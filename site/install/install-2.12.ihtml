@@ -195,29 +195,10 @@
 <tr>
   <td><p align="center"><img src="@IMAGES@macosx-logo.png"></p></td>
   <td>
-    MacOS X
-  </td>
-  <td>
-    10.5 (Leopard)
-  </td>
-  <td>
-    <strong>
-      _("Go <a href='%s'>here</a>", "http://ivo.bouwmans.name/lilypondleopard")
-    </strong>
-  </td>
-  <td></td>  
-  <td>
-    <a href='mailto:lilypondleopard@ivo.bouwmans.name'>Ivo Bouwmans</a>
-  </td> 
-</tr>
-
-<tr>
-  <td><p align="center"><img src="@IMAGES@macosx-logo.png"></p></td>
-  <td>
     MacOS X (Intel)
   </td>
   <td>
-    10.4
+    10.4 and newer
   </td>
   <td>
     <strong>
@@ -235,7 +216,7 @@
 <tr>
   <td><p align="center"><img src="@IMAGES@macosx-logo.png"></p></td>
   <td>
-    MacOS X (G3, G4, G5 Macs)
+    MacOS X (PPC)
   </td>
   <td>
     _("%s and newer", "10.3")
