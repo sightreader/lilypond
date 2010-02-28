@@ -1,7 +1,7 @@
 <!-- -*- html -*- -->
 <!--
-    Translation of GIT committish: <FILL-IN-HEAD-COMMITTISH>  
-    
+    Translation of GIT committish: <FILL-IN-HEAD-COMMITTISH>
+
     Translators must leave this comment intact, but remove any dollar
     signs ($) from the CVS Revision indicator.
 
@@ -32,6 +32,20 @@
     on one day.
 
     !-->
+
+
+  <dt>
+    <b>The LilyPond Report #17</b> -
+    <em>February 28, 2010</em>
+  </dt>
+  <dd>
+    The <a href="http://news.lilynet.net/"><em>LilyPond Report</em></a>
+    is a bi-monthly short, informal opinion column about the LilyPond
+    project: its team, its world, its community.
+    In addition to some news about the releases, the bugs and the new website,
+    this issue features a review of the <a href="http://frescobaldi.org/"> editor.<br>
+    Follow <a href="http://news.lilynet.net/The-LilyPond-Report-17">this link</a> to read the full issue...
+  </dd>
 
   <dt>
     <b>LilyPond 2.12.3 released!</b> -
@@ -94,8 +108,8 @@ normal users should continue to use 2.12.
   <a href="http://lilypondtool.organum.hu">
   http://lilypondtool.organum.hu</a>.
   </dd>
-  
-  
+
+
   <dt>
     <b>LilyPond 2.13.3</b> -
     <em>July 2, 2009</em>
@@ -154,7 +168,7 @@ release.
 	This short, informal, weekly opinion column is about the LilyPond project: its team, its world, its community.
     Follow <a href="http://news.lilynet.net/The-LilyPond-Report-14">this link</a> to read the full issue...
   </dd>
-	
+
   <dt>
     <b>LilyPond 2.12.2 and 2.13.0</b> —
     <em>March 21, 2009</em>
@@ -321,7 +335,7 @@ issues.
   </dt>
   <dd>
     LilyPond 2.11.55 is out.  This release fixes several bugs, and for octavation brackets
-    <code>set-octavation</code> has been replaced by a more user-friendly command, <code>\ottava</code>.  
+    <code>set-octavation</code> has been replaced by a more user-friendly command, <code>\ottava</code>.
     <a href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_11_55&amp;colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes</a>,
     <a href="install/#2.11">Download</a>.
   </dd>
@@ -663,7 +677,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_11_30&am
   <dd>
     Release 2.11.28 is now available as a binary installer for
     FreeBSD x86_64.  Download
-    <a href="http://lilypond.org/download/binaries/freebsd-64/lilypond-2.11.28-1.freebsd-64.sh">the installer</a> and 
+    <a href="http://lilypond.org/download/binaries/freebsd-64/lilypond-2.11.28-1.freebsd-64.sh">the installer</a> and
     do <em>sh lilypond-2.11.28-1.freebsd-64.sh</em> in a command window.
   </dd>
 
@@ -672,7 +686,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_11_30&am
 
 <dd> Release 2.11.28 has several updates to the manual and its
 translations,  an plethora of bugfixes and a complete cleanup of the
-spacing engine code. 
+spacing engine code.
 (<a href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_11_28&amp;colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes
 2.11</a>, <a href="install/#2.11">Download</a>)
 
@@ -711,7 +725,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_10_23&am
 
 </dd>
 
-<dt class="sticky"><b>Traducci&oacute;n de la documentaci&oacute;n al espa&ntilde;ol</b> - 
+<dt class="sticky"><b>Traducci&oacute;n de la documentaci&oacute;n al espa&ntilde;ol</b> -
     <em>10 de abril de 2007</em>
 </dt>
 <dd>Se han traducido la p&aacute;gina web, el manual de aprendizaje
@@ -724,11 +738,11 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_10_23&am
 </dd>
 
 
-	
+
 <dt><b>&Uuml;bersetzung der Dokumentation</b> - <em>10. April
 2007</em></dt>
 <dd>
-Die Kapitel 1-5 (der Abschnitt für Anf&auml;nger) des 
+Die Kapitel 1-5 (der Abschnitt für Anf&auml;nger) des
 LilyPond-Benutzerhandbuchs
 sind auf deutsch &uuml;bersetzt &mdash; sie sind erh&auml;ltlich f&uuml;r
 die <a href="@DOC@v2.11/Documentation/user/lilypond/index.de.html">Version
@@ -780,7 +794,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_11_20&am
 2.11</a>,
 <a
 href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_10_20&amp;colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes
-2.10</a>, 
+2.10</a>,
 <a href="@DOC@v2.11/Documentation/topdocs/NEWS.html">Changes 2.11</a>, <a
 href="install/#2.11">Download</a>)
 
@@ -795,7 +809,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_11_19&am
 2.11</a>,
 <a
 href="http://code.google.com/p/lilypond/issues/list?can=1&amp;q=fixed_2_10_19&amp;colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes
-2.10</a>, 
+2.10</a>,
 <a href="@DOC@v2.11/Documentation/topdocs/NEWS.html">Changes 2.11</a>, <a
 href="install/#2.11">Download</a>)
 
@@ -832,7 +846,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_11_16&colspe
 2.11</a>,
 <a
 href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_10_16&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes
-2.10</a>, 
+2.10</a>,
 <a href="@DOC@v2.11/Documentation/topdocs/NEWS.html">Changes 2.11</a>, <a
 href="install/#2.11">Download</a>)
 
@@ -850,7 +864,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_11_15&colspe
 2.11</a>,
 <a
 href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_10_15&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes
-2.10</a>, 
+2.10</a>,
 <a href="@DOC@v2.11/Documentation/topdocs/NEWS.html">Changes 2.11</a>, <a
 href="install/#2.11">Download</a>)
 
@@ -901,7 +915,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_10_12&colspe
 <a href="@DOC@v2.10/Documentation/topdocs/NEWS.html">Changes</a>, <a
 href="install/#2.10">Download</a>) </dd>
 
-      
+
 <dt><b>LilyPond 2.10.11 available</b> - <em>January 12, 2007</em></dt> <dd>
 This release mostly has the same fixes as 2.11.11.  (<a
 href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_10_11&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes</a>,
@@ -932,7 +946,7 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_11_10&colspe
 href="install/#2.11">Download</a>)
 </dd>
 
-      
+
 <dt><b>LilyPond 2.10.10 available</b> - <em>January 8, 2007</em> </dt><dd>
 This release fixes several popular bugs, among others: MIDI files
  that go silent after (de)crescendi, and tuplets problems with quoting
@@ -940,7 +954,7 @@ This release fixes several popular bugs, among others: MIDI files
  href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_11_10&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes</a>,
  <a href="@DOC@v2.10/Documentation/topdocs/NEWS.html">Changes</a>, <a
  href="install/#2.10">Download</a>)
-  
+
 </dd>
 
 
@@ -987,12 +1001,12 @@ href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_11_7&colspec
 href="install/#2.11">Download</a>)
 
 </dd>
-      
+
 <dt><b>LilyPond 2.11.6 available</b> - <em>December 30, 2006</em></dt>
 
 <dd>
-This release supports arbitrary fractional alterations, allowing 
-music with different microtonal conventions to be typeset. 
+This release supports arbitrary fractional alterations, allowing
+music with different microtonal conventions to be typeset.
 (<a
 href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_11_6&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes</a>,
 <a href="@DOC@v2.11/Documentation/topdocs/NEWS.html">Changes</a>, <a
@@ -1015,7 +1029,7 @@ href="install/#2.10">Download</a>)
 
 <dd>
 These releases complete the translation infrastructure for
-Documentation. 
+Documentation.
 (<a
 href="http://code.google.com/p/lilypond/issues/list?can=1&q=fixed_2_10_5&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary">Bugfixes</a>,
 <a href="@DOC@v2.11/Documentation/topdocs/NEWS.html">Changes</a>, <a
@@ -1076,7 +1090,7 @@ From now on, our GUB binary builds include support for Linux/PPC.  (<a
 href="install/#2.10">Download</a>)
 </dd>
 
-      
+
 <dt><b>Traduction du tutoriel en fran&ccedil;ais</b> -
 <em>December 13, 2006</em></dt>
 
@@ -1241,7 +1255,7 @@ href="install/#2.9">Download</a>)
 
 
 
- 
+
 
 <dt><b>LilyPond 2.9.22 available</b> - <em>October 9, 2006</em></dt>
 
@@ -1264,7 +1278,7 @@ href="install/#2.9">Download</a>)
 Test this release candidate for LilyPond 2.10!  (<a
 href="install/#2.9">Download</a>)
 </dd>
-      
+
 <dt><b>LilyPond 2.9.17 available</b> - <em>September 2, 2006</em></dt>
 
 <dd>
@@ -1274,7 +1288,7 @@ This release fixes many bugs. Among others, MacOS X QuickTime now
  href="install/#2.9">Download</a>) </dd>
 
 
- 
+
 <dt><b>LilyPond 2.9.16 available</b> - <em>August 25, 2006</em></dt>
 
 <dd>
@@ -1361,7 +1375,7 @@ href="install/#2.9">Download</a>)
 
 <dt><b>LilyPond 2.9.10 available</b> - <em>June 15, 2006</em></dt>
 <dd>
-This releases fixes a couple of  bugs in 2.9.9. 
+This releases fixes a couple of  bugs in 2.9.9.
 (<a href="@DOC@v2.9/Documentation/topdocs/NEWS.html">Changes</a>,
 <a href="install/#2.9">Download</a>)
 </dd>
@@ -1369,7 +1383,7 @@ This releases fixes a couple of  bugs in 2.9.9.
 
 <dt><b>LilyPond 2.9.9 available</b> - <em>June 15, 2006</em></dt>
 <dd>
-This releases fixes many bugs in 2.9.8 and earlier. 
+This releases fixes many bugs in 2.9.8 and earlier.
 (<a href="@DOC@v2.9/Documentation/topdocs/NEWS.html">Changes</a>,
 <a href="install/#2.9">Download</a>)
 </dd>
@@ -1450,7 +1464,7 @@ href="install/#2.9">Download</a>)
 
 This release has support for feathered beaming, and note head styles in
 the markup <tt>\note</tt> command. In addition, it has a lot of updates
-of the manual and a clean up of the spring spacer. 
+of the manual and a clean up of the spring spacer.
 (<a
 href="@DOC@v2.9/Documentation/topdocs/NEWS.html">Changes</a>, <a
 href="install/#2.9">Download</a>)
@@ -1542,7 +1556,7 @@ from lilypond.org. (<a
 href="@DOC@v2.7/Documentation/topdocs/NEWS.html">Changes</a>,
 <a href="install/#2.7">Download</a>)
 </dd>
- 
+
 <dt><b>LilyPond 2.7.35 is out</b> - <em>February 19, 2006</em></dt>
 <dd>
 This release has lots of bugs fixes. The plan is to release 2.8 at the
@@ -1577,7 +1591,7 @@ This feature was sponsored by Ramana Kumar. (<a
 href="@DOC@v2.7/Documentation/topdocs/NEWS.html">Changes</a>,
 <a href="install/#2.7">Download</a>)
 </dd>
-                                                                                                                            
+
 <dt><b>LilyPond 2.7.32 is out</b> - <em>February 7, 2006</em></dt>
 <dd>
 This release contains some syntax changes: words inside the \paper and
@@ -1595,7 +1609,7 @@ vector. (<a
 href="@DOC@v2.7/Documentation/topdocs/NEWS.html">Changes</a>,
 <a href="install/#2.7">Download</a>)
 </dd>
-                                                                                                                            
+
 <dt><b>LilyPond 2.7.31 is out</b> - <em>February 2, 2006</em></dt>
 <dd>
 This release fixes a load of bugs, and has some internal
@@ -1683,7 +1697,7 @@ now available for
  <a href="http://lilypond.org/download/binaries/linux-x86/lilypond-2.7.27-1.linux.sh">
 Linux/x86</a>,
  <a href="http://lilypond.org/download/binaries/MacOS/lilypond-2.7.27-2.zip">
-MacOS X</a> and  
+MacOS X</a> and
  <a href="http://lilypond.org/download/binaries/mingw/lilypond-2.7.27-2.exe">
 Windows</a>.
 </dd>
@@ -1704,7 +1718,7 @@ href="@DOC@v2.7/Documentation/topdocs/NEWS.html">Changes</a>,
     <img src="@IMAGES@lj-cover140-small.png" align="right" alt="linux
   journal cover"></a>
 
-  
+
     Linux Journal publishes an article on
       <a href="http://www.linuxjournal.com/article/8364"><em>Make
     Stunning Schenker Graphs with GNU LilyPond</em></a>.  It is a
@@ -2238,7 +2252,7 @@ href="@DOC@v2.5/Documentation/topdocs/out-www/NEWS.html">Changes</a>,
 LilyPond 2.5.20 has lots of bugfixes, in particular, MIDI files of
 multi-movement pieces don't overwrite each other.  Version 2.5.20 also
 supports putting arrows on lines, such as glissandi.
-More details are in the 
+More details are in the
      the <a
      href="@DOC@v2.5/Documentation/topdocs/out-www/NEWS.html">NEWS</a>
      file, or go straight to <a href="install/#2.5">downloading LilyPond 2.5.20</a>.
@@ -2255,7 +2269,7 @@ LilyPond 2.5.19 was released. The command `\epsfile' allows inclusion
      href="@DOC@v2.5/Documentation/topdocs/out-www/NEWS.html">NEWS</a>
      file and <a href="install/#2.5">Download LilyPond 2.5.19</a>.
 </dd>
-      
+
 <dt>April 6, 2005</dt>
 <dd>
 2.5.18 is a bugfix release. It has many small cleanups in the
@@ -2263,7 +2277,7 @@ web-based documentation, and many small cleanups all over the
 place. <a href="install/#2.5">Download LilyPond 2.5.18</a>.
 </dd>
 
-      
+
 <dt>March 31, 2005</dt>
 <dd>
 2.5.17 is out. This release features many small bugfixes. In addition,
@@ -2377,14 +2391,14 @@ href="install/#2.5">here</a>!
   <dd>LilyPond 2.5.8 is out.  This
     release has many internal code cleanups. In addition,
     accuracy of error reporting has been improved.
-    See the 
+    See the
     <a href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.3065&content-type=text/vnd.viewcvs-markup">
       change log
     </a> and download <a href="install/#2.5">now</a>!
   </dd>
-  
-  <dt>January 11, 2005</dt><dd> 
-    
+
+  <dt>January 11, 2005</dt><dd>
+
     LilyPond 2.5.7 is out. This release has a completely usable
     Pango integration for the PS backend. The default font is
     Century Schoolbook from the PS font suite.  It also has
@@ -2396,8 +2410,8 @@ href="install/#2.5">here</a>!
            href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.3048&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
 
   </dd>
-  <dt>January 02, 2005</dt><dd> 
-    
+  <dt>January 02, 2005</dt><dd>
+
     LilyPond 2.5.6 was released. This is a "technology preview"
     release, which means that it has all kinds of nifty
     features, but is not actually usable for producing nicely
@@ -2412,8 +2426,8 @@ href="install/#2.5">here</a>!
 		      href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.3013&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
 
   </dd>
-        <dt>December 28, 2004</dt><dd> 
-          
+        <dt>December 28, 2004</dt><dd>
+
       LilyPond 2.5.5 is out. It is the first one to link against
       FontConfig and Pango, although it is only available in the "-f
       ps" output. The default output format has been changed back TeX
@@ -2423,8 +2437,8 @@ href="install/#2.5">here</a>!
       href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev= 1.3000&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
 
 	</dd>
-        <dt>December 20, 2004</dt><dd> 
-          
+        <dt>December 20, 2004</dt><dd>
+
           LilyPond 2.5.4 is out. This release has some major
           brainsurgery in the font handling. As of now, LilyPond loads
           the music fonts in OpenType font format using FreeType.
@@ -2503,14 +2517,14 @@ href="install/#2.5">here</a>!
 	</dd>
 
         <dt>November 11, 2004</dt><dd>
-	
+
         LilyPond 2.4.2 is out. This release fixes a number of security
         problems with --safe, and adds a lot of polishing fixes.
         Download it <a href="install/#2.4">here</a>.
 	</dd>
 
         <dt>November 4, 2004</dt><dd>
-	
+
         LilyPond 2.4.1 is out. This release includes a number of small
         fixes that were made to 2.4.0 last week. Download it <a
         href="install/#2.4">here</a> and check out the changes in
@@ -2520,7 +2534,7 @@ href="install/#2.5">here</a>!
 
 
         <dt>October 31, 2004</dt><dd>
-	
+
 	  LilyPond 2.4.0 was just <a href="announce-v2.4.html">released!</a>
 	  This new stable version has support for page-layout,
 	  completely rewritten slur formatting and many other
@@ -2528,9 +2542,9 @@ href="install/#2.5">here</a>!
 	  href="@DOC@v2.4/Documentation/topdocs/out-www/NEWS.html">NEWS</a>
 	  file. Download from <a href="install/">here</a>.
 <p> Enjoy!
-	   
+
 	</dd>
-	
+
         <dt>October 29, 2004</dt><dd>
 
           LilyPond 2.3.26 is out. This is another 2.4 release
@@ -2539,7 +2553,7 @@ href="install/#2.5">here</a>!
           href="install/#2.3">here</a> and check out the changes in
           the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2773&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>October 29, 2004</dt><dd>
 
@@ -2550,7 +2564,7 @@ href="install/#2.5">here</a>!
           href="install/#2.3">here</a> and check out the changes in
           the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2765&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
  <dt>October 27, 2004</dt><dd>
 
@@ -2560,7 +2574,7 @@ href="install/#2.5">here</a>!
           href="install/#2.3">here</a> and check out the changes in
           the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2752&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>October 24, 2004</dt><dd>
 
@@ -2570,7 +2584,7 @@ href="install/#2.5">here</a>!
         href="install/#2.3">here</a> and check out the changes in
         the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2742&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-        </dd> 
+        </dd>
 
         <dt>October 10, 2004</dt><dd>
 
@@ -2580,7 +2594,7 @@ href="install/#2.5">here</a>!
         \paper{}.Download it <a href="install/#2.3">here</a> and
         check out the changes in the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2709&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>October 09, 2004</dt><dd>
 
@@ -2590,7 +2604,7 @@ href="install/#2.5">here</a>!
         code. Download it <a href="install/#2.3">here</a> and check
         out the changes in the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2692&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>October 02, 2004</dt><dd>
 
@@ -2602,7 +2616,7 @@ href="install/#2.5">here</a>!
         href="install/#2.3">here</a> and check out the changes in
         the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2674&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
 
       <dt>September 29, 2004</dt><dd>
@@ -2620,7 +2634,7 @@ just a friendly chat. Registration is not required to attend.
         it <a href="install/#2.3">here</a> and check out the changes
         in the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2652&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>September 20, 2004</dt><dd>
 
@@ -2634,7 +2648,7 @@ just a friendly chat. Registration is not required to attend.
         href="install/#2.3">here</a> and check out the changes in
         the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2614&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>September 11, 2004</dt><dd>
 
@@ -2645,7 +2659,7 @@ just a friendly chat. Registration is not required to attend.
         input/regression/new-slur for some examples.
 
         Please consider this release as a 3.0 pre-release so try to find as
-        many bugs as possible. A report including a small .ly example 
+        many bugs as possible. A report including a small .ly example
         can be filed at bug-lilypond@gnu.org
 
         In this case, a bug is defined as something that the current 2.3 does
@@ -2655,7 +2669,7 @@ just a friendly chat. Registration is not required to attend.
         href="install/#2.3">here</a> and check out the changes in
         the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2562&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>September 10, 2004</dt><dd>
 
@@ -2668,7 +2682,7 @@ just a friendly chat. Registration is not required to attend.
         href="install/#2.3">here</a> and check out the changes in
         the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2553&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>September 6, 2004</dt><dd>
 
@@ -2680,7 +2694,7 @@ just a friendly chat. Registration is not required to attend.
      other. Download it <a href="install/#2.3">here</a> and check out
      the changes in the <a
      href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2534&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>August 29, 2004</dt><dd>
 
@@ -2695,7 +2709,7 @@ just a friendly chat. Registration is not required to attend.
           chapter of the user manual.
 
           A lot of cheers for Graham!
-      </dd> 
+      </dd>
 
         <dt>August 29, 2004</dt><dd>
 
@@ -2708,7 +2722,7 @@ just a friendly chat. Registration is not required to attend.
           again.  Download it <a href="install/#2.3">here</a> and
           check out the changes in the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2520&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>August 24, 2004</dt><dd>
 
@@ -2716,7 +2730,7 @@ just a friendly chat. Registration is not required to attend.
           disappearing metronome mark. Download it <a
           href="install/#2.2">here</a> and check out the changes in
           the <a href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2000.2.33&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>August 23, 2004</dt><dd>
 
@@ -2726,7 +2740,7 @@ just a friendly chat. Registration is not required to attend.
           `doubleSlurs' property. Download it <a
           href="install/#2.3">here</a> and check out the changes in
           the <a href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2489&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
         <dt>August 3, 2004</dt><dd>
 
@@ -2734,8 +2748,8 @@ just a friendly chat. Registration is not required to attend.
           annoying bugs fixed. Download it <a href="install/#2.3">here</a> and check out
           the changes in the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2449&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      
-      </dd> 
+
+      </dd>
 
         <dt>August 1, 2004</dt><dd>
 
@@ -2754,8 +2768,8 @@ just a friendly chat. Registration is not required to attend.
           Download it <a href="install/#2.3">here</a> and check out
           the changes in the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2435&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      
-      </dd> 
+
+      </dd>
 
 
         <dt>July 30, 2004</dt><dd>
@@ -2776,8 +2790,8 @@ just a friendly chat. Registration is not required to attend.
           Download it <a href="install/#2.3">here</a> and check out
           the changes in the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2416&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      
-      </dd> 
+
+      </dd>
 
       <dt>July 23, 2004</dt><dd>
 
@@ -2788,8 +2802,8 @@ just a friendly chat. Registration is not required to attend.
           implementation. Download it <a href="install/#2.3">here</a>
           and check out the changes in the <a
           href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2395&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      
-      </dd> 
+
+      </dd>
 
       <dt>July 19, 2004</dt><dd>
 
@@ -2804,8 +2818,8 @@ just a friendly chat. Registration is not required to attend.
         beat within the measure. Download it <a
         href="install/#2.3">here</a> and check out the changes in
         the <a href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2383&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      
-      </dd> 
+
+      </dd>
 
       <dt>July 15, 2004</dt><dd>
 
@@ -2813,7 +2827,7 @@ just a friendly chat. Registration is not required to attend.
         2.3.x. Download it <a href="install/#2.2">here</a> and check
         out the changes in the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2000.2.28&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      </dd> 
+      </dd>
 
       <dt>July 11, 2004</dt><dd>
 
@@ -2821,8 +2835,8 @@ just a friendly chat. Registration is not required to attend.
       href="http://www.linuxjournal.com/article.php?sid=7657&mode=thread&order=0">Linux
       Journal</a>.
 
-      </dd> 
-        
+      </dd>
+
       <dt>July 5, 2004</dt><dd>
 
         LilyPond 2.3.6 was released.  This release has more updates
@@ -2832,8 +2846,8 @@ just a friendly chat. Registration is not required to attend.
         it <a href="install/#2.3">here</a> and check out the changes
         in the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2306&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      
-      </dd> 
+
+      </dd>
 
 
       <dt>July 5, 2004</dt><dd>
@@ -2842,8 +2856,8 @@ just a friendly chat. Registration is not required to attend.
         release. Download it <a href="install/#2.2">here</a> and
         check out the changes in the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2000.2.23&content-type=text/vnd.viewcvs-markup">ChangeLog</a>.
-      
-      </dd> 
+
+      </dd>
 
       <dt>June 25, 2004</dt><dd>
 
@@ -2856,8 +2870,8 @@ just a friendly chat. Registration is not required to attend.
         fret-diagram output. Check out the <a
         href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2293&content-type=text/vnd.viewcvs-markup">ChangeLog</a>
         and download <a href="install/#2.3">here</a>.
-      
-      </dd> 
+
+      </dd>
 
       <dt>June 20, 2004</dt><dd>
 
@@ -2865,8 +2879,8 @@ just a friendly chat. Registration is not required to attend.
       bugs that were reported over the past month. Check out the <a
       href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2000.2.16&content-type=text/vnd.viewcvs-markup">ChangeLog</a> for a full description and download it <a
       href="install/#2.2">here</a>.
-      
-      </dd> 
+
+      </dd>
 
 
       <dt>June 13, 2004</dt><dd>
@@ -2876,11 +2890,11 @@ just a friendly chat. Registration is not required to attend.
       <tt>\score</tt> into markups now works.  Check out the <a
       href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2242&content-type=text/vnd.viewcvs-markup">ChangeLog</a>
       and download <a href="install/#2.3">here</a>.
-      
-      </dd> 
+
+      </dd>
 
         <dt>May 31, 2004</dt> <dd>
-	
+
 LilyPond 2.3.3 has many internal changes relating to the output
 backend (PostScript) and page-layout. In addition, it contains a few
 bugfixes for recently reported problems.  Check out the <a
@@ -2890,7 +2904,7 @@ and download <a href="install/#2.3">here</a>.
 </dd>
 
         <dt>May 31, 2004</dt> <dd>
-	
+
 LilyPond 2.2.2 is out.  It has a number of small bugfixes, so upgrade
 if any of these errors concern you.  Check out the <a
 href="http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/lilypond/lilypond/ChangeLog?rev=1.2000.2.9">ChangeLog</a>
@@ -2905,7 +2919,7 @@ or head straight to the <a href="install/#2.2">download section</a>.
 	href="@DOC@v2.3/Documentation/topdocs/out-www/NEWS.html">release
 	notes</a> or head straight to the <a
 	href="install/#2.3">download section</a>.
-	
+
 	</dd>
 
 	<dt>May 9, 2004</dt>
@@ -2913,9 +2927,9 @@ or head straight to the <a href="install/#2.2">download section</a>.
 	LilyPond 2.3.1 is out. This release has many new and cool
 	features. Check out the <a
 	href="@DOC@v2.3/Documentation/topdocs/out-www/NEWS.html">release
-	notes</a> or head straight to the  
+	notes</a> or head straight to the
 	<a href="install/#2.3">download section</a>.
-	</dd>      
+	</dd>
 
 	<dt>May 4, 2004</dt>
 	<dd>
@@ -2928,7 +2942,7 @@ or head straight to the <a href="install/#2.2">download section</a>.
 	  Documentation. Of course, any other help is also welcome!
 	  </dd>
 
-	    
+
 	<dt>May 3, 2004</dt>
 	<dd>
 	  LilyPond 2.2.1 has been released. It fixes a handful of bugs.
@@ -2942,7 +2956,7 @@ or head straight to the <a href="install/#2.2">download section</a>.
 	  soon.
 	</dd>
 
-	      
+
       <dt>April 12, 2004</dt> <dd> LilyPond 2.3.0 is the first release
 in the 2.3 cycle.  The focus for 2.3 is page layout, so
 instrumentalists can force parts to have page breaks at sane turning
@@ -2956,14 +2970,14 @@ notes</a>.  Download <a href="install/#2.3">here</a>.
       release appeared on <a
       href="http://linuxfr.org/2004/04/08/15968.html">linuxfr.org</a>.
       </dd>
-	
+
 	<dt>April 8, 2004</dt>
-	
+
 	<dd>
 	  Binaries for LilyPond 2.2.0 are available for
 	  MacOS X, Slackware, Mandrake and Debian Woody.
 
-	  Download 
+	  Download
 	  <a href="install/#2.2">here</a>.</dd>
 
 	<dt>April 1, 2004</dt>
@@ -2975,7 +2989,7 @@ notes</a>.  Download <a href="install/#2.3">here</a>.
 	  integration. Read about it in the <a
 	  href="announce-v2.2.html">announcement</a> or skip to the <a
 	  href="install/#2.2">download</a> directly.</dd>
-	  
+
 	<dt>March 31, 2004</dt>
 	<dd>
 	  LilyPond 2.1.37 has build fixes for Cygwin and SUSE,
@@ -2990,7 +3004,7 @@ notes</a>.  Download <a href="install/#2.3">here</a>.
 	  LilyPond 2.1.36 has many fixes in
 	  the user manual. Download <a href="install/">here</a>.
 	</dd>
-		
+
 	<dt>March 28, 2004</dt>
 	<dd>
 	  LilyPond 2.1..35 fixes a slew of
@@ -3021,7 +3035,7 @@ notes</a>.  Download <a href="install/#2.3">here</a>.
 	  <a href="@DOC@v2.1/Documentation/user/out-www/lilypond/Interpretation-contexts.html">more
 	    rewriting</a> in the user manual. There is also an experimental
 	  implementation of optimal page breaking (Postscript backend
-	  only).  Download <a href="install/#2.1">here</a>.  
+	  only).  Download <a href="install/#2.1">here</a>.
 	</dd>
 
 	<dt>March 15, 2004</dt>
@@ -3032,7 +3046,7 @@ notes</a>.  Download <a href="install/#2.3">here</a>.
 	  the
 	  <a href="@DOC@v2.1/Documentation/topdocs/out-www/NEWS.html">release
 	    notes</a> and download <a href="install/#2.1">here</a>.
-	</dd>	
+	</dd>
 
         <dt>March 14, 2004</dt>
 	<dd>
