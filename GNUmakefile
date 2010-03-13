@@ -57,9 +57,6 @@ $(LANG)/%.svg: site/%.svg $(mo) scripts/translate.py GNUmakefile
 	mkdir -p $(dir $@)
 	LANG=$(LANG) $(PYTHON) $(SCRIPTDIR)/translate.py --remove-quotes --outdir=$(dir $@) $(@:$(LANG)/%=site/%)
 
-# FIXME: no inkscape on lilypond.org
-.PRECIOUS: %.png %.svg
-
 %.png: %.svg GNUmakefile
 ifeq ($(HOSTNAME),abc)
 # FIXME: allow to fail on lilypond.org
@@ -89,6 +86,10 @@ NON_HTML = $(shell find site -false $(EXT:%=-or -name '*%'))
 TREE = $(shell cd site && find . -type d -not -name CVS)
 PY = $(shell find scripts site -name '*.py')
 SVG = $(shell find site -name '*.svg')
+
+# FIXME: no inkscape on lilypond.org
+PRECIOUS = $(foreach svg,$(SVG),$(foreach lang,$(LANGUAGES),$(svg:site/%=$(lang)/%)))
+.PRECIOUS: %.png %.svg $(PRECIOUS)
 
 NEWS_FILES = site/top-news.ihtml site/old-news.html site/lilypond-rss-feed.xml
 
