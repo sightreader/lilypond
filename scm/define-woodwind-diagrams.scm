@@ -256,15 +256,6 @@ returns @samp{1/3}."
 
 ;;; Commands for text layout
 
-; Draws a circle around markup if (= trigger 0.5)
-(define-markup-command
-  (conditional-circle-markup layout props trigger in-markup)
-  (number? markup?)
-  (interpret-markup layout props
-    (if (eqv? trigger 0.5)
-      (markup #:circle (markup in-markup))
-      (markup in-markup))))
-
 ; Makes a list of named-keys
 (define (make-name-keylist input-list key-list font-size)
   (map (lambda (x y)

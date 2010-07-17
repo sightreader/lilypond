@@ -3699,3 +3699,13 @@ where @var{X} is the number of staff spaces."
   (pair? markup-list?)
   "Like @code{\\override}, for markup lists."
   (interpret-markup-list layout (cons (list new-prop) props) args))
+
+; Draws a circle around markup if (= trigger 0.5)
+(define-markup-command
+  (conditional-circle-markup layout props trigger in-markup)
+  (number? markup?)
+  (interpret-markup layout props
+    (if (eqv? trigger 0.5)
+      (markup #:circle (markup in-markup))
+      (markup in-markup))))
+
