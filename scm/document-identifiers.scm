@@ -22,19 +22,12 @@
       ((name-sym (car music-func-pair))
        (music-func (cdr music-func-pair))
        (func (ly:music-function-extract music-func))
-       (arg-names
-	(map symbol->string
-	     (cddr (cadr (procedure-source func)))))
+       (arg-names "")
        (doc (procedure-documentation func))
        (sign (object-property func 'music-function-signature))
        (type-names (map type-name sign))
 
-       (signature-str
-	(string-join
-	 (map (lambda (x) (format #f "@var{~a} (~a)"
-				  (car x)
-				  (cadr x)))
-	      (zip arg-names type-names)))))
+       (signature-str ""))
     (format #f
      "@item @code{~a}~a~a
 @findex ~a

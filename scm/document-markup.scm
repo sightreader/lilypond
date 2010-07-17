@@ -46,10 +46,7 @@
          (f-name (symbol->string (procedure-name  func)))
          (c-name (regexp-substitute/global #f "-markup(-list)?$" f-name  'pre "" 'post))
          (sig (object-property func 'markup-signature))
-         (arg-names (let ((arg-list (cadr (procedure-source func))))
-                      (if (list? arg-list)
-                          (map symbol->string (cddr arg-list))
-                          (make-list (length sig) "arg"))))
+         (arg-names (make-list (length sig) "arg"))
          (sig-type-names (map type-name sig))
          (signature-str
           (string-join
@@ -79,11 +76,11 @@
   (let* ((category-string (symbol->string category))
          (category-name (string-capitalize (regexp-substitute/global #f
                                         "-" category-string 'pre " " 'post)))
-        (markup-functions (hash-fold (lambda (markup-function dummy functions)
-				       (cons markup-function functions))
-				     '()
-				     (hashq-ref markup-functions-by-category
-						category))))
+	 (markup-functions (hash-fold (lambda (markup-function dummy functions)
+					(cons markup-function functions))
+				      '()
+				      (hashq-ref markup-functions-by-category
+						 category))))
     (make <texi-node>
       #:appendix #t
       #:name category-name
