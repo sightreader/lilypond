@@ -3259,7 +3259,7 @@ and/or @code{extra-offset} properties.
 Make a fraction of two markups.
 @lilypond[verbatim,quote]
 \\markup {
-  π ≈
+  pi is
   \\fraction 355 113
 }
 @end lilypond"
