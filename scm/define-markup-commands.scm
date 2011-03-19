@@ -139,32 +139,6 @@ A simple line.
         (y (cdr dest)))
     (make-line-stencil th 0 0 x y)))
 
-(define-markup-command (draw-hline layout props)
-  ()
-  #:category graphic
-  #:properties ((draw-line-markup)
-                (line-width)
-                (span-factor 1))
-  "
-@cindex drawing a line across a page
-
-Draws a line across a page, where the property @code{span-factor}
-controls what fraction of the page is taken up.
-@lilypond[verbatim,quote]
-\\markup {
-  \\column {
-    \\draw-hline
-    \\override #'(span-factor . 1/3)
-    \\draw-hline
-  }
-}
-@end lilypond"
-  (interpret-markup layout
-                    props
-                    (markup #:draw-line (cons (* line-width
-                                                  span-factor)
-                                               0))))
-
 (define-markup-command (draw-circle layout props radius thickness filled)
   (number? number? boolean?)
   #:category graphic

@@ -37,6 +37,32 @@ Use `markup*' in a \\notemode context."
 
   (car (compile-all-markup-expressions `(#:line ,body))))
 
+(define-markup-command (draw-hline layout props)
+  ()
+  #:category graphic
+  #:properties ((draw-line-markup)
+                (line-width)
+                (span-factor 1))
+  "
+@cindex drawing a line across a page
+
+Draws a line across a page, where the property @code{span-factor}
+controls what fraction of the page is taken up.
+@lilypond[verbatim,quote]
+\\markup {
+  \\column {
+    \\draw-hline
+    \\override #'(span-factor . 1/3)
+    \\draw-hline
+  }
+}
+@end lilypond"
+  (interpret-markup layout
+                    props
+                    (markup #:draw-line (cons (* line-width
+                                                  span-factor)
+                                               0))))
+
 ;; utility
 
 (define (markup-join markups sep)
