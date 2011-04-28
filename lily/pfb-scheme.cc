@@ -41,6 +41,15 @@ LY_DEFINE (ly_otf_2_cff, "ly:otf->cff",
   FT_Face face = open_ft_face (file_name, 0 /* index */);
   string table = get_otf_table (face, "CFF ");
 
+  // This function is causing problems with Guile 2.0: with Guile
+  // 1.8, it returned the exact binary string we needed, but Guile
+  // 2.0 uses a different internal representation of strings, so
+  // the returned string is mangled... IOW, strings likely can't
+  // be binary with Guile 2.0, since many character encodings have
+  // forbidden byte values.  FIXME
+  //
+  // As a workaround for this issue, enable the "-dgs-load-fonts"
+  // option when running LilyPond.
   SCM asscm = scm_from_locale_stringn ((char *) table.data (),
                                        table.length ());
 
