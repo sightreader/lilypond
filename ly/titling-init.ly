@@ -18,7 +18,7 @@ tagline = \markup {
     #(ly:export
       (format #f "Music engraving by LilyPond ~a~awww.lilypond.org"
        (lilypond-version)
-       (ly:wide-char->utf-8 #x2014)
+       "-"
        ))
   }
 }
