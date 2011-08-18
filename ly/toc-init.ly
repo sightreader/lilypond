@@ -34,27 +34,27 @@
 tocItemWithDotsMarkup = \markup \fill-with-pattern #1 #RIGHT .
   \fromproperty #'toc:text \fromproperty #'toc:page
 
-#(define-markup-list-command (table-of-contents layout props) ()
-  ( _i "Outputs the table of contents, using the paper variable
-@code{tocTitleMarkup} for its title, then the list of lines
-built using the @code{tocItem} music function
-Usage: @code{\\markuplines \\table-of-contents}" )
-  (cons (interpret-markup layout props
-			  (ly:output-def-lookup layout 'tocTitleMarkup))
-	(space-lines (chain-assoc-get 'baseline-skip props)
-		    (map (lambda (toc-item)
-			   (let ((label (car toc-item))
-				 (toc-markup (cadr toc-item))
-				 (text (caddr toc-item)))
-			     (interpret-markup
-			       layout
-			       (cons (list (cons 'toc:page
-					    (markup #:with-link label #:page-ref label "XXX" "?"))
-					   (cons 'toc:text (markup #:with-link label text))
-					   (cons 'toc:label label))
-				     props)
-			       (ly:output-def-lookup layout toc-markup))))
-			 (toc-items)))))
+%#(define-markup-list-command (table-of-contents layout props) ()
+%  ( _i "Outputs the table of contents, using the paper variable
+%@code{tocTitleMarkup} for its title, then the list of lines
+%built using the @code{tocItem} music function
+%Usage: @code{\\markuplines \\table-of-contents}" )
+%  (cons (interpret-markup layout props
+%			  (ly:output-def-lookup layout 'tocTitleMarkup))
+%	(space-lines (chain-assoc-get 'baseline-skip props)
+%		    (map (lambda (toc-item)
+%			   (let ((label (car toc-item))
+%				 (toc-markup (cadr toc-item))
+%				 (text (caddr toc-item)))
+%			     (interpret-markup
+%			       layout
+%			       (cons (list (cons 'toc:page
+%					    (markup #:with-link label #:page-ref label "XXX" "?"))
+%					   (cons 'toc:text (markup #:with-link label text))
+%					   (cons 'toc:label label))
+%				     props)
+%			       (ly:output-def-lookup layout toc-markup))))
+%			 (toc-items)))))
 
 tocItem = 
 #(define-music-function (parser location text) (markup?)
