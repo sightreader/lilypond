@@ -24,19 +24,19 @@
 
 ;; properly sort all grobs, properties, and interfaces
 ;; within the all-grob-descriptions alist
-(map
-  (lambda (x)
-    (let* ((props      (assoc-ref all-grob-descriptions (car x)))
-           (meta       (assoc-ref props 'meta))
-           (interfaces (assoc-ref meta 'interfaces)))
-      (set! all-grob-descriptions
-        (sort (assoc-set! all-grob-descriptions (car x)
-               (sort-grob-properties
-                (assoc-set! props 'meta
-                 (assoc-set! meta 'interfaces
-                  (sort interfaces ly:symbol-ci<?)))))
-              ly:alist-ci<?))))
-  all-grob-descriptions)
+;(map
+;  (lambda (x)
+;    (let* ((props      (assoc-ref all-grob-descriptions (car x)))
+;           (meta       (assoc-ref props 'meta))
+;           (interfaces (assoc-ref meta 'interfaces)))
+;      (set! all-grob-descriptions
+;        (sort (assoc-set! all-grob-descriptions (car x)
+;               (sort-grob-properties
+;                (assoc-set! props 'meta
+;                 (assoc-set! meta 'interfaces
+;                  (sort interfaces ly:symbol-ci<?)))))
+;              ly:alist-ci<?))))
+;  all-grob-descriptions)
 
 (define (interface-doc-string interface grob-description)
   (let* ((name (car interface))
