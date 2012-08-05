@@ -68,6 +68,27 @@
 			       loc))
 	  (and (pair? (car sig)) (cdar sig))))))
 
+(define-ly-syntax (music-function-set! parser loc fun args value)
+  (let* ((sig (ly:music-function-signature fun))
+	 (pred (if (pair? (car sig)) (caar sig) (car sig)))
+	 (good (proper-list? args))
+	 (proc (ly:music-function-extract fun)))
+    (if (and good (pred value))
+	(begin
+	  (if (ly:music? value)
+	      (set! (ly:music-property value 'origin) loc))
+	  (if (procedure-with-setter? proc)
+	      (apply (setter proc) parser loc
+		     (reverse! args (list value)))
+	      (ly:parser-error parser
+			       (format #f (_ "~a is not settable" proc))
+			       loc)))
+	(if good
+	    (ly:parser-error parser
+			     (format #f (_ "~a should be ~a")
+				     value (type-name pred))
+			     loc)))))
+
 (define-ly-syntax (argument-error parser location n pred arg)
   (ly:parser-error
    parser

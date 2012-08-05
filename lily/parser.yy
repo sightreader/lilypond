@@ -49,6 +49,7 @@ deleting them.  Let's hope that a stack overflow doesn't trigger a move
 of the parse stack onto the heap. */
 
 %left PREC_BOT
+%left '='
 %nonassoc REPEAT
 %nonassoc ALTERNATIVE
 
@@ -374,6 +375,7 @@ If we give names, Bison complains.
 %token <scm> SCM_IDENTIFIER
 %token <scm> SCM_TOKEN
 %token <scm> SCORE_IDENTIFIER
+%token <i> SETTER_FUNCTION
 %token <scm> STRING
 %token <scm> STRING_IDENTIFIER
 %token <scm> TONICNAME_PITCH
@@ -637,6 +639,14 @@ toplevel_expression:
 		parser->lexer_->set_identifier (id, od->self_scm ());
 		od->unprotect();
 	}
+	| SCM_FUNCTION function_arglist '=' identifier_init
+	{
+		MAKE_SYNTAX ("music-function-set!", @$, $1, $2, $4);
+	}
+	| MUSIC_FUNCTION function_arglist '=' music_arg
+	{
+		MAKE_SYNTAX ("music-function-set!", @$, $1, $2, $4);
+	}
 	;
 
 embedded_scm_bare:
@@ -748,14 +758,6 @@ assignment:
 	| assignment_id property_path '=' identifier_init {
 		SCM path = scm_cons (scm_string_to_symbol ($1), $2);
 		parser->lexer_->set_identifier (path, $4);
-	;
-/*
- TODO: devise standard for protection in parser.
-
-  The parser stack lives on the C-stack, which means that
-all objects can be unprotected as soon as they're here.
-
-*/
 	}
 	| embedded_scm { }
 	;
