@@ -1,11 +1,9 @@
-include $(stepdir)/compile-vars.make
+include $(stepmake)/compile-vars.make
 
 H_FILES := $(call src-wildcard,*.h)
 C_FILES := $(call src-wildcard,*.c)
 Y_FILES := $(call src-wildcard,*.y)
 L_FILES := $(call src-wildcard,*.l)
-
-SOURCE_FILES+=$(Y_FILES) $(C_FILES) $(L_FILES) $(H_FILES)
 
 O_FILES+=$(addprefix $(outdir)/, $(Y_FILES:.y=.o) $(C_FILES:.c=.o) $(L_FILES:.l=.o))
 

@@ -1,6 +1,6 @@
 depth=../..
-LOCALSTEPMAKE_TEMPLATES=lilypond ly
-include $(depth)/make/stepmake.make
+STEPMAKE_TEMPLATES = lilypond ly
+include $(depth)/stepmake/stepmake.make
 
 LILYPOND_PREVIEW = $(LILYPOND_BINARY) -dpreview -dresolution=150
 

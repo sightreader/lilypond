@@ -16,7 +16,7 @@ LILYPOND_WORDS_DEPENDS =\
 STEPMAKE_TEMPLATES=install-out
 
 # vimdir defined in config.make
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 local-install:
 	for a in compiler ftdetect ftplugin indent syntax; do \

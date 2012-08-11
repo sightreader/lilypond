@@ -2,10 +2,9 @@
 
 depth = ..
 
-STEPMAKE_TEMPLATES = metafont \
+STEPMAKE_TEMPLATES = lilypond metafont \
 		     install \
 		     install-out
-LOCALSTEPMAKE_TEMPLATES = lilypond
 
 # We don't use $(MF_FILES), because there's more .mf cruft here
 FETA_MF_FILES = $(call src-wildcard,feta[0-9]*.mf) \
@@ -19,7 +18,7 @@ FETA_FONTS = $(FETA_MF_FILES:.mf=)
 ALL_FONTS = $(FETA_FONTS)
 PFB_FILES = $(ALL_FONTS:%=$(outdir)/%.pfb)
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 
 EXTRA_DIST_FILES += README mf2pt1.mp

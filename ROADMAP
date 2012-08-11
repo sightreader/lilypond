@@ -89,8 +89,7 @@ LilyPond's source files.
 |   BUILD PROCESS:
 |   (also see SCRIPTS section above)
 |
-|-- make/                Specific make subroutine files
-|-- stepmake/            Generic make subroutine files
+|-- stepmake/            Make subroutine files
 |
 |
 |   REGRESSION TESTS:

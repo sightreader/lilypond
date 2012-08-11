@@ -1,9 +1,8 @@
 depth = ../../..
 
-STEPMAKE_TEMPLATES=documentation texinfo
-LOCALSTEPMAKE_TEMPLATES=lilypond ly lysdoc lilypond-book
+STEPMAKE_TEMPLATES = lilypond ly lysdoc lilypond-book documentation texinfo
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 TITLE=lilypond-book Test Suite
 

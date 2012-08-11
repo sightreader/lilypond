@@ -12,7 +12,7 @@ local-distclean:
 	rm -rf $(outdir)
 
 GNUmakefile: GNUmakefile.in
-	$(MAKE) INFILE=$< OUTFILE=$@ -f $(stepdir)/automatically-generated.sub.make
+	$(MAKE) INFILE=$< OUTFILE=$@ -f $(stepmake)/automatically-generated.sub.make
 
 $(package-icon):
 	$(MAKE) -C Documentation/logo icon

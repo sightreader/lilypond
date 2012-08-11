@@ -9,7 +9,7 @@ DOMAIN = $(NAME)
 EXTRA_DIST_FILES = TODO README
 STEPMAKE_TEMPLATES=podir 
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 default: $(MO_FILES)
 

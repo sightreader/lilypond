@@ -1,10 +1,9 @@
 ISOLANG = nl
 depth = ../..
-STEPMAKE_TEMPLATES = documentation texinfo
-LOCALSTEPMAKE_TEMPLATES = lilypond ly doc-i18n-root
+STEPMAKE_TEMPLATES = lilypond ly doc-i18n-root documentation texinfo
 # NO_PDF_FILES = 1
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 check-xrefs:
 	# This is still clumsy, as check_texi_ref.py does not handle

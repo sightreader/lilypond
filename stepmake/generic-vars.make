@@ -40,16 +40,9 @@ doc-dir = $(src-depth)/Documentation
 po-srcdir = $(src-depth)/po
 po-outdir = $(depth)/po/$(outdir)
 
-# stepmake package support.
-DEPTH = $(depth)/$(package-depth)
-
 INSTALLPY=$(buildscript-dir)/install -c
 INSTALL=$(INSTALLPY)
 
-group-dir = $(shell cd $(DEPTH);pwd)/..
-patch-dir = $(group-dir)/patches
-rpm-sources = $(release-dir)
-rpm-build = $(group-dir)/RedHat/BUILD
 package-icon = $(outdir)/$(package)-icon.xpm
 
 ifneq ($(strip $(MY_PATCH_LEVEL)),)
@@ -75,34 +68,16 @@ INFO_DIRECTORIES = Documentation
 # clean file lists:
 #
 ERROR_LOG = 2> /dev/null
-SILENT_LOG = 2>&1 >  /dev/null
-date := $(shell date +%x)	#duplicated?
+SILENT_LOG = 2>&1 > /dev/null
 
 INCLUDES = $(src-dir)/include $(outdir) $($(PACKAGE)_INCLUDES) $(MODULE_INCLUDES)
 
 M4 = m4
 
-DOCDIR=$(depth)/$(outdir)
-
-#?
-STRIPDEBUG=true
-STRIP=strip --strip-debug
-DO_STRIP=true
-
 LOOP=+$(foreach i, $(SUBDIRS), $(MAKE) PACKAGE=$(PACKAGE) package=$(package) -C $(i) $@ &&) true
 
 ETAGS_FLAGS =
 CTAGS_FLAGS =
-
-makeflags=$(patsubst %==, %, $(patsubst ---%,,$(patsubst ----%,,$(MAKEFLAGS:%=--%))))
-
-IN_FILES := $(call src-wildcard,*.in)
-SOURCE_FILES += $(IN_FILES)
-
-# Preprocessed .in documentation _FILES:
-OUTIN_FILES = $(addprefix $(outdir)/, $(IN_FILES:%.in=%))
-
-ALL_SOURCES = $(SOURCE_FILES)
 
 ifeq (cygwin,$(findstring cygwin,$(HOST_ARCH)))
 CYGWIN_BUILD = yes
@@ -115,3 +90,31 @@ endif
 ifeq (darwin,$(findstring darwin,$(HOST_ARCH)))
 DARWIN_BUILD = yes
 endif
+
+buildscript-dir = $(top-build-dir)/scripts/build/$(outconfbase)
+auxpython-dir = $(src-depth)/python/auxiliar
+auxscript-dir = $(src-depth)/scripts/auxiliar
+script-dir = $(src-depth)/scripts
+input-dir = $(src-depth)/input
+
+flower-dir = $(src-depth)/flower
+lily-dir = $(src-depth)/lily
+include-flower = $(src-depth)/flower/include
+
+export PYTHONPATH:=$(auxpython-dir):$(PYTHONPATH)
+
+LILYPOND_INCLUDES = $(include-flower) $(depth)/flower/$(outdir)
+
+# installed by 'make installextradoc'
+EXTRA_DOC_FILES = \
+  ANNOUNCEMENT ANNOUNCE-0.1 AUTHORS.txt  COPYING DEDICATION INSTALL.txt NEWS PATCHES.txt README.txt TODO \
+  Documentation/out/*.txt\
+  Documentation/tex/*.doc\
+  Documentation/tex/*.bib\
+  Documentation/logo/out/lelie_logo.gif\
+  input\
+
+INSTALLED_EXTRA_DOC_FILES = $(addprefix $(prefix:/%=%)/doc/lilypond/, $(EXTRA_DOC_FILES))
+
+
+INSTALLED_DIST_FILES = $(addprefix $(prefix:/%=%)/, $(INSTALL_DIST_FILES))

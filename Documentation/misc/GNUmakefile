@@ -6,7 +6,7 @@ STEPMAKE_TEMPLATES = documentation texinfo
 
 TEXTS = $(call src-wildcard,ANNOUNCE-*[0-9]) $(call src-wildcard,CHANGES-*[0-9]) $(call src-wildcard,ChangeLog*[0-9]) $(call src-wildcard,NEWS-*[0-9])
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 default: local-txt-doc
 

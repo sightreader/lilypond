@@ -1,14 +1,13 @@
 depth = ../../..
 
-STEPMAKE_TEMPLATES=documentation texinfo tex
-LOCALSTEPMAKE_TEMPLATES=lilypond ly lysdoc musicxml
+STEPMAKE_TEMPLATES = lilypond ly lysdoc musicxml documentation texinfo tex
 
 TEXI2HTML_FLAGS += --nomenu
 
 COLLATED_FILES = $(sort $(MUSICXML_FILES) $(MUSICMXL_FILES) $(TEXINFO_SOURCES) )
 
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 
 TITLE=Unofficial MusicXML test suite

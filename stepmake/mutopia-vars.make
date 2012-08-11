@@ -1,6 +1,6 @@
 
 # UGH UGH
-include $(make-dir)/lilypond-vars.make
+include $(stepmake)/lilypond-vars.make
 
 # LY_FILES is defined the LY make template.
 

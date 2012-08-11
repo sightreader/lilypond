@@ -6,7 +6,7 @@ XPM_FILES=$(call src-wildcard,*.xpm)
 lilypond-icon = $(outdir)/lilypond.ico
 ly-icon = $(outdir)/ly.ico
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 ifeq ($(PLATFORM_WINDOWS),yes)
 

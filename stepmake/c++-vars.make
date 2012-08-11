@@ -1,5 +1,4 @@
-
-include $(stepdir)/compile-vars.make
+include $(stepmake)/compile-vars.make
 
 EXTRA_CXXFLAGS = -W -Wall -Wconversion
 #ifeq ($(MY_PATCH_LEVEL),)
@@ -15,8 +14,6 @@ CC_FILES := $(call src-wildcard,*.cc)
 INL_FILES := $(call src-wildcard,*.icc)
 YY_FILES := $(call src-wildcard,*.yy)
 LL_FILES := $(call src-wildcard,*.ll)
-
-SOURCE_FILES+= $(CC_FILES) $(YY_FILES) $(INL_FILES) $(TCC_FILES) $(HH_FILES) $(LL_FILES)
 
 ALL_CC_SOURCES += $(HH_FILES) $(INL_FILES) $(CC_FILES) $(YY_FILES) $(LL_FILES)
 

@@ -2,7 +2,7 @@ depth = ../..
 
 STEPMAKE_TEMPLATES=script install po
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 # Should we install these? This should be handled by sysadmin or
 # packager but if she forgets...

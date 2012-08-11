@@ -11,8 +11,7 @@ NAME = documentation
 LANGS = $(shell $(PYTHON) $(top-src-dir)/python/langdefs.py)
 SUBDIRS = logo pictures misc po css topdocs \
   ly-examples $(LANGS)
-STEPMAKE_TEMPLATES = documentation texinfo tex omf
-LOCALSTEPMAKE_TEMPLATES = lilypond ly
+STEPMAKE_TEMPLATES = lilypond ly documentation texinfo tex omf
 
 ### Extra flags
 
@@ -84,7 +83,7 @@ INFO_IMAGES_DIR = lilypond
 DEST_INFO_IMAGES_SUBDIR = Documentation
 endif
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 OUT_TXT_FILES = $(addprefix $(outdir)/, $(addsuffix .txt, $(README_TOP_FILES)))
 

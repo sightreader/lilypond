@@ -4,7 +4,7 @@ SUBDIRS=auxiliar
 
 STEPMAKE_TEMPLATES=c python-module install-out po
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 CFLAGS += -DPy_BUILD_CORE -Wall
 # unset al guile stuff from configure

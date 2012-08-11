@@ -1,9 +1,8 @@
 depth = ../..
 
-STEPMAKE_TEMPLATES=podir
-LOCALSTEPMAKE_TEMPLATES=lilypond
+STEPMAKE_TEMPLATES = lilypond podir
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 doc-localedir=$(outdir)
 LANGS = $(shell $(PYTHON) $(top-src-dir)/python/langdefs.py)

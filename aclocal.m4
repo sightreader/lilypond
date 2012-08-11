@@ -718,50 +718,22 @@ AC_DEFUN(STEPMAKE_INIT, [
     fi
 
     AC_MSG_CHECKING(Package)
-    if test "$PACKAGE" = "STEPMAKE"; then
-	AC_MSG_RESULT(Stepmake package!)
+    AC_MSG_RESULT($PACKAGE)
 
-	AC_MSG_CHECKING(builddir)
+    AC_MSG_CHECKING(builddir)
+    ugh_ugh_autoconf250_builddir="`pwd`"
 
-	ugh_ugh_autoconf250_builddir="`pwd`"
-	
-	if test "$srcdir" = "."; then
-	    srcdir_build=yes
-	else
-	    srcdir_build=no
-	    package_builddir="`dirname $ugh_ugh_autoconf250_builddir`"
-	    package_srcdir="`dirname  $srcdir`"
-	fi
-	AC_MSG_RESULT($ugh_ugh_autoconf250_builddir)
+    here_dir=$(cd . && pwd)
+    full_src_dir=$(cd $srcdir && pwd)
 
-	(cd stepmake 2>/dev/null || mkdir stepmake)
-	(cd stepmake; rm -f bin; ln -s ../$srcdir/bin .)
-	stepmake=stepmake
+    if test "$full_src_dir" = "$here_dir"; then
+	srcdir_build=yes
     else
-        AC_MSG_RESULT($PACKAGE)
-
-	AC_MSG_CHECKING(builddir)
-	ugh_ugh_autoconf250_builddir="`pwd`"
-
-	here_dir=$(cd . && pwd)
-	full_src_dir=$(cd $srcdir && pwd)
-
-	if test "$full_src_dir" = "$here_dir"; then
-	    srcdir_build=yes
-	else
-	    srcdir_build=no
-	fi
-	AC_MSG_RESULT($ugh_ugh_autoconf250_builddir)
-
-	AC_MSG_CHECKING(for stepmake)
-	# Check for installed stepmake
-	if test -d $stepmake; then
-	    AC_MSG_RESULT($stepmake)
-	else
-	    stepmake="`cd $srcdir/stepmake; pwd`"
-	    AC_MSG_RESULT([$srcdir/stepmake  ($datadir/stepmake not found)])
-	fi
+	srcdir_build=no
     fi
+    AC_MSG_RESULT($ugh_ugh_autoconf250_builddir)
+
+    stepmake="`cd $srcdir/stepmake; pwd`"
 
     AC_SUBST(ugh_ugh_autoconf250_builddir)
 
@@ -1258,18 +1230,6 @@ AC_DEFUN(STEPMAKE_FONTCONFIG, [
 AC_DEFUN(STEPMAKE_WINDOWS, [
     AC_CYGWIN
     AC_MINGW32
-
-    if test "$CYGWIN" = "yes"; then
-	LN_S='cp -r' # Cygwin symbolic links do not work for native apps.
-	program_suffix=.exe
-	INSTALL="\$(SHELL) \$(stepdir)/../bin/install-dot-exe.sh -c"
-    elif test "$MINGW32" = "yes"; then
-	LN='cp -r'
-	LN_S='cp -r'
-	program_suffix=.exe
-	INSTALL="\$(SHELL) \$(stepdir)/../bin/install-dot-exe.sh -c"
-	PATHSEP=';'
-    fi
 
     AC_SUBST(LN)
     AC_SUBST(LN_S)

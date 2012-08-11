@@ -15,7 +15,7 @@ STEPMAKE_TEMPLATES=c c++ executable po help2man
 
 OUT_DIST_FILES=$(addprefix $(outdir)/,parser.hh parser.cc)
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 ifeq ($(LINK_GXX_STATICALLY),yes)
 MODULE_LDFLAGS += -L$(outdir) -static-libgcc

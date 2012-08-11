@@ -12,17 +12,11 @@
 # 0: try local tree
 # 1: follow LILYPOND_DATADIR
 # 2: try source tree in home
-# 3: try installed tree in $HOME
-# 4: try system installed tree
-# 5: try system installed tree
 #
-make-root=$(wildcard $(depth)/make)
-make-root?=$(wildcard $(LILYPOND_DATADIR)/make)
-make-root?=$(wildcard $(HOME)/usr/src/lilypond/make)
-make-root?=$(wildcard $(HOME)/usr/share/lilypond/make)
-make-root?=$(wildcard /usr/share/lilypond/make)
-make-root?=$(wildcard /usr/local/share/lilypond/make)
-#make-root=<LilyPond's datadir>/make
+make-root=$(wildcard $(depth)/stepmake)
+make-root?=$(wildcard $(LILYPOND_DATADIR)/stepmake)
+make-root?=$(wildcard $(HOME)/usr/src/lilypond/stepmake)
+#make-root=<LilyPond's datadir>/stepmake
 ifneq ($(make-root),)
 ### some versions apparently choke on $(message)
 ### $(message running from $(make-root))

@@ -21,7 +21,6 @@ README_FILES = COPYING COPYING.FDL DEDICATION ROADMAP THANKS HACKING \
   LICENSE LICENSE.DOCUMENTATION
 TOPDOC_FILES = AUTHORS INSTALL README NEWS
 TOPDOC_TXT_FILES = $(addprefix $(top-build-dir)/Documentation/topdocs/$(outdir)/,$(addsuffix .txt,$(TOPDOC_FILES)))
-IN_FILES := $(call src-wildcard,*.in)
 
 RELEASE_FILES = ChangeLog RELEASE-COMMIT
 RELEASE_OUT_FILES = $(RELEASE_FILES:%=$(outdir)/%)
@@ -31,10 +30,9 @@ INSTALLATION_FILES=$(config_make) VERSION
 GENERATED_BUILD_FILES=configure aclocal.m4 autogen.sh
 # bootstrap stepmake:
 #
-STEPMAKE_TEMPLATES=toplevel po install
-LOCALSTEPMAKE_TEMPLATES=lilypond
+STEPMAKE_TEMPLATES = lilypond toplevel po install
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 .PHONY: test info website
 
@@ -370,6 +368,5 @@ test-snippets-clean:
 website:
 	$(MAKE) config_make=$(config_make) \
 		top-src-dir=$(top-src-dir) \
-		-f $(top-src-dir)/make/website.make \
+		-f $(top-src-dir)/stepmake/website.make \
 		website
-

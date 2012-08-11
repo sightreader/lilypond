@@ -1,8 +1,8 @@
 # make/Substitute.make
 
 #guh
-include $(stepdir)/substitute-vars.make
-include $(stepdir)/substitute-rules.make
+include $(stepmake)/substitute-vars.make
+include $(stepmake)/substitute-rules.make
 
 ATVARIABLES = \
   BASH\

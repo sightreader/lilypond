@@ -11,7 +11,7 @@ OUT_BITMAP_IMAGES += $(EPS_ILLUSTRATIONS:%.eps=$(outdir)/%.png)
 
 STEPMAKE_TEMPLATES = documentation
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 ###########
 ### Targets

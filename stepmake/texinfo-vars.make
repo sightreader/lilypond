@@ -69,4 +69,4 @@ INFO_INSTALL_COMMAND = $(if $(INFO_INSTALL_FILES),\
 	$(INSTALLPY) -d $(DESTDIR)$(infodir) ; \
 	$(MAKE) INSTALLATION_OUT_DIR=$(infodir) \
 		depth=$(depth) INSTALLATION_OUT_FILES="$(INFO_INSTALL_FILES)" \
-		-f $(stepdir)/install-out.sub.make,true)
+		-f $(stepmake)/install-out.sub.make,true)

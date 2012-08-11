@@ -6,7 +6,7 @@ OUT_CSS_FILES = $(CSS_FILES:%=$(outdir)/%)
 
 STEPMAKE_TEMPLATES = documentation
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
 
 ###########
 ### Targets

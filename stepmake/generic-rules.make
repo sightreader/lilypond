@@ -1,17 +1,17 @@
 # title	   package specific rules
 # file	   make/Rules.make
 
-# urg
-$(outdir)/%.ly: %.lym4
-	$(M4) $< | sed "s/\`/,/g" > $@
-
 $(outdir)/%: %.in
 	rm -f $@
 	cat $< | sed $(sed-atfiles) | sed $(sed-atvariables) > $@
 
+include $(stepmake)/substitute.make
 
+$(outdir)/%: %.m4
+	$(M4) $< > $@
 
-include $(depth)/make/substitute.make
+%.gz: %
+	gzip -c9 $< > $@
 
-
-
+$(outdir)/%.css: $(CSS_DIRECTORY)/%.css
+	ln -f $< $@

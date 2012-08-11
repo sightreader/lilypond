@@ -6,8 +6,6 @@ EXTRA_DIST_FILES = $(SCM_FILES)
 INSTALLATION_DIR=$(local_lilypond_datadir)/ly
 INSTALLATION_FILES=$(INI_FILES)
 
-STEPMAKE_TEMPLATES=install
-LOCALSTEPMAKE_TEMPLATES=ly
+STEPMAKE_TEMPLATES = ly install
 
-include $(depth)/make/stepmake.make
-
+include $(depth)/stepmake/stepmake.make

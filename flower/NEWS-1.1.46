@@ -175,7 +175,7 @@ pl 5
 
 pl 4-1
 	- included in new make structure, as a library of lilypond; 
-	  for compiling you-ll need ../make and ../bin dirs from 
+	  for compiling you'll need ../stepmake and ../bin dirs from
 	  lilypond...
 	
 pl 4

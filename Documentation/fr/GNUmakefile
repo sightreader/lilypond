@@ -1,6 +1,5 @@
 ISOLANG = fr
 depth = ../..
-STEPMAKE_TEMPLATES = documentation texinfo
-LOCALSTEPMAKE_TEMPLATES = lilypond ly doc-i18n-root
+STEPMAKE_TEMPLATES = lilypond ly doc-i18n-root documentation texinfo
 
-include $(depth)/make/stepmake.make
+include $(depth)/stepmake/stepmake.make
