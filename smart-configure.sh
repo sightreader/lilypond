@@ -15,6 +15,7 @@ if test `cat $CONFIGURE_CHECKSUM_FILE` = "$CONFIGURE_CHECKSUM" ; then
 fi
 
 set -e
+set +u
 $srcdir/configure "$@"
 printf "%s" $CONFIGURE_CHECKSUM > $CONFIGURE_CHECKSUM_FILE
 

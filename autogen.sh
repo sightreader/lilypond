@@ -14,6 +14,7 @@ do
   (
       cd $dir
       echo "Running autoconf ..."
+      set +u
       autoconf || exit 1
   )
   # Autoconf automatically checks its own minimum required
