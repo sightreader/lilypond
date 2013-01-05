@@ -309,6 +309,11 @@ Pango_font::pango_item_string_stencil (PangoGlyphItem const *glyph_item) const
                                     scm_from_double (- ggeo.y_offset * scale_),
                                     char_id),
                         SCM_EOL);
+      warning ("Phil was here");
+      float Phil=PANGO_RBEARING (logical_sub_rect);
+      char PhilBuff[100];
+      sprintf(PhilBuff, "%f", Phil);
+      warning (PhilBuff);
       tail = SCM_CDRLOC (*tail);
     }
   pango_fc_font_unlock_face (fcfont);
