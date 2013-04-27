@@ -67,32 +67,31 @@ a list of @var{padding}."
 
 (define-public (stack-lines dir padding baseline stils)
   "Stack vertically with a baseline skip."
-  (define result empty-stencil)
-  (define last-y #f)
-  (do
-      ((last-stencil #f (car p))
-       (p stils (cdr p)))
-
-      ((null? p))
-
-    (if (number? last-y)
-	(begin
-	  (let* ((dy (max (+ (* dir (interval-bound (ly:stencil-extent last-stencil Y) dir))
-			     padding
-			     (* (- dir) (interval-bound (ly:stencil-extent (car p) Y) (- dir))))
-			  baseline))
-		 (y (+ last-y  (* dir dy))))
-
-
-
-	    (set! result
-		  (ly:stencil-add result (ly:stencil-translate-axis (car p) y Y)))
-	    (set! last-y y)))
-	(begin
-	  (set! last-y 0)
-	  (set! result (car p)))))
-
-  result)
+  (let loop
+      ((result empty-stencil)
+       (last-y #f)
+       (last-depth #f)
+       (p stils))
+    (cond ((null? p) result)
+          ((ly:stencil-empty? (car p) Y)
+           (loop result last-y last-depth (cdr p)))
+          (last-y
+           (let* ((dy (max (+ (* dir last-depth)
+                              (if (ly:stencil-empty? (car p) X)
+                                  0
+                                  padding)
+                              (* (- dir) (interval-bound (ly:stencil-extent (car p) Y) (- dir))))
+                           baseline))
+                  (y (+ last-y  (* dir dy))))
+             (loop
+              (ly:stencil-add result (ly:stencil-translate-axis (car p) y Y))
+              y
+              (interval-bound (ly:stencil-extent (car p) Y) dir)
+              (cdr p))))
+          (else (loop (car p)
+                      0
+                      (interval-bound (ly:stencil-extent (car p) Y) dir)
+                      (cdr p))))))
 
 
 (define-public (bracketify-stencil stil axis thick protrusion padding)
