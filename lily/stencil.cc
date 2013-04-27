@@ -237,22 +237,95 @@ Stencil::align_to (Axis a, Real x)
 }
 
 /*  See scheme Function.  */
+
+// The model for Stencil::add_at_edge is (when adding at the right
+// edge) to place the reference point of the result right by the
+// addition of the "right advancement" of the left stencil and the
+// "left advancement" of the right stencil.  The resulting stencil
+// inherits the "left advancement" from the left stencil, and the
+// "right advancement" from the right stencil.
+//
+// Ideally, the resulting dimensions would be the union of the
+// respective ranges of the original stencils.  However, the absence
+// of explicit advancements in the stencil description means that
+// spacing changes have to be effected by tampering with the
+// dimensions, resulting in an unreliable bounding box when spacing
+// without actual content is involved.
+//
+// The left advancement is defined as
+// max (0, -extent (X_AXIS) [LEFT])
+// and the right advancement is defined as
+// max (0, extent (X_AXIS) [RIGHT])
+//
+// Spacing changes and translation will work unreliably when
+// advancements and extents are decoupled because of this limiting
+// behavior.
+//
+// Any stencil that is empty in the orthogonal axis is spacing.
+// Spacing is not subjected to the max (0) rule and can thus be
+// negative.
+
 void
 Stencil::add_at_edge (Axis a, Direction d, Stencil const &s, Real padding)
 {
-  Interval my_extent = dim_[a];
-  Interval i (s.extent (a));
-  Real his_extent;
-  if (i.is_empty ())
-    {
-      programming_error ("Stencil::add_at_edge: adding empty stencil.");
-      his_extent = 0.0;
-    }
-  else
-    his_extent = i[-d];
+  // Material that is empty in the axis of reference can't be sensibly
+  // combined.  It does, however, affect the orthogonal stencil
+  // dimension, like with \line { \vspace #1 }
 
-  Real offset = (my_extent.is_empty () ? 0.0 : my_extent[d] - his_extent)
-                + d * padding;
+  if (s.is_empty (a))
+    {
+      dim_.unite (s.extent_box ());
+      return;
+    }
+  if (is_empty (a))
+    {
+      // Don't just *this = s since this stomps over memory management
+      expr_ = s.expr ();
+      dim_.unite (s.extent_box ());
+      return;
+    }
+
+  Interval first_extent = extent (a);
+  Interval next_extent = s.extent (a);
+
+  bool first_is_spacing = is_empty (other_axis (a));
+  bool next_is_spacing = s.is_empty (other_axis (a));
+
+  if (next_is_spacing)
+    {
+      dim_[a][d] += d * next_extent.delta ();
+      return;
+    }
+
+  if (first_is_spacing)
+    {
+      expr_ = s.expr ();
+      dim_ = s.extent_box ();
+      translate_axis (d * first_extent.delta (), a);
+      dim_[a][-d] -= d * first_extent.delta ();
+      return;
+    }
+
+  Real offset = d * padding;
+
+  // symmetry of composition would ask for
+  // if (d * first_extent [d] > 0)
+  // as a precondition.  However, for "add_at_edge" there is
+  // reasonable expectation that any previous translation of the
+  // original stencil does not cause a difference in the arrangement
+  // of the result.
+
+  offset += first_extent [d];
+
+  // We still shift the closer edge of the added stencil to the
+  // right/up if it would end up negative when adding to the
+  // right/top (and it has backward spacing or descenders), or to the
+  // left/down if it would end up positive when adding to the
+  // left/bottom (which should put typical stencils on a reasonable
+  // position).
+
+  if (d * next_extent [-d] < 0)
+    offset -= next_extent [-d];
 
   Stencil toadd (s);
   toadd.translate_axis (offset, a);
