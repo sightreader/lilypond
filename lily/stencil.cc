@@ -240,23 +240,35 @@ Stencil::align_to (Axis a, Real x)
 void
 Stencil::add_at_edge (Axis a, Direction d, Stencil const &s, Real padding)
 {
+  if (s.is_empty (a))
+    return;
+  if (is_empty (a))
+    {
+      *this = s;
+      return;
+    }
+
   Interval my_extent = dim_[a];
   Interval i (s.extent (a));
-  Real his_extent;
-  if (i.is_empty ())
-    {
-      programming_error ("Stencil::add_at_edge: adding empty stencil.");
-      his_extent = 0.0;
-    }
-  else
-    his_extent = i[-d];
 
-  Real offset = (my_extent.is_empty () ? 0.0 : my_extent[d] - his_extent)
-                + d * padding;
+  Real his_extent = i[-d];
+
+  Real offset = my_extent[d] - his_extent;
+  bool separate = !is_empty (other_axis (a)) && !s.is_empty (other_axis (a));
+
+  if (separate)
+    offset += d * padding;
 
   Stencil toadd (s);
   toadd.translate_axis (offset, a);
   add_stencil (toadd);
+  // if there is no colliding material, the intervals ends are only
+  // determined by their respective stencils to allow for spacing
+  if (!separate)
+    {
+      dim_[a][d] = offset + i[d];
+      dim_[a][-d] = my_extent[-d];
+    }
 }
 
 Stencil
