@@ -42,24 +42,31 @@
 (define-public (stack-stencils axis dir padding stils)
   "Stack stencils @var{stils} in direction @var{axis}, @var{dir}, using
 @var{padding}."
-  (cond
-   ((null? stils) empty-stencil)
-   ((null? (cdr stils)) (car stils))
-   (else (ly:stencil-combine-at-edge
-	  (car stils) axis dir (stack-stencils axis dir padding (cdr stils))
-	  padding))))
+  (reduce-right
+   (lambda (next back)
+     (ly:stencil-combine-at-edge next axis dir back padding #t))
+   empty-stencil
+   stils))
 
-(define-public (stack-stencils-padding-list axis dir padding stils)
+(define-public (stack-stencils-padding-list axis dir paddings stils)
   "Stack stencils @var{stils} in direction @var{axis}, @var{dir}, using
-a list of @var{padding}."
-  (cond
-   ((null? stils) empty-stencil)
-   ((null? (cdr stils)) (car stils))
-   (else (ly:stencil-combine-at-edge
-	  (car stils)
-	  axis dir
-	  (stack-stencils-padding-list axis dir (cdr padding) (cdr stils))
-	  (car padding)))))
+a list of @var{paddings}."
+  (if (null? stils)
+      empty-stencil
+      (let loop ((front (car stils)) (tail (cdr stils))
+                 (paddings paddings))
+        (if (null? tail)
+            front
+            (loop
+             (ly:stencil-combine-at-edge
+              front
+              axis
+              dir
+              (car tail)
+              (car paddings)
+              #t)
+             (cdr tail)
+             (cdr paddings))))))
 
 (define-public (centered-stencil stencil)
   "Center stencil @var{stencil} in both the X and Y directions."
