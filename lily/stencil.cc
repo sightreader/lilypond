@@ -266,7 +266,8 @@ Stencil::align_to (Axis a, Real x)
 // negative.
 
 void
-Stencil::add_at_edge (Axis a, Direction d, Stencil const &s, Real padding)
+Stencil::add_at_edge (Axis a, Direction d, Stencil const &s, Real padding,
+                      bool overdraw)
 {
   // Material that is empty in the axis of reference can't be sensibly
   // combined.  It does, however, affect the orthogonal stencil
@@ -329,7 +330,14 @@ Stencil::add_at_edge (Axis a, Direction d, Stencil const &s, Real padding)
 
   Stencil toadd (s);
   toadd.translate_axis (offset, a);
-  add_stencil (toadd);
+
+  // We don't use add_stencil here because its drawing order is not
+  // really working well for all applications
+  if (overdraw)
+    expr_ = scm_list_3 (ly_symbol2scm ("combine-stencil"), expr_, toadd.expr_);
+  else
+    expr_ = scm_list_3 (ly_symbol2scm ("combine-stencil"), toadd.expr_, expr_);
+  dim_.unite (toadd.dim_);
 }
 
 Stencil

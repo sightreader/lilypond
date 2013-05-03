@@ -98,15 +98,18 @@ LY_DEFINE (ly_stencil_empty_p, "ly:stencil-empty?",
 }
 
 LY_DEFINE (ly_stencil_combine_at_edge, "ly:stencil-combine-at-edge",
-           4, 1, 0, (SCM first, SCM axis, SCM direction,
+           4, 2, 0, (SCM first, SCM axis, SCM direction,
                      SCM second,
-                     SCM padding),
+                     SCM padding,
+                     SCM overdraw),
            "Construct a stencil by putting @var{second} next to @var{first}."
            "  @var{axis} can be 0 (x-axis) or@tie{}1 (y-axis)."
            "  @var{direction} can be -1 (left or down) or@tie{}1 (right or"
-           " up).  The stencils are juxtaposed with @var{padding} as extra"
-           " space.  @var{first} and @var{second} may also be @code{'()} or"
-           " @code{#f}.")
+           " up).  The stencils are juxtaposed with optional @var{padding}"
+           " as extra space.  @var{first} and @var{second} may also be"
+           " @code{'()} or @code{#f}.  If optional @var{overdraw} is true,"
+           " @var{second} is drawn after @var{first}, otherwise it is"
+           " drawn first.")
 {
   Stencil *s1 = unsmob_stencil (first);
   Stencil *s2 = unsmob_stencil (second);
@@ -126,12 +129,16 @@ LY_DEFINE (ly_stencil_combine_at_edge, "ly:stencil-combine-at-edge",
       p = scm_to_double (padding);
     }
 
+  bool od = false;
+  if (!SCM_UNBNDP (overdraw))
+    od = scm_is_true (overdraw);
+
   if (s1)
     result = *s1;
 
   if (s2)
     result.add_at_edge (Axis (scm_to_int (axis)),
-                        Direction (scm_to_int (direction)), *s2, p);
+                        Direction (scm_to_int (direction)), *s2, p, od);
 
   return result.smobbed_copy ();
 }
