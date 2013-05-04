@@ -3547,6 +3547,13 @@ def conv(str):
                   r"\1 " + do + r"\2", str)
     return str
 
+@rule((2, 17, 18), r"\vspace -> \line \vspace")
+def conv(str):
+    str = re.sub (r"(\\\\?)vspace(\s)", r"\1line \1vspace\2", str)
+    str = re.sub (r"(\\\\?(?:markup(?:\s*\{)?|line)\s*)\\\\?line (\\\\?vspace)",
+                  r"\1\2", str)
+    return str
+
 # Guidelines to write rules (please keep this at the end of this file)
 #
 # - keep at most one rule per version; if several conversions should be done,
