@@ -1,4 +1,4 @@
-\version "2.17.6"
+\version "2.17.18"
 \header {
 
   texidoc = "The @code{\\removeWithTag} and @code{\\keepWithTag}
@@ -30,7 +30,7 @@ demo =
 
 \markuplist {
   \fill-line { \center-column \fontsize #5 \bold { "\\keepWithTag" } }
-  \vspace #1
+  \line \vspace #1
 }
 \demo #keepWithTag #'(none) \music
 \demo #keepWithTag #'(flood highball buffoon) \music
@@ -41,7 +41,7 @@ demo =
 
 \markuplist {
   \fill-line { \center-column \fontsize #5 \bold { "\\removeWithTag" } }
-  \vspace #1
+  \line \vspace #1
 }
 \demo #removeWithTag #'(none) \music
 \demo #removeWithTag #'(flood highball buffoon) \music
