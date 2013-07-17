@@ -1386,7 +1386,7 @@
 	(staff-padding . 3)
 	(stencil . ,ly:measure-grouping::print)
 	(thickness . 1)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 	(meta . ((class . Spanner)
 		 (interfaces . (measure-grouping-interface
 				side-position-interface))))))
