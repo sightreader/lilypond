@@ -1846,9 +1846,9 @@
 	(minimum-distance . 0.25)
 	(stencil . ,ly:rest::print)
 	(X-extent . ,ly:rest::width)
-	(Y-extent . ,ly:rest::height)
-	(Y-offset . ,ly:rest::y-offset-callback)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(Y-extent . ,(ly:make-unpure-pure-container ly:rest::height ly:rest::pure-height))
+	(Y-offset . ,(ly:make-unpure-pure-container ly:rest::y-offset-callback))
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (font-interface
 				rest-interface
