@@ -1417,8 +1417,8 @@
 	(padding . 0.8)
 	(side-axis . ,Y)
 	(stencil . ,ly:text-interface::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 	(X-offset . ,(ly:make-simple-closure
 		      `(,+
 			,(ly:make-simple-closure
