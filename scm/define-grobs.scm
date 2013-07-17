@@ -1475,9 +1475,9 @@
 			  (list ly:self-alignment-interface::x-aligned-on-self))
 			,(ly:make-simple-closure
 			  (list ly:self-alignment-interface::x-centered-on-y-parent)))))
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-offset . ,side-position-interface::y-aligned-side)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Spanner)
 		 (interfaces . (font-interface
 				multi-measure-interface
