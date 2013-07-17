@@ -291,7 +291,7 @@
 	(padding . 0.2)
 	(positioning-done . ,ly:align-interface::align-to-minimum-distances)
 	(stacking-dir . ,DOWN)
-	(Y-extent . ,ly:axis-group-interface::height)
+	(Y-extent . ,axis-group-interface::height)
 	(meta . ((class . Spanner)
 		 (object-callbacks . ((pure-Y-common . ,ly:axis-group-interface::calc-pure-y-common)
 				      (pure-relevant-grobs . ,ly:axis-group-interface::calc-pure-relevant-grobs)))
