@@ -701,7 +701,7 @@
 	(dot-count . ,dots::calc-dot-count)
 	(staff-position . ,dots::calc-staff-position)
 	(stencil . ,ly:dots::print)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(extra-spacing-height . (-0.5 . 0.5))
 	(meta . ((class . Item)
 		 (interfaces . (dots-interface
