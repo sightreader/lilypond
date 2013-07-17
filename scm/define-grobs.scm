@@ -153,8 +153,8 @@
 	(duration-log . 2)
 	(glyph-name . ,note-head::calc-glyph-name)
 	(stencil . ,ly:note-head::print)
-	(Y-offset . ,ly:staff-symbol-referencer::callback)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-offset . ,staff-symbol-referencer::callback)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (ambitus-interface
 				font-interface
