@@ -1972,7 +1972,7 @@
     (SpanBar
      . (
 	(allow-span-bar . #t)
-	(bar-extent . ,ly:axis-group-interface::height)
+	(bar-extent . ,axis-group-interface::height)
 	(before-line-breaking . ,ly:span-bar::before-line-breaking)
 	(break-align-symbol . staff-bar)
 	(cross-staff . #t)
