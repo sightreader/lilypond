@@ -1349,7 +1349,7 @@
 	(skyline-horizontal-padding . 0.1)
 	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	(X-offset . ,ly:self-alignment-interface::aligned-on-x-parent)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (font-interface
 				lyric-syllable-interface
