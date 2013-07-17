@@ -49,7 +49,7 @@
 	(glyph-name-alist . ,standard-alteration-glyph-name-alist)
 	(parenthesized . #t)
 	(stencil . ,ly:accidental-interface::print)
-	(Y-extent . ,ly:accidental-interface::height)
+	(Y-extent . ,accidental-interface::height)
 	(meta . ((class . Item)
 		 (interfaces . (accidental-interface
 				inline-accidental-interface
