@@ -1627,9 +1627,9 @@
 			  (list ly:self-alignment-interface::x-aligned-on-self))
 			,(ly:make-simple-closure
 			  (list ly:self-alignment-interface::centered-on-x-parent)))))
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-offset . ,side-position-interface::y-aligned-side)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (font-interface
 				octavate-eight-interface
