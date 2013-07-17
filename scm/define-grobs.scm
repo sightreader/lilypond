@@ -1559,7 +1559,7 @@
 	(horizontal-skylines . ,ly:separation-item::calc-skylines)
 	(skyline-vertical-padding . 0.15)
 	(X-extent . ,ly:axis-group-interface::width)
-	(Y-extent . ,ly:axis-group-interface::height)
+	(Y-extent . ,axis-group-interface::height)
 	(meta . ((class . Item)
 		 (object-callbacks . ((pure-Y-common . ,ly:axis-group-interface::calc-pure-y-common)
 				      (pure-relevant-grobs . ,ly:axis-group-interface::calc-pure-relevant-grobs)))
