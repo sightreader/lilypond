@@ -2628,7 +2628,7 @@
 	(stacking-dir . -1)
 	(vertical-skylines . ,ly:axis-group-interface::combine-skylines)
 	(X-extent . ,ly:axis-group-interface::width)
-	(Y-extent . ,ly:axis-group-interface::height)
+	(Y-extent . ,axis-group-interface::height)
 	(meta . ((class . Spanner)
 		 (object-callbacks . ((Y-common . ,ly:axis-group-interface::calc-y-common)
 				      (pure-relevant-grobs . ,ly:axis-group-interface::calc-pure-relevant-grobs)
