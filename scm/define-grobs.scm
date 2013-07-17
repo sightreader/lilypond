@@ -2416,7 +2416,7 @@
 	(neutral-direction . ,UP)
 	(springs-and-rods . ,ly:spanner::set-spacing-rods)
 	(stencil . ,ly:tie::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(thickness . 1.2)
 	(meta . ((class . Spanner)
 		 (interfaces . (tie-interface))))))
