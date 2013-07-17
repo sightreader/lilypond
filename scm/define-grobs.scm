@@ -1824,7 +1824,8 @@
 	(stencil  . ,ly:tie::print)
 	(thickness . 1.0)
 	(extra-spacing-height . (-0.5 . 0.5))
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (semi-tie-interface))))))
 
