@@ -1347,7 +1347,7 @@
 	(text . ,(grob::calc-property-by-copy 'text))
 	(word-space . 0.6)
 	(skyline-horizontal-padding . 0.1)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	(X-offset . ,ly:self-alignment-interface::aligned-on-x-parent)
 	(Y-extent . ,grob::all-heights-from-stencil)
 	(meta . ((class . Item)
