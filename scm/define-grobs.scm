@@ -915,7 +915,7 @@
 	(staff-padding . 0.5)
 	(stencil . ,ly:text-interface::print)
 	(text . ,fingering::calc-text)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (finger-interface
 				font-interface
