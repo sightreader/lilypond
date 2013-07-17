@@ -2122,7 +2122,7 @@
 			  (list ly:self-alignment-interface::centered-on-x-parent))
 			,(ly:make-simple-closure
 			  (list ly:self-alignment-interface::x-aligned-on-self)))))
-	(Y-offset . ,ly:stem-tremolo::calc-y-offset)
+        (Y-offset . ,(ly:make-unpure-pure-container ly:stem-tremolo::calc-y-offset ly:stem-tremolo::pure-calc-y-offset))
 	(meta . ((class . Item)
 		 (interfaces . (self-alignment-interface
                                 stem-tremolo-interface))))))
