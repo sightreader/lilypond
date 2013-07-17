@@ -2645,7 +2645,7 @@
 					(padding . 1)))
 	(nonstaff-unrelatedstaff-spacing . ((padding . 0.5)))
 	(outside-staff-placement-directive . left-to-right-polite)
-	(staff-staff-spacing . ,ly:axis-group-interface::calc-staff-staff-spacing)
+	(staff-staff-spacing . ,(ly:make-unpure-pure-container ly:axis-group-interface::calc-staff-staff-spacing ly:axis-group-interface::calc-pure-staff-staff-spacing))
 	(stencil . ,ly:axis-group-interface::print)
 	(skyline-horizontal-padding . 0.1)
 	(vertical-skylines . ,ly:hara-kiri-group-spanner::calc-skylines)
