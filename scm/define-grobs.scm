@@ -2216,7 +2216,7 @@
 	(skyline-horizontal-padding . 1.0)
 	(vertical-skylines . ,ly:axis-group-interface::calc-skylines)
 	(X-extent . ,ly:axis-group-interface::width)
-	(Y-extent . ,ly:system::height)
+	(Y-extent . ,(ly:make-unpure-pure-container ly:system::height ly:system::calc-pure-height))
 	(meta . ((class . System)
 		 (object-callbacks . ((footnotes-before-line-breaking . ,ly:system::footnotes-before-line-breaking)
 				      (footnotes-after-line-breaking . ,ly:system::footnotes-after-line-breaking)
