@@ -1914,8 +1914,8 @@
 	(springs-and-rods . ,ly:spanner::set-spacing-rods)
 	(stencil . ,ly:slur::print)
 	(thickness . 1.2)
-	(vertical-skylines . ,ly:slur::vertical-skylines)
-	(Y-extent . ,ly:slur::height)
+	(vertical-skylines . ,(ly:make-unpure-pure-container ly:slur::vertical-skylines ly:grob::pure-simple-vertical-skylines-from-extents))
+	(Y-extent . ,slur::height)
 	(meta . ((class . Spanner)
 		 (interfaces . (slur-interface))))))
 
