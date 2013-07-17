@@ -2140,7 +2140,7 @@
 	(staff-padding . 0.5)
 	(stencil . ,print-circled-text-callback)
 	(text . ,string-number::calc-text)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (font-interface
 				self-alignment-interface
