@@ -1449,8 +1449,8 @@
 	(thick-thickness . 6.6)
 	;; See Wanske pp. 125
 	(usable-duration-logs . ,(iota 4 -3))
-	(Y-extent . ,ly:multi-measure-rest::height)
-	(Y-offset . ,ly:staff-symbol-referencer::callback)
+	(Y-extent . ,(ly:make-unpure-pure-container ly:multi-measure-rest::height))
+	(Y-offset . ,staff-symbol-referencer::callback)
 	(meta . ((class . Spanner)
 		 (interfaces . (font-interface
 				multi-measure-interface
