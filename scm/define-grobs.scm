@@ -230,7 +230,7 @@
 			(next-note . (semi-fixed-space . 0.9))
 			(right-edge . (extra-space . 0.0))))
 	(stencil . ,ly:bar-line::print)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
                  (object-callbacks . ((pure-Y-common . ,ly:axis-group-interface::calc-pure-y-common)
                                       (pure-relevant-grobs . ,ly:pure-from-neighbor-interface::calc-pure-relevant-grobs)))
