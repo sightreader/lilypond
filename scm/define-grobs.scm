@@ -2093,8 +2093,8 @@
 	(thickness . 1.3)
 	(X-extent . ,ly:stem::width)
 	(X-offset . ,ly:stem::offset-callback)
-	(Y-extent . ,ly:stem::height)
-	(Y-offset . ,ly:staff-symbol-referencer::callback)
+	(Y-extent . ,(ly:make-unpure-pure-container ly:stem::height ly:stem::pure-height))
+	(Y-offset . ,staff-symbol-referencer::callback)
 	(meta . ((class . Item)
 		 (interfaces . (stem-interface))))))
 
