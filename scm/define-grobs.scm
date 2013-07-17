@@ -1019,7 +1019,7 @@
 	(simple-Y . #t)
 	(stencil . ,ly:line-spanner::print)
 	(style . line)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(X-extent . #f)
 	(Y-extent . #f)
 	(zigzag-width . 0.75)
