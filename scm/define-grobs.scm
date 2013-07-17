@@ -718,7 +718,7 @@
 	(slash-negative-kern . 1.6)
 	(slope . 1.0)
 	(stencil . ,ly:percent-repeat-item-interface::double-percent)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(thickness . 0.48)
 	(meta . ((class . Item)
 		 (interfaces . (break-aligned-interface
