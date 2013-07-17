@@ -2084,7 +2084,7 @@
 
 	(direction . ,ly:stem::calc-direction)
 	(duration-log . ,stem::calc-duration-log)
-        (length . ,ly:stem::calc-length)
+        (length . ,(ly:make-unpure-pure-container ly:stem::calc-length ly:stem::pure-calc-length))
 	(neutral-direction . ,DOWN)
 	(positioning-done . ,ly:stem::calc-positioning-done)
 	(stem-info . ,ly:stem::calc-stem-info)
