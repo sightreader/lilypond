@@ -1242,7 +1242,7 @@
 	(minimum-length-fraction . 0.25)
 	(springs-and-rods . ,ly:ledger-line-spanner::set-spacing-rods)
 	(stencil . ,ly:ledger-line-spanner::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(X-extent . #f)
 	(Y-extent . #f)
 	(meta . ((class . Spanner)
