@@ -1650,8 +1650,8 @@
 	(staff-padding . 1.0)
 	(stencil . ,ly:ottava-bracket::print)
 	(style . dashed-line)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 	(meta . ((class . Spanner)
 		 (interfaces . (font-interface
 				horizontal-bracket-interface
