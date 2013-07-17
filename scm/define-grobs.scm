@@ -90,8 +90,8 @@
 			  (list ly:self-alignment-interface::centered-on-x-parent))
 			,(ly:make-simple-closure
 			  (list ly:self-alignment-interface::x-aligned-on-self)))))
-	(Y-extent . ,ly:accidental-interface::height)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(Y-extent . ,accidental-interface::height)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 	(meta . ((class . Item)
 		 (interfaces . (accidental-interface
 				accidental-suggestion-interface
