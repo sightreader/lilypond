@@ -937,9 +937,9 @@
 	(stencil . ,ly:flag::print)
 	(X-extent . ,ly:flag::width)
 	(X-offset . ,ly:flag::calc-x-offset)
-	(Y-offset . ,ly:flag::calc-y-offset)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-offset . ,(ly:make-unpure-pure-container ly:flag::calc-y-offset ly:flag::pure-calc-y-offset))
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (flag-interface
                                 font-interface))))))
