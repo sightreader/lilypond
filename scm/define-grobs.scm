@@ -1188,7 +1188,7 @@
 			(right-edge . (extra-space . 0.5))
 			(first-note . (fixed-space . 2.5))))
 	(stencil . ,ly:key-signature-interface::print)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(extra-spacing-width . (0.0 . 1.0))
 	(extra-spacing-height . ,pure-from-neighbor-interface::extra-spacing-height-including-staff)
 	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
