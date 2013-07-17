@@ -1927,7 +1927,7 @@
 	(padding . 0.0) ;; padding relative to SostenutoPedalLineSpanner
 	(self-alignment-X . ,CENTER)
 	(stencil . ,ly:text-interface::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	(X-offset . ,ly:self-alignment-interface::x-aligned-on-self)
 	(Y-extent . ,grob::all-heights-from-stencil)
 	(meta . ((class . Item)
