@@ -2343,7 +2343,7 @@
 	(stencil . ,ly:text-interface::print)
 	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	;; todo: add X self alignment?
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(X-offset . ,ly:self-alignment-interface::x-aligned-on-self)
 	(Y-offset . ,ly:side-position-interface::y-aligned-side)
 	(meta . ((class . Item)
