@@ -1725,8 +1725,8 @@
 			  (list ly:self-alignment-interface::x-centered-on-y-parent))
 			,(ly:make-simple-closure
 			  (list ly:self-alignment-interface::x-aligned-on-self)))))
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-offset . ,side-position-interface::y-aligned-side)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Spanner)
 		 (interfaces . (font-interface
 				percent-repeat-interface
