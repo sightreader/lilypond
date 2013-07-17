@@ -1946,7 +1946,7 @@
 	(padding . 1.2)
 	(side-axis . ,Y)
 	(staff-padding . 1.0)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-element-stencils)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-element-stencils)
 	(X-extent . ,ly:axis-group-interface::width)
 	(Y-extent . ,ly:axis-group-interface::height)
 	(Y-offset . ,ly:side-position-interface::y-aligned-side)
