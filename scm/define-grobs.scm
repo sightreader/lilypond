@@ -173,6 +173,7 @@
 	(staff-position . 0.0)
 	(stencil . ,ly:arpeggio::print)
 	(X-extent . ,ly:arpeggio::width)
+	(Y-extent . ,(grob::unpure-Y-extent-from-stencil ly:arpeggio::pure-height))
 	(X-offset . ,ly:side-position-interface::x-aligned-side)
 	(Y-offset . ,ly:staff-symbol-referencer::callback)
 	(meta . ((class . Item)
