@@ -409,7 +409,7 @@
 	(quantized-positions . ,ly:beam::set-stem-lengths)
 
 	(shorten . ,ly:beam::calc-stem-shorten)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(stencil . ,ly:beam::print)
 
 	(meta . ((class . Spanner)
