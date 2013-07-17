@@ -2650,7 +2650,7 @@
 	(skyline-horizontal-padding . 0.1)
 	(vertical-skylines . ,ly:hara-kiri-group-spanner::calc-skylines)
 	(X-extent . ,ly:axis-group-interface::width)
-	(Y-extent . ,ly:hara-kiri-group-spanner::y-extent)
+	(Y-extent . ,(ly:make-unpure-pure-container ly:hara-kiri-group-spanner::y-extent ly:hara-kiri-group-spanner::pure-height))
 	(Y-offset . ,ly:hara-kiri-group-spanner::force-hara-kiri-callback)
 	(meta . ((class . Spanner)
 		 (object-callbacks . (
