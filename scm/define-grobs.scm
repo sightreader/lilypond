@@ -1763,7 +1763,7 @@
 	(stencil . ,ly:piano-pedal-bracket::print)
 	(style . line)
 	(thickness .  1.0)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(meta . ((class . Spanner)
 		 (interfaces . (line-interface
 				piano-pedal-bracket-interface
