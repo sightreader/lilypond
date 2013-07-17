@@ -1878,8 +1878,8 @@
 	(staff-padding . 0.25)
 
 	(stencil . ,ly:script-interface::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(X-offset . ,script-interface::calc-x-offset)
 	(Y-offset . ,ly:side-position-interface::y-aligned-side)
 	(meta . ((class . Item)
