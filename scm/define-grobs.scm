@@ -2026,7 +2026,7 @@
 	(ledger-line-thickness . (1.0 . 0.1))
 	(line-count . 5)
 	(stencil . ,ly:staff-symbol::print)
-	(Y-extent . ,ly:staff-symbol::height)
+	(Y-extent . ,(ly:make-unpure-pure-container ly:staff-symbol::height))
 	(meta . ((class . Spanner)
 		 (interfaces . (staff-symbol-interface))))))
 
