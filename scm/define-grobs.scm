@@ -2527,7 +2527,7 @@
 	(staff-padding . 1.0)
 	(stencil . ,ly:line-spanner::print)
 	(style . trill)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 	(meta . ((class . Spanner)
 		 (interfaces . (font-interface
 				line-interface
