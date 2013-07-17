@@ -334,7 +334,7 @@
 	(adjacent-pure-heights . ,ly:axis-group-interface::adjacent-pure-heights)
 	(axes . (,Y))
 	(vertical-skylines . ,ly:axis-group-interface::calc-skylines)
-	(Y-extent . ,ly:axis-group-interface::height)
+	(Y-extent . ,axis-group-interface::height)
 	(meta . ((class . Spanner)
 		 (object-callbacks . ((pure-Y-common . ,ly:axis-group-interface::calc-pure-y-common)
 				      (pure-relevant-grobs . ,ly:axis-group-interface::calc-pure-relevant-grobs)))
