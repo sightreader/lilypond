@@ -858,7 +858,7 @@
 	(springs-and-rods . ,ly:spanner::set-spacing-rods)
 	(stencil . ,ly:line-spanner::print)
 	(style . dashed-line)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(meta . ((class . Spanner)
 		 (interfaces . (dynamic-interface
 				dynamic-text-spanner-interface
