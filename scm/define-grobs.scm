@@ -2447,7 +2447,7 @@
 			(right-edge . (extra-space . 0.5))
 			(staff-bar . (minimum-space . 2.0))))
 	(stencil . ,ly:time-signature::print)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(style . C)
 	(meta . ((class . Item)
                  (object-callbacks . ((pure-Y-common . ,ly:axis-group-interface::calc-pure-y-common)
