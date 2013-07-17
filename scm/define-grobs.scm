@@ -2313,8 +2313,8 @@
 	(stencil . ,tab-note-head::print)
 	(whiteout . #t)
 	(X-offset . ,ly:self-alignment-interface::x-aligned-on-self)
-	(Y-offset . ,ly:staff-symbol-referencer::callback)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-offset . ,staff-symbol-referencer::callback)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces  . (font-interface
 				 note-head-interface
