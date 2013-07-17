@@ -2581,8 +2581,8 @@
 	(padding . 0.0)  ;; padding relative to UnaCordaPedalLineSpanner
 	(self-alignment-X . ,CENTER)
 	(stencil . ,ly:text-interface::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(X-offset . ,ly:self-alignment-interface::x-aligned-on-self)
 	(meta . ((class . Item)
 		 (interfaces . (font-interface
