@@ -2088,7 +2088,7 @@
 	(neutral-direction . ,DOWN)
 	(positioning-done . ,ly:stem::calc-positioning-done)
 	(stem-info . ,ly:stem::calc-stem-info)
-	(stem-begin-position . ,ly:stem::calc-stem-begin-position)
+	(stem-begin-position . ,(ly:make-unpure-pure-container ly:stem::calc-stem-begin-position ly:stem::pure-calc-stem-begin-position))
 	(stencil . ,ly:stem::print)
 	(thickness . 1.3)
 	(X-extent . ,ly:stem::width)
