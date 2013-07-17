@@ -1881,7 +1881,7 @@
 	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(X-offset . ,script-interface::calc-x-offset)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 	(meta . ((class . Item)
 		 (interfaces . (font-interface
 				script-interface
