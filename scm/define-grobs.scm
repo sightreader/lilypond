@@ -992,7 +992,7 @@
 	(stencil . ,fret-board::calc-stencil)
 	(extra-spacing-height . (0.2 . -0.2))
 	(extra-spacing-width . (-0.5 . 0.5))
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (chord-name-interface
 				font-interface
