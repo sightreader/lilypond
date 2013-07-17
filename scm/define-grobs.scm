@@ -2341,7 +2341,7 @@
 	(slur-padding . 0.5)
 	(staff-padding . 0.5)
 	(stencil . ,ly:text-interface::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	;; todo: add X self alignment?
 	(Y-extent . ,grob::all-heights-from-stencil)
 	(X-offset . ,ly:self-alignment-interface::x-aligned-on-self)
