@@ -1785,7 +1785,7 @@
 	(padding . 0.8)
 	(self-alignment-X . ,CENTER)
 	(stencil . ,ly:text-interface::print)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
 	(X-offset . ,(ly:make-simple-closure
 		      `(,+
 			,(ly:make-simple-closure
