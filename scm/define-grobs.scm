@@ -2376,7 +2376,7 @@
 	(staff-padding . 0.8)
 	(stencil . ,ly:line-spanner::print)
 	(style . dashed-line)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 
 	(meta . ((class . Spanner)
 		 (interfaces . (font-interface
