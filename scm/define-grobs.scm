@@ -1077,8 +1077,9 @@
 	(stencil . ,ly:hairpin::print)
 	(thickness . 1.0)
 	(to-barline . #t)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
-	(Y-offset . ,ly:self-alignment-interface::y-aligned-on-self)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
+	(Y-extent . ,(grob::unpure-Y-extent-from-stencil ly:hairpin::pure-height))
+	(Y-offset . ,self-alignment-interface::y-aligned-on-self)
 	(meta . ((class . Spanner)
 		 (interfaces . (dynamic-interface
 				hairpin-interface
