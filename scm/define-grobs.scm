@@ -677,7 +677,7 @@
 			(right-edge . (extra-space . 0.1))))
 	(stencil . ,ly:custos::print)
 	(style . vaticana)
-	(Y-offset . ,ly:staff-symbol-referencer::callback)
+	(Y-offset . ,staff-symbol-referencer::callback)
 	(meta . ((class . Item)
 		 (interfaces  . (break-aligned-interface
 				 custos-interface
