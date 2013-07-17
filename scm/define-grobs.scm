@@ -131,7 +131,7 @@
 	(side-axis . ,X)
 	(stencil . ,ly:accidental-interface::print)
 	(X-offset . ,ly:side-position-interface::x-aligned-side)
-	(Y-extent . ,ly:accidental-interface::height)
+	(Y-extent . ,accidental-interface::height)
 	(meta . ((class . Item)
 		 (interfaces . (accidental-interface
 				break-aligned-interface
