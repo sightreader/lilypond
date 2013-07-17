@@ -887,7 +887,7 @@
 	(side-axis . ,Y)
 	(stencil . ,ly:line-spanner::print)
 	(style . line)
-	(Y-offset . ,ly:side-position-interface::y-aligned-side)
+	(Y-offset . ,side-position-interface::y-aligned-side)
 	(meta . ((class . Spanner)
 		 (interfaces . (episema-interface
 				font-interface
