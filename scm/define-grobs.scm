@@ -36,7 +36,7 @@
 	(horizontal-skylines . ,(ly:make-unpure-pure-container ly:accidental-interface::horizontal-skylines))
 	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(X-extent . ,ly:accidental-interface::width)
-	(Y-extent . ,ly:accidental-interface::height)
+	(Y-extent . ,accidental-interface::height)
 	(meta . ((class . Item)
 		 (interfaces . (accidental-interface
 				inline-accidental-interface
