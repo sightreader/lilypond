@@ -2484,7 +2484,7 @@
 	(stencil . ,parenthesize-elements)
 	(stencils . ,parentheses-item::calc-parenthesis-stencils)
 	(X-offset . ,ly:side-position-interface::x-aligned-side)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (axis-group-interface
 				font-interface
