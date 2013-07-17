@@ -1577,8 +1577,8 @@
 	(stem-attachment . ,ly:note-head::calc-stem-attachment)
 	(stencil . ,ly:note-head::print)
 	(X-offset . ,ly:note-head::stem-x-shift)
-	(Y-offset . ,ly:staff-symbol-referencer::callback)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-offset . ,staff-symbol-referencer::callback)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(meta . ((class . Item)
 		 (interfaces . (font-interface
 				gregorian-ligature-interface
