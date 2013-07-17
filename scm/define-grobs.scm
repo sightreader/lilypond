@@ -2549,7 +2549,7 @@
 	(staff-padding . 0.25)
 	(stencil . ,ly:tuplet-bracket::print)
 	(thickness . 1.6)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
 	(X-positions . ,ly:tuplet-bracket::calc-x-positions)
 
 	(meta . ((class . Spanner)
