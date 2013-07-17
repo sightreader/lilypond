@@ -1807,7 +1807,7 @@
 	(slash-negative-kern . 0.85)
 	(slope . 1.7)
 	(stencil . ,ly:percent-repeat-item-interface::beat-slash)
-	(Y-extent . ,grob::all-heights-from-stencil)
+	(Y-extent . ,grob::always-Y-extent-from-stencil)
 	(thickness . 0.48)
 	(meta . ((class . Item)
 		 (interfaces . (percent-repeat-interface
