@@ -2115,6 +2115,7 @@
 	(stencil . ,ly:stem-tremolo::print)
 	(style . ,ly:stem-tremolo::calc-style)
 	(X-extent . ,ly:stem-tremolo::width)
+	(Y-extent . ,(grob::unpure-Y-extent-from-stencil ly:stem-tremolo::pure-height))
 	(X-offset . ,(ly:make-simple-closure
 		      `(,+
 			,(ly:make-simple-closure
