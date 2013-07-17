@@ -2694,7 +2694,8 @@
 	(stencil . ,ly:volta-bracket-interface::print)
 	(thickness . 1.6) ;; line-thickness
 	(word-space . 0.6)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-stencil)
+	(vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
+	(Y-extent . ,(grob::unpure-Y-extent-from-stencil volta-bracket-interface::pure-height))
 	(meta . ((class . Spanner)
 		 (interfaces . (font-interface
 				horizontal-bracket-interface
