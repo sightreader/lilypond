@@ -2714,7 +2714,7 @@
 	(outside-staff-priority . 600)
 	(padding . 1)
 	(side-axis . ,Y)
-	(vertical-skylines . ,ly:grob::vertical-skylines-from-element-stencils)
+	(vertical-skylines . ,grob::always-vertical-skylines-from-element-stencils)
 	(X-extent . ,ly:axis-group-interface::width)
 	(Y-extent . ,ly:axis-group-interface::height)
         (Y-offset . ,ly:side-position-interface::y-aligned-side)
