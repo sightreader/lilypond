@@ -7,5 +7,6 @@ endef
 $(foreach a, $(MODULE_LIBS), $(eval $(call MODULE_LIB_template,$(a))))
 
 $(EXECUTABLE): $(outdir)/config.hh $(O_FILES) $(outdir)/version.hh $(MODULE_LIBS:%=%/$(outdir)/library.a)
-	$(foreach a, $(MODULE_LIBS), $(MAKE) -C $(a) && ) true
-	$(LD) -o $@ $(O_FILES) $(LOADLIBES) $(ALL_LDFLAGS)
+	@ $(foreach a, $(MODULE_LIBS), $(MAKE) -C $(a) && ) true
+	@ $(call FANCY_PRINT_LD,$@)
+	@ $(LD) -o $@ $(O_FILES) $(LOADLIBES) $(ALL_LDFLAGS)

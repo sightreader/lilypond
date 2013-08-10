@@ -1,27 +1,35 @@
 .SUFFIXES: .cc .dep .hh .ll .o .so .yy
 
 $(outdir)/%.o: %.cc
-	$(DO_O_DEP) $(CXX) -c $(ALL_CXXFLAGS) -o $@ $<
+	@ $(call FANCY_PRINT_CXX,$<)
+	@ $(DO_O_DEP) $(CXX) -c $(ALL_CXXFLAGS) -o $@ $<
 
 $(outdir)/%.o: $(outdir)/%.cc
-	$(DO_O_DEP) $(CXX) -c $(ALL_CXXFLAGS) -o $@ $<
+	@ $(call FANCY_PRINT_CXX,$<)
+	@ $(DO_O_DEP) $(CXX) -c $(ALL_CXXFLAGS) -o $@ $<
 
 $(outdir)/%.lo: %.cc
-	$(DO_LO_DEP) $(CXX) -c $(ALL_CXXFLAGS) $(PIC_FLAGS) -o $@ $<
+	@ $(call FANCY_PRINT_CXX,$<)
+	@ $(DO_LO_DEP) $(CXX) -c $(ALL_CXXFLAGS) $(PIC_FLAGS) -o $@ $<
 
 $(outdir)/%.lo: $(outdir)/%.cc
-	$(DO_LO_DEP) $(CXX) -c $(ALL_CXXFLAGS) $(PIC_FLAGS) -o $@ $<
+	@ $(call FANCY_PRINT_CXX,$<)
+	@ $(DO_LO_DEP) $(CXX) -c $(ALL_CXXFLAGS) $(PIC_FLAGS) -o $@ $<
 
 $(outdir)/%.cc: %.yy
-	$(BISON) -o $@  $<
+	@ $(call FANCY_PRINT_GENERATION_WITH,$(BISON),$<)
+	@ $(BISON) -o $@  $<
 
 $(outdir)/%.hh: %.yy
-	$(BISON) -o $(subst .hh,-tmp.cc,$@) -d  $<
-	rm $(subst .hh,-tmp.cc,$@)
-	mv $(subst .hh,-tmp.hh,$@) $@
+	@ $(call FANCY_PRINT_GENERATION_WITH,$(BISON),$<)
+	@ $(BISON) -o $(subst .hh,-tmp.cc,$@) -d  $<
+	@ rm $(subst .hh,-tmp.cc,$@)
+	@ mv $(subst .hh,-tmp.hh,$@) $@
 
 $(outdir)/%.cc: %.ll
-	$(FLEX) -Cfe -p -p -o$@ $<
+	@ $(call FANCY_PRINT_GENERATION_WITH,$(FLEX),$<)
+	@ $(FLEX) -Cfe -p -p -o$@ $<
 
 $(outdir)/%-rc.o: $(outdir)/%.rc
-	$(WINDRES) $(WINDRES_FLAGS) -o$@ $<
+	@ $(call FANCY_PRINT_COMPILATION_WITH,$(WINDRES),$<)
+	@ $(WINDRES) $(WINDRES_FLAGS) -o$@ $<

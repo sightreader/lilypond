@@ -10,8 +10,11 @@ MF2PT1_OPTIONS=--rounding=0.0001 \
                --fullname=$(notdir $(<:%.mf=%)) \
                --name=$(notdir $(<:%.mf=%))
 
-ifdef QUIET_BUILD
-METAFONT_QUIET = >/dev/null
-else
+#
+# Remember about that change!
+#
+ifdef VERBOSE_METAFONT
 METAFONT_QUIET =
+else
+METAFONT_QUIET = >/dev/null
 endif

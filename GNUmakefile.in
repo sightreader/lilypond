@@ -204,7 +204,11 @@ CATALOGS = $(HELP_CATALOGS:lilypond=)
 # Preparing LilyPond tree for build-dir exec
 link-tree: $(tree-share-prefix)/lilypond-force
 
+#suppresses echoing
+.SILENT: $(tree-share-prefix)/lilypond-force $(tree-share-prefix)/mf-link-tree
+
 $(tree-share-prefix)/lilypond-force: GNUmakefile $(outdir)/VERSION
+	$(call FANCY_PRINT_GENERIC,Creating directories...)
 	cd $(top-build-dir)/$(outbase) && rm -rf bin lib share
 	mkdir -p $(tree-bin)
 	mkdir -p $(tree-share-prefix)
@@ -250,6 +254,7 @@ $(tree-share-prefix)/lilypond-force: GNUmakefile $(outdir)/VERSION
 link-mf-tree: $(tree-share-prefix)/mf-link-tree
 
 $(tree-share-prefix)/mf-link-tree: $(tree-share-prefix)/lilypond-force
+	$(call FANCY_PRINT_GENERIC,Linking font tree...)
 	-rm -f $(tree-share-prefix)/fonts/otf/* &&  \
 	rm -f $(tree-share-prefix)/fonts/svg/* &&  \
 	rm -f $(tree-share-prefix)/fonts/fonts.conf &&  \

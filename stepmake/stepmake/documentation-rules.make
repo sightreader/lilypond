@@ -4,12 +4,17 @@
 .SUFFIXES: .1 .data .html .gif .png .tex .txt .xpm
 
 $(outdir)/%.gif: %.xpm
-	xpmtoppm $< | ppmtogif > $@
+	@ $(call FANCY_PRINT_CONVERSION_TO,$<,$@)
+	@ xpmtoppm $< | ppmtogif > $@
 
+#isn't that error? shouldn't it be "ppmtopng" instead of "pnmtopng"?
+#and do we really need that for anything?
 $(outdir)/%.png: %.xpm
-	xpmtoppm $< | pnmtopng > $@
+	@ $(call FANCY_PRINT_CONVERSION_TO,$<,$@)
+	@ xpmtoppm $< | pnmtopng > $@
 
 # use striproff?
 $(outdir)/%.txt: $(outdir)/%.1
-	troff -man -Tascii $< | grotty -b -u -o > $@
+	@ $(call FANCY_PRINT_GENERATION_WITH,troff,$@)
+	@ troff -man -Tascii $< | grotty -b -u -o > $@
 

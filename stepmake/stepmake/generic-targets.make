@@ -90,14 +90,16 @@ local-tags:
 # Don't use $(buildscript-dir)/make-version, because it is not known whether
 # build process has visited scripts/build
 $(outdir)/version.hh: $(depth)/VERSION $(config_make) $(top-src-dir)/scripts/build/make-version.py
-	$(PYTHON) $(top-src-dir)/scripts/build/make-version.py $< > $@
+	@ $(call FANCY_PRINT_GENERATION,$@)
+	@ $(PYTHON) $(top-src-dir)/scripts/build/make-version.py $< > $@
 
 $(outdir)/config.hh: $(config_h)
 	cp -p $< $@
 
 configure: configure.ac aclocal.m4
-	NOCONFIGURE=yes $(src-depth)/autogen.sh
-	chmod +x configure
+	@ $(call FANCY_PRINT_RUNNING,$(src-depth)/autogen.sh)
+	@ NOCONFIGURE=yes $(src-depth)/autogen.sh
+	@ chmod +x configure
 
 local-clean:
 
@@ -130,9 +132,10 @@ installextradoc:
 -include $(outdir)/dummy.dep $(wildcard $(outdir)/*.dep)
 
 $(outdir)/dummy.dep:
-	-mkdir -p $(outdir)
-	touch $(outdir)/dummy.dep
-	echo '*' > $(outdir)/.gitignore
+	@ $(call FANCY_PRINT_GENERIC,Creating,$(outdir))
+	@- mkdir -p $(outdir)
+	@ touch $(outdir)/dummy.dep
+	@ echo '*' > $(outdir)/.gitignore
 
 check: local-check
 	$(LOOP)
@@ -141,9 +144,9 @@ local-check:
 
 # ugh.  ugh ugh ugh
 $(config_make): $(top-src-dir)/configure
-	@echo "************************************************************"
-	@echo "configure changed! You should probably reconfigure manually."
-	@echo "************************************************************"
+	@env echo -e "\e[1;31m************************************************************\e[0m"
+	@env echo -e "\e[1;31mconfigure changed! You should probably reconfigure manually.\e[0m"
+	@env echo -e "\e[1;31m************************************************************\e[0m"
 	(cd $(top-build-dir); ./config.status)
 	touch $@		# do something for multiple simultaneous configs.
 
