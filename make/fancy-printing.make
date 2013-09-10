@@ -64,9 +64,9 @@ FP_FULL_FNAME = $(subst $(abspath $(depth))/,,$(abspath $(1)))
 # All arguments may be empty.
 ifndef NO_FANCY_PRINTING
 define PRINT_CMD_DESCRIPTION #<style>(1) <desc0>(2) <prog>(3) <desc1>(4) <fn1>(5) <desc2>(6) <fn2>(7)
-	$(HIDE) env printf "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)"\
+	@ env printf "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)"\
 	$(if $(2),$(2)' ','') $(if $(3),$(3)' ','') $(if $(4),$(4)' ','') $(if $(5),$(call FP_FULL_FNAME,$(5))' ','') $(if $(6),$(6)' ','') $(if $(7),$(call FP_FULL_FNAME,$(7))' ','')
-	# ifs are necessary to avoid superfluous spaces, when arguments are absent, and to ensure correct argument matching
+	@# ifs are necessary to avoid superfluous spaces, when arguments are absent, and to ensure correct argument matching
 endef
 else
 PRINT_CMD_DESCRIPTION=
@@ -96,17 +96,17 @@ PRINTING_GROUP_ALL = $(PRINTING_GROUP_1) $(PRINTING_GROUP_2) $(PRINTING_GROUP_3)
 # for empty <prog>, prints 'Generating $@'
 # for special prog _CONV, prints 'Converting $< to $@'
 define PRINT_SMART_DESC #<prog>
-	#rules for defined groups are (descriptions above)
-	$(HIDE) $(if $(filter $(PRINTING_GROUP_1),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$<))
-	$(HIDE) $(if $(filter $(PRINTING_GROUP_2),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$@))
-	$(HIDE) $(if $(filter $(PRINTING_GROUP_3),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,,Copying,$@,from,$<))
-	$(HIDE) $(if $(filter $(PRINTING_GROUP_4),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,,Linking,$@))
-	$(HIDE) $(if $(filter $(PRINTING_GROUP_5),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CPRESS),,$(1),compressing,$@))
-	$(HIDE) $(if $(filter _CONV,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,,Converting,$<,to,$@))
-	# generic rule, for anything other (i.e. when <prog> is not empty)
-	$(HIDE) $(if $(filter-out "$(PRINTING_GROUP_ALL)",$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,$(1),generating,$@),)
-	# generic rule, when <prog> is empty
-	$(HIDE) $(if $(1),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,,Generating,$@))
+	@#rules for defined groups are (descriptions above)
+	@ $(if $(filter $(PRINTING_GROUP_1),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$<))
+	@ $(if $(filter $(PRINTING_GROUP_2),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$@))
+	@ $(if $(filter $(PRINTING_GROUP_3),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,,Copying,$@,from,$<))
+	@ $(if $(filter $(PRINTING_GROUP_4),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,,Linking,$@))
+	@ $(if $(filter $(PRINTING_GROUP_5),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CPRESS),,$(1),compressing,$@))
+	@ $(if $(filter _CONV,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,,Converting,$<,to,$@))
+	@# generic rule, for anything other (i.e. when <prog> is not empty)
+	@ $(if $(filter-out "$(PRINTING_GROUP_ALL)",$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,$(1),generating,$@),)
+	@# generic rule, when <prog> is empty
+	@ $(if $(1),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,,Generating,$@))
 endef
 
 #prints <desc> in STYLE_GNRIC style, optionally adding <fname> printed as filename
