@@ -91,17 +91,17 @@ PRINTING_GROUP_ALL = $(PRINTING_GROUP_1) $(PRINTING_GROUP_2) $(PRINTING_GROUP_3)
 # for empty <prog>, prints 'Generating $@'
 define PRINT_SMART_DESC #<prog>
     #rules for defined groups are (descriptions above)
-    @ $(if $(filter PRINTING_GROUP_1,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),$(1),compiling,$<,,))
-    @ $(if $(filter PRINTING_GROUP_2,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),$(1),compiling,$<,,))
-    @ $(if $(filter PRINTING_GROUP_3,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,Copying,$@,from,$<,,))
-    @ $(if $(filter PRINTING_GROUP_4,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,Linking,$@,,,,))
+    @ $(if $(filter PRINTING_GROUP_1,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$<))
+    @ $(if $(filter PRINTING_GROUP_2,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$<))
+    @ $(if $(filter PRINTING_GROUP_3,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,,Copying,$@,from,$<))
+    @ $(if $(filter PRINTING_GROUP_4,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,,Linking,$@))
     # generic rule, for anything other, when <prog> is not empty
-    @ $(if $(filter-out PRINTING_GROUP_ALL,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),$(1),generating,$@),)
+    @ $(if $(filter-out PRINTING_GROUP_ALL,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,$(1),generating,$@),)
     # generic rule, when <prog> is empty
-    @ $(if $(1),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),$(1),generating,$@))
+    @ $(if $(1),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,$(1),generating,$@))
 endef
 
-#prints description in STYLE_GNRIC style
-define PRINT_GENERIC_DESC #<desc>
-    $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),$(1),compiling,$<,,)
+#prints <desc> in STYLE_GNRIC style, optionally adding <fname> printed as filename
+define PRINT_GENERIC_DESC #<desc> <fname>
+    $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),,,$(1),$(2))
 endef

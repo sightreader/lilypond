@@ -132,7 +132,7 @@ installextradoc:
 -include $(outdir)/dummy.dep $(wildcard $(outdir)/*.dep)
 
 $(outdir)/dummy.dep:
-	@ $(call FANCY_PRINT_GENERIC,Creating,$(outdir))
+	@ $(call PRINT_GENERIC_DESC,Creating,$(outdir))
 	@- mkdir -p $(outdir)
 	@ touch $(outdir)/dummy.dep
 	@ echo '*' > $(outdir)/.gitignore
