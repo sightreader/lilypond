@@ -2,7 +2,7 @@ $(outdir)/%: %.m4
 	$(M4) $< > $@
 
 %.gz: %
-	@ $(call FANCY_PRINT_GENERIC_WITH,gzip,packing,$@)
+    @ $(call PRINT_SMART_DESC,gzip)
 	@ gzip -c9 $< > $@
 
 $(outdir)/%.css: $(CSS_DIRECTORY)/%.css

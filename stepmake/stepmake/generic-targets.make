@@ -90,14 +90,14 @@ local-tags:
 # Don't use $(buildscript-dir)/make-version, because it is not known whether
 # build process has visited scripts/build
 $(outdir)/version.hh: $(depth)/VERSION $(config_make) $(top-src-dir)/scripts/build/make-version.py
-	@ $(call FANCY_PRINT_GENERATION,$@)
+	@ $(call PRINT_SMART_DESC)
 	@ $(PYTHON) $(top-src-dir)/scripts/build/make-version.py $< > $@
 
 $(outdir)/config.hh: $(config_h)
 	cp -p $< $@
 
 configure: configure.ac aclocal.m4
-	@ $(call FANCY_PRINT_RUNNING,$(src-depth)/autogen.sh)
+    @ $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),Running,autogen.sh)
 	@ NOCONFIGURE=yes $(src-depth)/autogen.sh
 	@ chmod +x configure
 
