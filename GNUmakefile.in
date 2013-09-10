@@ -208,7 +208,7 @@ link-tree: $(tree-share-prefix)/lilypond-force
 .SILENT: $(tree-share-prefix)/lilypond-force $(tree-share-prefix)/mf-link-tree
 
 $(tree-share-prefix)/lilypond-force: GNUmakefile $(outdir)/VERSION
-    $(call PRINT_GENERIC_DESC,Creating directories...)
+	$(call PRINT_GENERIC_DESC,"Creating directories...")
 	cd $(top-build-dir)/$(outbase) && rm -rf bin lib share
 	mkdir -p $(tree-bin)
 	mkdir -p $(tree-share-prefix)
@@ -254,7 +254,7 @@ $(tree-share-prefix)/lilypond-force: GNUmakefile $(outdir)/VERSION
 link-mf-tree: $(tree-share-prefix)/mf-link-tree
 
 $(tree-share-prefix)/mf-link-tree: $(tree-share-prefix)/lilypond-force
-    $(call PRINT_GENERIC_DESC,Linking font tree (i.e. creating symlinks)...)
+	$(call PRINT_GENERIC_DESC,"Linking font tree (i.e. creating symlinks)...")
 	-rm -f $(tree-share-prefix)/fonts/otf/* &&  \
 	rm -f $(tree-share-prefix)/fonts/svg/* &&  \
 	rm -f $(tree-share-prefix)/fonts/fonts.conf &&  \
