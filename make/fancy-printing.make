@@ -86,11 +86,13 @@ PRINTING_GROUP_3 := cp
 PRINTING_GROUP_4 := ld
 #compression
 PRINTING_GROUP_5 := gzip zip
+#conversion
+PRINTING_GROUP_6 := help2man
 #special pseudo-names
 PRINTING_GROUP_SPECIALS := _CONV
 #all known names
 PRINTING_GROUP_ALL = $(PRINTING_GROUP_1) $(PRINTING_GROUP_2) $(PRINTING_GROUP_3)\
-    $(PRINTING_GROUP_4) $(PRINTING_GROUP_5) $(PRINTING_GROUP_SPECIALS)
+    $(PRINTING_GROUP_4) $(PRINTING_GROUP_5) $(PRINTING_GROUP_6) $(PRINTING_GROUP_SPECIALS)
 
 # tries to deduce proper description from <prog>, and use $@, $< and $^.
 # for empty <prog>, prints 'Generating $@'
@@ -102,6 +104,7 @@ define PRINT_SMART_DESC #<prog>
 	@ $(if $(filter $(PRINTING_GROUP_3),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,,Copying,$@,from,$<))
 	@ $(if $(filter $(PRINTING_GROUP_4),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,,Linking,$@))
 	@ $(if $(filter $(PRINTING_GROUP_5),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CPRESS),,$(1),compressing,$@))
+	@ $(if $(filter $(PRINTING_GROUP_6),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,$(1),converting,$<,to,$@))
 	@ $(if $(filter _CONV,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,,Converting,$<,to,$@))
 	@# generic rule, for anything other (i.e. when <prog> is not empty)
 	@ $(if $(filter-out "$(PRINTING_GROUP_ALL)",$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,$(1),generating,$@),)

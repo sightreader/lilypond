@@ -23,19 +23,22 @@ endif
 
 ifeq ($(strip $(CROSS)),no)
 $(outdir)/%.1: $(outdir)/% $(buildscript-dir)/help2man
-	$(HELP2MAN_COMMAND)
+	$(HIDE) $(call PRINT_SMART_DESC,help2man)
+	$(HIDE) $(HELP2MAN_COMMAND)
 else
 # When cross building, some manpages will not build because the
 # executable does not run.  We assume the manpages to be generated
 # during a previous compile for the build host, with config=for-build,
 # in the directory $(outdir)-for-build.
 $(outdir)/%.1: $(outdir:%=%-for-build)/%.1
-	cp $< $@
+	$(HIDE) $(call PRINT_SMART_DESC,cp)
+	$(HIDE) cp $< $@
 endif
 
 ifneq ($(outdir),./out)
 $(outdir)/%.1: out/%.1
-	cp $< $@
+	$(HIDE) $(call PRINT_SMART_DESC,cp)
+	$(HIDE) cp $< $@
 endif
 
 $(buildscript-dir)/help2man:
