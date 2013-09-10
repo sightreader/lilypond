@@ -67,7 +67,7 @@ FPW_PRGN = $(STYLE_PRGN)$(1)
 #   <desc*>   as <style>
 #
 # All arguments may be empty.
-define PRINT_GENERIC_DESC #<style>(1) <desc0>(2) <prog>(3) <desc1>(4) <fn1>(5) <desc2>(6) <fn2>(7)
+define PRINT_CMD_DESCRIPTION #<style>(1) <desc0>(2) <prog>(3) <desc1>(4) <fn1>(5) <desc2>(6) <fn2>(7)
     @ env printf "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)"\
     $(if $(2),$(2) ,) $(if $(3),$(3) ,) $(if $(4),$(4) ,) $(if $(5),$(5) ,) $(if $(6),$(6) ,) $(if $(7),$(7) ,)
     # ifs are necessary to avoid superfluous spaces, when arguments are absent
@@ -78,9 +78,9 @@ endef
 #        "$(if $(7),$(call FPW_FNAME,$(7)) ,)$(FP_ENDL)"
 
 # compilation, for which we want source file name (i.e. $<) printed
-PRINTING_GROUP_1 := g++ bison yy
+PRINTING_GROUP_1 := $(CXX) $(BISON) $(FLEX) $(WINDRES)
 #compilation, for which we want target file name (i.e. $@) printed
-PRINTING_GROUP_2 := mf
+PRINTING_GROUP_2 := $(METAFONT)
 #copying
 PRINTING_GROUP_3 := cp
 #linking
@@ -89,13 +89,19 @@ PRINTING_GROUP_ALL = $(PRINTING_GROUP_1) $(PRINTING_GROUP_2) $(PRINTING_GROUP_3)
 
 # tries to deduce proper description from <prog>, and use $@, $< and $^.
 # for empty <prog>, prints 'Generating $@'
-define PRINT_SMART_DESC <prog>
+define PRINT_SMART_DESC #<prog>
     #rules for defined groups are (descriptions above)
-    $(if $(filter PRINTING_GROUP_1,$(1)),$(call PRINT_GENERIC_DESC,$(STYLE_CXX),$(1),compiling,$<,,))
-    $(if $(filter PRINTING_GROUP_2,$(1)),,$(call PRINT_GENERIC_DESC,$(STYLE_CXX),$(1),compiling,$<,,))
-    $(if $(filter PRINTING_GROUP_3,$(1)),,$(call PRINT_GENERIC_DESC,$(STYLE_CP),,Copying,$@,from,$<,,))
+    @ $(if $(filter PRINTING_GROUP_1,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),$(1),compiling,$<,,))
+    @ $(if $(filter PRINTING_GROUP_2,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),$(1),compiling,$<,,))
+    @ $(if $(filter PRINTING_GROUP_3,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,Copying,$@,from,$<,,))
+    @ $(if $(filter PRINTING_GROUP_4,$(1)),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,Linking,$@,,,,))
     # generic rule, for anything other, when <prog> is not empty
-    $(if $(filter-out PRINTING_GROUP_ALL,$(1)),$(call PRINT_GENERIC_DESC,$(STYLE_GEN),$(1),generating,$@),)
+    @ $(if $(filter-out PRINTING_GROUP_ALL,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),$(1),generating,$@),)
     # generic rule, when <prog> is empty
-    $(if $(1),,$(call PRINT_GENERIC_DESC,$(STYLE_GEN),$(1),generating,$@))
+    @ $(if $(1),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),$(1),generating,$@))
+endef
+
+#prints description in STYLE_GNRIC style
+define PRINT_GENERIC_DESC #<desc>
+    $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),$(1),compiling,$<,,)
 endef
