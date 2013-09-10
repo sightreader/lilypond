@@ -22,14 +22,14 @@ ifdef USE_COLOR_CODES
 # Colors for fancy output - we are in terminal
 # In facts, these may be styles, no only colors
 STYLE_NONE := \e[0m# resets style
-STYLE_GNRIC := \e[0;31m# generic description
+STYLE_GNRIC := \e[0;32m# generic description
 STYLE_FNAME := \e[0;1;32m# file name
-STYLE_PRGN := \e[0;1;35m# program name
+STYLE_PRGN := \e[0;1;33m# program name
 STYLE_CXX := \e[0;32m# compilation description
 STYLE_CP := \e[0;32m# copying description
-STYLE_CONV := \e[0;33m# conversion description
-STYLE_GEN := \e[0;34m# generation description
-STYLE_LD := \e[0;35m# linkage description
+STYLE_CONV := \e[0;32m# conversion description
+STYLE_GEN := \e[0;32m# generation description
+STYLE_LD := \e[0;32m# linkage description
 STYLE_CPRESS := $(STYLE_GNRIC)# compression description
 endif
 # Color variables don't need to be defined, if we are not
