@@ -2,9 +2,6 @@
 # supressing superfluous make output and printing
 # messages
 
-# all variables, excluding HIDE, have prefix FP_ (for fancy printing)
-# or FPC_ (for fancy printing color)
-
 # variable
 ifdef VERBOSE_MAKE
 HIDE :=
@@ -51,11 +48,16 @@ FPW__FNAME = $(FPC_FNAME)$(call FP__FULL_FNAME,$(1))
 # function returning argument, colored as program name
 FPW__PRGN = $(FPC_PROGNAME)$(1)
 
-# prints "<prog> <what>", with
+# prints "<desc0> <prog> <desc1> <fn1> <desc2> <fn2>", with
 #   <prog>    as PROGNAME
-#   <what>    as FNAME
-define FP_GENERIC #<prog> <what>
-    @ env echo -ne "$(FPC_GENERIC)$(1) $(call FPW__FNAME,$(2))$(FP_ENDL)"
+#   <fn*>     as FNAME
+#   <desc*>   as <style>
+#
+# All arguments may be empty.
+define PRINT_GENERIC_DESC #<style>(1) <desc0>(2) <prog>(3) <desc1>(4) <fn1>(5) <desc2>(6) <fn2>(7)
+    @ env echo -ne "$(if $(2),$(1)$(2) ,)$(if $(3),$(call FPW__PRGN,$(3)) ,)"\
+        "$(if $(4),$(2)$(4) ,)$(if $(5),$(call FPW__FNAME,$(5)) ,)$(if $(6),$(2)$(6) ,)"\
+        "$(if $(7),$(call FPW__FNAME,$(7)) ,)$(FP_ENDL)"
 endef
 
 # prints "<prog> <doing> <what>", with
