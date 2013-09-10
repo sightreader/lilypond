@@ -97,7 +97,7 @@ $(outdir)/config.hh: $(config_h)
 	cp -p $< $@
 
 configure: configure.ac aclocal.m4
-    @ $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),Running,autogen.sh)
+	@ $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),Running,autogen.sh)
 	@ NOCONFIGURE=yes $(src-depth)/autogen.sh
 	@ chmod +x configure
 

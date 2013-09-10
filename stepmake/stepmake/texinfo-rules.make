@@ -26,12 +26,12 @@ endif
 # Copy files while tracking their dependencies.
 # Maybe sth should be echoed.
 $(outdir)/%.texi: %.texi
-    @ $(call PRINT_SMART_DESC,cp)
+	@ $(call PRINT_SMART_DESC,cp)
 	@ mkdir -p $(dir $@)
 	@ $(DO_TEXI_DEP) cp -f $< $@
 
 $(outdir)/%.itexi: %.itexi
-    @ $(call PRINT_SMART_DESC,cp)
+	@ $(call PRINT_SMART_DESC,cp)
 	@ mkdir -p $(dir $@)
 	@ $(DO_TEXI_DEP) cp -f $< $@
 

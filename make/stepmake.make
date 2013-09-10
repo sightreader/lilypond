@@ -111,7 +111,7 @@ endif
 # Keep this empty to prevent make from removing intermediate files.
 .SECONDARY:
 
-$(depth)/make/fancy-printing.make
+include $(depth)/make/fancy-printing.make
 
 all:
 
