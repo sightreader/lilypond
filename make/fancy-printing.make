@@ -62,11 +62,15 @@ FP_FULL_FNAME = $(subst $(abspath $(depth))/,,$(abspath $(1)))
 #   <desc*>   as <style>
 #
 # All arguments may be empty.
+ifndef NO_FANCY_PRINTING
 define PRINT_CMD_DESCRIPTION #<style>(1) <desc0>(2) <prog>(3) <desc1>(4) <fn1>(5) <desc2>(6) <fn2>(7)
 	@ env printf "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)"\
 	$(if $(2),$(2)' ','') $(if $(3),$(3)' ','') $(if $(4),$(4)' ','') $(if $(5),$(call FP_FULL_FNAME,$(5))' ','') $(if $(6),$(6)' ','') $(if $(7),$(call FP_FULL_FNAME,$(7))' ','')
 	# ifs are necessary to avoid superfluous spaces, when arguments are absent
 endef
+else
+PRINT_CMD_DESCRIPTION=
+endif
 # echo version:
 #    @ env echo -ne "$(if $(2),$(1)$(2) ,)$(if $(3),$(call FPW_PRGN,$(3)) ,)"\
 #        "$(if $(4),$(1)$(4) ,)$(if $(5),$(call FPW_FNAME,$(5)) ,)$(if $(6),$(1)$(6) ,)"\
