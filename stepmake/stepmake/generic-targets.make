@@ -90,16 +90,16 @@ local-tags:
 # Don't use $(buildscript-dir)/make-version, because it is not known whether
 # build process has visited scripts/build
 $(outdir)/version.hh: $(depth)/VERSION $(config_make) $(top-src-dir)/scripts/build/make-version.py
-	@ $(call PRINT_SMART_DESC)
-	@ $(PYTHON) $(top-src-dir)/scripts/build/make-version.py $< > $@
+	$(HIDE) $(call PRINT_SMART_DESC)
+	$(HIDE) $(PYTHON) $(top-src-dir)/scripts/build/make-version.py $< > $@
 
 $(outdir)/config.hh: $(config_h)
 	cp -p $< $@
 
 configure: configure.ac aclocal.m4
-	@ $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),Running,autogen.sh)
-	@ NOCONFIGURE=yes $(src-depth)/autogen.sh
-	@ chmod +x configure
+	$(HIDE) $(call PRINT_CMD_DESCRIPTION,$(STYLE_GNRIC),Running,autogen.sh)
+	$(HIDE) NOCONFIGURE=yes $(src-depth)/autogen.sh
+	$(HIDE) chmod +x configure
 
 local-clean:
 
@@ -132,10 +132,10 @@ installextradoc:
 -include $(outdir)/dummy.dep $(wildcard $(outdir)/*.dep)
 
 $(outdir)/dummy.dep:
-	@ $(call PRINT_GENERIC_DESC,Creating,$(outdir))
+	$(HIDE) $(call PRINT_GENERIC_DESC,Creating,$(outdir))
 	@- mkdir -p $(outdir)
-	@ touch $(outdir)/dummy.dep
-	@ echo '*' > $(outdir)/.gitignore
+	$(HIDE) touch $(outdir)/dummy.dep
+	$(HIDE) echo '*' > $(outdir)/.gitignore
 
 check: local-check
 	$(LOOP)

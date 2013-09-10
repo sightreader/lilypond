@@ -136,8 +136,8 @@ $(outdir)/%.lisp \
 $(outdir)/%.otf-gtable \
 $(outdir)/%.enc \
 $(outdir)/%.pe: $(outdir)/%.log $(outdir)/%.tfm
-	@ $(call PRINT_SMART_DESC)
-	@ $(buildscript-dir)/mf-to-table \
+	$(HIDE) $(call PRINT_SMART_DESC)
+	$(HIDE) $(buildscript-dir)/mf-to-table \
 		--global-lisp=$(outdir)/$(<F:.log=.otf-gtable) \
 		--lisp=$(outdir)/$(<F:.log=.lisp) \
 		--outdir=$(outdir) \
@@ -158,8 +158,8 @@ $(outdir)/emmentaler-%.woff: $(outdir)/emmentaler-%.pe \
 			    $(outdir)/feta%.otf-table \
 			    $(outdir)/feta%.otf-gtable \
 			    | pfb
-	@ $(call PRINT_SMART_DESC)
-	@ cd $(outdir) && $(FONTFORGE) -script $(notdir $<)
+	$(HIDE) $(call PRINT_SMART_DESC)
+	$(HIDE) cd $(outdir) && $(FONTFORGE) -script $(notdir $<)
 
 $(outdir)/emmentaler-brace.otf\
  $(outdir)/emmentaler-brace.svg\
@@ -167,8 +167,8 @@ $(outdir)/emmentaler-brace.otf\
 		       $(foreach s,$(BRACES),$(outdir)/feta-braces-$(s).pfb) \
 		       $(outdir)/emmentaler-brace.otf-table $(outdir)/emmentaler-brace.otf-gtable \
 		       | pfb
-	@ $(call PRINT_SMART_DESC)
-	@ cd $(outdir) && $(FONTFORGE) -script emmentaler-brace.pe
+	$(HIDE) $(call PRINT_SMART_DESC)
+	$(HIDE) cd $(outdir) && $(FONTFORGE) -script emmentaler-brace.pe
 
 default: $(ALL_GEN_FILES) \
 	 $(outdir)/emmentaler-20.otf \
@@ -185,8 +185,8 @@ $(outdir)/%.lisp \
 $(outdir)/%.otf-gtable \
 $(outdir)/%.enc \
 $(outdir)/%.pe: $(outdir)/%.log $(outdir)/%.tfm
-	@ $(call PRINT_SMART_DESC)
-	@ $(buildscript-dir)/mf-to-table \
+	$(HIDE) $(call PRINT_SMART_DESC)
+	$(HIDE) $(buildscript-dir)/mf-to-table \
 		--global-lisp=$(outdir)/$(<F:.log=.otf-gtable) \
 		--lisp=$(outdir)/$(<F:.log=.lisp) \
 		--outdir=$(outdir) \

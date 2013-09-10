@@ -2,18 +2,18 @@
 
 # we want to see botched results as well.
 $(outdir)/%.dvi: %.mf
-	@ $(call PRINT_SMART_DESC,$(METAFONT))
+	$(HIDE) $(call PRINT_SMART_DESC,$(METAFONT))
 	@- MFINPUTS=$(src-dir) $(METAFONT) "\scrollmode; input $<;" $(METAFONT_QUIET)
-	@ gftodvi $(basename $<)
-	@ mv $(basename $<).dvi $(outdir)
-	@ rm $(basename $<).*gf
+	$(HIDE) gftodvi $(basename $<)
+	$(HIDE) mv $(basename $<).dvi $(outdir)
+	$(HIDE) rm $(basename $<).*gf
 
 $(outdir)/%.tfm $(outdir)/%.log: %.mf
-	@ $(call PRINT_SMART_DESC,$(METAFONT))
-	@ MFINPUTS=$(src-dir) $(METAFONT) "\mode:=$(MFMODE); nonstopmode; input $<;" $(METAFONT_QUIET)
+	$(HIDE) $(call PRINT_SMART_DESC,$(METAFONT))
+	$(HIDE) MFINPUTS=$(src-dir) $(METAFONT) "\mode:=$(MFMODE); nonstopmode; input $<;" $(METAFONT_QUIET)
 # Let's keep this log output, it saves another mf run.
-	@ mv $(basename $(@F)).log $(basename $(@F)).tfm $(outdir)
-	@ rm -f $(basename $(@F)).*gf  $(basename $(@F)).*pk
+	$(HIDE) mv $(basename $(@F)).log $(basename $(@F)).tfm $(outdir)
+	$(HIDE) rm -f $(basename $(@F)).*gf  $(basename $(@F)).*pk
 
 # ugh . mf2pt1 is extremely broken, it pollutes CWD iso. creating a
 # temp dir.
@@ -21,8 +21,8 @@ $(outdir)/%.tfm $(outdir)/%.log: %.mf
 # the soft link for mf2pt1.mp is for recent mpost versions
 # which no longer dump a .mem file
 $(outdir)/%.pfb: %.mf $(outdir)/mf2pt1.mem $(outdir)/%.log
-	@ $(call PRINT_SMART_DESC)
-	@ TMP=`mktemp -d $(outdir)/pfbtemp.$*.XXXXXXXXX` \
+	$(HIDE) $(call PRINT_SMART_DESC)
+	$(HIDE) TMP=`mktemp -d $(outdir)/pfbtemp.$*.XXXXXXXXX` \
 	&& ( cd $$TMP \
 		&& ln -s ../mf2pt1.mem . \
 		&& ln -s ../../mf2pt1.mp . \
@@ -34,7 +34,7 @@ $(outdir)/%.pfb: %.mf $(outdir)/mf2pt1.mem $(outdir)/%.log
 # file to satisfy the dependency (which gets overwritten in case an older
 # mpost creates a real mem file)
 $(outdir)/mf2pt1.mem: mf2pt1.mp
-	@ $(call PRINT_SMART_DESC)
-	@ cd $(outdir) \
+	$(HIDE) $(call PRINT_SMART_DESC)
+	$(HIDE) cd $(outdir) \
 	   && touch mf2pt1.mem \
 	   && mpost -progname=mpost -ini $(top-src-dir)/mf/mf2pt1.mp \\dump

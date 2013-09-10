@@ -15,25 +15,25 @@
 
 $(outdir)/$(INFO_IMAGES_DIR).info-images-dir-dep: $(OUT_TEXI_FILES)
 ifneq ($(INFO_IMAGES_DIR),)
-	@ rm -f $(INFO_IMAGES_DIR)
-	@ ln -s $(outdir) $(INFO_IMAGES_DIR)
-	@ mkdir -p $(outdir)/$(INFO_IMAGES_DIR)
-	@ rm -f $(outdir)/$(INFO_IMAGES_DIR)/[a-f0-9][a-f0-9]
-	@ cd $(outdir)/$(INFO_IMAGES_DIR) && $(buildscript-dir)/mass-link symbolic .. . [a-f0-9][a-f0-9]
+	$(HIDE) rm -f $(INFO_IMAGES_DIR)
+	$(HIDE) ln -s $(outdir) $(INFO_IMAGES_DIR)
+	$(HIDE) mkdir -p $(outdir)/$(INFO_IMAGES_DIR)
+	$(HIDE) rm -f $(outdir)/$(INFO_IMAGES_DIR)/[a-f0-9][a-f0-9]
+	$(HIDE) cd $(outdir)/$(INFO_IMAGES_DIR) && $(buildscript-dir)/mass-link symbolic .. . [a-f0-9][a-f0-9]
 endif
-	@ touch $@
+	$(HIDE) touch $@
 
 # Copy files while tracking their dependencies.
 # Maybe sth should be echoed.
 $(outdir)/%.texi: %.texi
-	@ $(call PRINT_SMART_DESC,cp)
-	@ mkdir -p $(dir $@)
-	@ $(DO_TEXI_DEP) cp -f $< $@
+	$(HIDE) $(call PRINT_SMART_DESC,cp)
+	$(HIDE) mkdir -p $(dir $@)
+	$(HIDE) $(DO_TEXI_DEP) cp -f $< $@
 
 $(outdir)/%.itexi: %.itexi
-	@ $(call PRINT_SMART_DESC,cp)
-	@ mkdir -p $(dir $@)
-	@ $(DO_TEXI_DEP) cp -f $< $@
+	$(HIDE) $(call PRINT_SMART_DESC,cp)
+	$(HIDE) mkdir -p $(dir $@)
+	$(HIDE) $(DO_TEXI_DEP) cp -f $< $@
 
 $(outdir)/%.info: $(outdir)/%.texi $(outdir)/$(INFO_IMAGES_DIR).info-images-dir-dep $(outdir)/version.itexi $(outdir)/weblinks.itexi | $(OUT_TEXINFO_MANUALS)
 ifeq ($(WEB_VERSION),yes)
