@@ -2,14 +2,14 @@
 
 # we want to see botched results as well.
 $(outdir)/%.dvi: %.mf
-	$(HIDE) $(call PRINT_SMART_DESC,$(METAFONT))
+	$(HIDE) $(call PRINT_SMART_DESC,"$(METAFONT)")
 	@- MFINPUTS=$(src-dir) $(METAFONT) "\scrollmode; input $<;" $(METAFONT_QUIET)
 	$(HIDE) gftodvi $(basename $<)
 	$(HIDE) mv $(basename $<).dvi $(outdir)
 	$(HIDE) rm $(basename $<).*gf
 
 $(outdir)/%.tfm $(outdir)/%.log: %.mf
-	$(HIDE) $(call PRINT_SMART_DESC,$(METAFONT))
+	$(HIDE) $(call PRINT_SMART_DESC,"$(METAFONT)")
 	$(HIDE) MFINPUTS=$(src-dir) $(METAFONT) "\mode:=$(MFMODE); nonstopmode; input $<;" $(METAFONT_QUIET)
 # Let's keep this log output, it saves another mf run.
 	$(HIDE) mv $(basename $(@F)).log $(basename $(@F)).tfm $(outdir)

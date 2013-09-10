@@ -79,7 +79,7 @@ endif
 # compilation, for which we want source file name (i.e. $<) printed
 PRINTING_GROUP_1 := $(CC) $(CXX) $(BISON) $(FLEX) $(WINDRES)
 #compilation, for which we want target file name (i.e. $@) printed
-PRINTING_GROUP_2 := $(METAFONT)
+PRINTING_GROUP_2 := mf "\"$(METAFONT)\""
 #copying
 PRINTING_GROUP_3 := cp
 #linking
