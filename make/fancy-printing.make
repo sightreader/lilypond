@@ -62,6 +62,11 @@ FP_FULL_FNAMES = $(foreach filename,$(1),$(call FP_FULL_FNAME,$(filename)))
 # function returning argument, colored as program name
 #FPW_PRGN = $(STYLE_PRGN)$(1)
 
+define PRINT_CMD_DESCRIPTION_PRINTF_ARGLIST
+	$(if $(2),$(2)' ','') $(if $(3),$(3)' ','') $(if $(4),$(4)' ','') \
+	$(if $(5),$(call FP_FULL_FNAMES,$(5))' ','') $(if $(6),$(6)' ','') \
+	$(if $(7),$(call FP_FULL_FNAMES,$(7))' ','')
+endef
 # prints "<desc0> <prog> <desc1> <fn1> <desc2> <fn2>", with
 #   <prog>    as PROGNAME
 #   <fn*>     as FNAME
@@ -75,12 +80,10 @@ FP_FULL_FNAMES = $(foreach filename,$(1),$(call FP_FULL_FNAME,$(filename)))
 # avoid printing color codes, if output is not going to file
 ifndef NO_FANCY_PRINTING
 define PRINT_CMD_DESCRIPTION #<style>(1) <desc0>(2) <prog>(3) <desc1>(4) <fn1>(5) <desc2>(6) <fn2>(7)
-	@- env printf \
-	"`if [ -t 1 ];\
-	then env echo -n "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)";\
-	else env echo -n "%s%s%s%s%s%s";\
-	fi`"\
-	$(if $(2),$(2)' ','') $(if $(3),$(3)' ','') $(if $(4),$(4)' ','') $(if $(5),$(call FP_FULL_FNAMES,$(5))' ','') $(if $(6),$(6)' ','') $(if $(7),$(call FP_FULL_FNAMES,$(7))' ','')
+	@- if [ -t 1 ];\
+	then env printf "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)" $(PRINT_CMD_DESCRIPTION_PRINTF_ARGLIST);\
+	else env printf "%s%s%s%s%s%s\n" $(PRINT_CMD_DESCRIPTION_PRINTF_ARGLIST);\
+	fi
 endef
 else
 PRINT_CMD_DESCRIPTION=
@@ -132,7 +135,7 @@ endef
 # Optional argument <sources>, if present, is used instead of $< and $^.
 # Optional argument <target>, if present, is used instead of $@.
 define PRINT_SMART_DESC #<prog> <sources> <target>
-	$(call PRINT_SMART_DESC_INTERNAL,"$(1)","$(if $(3),$(3),$@)","$(if $(2),$(2),$<)","$(if $(2),$(2),$^)","$(2)","$(3)")
+	$(call PRINT_SMART_DESC_INTERNAL,$(1),"$(if $(3),$(3),$@)","$(if $(2),$(2),$<)","$(if $(2),$(2),$^)","$(2)","$(3)")
 endef
 
 #prints <desc> in STYLE_GNRIC style, optionally adding <fname> printed as filename
