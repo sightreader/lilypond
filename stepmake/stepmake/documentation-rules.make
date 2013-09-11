@@ -4,13 +4,13 @@
 .SUFFIXES: .1 .data .html .gif .png .tex .txt .xpm
 
 $(outdir)/%.gif: %.xpm
-	$(HIDE) $(call PRINT_SMART_DESC,_CONV)
+	$(HIDE) $(call PRINT_SMART_DESC,xpmtoppm ppmtogif)
 	$(HIDE) xpmtoppm $< | ppmtogif > $@
 
 #isn't that error? shouldn't it be "ppmtopng" instead of "pnmtopng"?
 #and do we really need that for anything?
 $(outdir)/%.png: %.xpm
-	$(HIDE) $(call PRINT_SMART_DESC,_CONV)
+	$(HIDE) $(call PRINT_SMART_DESC,xpmtoppm pnmtopng)
 	$(HIDE) xpmtoppm $< | pnmtopng > $@
 
 # use striproff?

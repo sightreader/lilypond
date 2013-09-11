@@ -100,7 +100,7 @@ PRINTING_GROUP_4 := ld
 #compression
 PRINTING_GROUP_5 := gzip zip
 #conversion
-PRINTING_GROUP_6 := help2man
+PRINTING_GROUP_6 := help2man xpmtoppm ppmtogif pnmtopng
 #special pseudo-names
 PRINTING_GROUP_SPECIALS := _CONV
 #all known names
