@@ -56,6 +56,7 @@ FP_ENDL := $(STYLE_NONE)\n# reset style + endline
 # function returning path to file relative to source root
 # (not best way to do it, but works quite well)
 FP_FULL_FNAME = $(subst $(abspath $(depth))/,,$(abspath $(1)))
+FP_FULL_FNAMES = $(foreach filename,$(1),$(call FP_FULL_FNAME,$(filename)))
 # function returning path to file, colored as filename
 #FPW_FNAME = $(STYLE_FNAME)$(call FP_FULL_FNAME,$(1))
 # function returning argument, colored as program name
@@ -67,19 +68,23 @@ FP_FULL_FNAME = $(subst $(abspath $(depth))/,,$(abspath $(1)))
 #   <desc*>   as <style>
 #
 # All arguments may be empty.
+#
+# The code may look overcomplicated, but it is all necessary.
+# Ifs are necessary to avoid superfluous spaces, when arguments are absent,
+# and to ensure correct argument matching. "if [ -t 1 ]" is necessary to
+# avoid printing color codes, if output is not going to file
 ifndef NO_FANCY_PRINTING
 define PRINT_CMD_DESCRIPTION #<style>(1) <desc0>(2) <prog>(3) <desc1>(4) <fn1>(5) <desc2>(6) <fn2>(7)
-	@ env printf "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)"\
-	$(if $(2),$(2)' ','') $(if $(3),$(3)' ','') $(if $(4),$(4)' ','') $(if $(5),$(call FP_FULL_FNAME,$(5))' ','') $(if $(6),$(6)' ','') $(if $(7),$(call FP_FULL_FNAME,$(7))' ','')
-	@# ifs are necessary to avoid superfluous spaces, when arguments are absent, and to ensure correct argument matching
+	@- env printf \
+	"`if [ -t 1 ];\
+	then env echo -n "$(1)%s$(STYLE_PRGN)%s$(1)%s$(STYLE_FNAME)%s$(1)%s$(STYLE_FNAME)%s$(FP_ENDL)";\
+	else env echo -n "%s%s%s%s%s%s";\
+	fi`"\
+	$(if $(2),$(2)' ','') $(if $(3),$(3)' ','') $(if $(4),$(4)' ','') $(if $(5),$(call FP_FULL_FNAMES,$(5))' ','') $(if $(6),$(6)' ','') $(if $(7),$(call FP_FULL_FNAMES,$(7))' ','')
 endef
 else
 PRINT_CMD_DESCRIPTION=
 endif
-# echo version:
-#    @ env echo -ne "$(if $(2),$(1)$(2) ,)$(if $(3),$(call FPW_PRGN,$(3)) ,)"\
-#        "$(if $(4),$(1)$(4) ,)$(if $(5),$(call FPW_FNAME,$(5)) ,)$(if $(6),$(1)$(6) ,)"\
-#        "$(if $(7),$(call FPW_FNAME,$(7)) ,)$(FP_ENDL)"
 
 # compilation, for which we want source file name (i.e. $<) printed
 PRINTING_GROUP_1 := $(CC) $(CXX) $(BISON) $(FLEX) $(WINDRES)
@@ -99,22 +104,35 @@ PRINTING_GROUP_SPECIALS := _CONV
 PRINTING_GROUP_ALL = $(PRINTING_GROUP_1) $(PRINTING_GROUP_2) $(PRINTING_GROUP_3)\
     $(PRINTING_GROUP_4) $(PRINTING_GROUP_5) $(PRINTING_GROUP_6) $(PRINTING_GROUP_SPECIALS)
 
+# This is real implementation of PRINT_SMART_DESC.
+# PRINT_SMART_DESC is only proxy for handling optional arguments.
+# Here, <$@>,<$<> and <$^>, means "$@,$<,$^, or whatever user specified to use instead".
+# <usersources> and <usertarget> parameters let some rules use user-specified values,
+# while not using automatic ones.
+define PRINT_SMART_DESC_INTERNAL #<prog> <$@> <$<> <$^> <usersources> <usertarget>
+	@#rules for defined groups are (descriptions above)
+	@ $(if $(filter $(PRINTING_GROUP_1),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$(3)))
+	@ $(if $(filter $(PRINTING_GROUP_2),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$(2)))
+	@ $(if $(filter $(PRINTING_GROUP_3),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,,Copying,$(2),from,$(3)))
+	@ $(if $(filter $(PRINTING_GROUP_4),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,,Linking,$(2)))
+	@ $(if $(filter $(PRINTING_GROUP_5),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CPRESS),,$(1),compressing,$(2)))
+	@ $(if $(filter $(PRINTING_GROUP_6),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,$(1),converting,$(3),to,$(2)))
+	@ $(if $(filter _CONV,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,,Converting,$(3),to,$(2)))
+	@# generic rule, for anything other (i.e. when <prog> is not empty)
+	@ $(if $(filter-out "$(PRINTING_GROUP_ALL)",$(1)),$(call PRINT_CMD_DESCRIPTION,\
+		$(STYLE_GEN),,$(1),generating,$(2),$(if $(5),from),$(5)))
+	@# generic rule, when <prog> is empty
+	@ $(if $(1),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,,Generating,$(2),$(if $(5),from),$(5)))
+endef
+
 # tries to deduce proper description from <prog>, and use $@, $< and $^.
 # for empty <prog>, prints 'Generating $@'
 # for special prog _CONV, prints 'Converting $< to $@'
-define PRINT_SMART_DESC #<prog>
-	@#rules for defined groups are (descriptions above)
-	@ $(if $(filter $(PRINTING_GROUP_1),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$<))
-	@ $(if $(filter $(PRINTING_GROUP_2),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CXX),,$(1),compiling,$@))
-	@ $(if $(filter $(PRINTING_GROUP_3),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CP),,,Copying,$@,from,$<))
-	@ $(if $(filter $(PRINTING_GROUP_4),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_LD),,,Linking,$@))
-	@ $(if $(filter $(PRINTING_GROUP_5),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CPRESS),,$(1),compressing,$@))
-	@ $(if $(filter $(PRINTING_GROUP_6),$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,$(1),converting,$<,to,$@))
-	@ $(if $(filter _CONV,$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_CONV),,,Converting,$<,to,$@))
-	@# generic rule, for anything other (i.e. when <prog> is not empty)
-	@ $(if $(filter-out "$(PRINTING_GROUP_ALL)",$(1)),$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,$(1),generating,$@),)
-	@# generic rule, when <prog> is empty
-	@ $(if $(1),,$(call PRINT_CMD_DESCRIPTION,$(STYLE_GEN),,,Generating,$@))
+#
+# Optional argument <sources>, if present, is used instead of $< and $^.
+# Optional argument <target>, if present, is used instead of $@.
+define PRINT_SMART_DESC #<prog> <sources> <target>
+	$(call PRINT_SMART_DESC_INTERNAL,"$(1)","$(if $(3),$(3),$@)","$(if $(2),$(2),$<)","$(if $(2),$(2),$^)","$(2)","$(3)")
 endef
 
 #prints <desc> in STYLE_GNRIC style, optionally adding <fname> printed as filename
