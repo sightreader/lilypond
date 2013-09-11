@@ -2,7 +2,18 @@
 # supressing superfluous make output and printing
 # messages
 
-# defining variable NOCOLORS turns coloring off, despite of output type
+# Fancy printing is controlled by make variables
+# VERBOSE_MAKE, NO_FANCY_PRINTING and NOCOLORS, all disabled by default.
+# Defining VERBOSE_MAKE shows all hidden output (echoing, some output from programs),
+# excluding output from metafont (it can be turned on by VERBOSE_METAFONT variable).
+# NO_FANCY_PRINTING turns off printing rule descriptions. It implies VERBOSE_MAKE.
+# 
+# NO_COLORS turns off color codes.
+
+ifdef NO_FANCY_PRINTING
+# NO_FANCY_PRINTING without VERBOSE_MAKE doesn't make sense.
+override VERBOSE_MAKE=1
+endif
 
 # variable
 ifdef VERBOSE_MAKE
@@ -11,13 +22,7 @@ else
 HIDE := @
 endif
 
-#ifneq ($(shell (if [ -t 1 ] ; then printf 1; fi)),)
-ifndef NOCOLORS
-USE_COLOR_CODES=1
-endif
-#endif
-
-ifdef USE_COLOR_CODES
+ifndef NO_COLORS
 #check, if output is terminal
 # Colors for fancy output - we are in terminal
 # In facts, these may be styles, no only colors
