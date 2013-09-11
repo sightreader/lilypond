@@ -8,7 +8,7 @@
 # excluding output from metafont (it can be turned on by VERBOSE_METAFONT variable).
 # NO_FANCY_PRINTING turns off printing rule descriptions. It implies VERBOSE_MAKE.
 # 
-# NO_COLORS turns off color codes.
+# NO_COLOR turns off color codes.
 
 ifdef NO_FANCY_PRINTING
 # NO_FANCY_PRINTING without VERBOSE_MAKE doesn't make sense.
@@ -22,7 +22,7 @@ else
 HIDE := @
 endif
 
-ifndef NO_COLORS
+ifndef NO_COLOR
 #check, if output is terminal
 # Colors for fancy output - we are in terminal
 # In facts, these may be styles, no only colors
