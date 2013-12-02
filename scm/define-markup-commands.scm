@@ -2853,17 +2853,31 @@ the possible glyphs.
 
     glyph))
 
+(define (get-accidental-glyph-name alteration)
+   (assoc-get alteration standard-alteration-glyph-name-alist ""))
+
+(define (get-formatted-short-accidental-markup alteration)
+   "Produces a shortened variant of the accidental,
+   with size and placement adjusted to match surrounding text."
+  (let ((raise-amount
+         (cond
+          ((< alteration 0) 0.4)
+          ((> alteration 0) 0.75)
+          (else 0.6))))
+    (markup
+     #:smaller
+     #:raise raise-amount
+     #:musicglyph (string-append (get-accidental-glyph-name alteration) ".short"))))
+
 (define-markup-command (doublesharp layout props)
   ()
   #:category music
   "Draw a double sharp symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\doublesharp
-}
+\\markup { \\doublesharp }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get 1 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup 1)))
 
 (define-markup-command (sesquisharp layout props)
   ()
@@ -2871,11 +2885,9 @@ the possible glyphs.
   "Draw a 3/2 sharp symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\sesquisharp
-}
+\\markup { \\sesquisharp }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get 3/4 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup 3/4)))
 
 (define-markup-command (sharp layout props)
   ()
@@ -2883,11 +2895,9 @@ the possible glyphs.
   "Draw a sharp symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\sharp
-}
+\\markup { \\sharp }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get 1/2 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup 1/2)))
 
 (define-markup-command (semisharp layout props)
   ()
@@ -2895,11 +2905,9 @@ the possible glyphs.
   "Draw a semisharp symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\semisharp
-}
+\\markup { \\semisharp }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get 1/4 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup 1/4)))
 
 (define-markup-command (natural layout props)
   ()
@@ -2907,11 +2915,9 @@ the possible glyphs.
   "Draw a natural symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\natural
-}
+\\markup { \\natural }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get 0 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup 0)))
 
 (define-markup-command (semiflat layout props)
   ()
@@ -2919,11 +2925,9 @@ the possible glyphs.
   "Draw a semiflat symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\semiflat
-}
+\\markup { \\semiflat }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get -1/4 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup -1/4)))
 
 (define-markup-command (flat layout props)
   ()
@@ -2931,11 +2935,9 @@ the possible glyphs.
   "Draw a flat symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\flat
-}
+\\markup { \\flat }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get -1/2 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup -1/2)))
 
 (define-markup-command (sesquiflat layout props)
   ()
@@ -2943,11 +2945,9 @@ the possible glyphs.
   "Draw a 3/2 flat symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\sesquiflat
-}
+\\markup { \\sesquiflat }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get -3/4 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup -3/4)))
 
 (define-markup-command (doubleflat layout props)
   ()
@@ -2955,11 +2955,9 @@ the possible glyphs.
   "Draw a double flat symbol.
 
 @lilypond[verbatim,quote]
-\\markup {
-  \\doubleflat
-}
+\\markup { \\doubleflat }
 @end lilypond"
-  (interpret-markup layout props (markup #:musicglyph (assoc-get -1 standard-alteration-glyph-name-alist ""))))
+  (interpret-markup layout props (get-formatted-short-accidental-markup -1)))
 
 (define-markup-command (with-color layout props color arg)
   (color? markup?)
