@@ -60,14 +60,14 @@ def draw_sharp_beam (expr length, y_offset) =
 enddef;
 
 
-def draw_sharp (expr arrowup, arrowdown) =
+def draw_sharp (expr arrowup, arrowdown, extra_height) =
         save dist_between_stems;
         save outer_space;
         save half_height, interbeam_dist;
 
-        half_height# := 0.5 default_height#;
+        half_height# := 0.5 (default_height# + extra_height * staff_space#);
         define_pixels (half_height);
-        interbeam_dist := default_interbeam_dist;
+        interbeam_dist := default_interbeam_dist + 0.2 extra_height * staff_space;
 
         set_char_box (0, default_width#, half_height#, half_height#);
         d := d - feta_space_shift;
@@ -119,32 +119,37 @@ enddef;
 
 
 fet_beginchar ("Sharp", "sharp");
-        draw_sharp (false, false);
+        draw_sharp (false, false, 0);
+fet_endchar;
+
+
+fet_beginchar ("Short Sharp", "sharp.short");
+        draw_sharp (false, false, -0.4);
 fet_endchar;
 
 
 fet_beginchar ("Arrowed Sharp (arrow up)", "sharp.arrowup");
-        draw_sharp (true, false);
+        draw_sharp (true, false, 0);
 fet_endchar;
 
 
 fet_beginchar ("Arrowed Sharp (arrow down)", "sharp.arrowdown");
-        draw_sharp (false, true);
+        draw_sharp (false, true, 0);
 fet_endchar;
 
 
 fet_beginchar ("Arrowed Sharp (arrows up and down)", "sharp.arrowboth");
-        draw_sharp (true, true);
+        draw_sharp (true, true, 0);
 fet_endchar;
 
 
-fet_beginchar ("1/2 Sharp", "sharp.slashslash.stem");
+def draw_onestemmed_sharp (expr extra_height) =
         save outer_space;
         save half_height, interbeam_dist;
 
-        half_height# := 0.5 onestemmed_height#;
+        half_height# := 0.5 (onestemmed_height# + extra_height * staff_space#);
         define_pixels (half_height);
-        interbeam_dist := default_interbeam_dist;
+        interbeam_dist := default_interbeam_dist + 0.2 extra_height * staff_space;
 
         set_char_box (0, 0.7 staff_space#, half_height#, half_height#);
         d := d - feta_space_shift;
@@ -166,6 +171,16 @@ fet_beginchar ("1/2 Sharp", "sharp.slashslash.stem");
 
         labels (5, 6);
         draw_staff_if_debugging (-2, 2);
+enddef;
+
+
+fet_beginchar ("1/2 Sharp", "sharp.slashslash.stem");
+	draw_onestemmed_sharp (0);
+fet_endchar;
+
+
+fet_beginchar ("Short 1/2 Sharp", "sharp.slashslash.stem.short");
+	draw_onestemmed_sharp (-0.4);
 fet_endchar;
 
 
@@ -247,14 +262,14 @@ fet_beginchar ("1/2 Sharp (3 beams)", "sharp.slashslashslash.stem");
 fet_endchar;
 
 
-fet_beginchar ("3/4 Sharp", "sharp.slashslash.stemstemstem");
+def draw_threestemmed_sharp (expr extra_height) =
         save dist_between_stems;
         save outer_space;
         save half_height, interbeam_dist;
 
-        half_height# := 0.5 default_height#;
+        half_height# := 0.5 (default_height# + extra_height * staff_space#);
         define_pixels (half_height);
-        interbeam_dist := default_interbeam_dist;
+        interbeam_dist := default_interbeam_dist + 0.2 extra_height * staff_space;
 
         set_char_box (0, 1.6 staff_space#, half_height#, half_height#);
         d := d - feta_space_shift;
@@ -285,10 +300,20 @@ fet_beginchar ("3/4 Sharp", "sharp.slashslash.stemstemstem");
 
         labels (5, 6, 7, 8, 9, 10);
         draw_staff_if_debugging (-2, 2);
+enddef;
+
+
+fet_beginchar ("3/4 Sharp", "sharp.slashslash.stemstemstem");
+	draw_threestemmed_sharp (0);
 fet_endchar;
 
 
-fet_beginchar ("Double Sharp", "doublesharp");
+fet_beginchar ("Short 3/4 Sharp", "sharp.slashslash.stemstemstem.short");
+	draw_threestemmed_sharp (-0.4);
+fet_endchar;
+
+
+def draw_double_sharp =
         save klaverblad, klaversteel;
         save pat;
         path pat;
@@ -336,4 +361,14 @@ fet_beginchar ("Double Sharp", "doublesharp");
 
         labels (1, 2, 3, 4, 5);
         draw_staff_if_debugging (-2, 2);
+enddef;
+
+
+fet_beginchar ("Double Sharp", "doublesharp");
+	draw_double_sharp;
+fet_endchar;
+
+
+fet_beginchar ("Short Double Sharp", "doublesharp.short");
+	draw_double_sharp;
 fet_endchar;
