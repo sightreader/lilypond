@@ -62,7 +62,7 @@ def draw_meta_flat (expr xcenter, w, crook_fatness, arrowup, arrowdown) =
         center = (xcenter, 0);
 
         x1l = hround (xcenter - .5 top_stem_thick);
-        y1 = vround (2 staff_space - clearing);
+        y1 = vround ((2 + flat_extra_height) * staff_space - clearing);
         x2l = hround (xcenter - .5 bottom_stem_thick);
         y2 = -.5 staff_space - .5 stafflinethickness;
         % z16 and the `*_orig' variables are needed for arrowed accidentals
@@ -181,6 +181,9 @@ enddef;
 %
 % unfortunately, 600dpi is not enough to show the brush of the stem.
 %
+
+save flat_extra_height;
+flat_extra_height := 0;
 
 fet_beginchar ("Flat", "flat");
         draw_arrowed_meta_flat (0, 0.8 staff_space#, 0.31 staff_space,
@@ -313,7 +316,7 @@ fet_beginchar ("Flat (slashed twice)", "flat.slashslash");
 fet_endchar;
 
 
-fet_beginchar ("Flatflat (mirrored)", "mirroredflat.flat");
+def draw_mirrored_flat =
         set_char_box (0, 1.6 staff_space#,
                       0.6 staff_space#, 1.9 staff_space#);
 
@@ -361,7 +364,7 @@ fet_beginchar ("Flatflat (mirrored)", "mirroredflat.flat");
         center = (0, 0);
 
         x1l = hround (-.5 top_stem_thick);
-        y1 = vround (2 staff_space - clearing);
+        y1 = vround ((2 + flat_extra_height) * staff_space - clearing);
         x2l = hround (-.5 bottom_stem_thick);
         y2 = -.5 staff_space - .5 stafflinethickness;
 
@@ -424,6 +427,11 @@ fet_beginchar ("Flatflat (mirrored)", "mirroredflat.flat");
         currentpicture := currentpicture shifted (w/2, 0);
 
         draw_staff_if_debugging (-2, 2);
+enddef;
+
+
+fet_beginchar ("Flatflat (mirrored)", "mirroredflat.flat");
+	draw_mirrored_flat;
 fet_endchar;
 
 
@@ -471,8 +479,7 @@ fet_beginchar ("Semi flat", "mirroredflat.backslash");
         labels (1, 2, 3);
 fet_endchar;
 
-
-fet_beginchar ("Double Flat", "flatflat");
+def draw_double_flat =
         save left_wid, overlap, right_wid;
 
         left_wid = .7;
@@ -487,6 +494,11 @@ fet_beginchar ("Double Flat", "flatflat");
         draw_meta_flat (hround ((left_wid - overlap) * staff_space),
                         right_wid * staff_space, 1/3 staff_space,
                         false, false);
+enddef;
+
+
+fet_beginchar ("Double Flat", "flatflat");
+	draw_double_flat;
 fet_endchar;
 
 
@@ -533,3 +545,39 @@ fet_beginchar ("3/4 Flat", "flatflat.slash");
 
         draw_staff_if_debugging (-2, 2);
 fet_endchar;
+
+
+%% Short flats:
+
+flat_extra_height := -0.25;
+
+
+fet_beginchar ("Short Flat", "flat.short");
+        draw_arrowed_meta_flat (0, 0.8 staff_space#, 0.31 staff_space,
+                                false, false);
+        penlabels (range 0 thru 11);
+
+        draw_staff_if_debugging (-2, 2, stafflines_y_offset);
+fet_endchar;
+
+
+fet_beginchar ("Short Semi flat", "mirroredflat.short");
+        set_char_box (1.2 stafflinethickness#, .8 staff_space#,
+                      0.6 staff_space#, 1.9 staff_space#);
+
+        draw_meta_flat (0, w, 0.31 staff_space, false, false);
+        currentpicture := currentpicture xscaled -1 shifted (w - b, 0);
+fet_endchar;
+
+
+fet_beginchar ("Short Flatflat (mirrored)", "mirroredflat.flat.short");
+	draw_mirrored_flat;
+fet_endchar;
+
+
+fet_beginchar ("Short Double Flat", "flatflat.short");
+	draw_double_flat;
+fet_endchar;
+
+
+flat_extra_height := 0;
