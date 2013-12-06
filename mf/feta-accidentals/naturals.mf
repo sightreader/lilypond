@@ -4,30 +4,32 @@
 %
 
 % general parameters:
-save full_width, full_height;
+save default_width, default_height;
 save stem_thickness, stem_end_thickness_multiplier;
 save beam_thickness, beam_slant, hole_highest_point;
 
-full_height# := 3 staff_space#;
-full_width# := 2/3 staff_space#;
+default_height# := 3 staff_space#;
+default_width# := 2/3 staff_space#;
 stem_thickness# := 0.09 staff_space# + 0.5 stafflinethickness#;
 stem_end_thickness_multiplier := 10/7;
 beam_slant := 1.266 stafflinethickness;
 beam_thickness := 0.485 staff_space -  stafflinethickness;
 hole_highest_point := 0.5 (staff_space - stafflinethickness);
 
-
-def draw_natural (expr arrowup, arrowdown) =
+% It makes more sense to specify extra witdth changes using a multiplier,
+% while in case of extra height changes it's better to use explicit value.
+def draw_natural (expr arrowup, arrowdown, extra_width_factor, extra_height) =
         save upstem_factor, downstem_factor;
         save upstem_end_thickness, downstem_end_thickness;
-        save half_height, half_box_height;
+        save half_height, adj_hole_highest_point, half_box_height;
         save beam_direction, r_stem_top_path, l_stem_bottom_path;
         pair beam_direction;
         path r_stem_top_path, l_stem_bottom_path;
 
         upstem_factor = downstem_factor = stem_end_thickness_multiplier;
 
-        half_height# := 0.5 full_height#;
+        half_height# := 0.5 (default_height# + extra_height * staff_space#);
+        full_width# := extra_width_factor * default_width#;
         define_pixels (half_height);
         define_pixels (full_width);
 
@@ -52,7 +54,9 @@ def draw_natural (expr arrowup, arrowdown) =
         define_whole_blacker_pixels (upstem_end_thickness, downstem_end_thickness);
         define_whole_blacker_pixels (stem_thickness);
 
-        half_box_height := hole_highest_point + beam_thickness
+        adj_hole_highest_point := hole_highest_point
+                                  + 0.1 extra_height * staff_space;
+        half_box_height := adj_hole_highest_point + beam_thickness
                            %% correction for the fact that x11 != x12.
                            %% ideally y2 should be calculated from y11
                            %% and beam_thickness, but the brushed stems
@@ -100,7 +104,7 @@ def draw_natural (expr arrowup, arrowdown) =
         beam_direction = (full_width, beam_slant);
 
         z11 = z3l + whatever * (z2l - z3l);
-        y11 = vround (hole_highest_point);
+        y11 = vround (adj_hole_highest_point);
         z12 = directionpoint -beam_direction of r_stem_top_path;
         z13 = z12 + whatever * beam_direction;
         x13 = x1;
@@ -144,20 +148,30 @@ enddef;
 
 
 fet_beginchar ("Natural", "natural");
-        draw_natural (false, false);
+        draw_natural (false, false, 1, 0);
+fet_endchar;
+
+
+fet_beginchar ("Narrow Natural", "natural.narrow");
+        draw_natural (false, false, 0.9, 0);
+fet_endchar;
+
+
+fet_beginchar ("Short Natural", "natural.short");
+        draw_natural (false, false, 1, -0.5);
 fet_endchar;
 
 
 fet_beginchar ("Arrowed Natural (arrow up)", "natural.arrowup");
-        draw_natural (true, false);
+        draw_natural (true, false, 1, 0);
 fet_endchar;
 
 
 fet_beginchar ("Arrowed Natural (arrow down)", "natural.arrowdown");
-        draw_natural (false, true);
+        draw_natural (false, true, 1, 0);
 fet_endchar;
 
 
 fet_beginchar ("Arrowed Natural (arrows up and down)", "natural.arrowboth");
-        draw_natural (true, true);
+        draw_natural (true, true, 1, 0);
 fet_endchar;
