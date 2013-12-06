@@ -10,10 +10,10 @@
 
 input common-modules-and-initialization;
 
-font_x_height staff_space#;
+fet_beginfont ("feta-alphabet", design_size, "fetaNumber");
+	number_design_size := design_size / 2;
+	dynamic_design_size := 14 design_size / 20;
 
-fet_beginfont ("feta", design_size, "fetaMusic");
-	input feta-noteheads;
-
-	input declare-autometric-parameters;
-fet_endfont;
+	input feta-numbers;
+	input feta-dynamics;
+fet_endfont ("feta-numbers");

@@ -351,3 +351,4 @@ fet_beginchar ("Double Sharp", "doublesharp");
 
         draw_staff_if_debugging (-2, 2);
 fet_endchar;
+

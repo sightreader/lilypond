@@ -41,15 +41,9 @@
 
 
 fet_begingroup ("accidentals");
-
-input feta-accidentals/arrow;
-
-input feta-accidentals/sharps;
-
-input feta-accidentals/naturals;
-
-input feta-accidentals/flats;
-
-input feta-accidentals/parenthesis;
-
+	input feta-accidentals/arrow;
+	input feta-accidentals/sharps;
+	input feta-accidentals/naturals;
+	input feta-accidentals/flats;
+	input feta-accidentals/parenthesis;
 fet_endgroup ("accidentals");
