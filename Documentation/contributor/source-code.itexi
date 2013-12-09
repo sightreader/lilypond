@@ -4,98 +4,77 @@
 @node Working with source code
 @chapter Working with source code
 
-@warning{New contributors should read @ref{Quick start}, and in
-particular @ref{lily-git}, instead of this chapter.}
+@warning{New contributors should read @ref{Quick start},
+instead of this chapter.}
 
 Advanced contributors will find this material quite useful,
 particularly if they are working on major new features.
 
 @menu
-* Manually installing lily-git.tcl::
 * Starting with Git::
+* lily-git::
 * Basic Git procedures::
 * Advanced Git procedures::
-* Repository directory structure::
 * Other Git documentation::
 @end menu
 
-
-@node Manually installing lily-git.tcl
-@section Manually installing lily-git.tcl
-
-We have created an easy-to-use GUI to simplify git for new
-contributors.  If you are comfortable with the command-line, then
-skip ahead to @ref{Starting with Git}.
-
-@warning{These instructions are only for people who are @emph{not}
-using @ref{LilyDev}.}
-
-@c there's some duplication in this section with stuff covered in
-@c Quick Start, but moving it into a macro inside included/ would
-@c be getting a bit icky.  -gp
-
-@enumerate
-@item
-If you haven't already, download and install Git.
+Git is a @emph{version control system} that tracks the history of
+a program's source code.  The LilyPond source code is maintained
+as a Git repository, which contains:
 
 @itemize
+@item
+all of the source files needed to build LilyPond, and
 
-@item Windows users: download the @code{.exe} file labeled
-@qq{Full installer for official Git} from:
-
-@example
-@uref{http://code.google.com/p/msysgit/downloads/list}
-@end example
-
-@item Other operating systems: either install @command{git} with
-your package manager, or download it from the @qq{Binaries}
-section of:
-
-@example
-@uref{http://git-scm.com/download}
-@end example
-
+@item
+a record of the entire history of every change made to every file
+since the program was born.
 @end itemize
 
+The @q{official} LilyPond Git repository is hosted by the GNU
+Savannah software forge at @uref{http://git.sv.gnu.org}.
 
-@item
-Download the @command{lily-git.tcl} script from:
+Changes made within one contributor's copy of the repository can
+be shared with other contributors using @emph{patches}.  A patch
+is a text file that indicates what changes have been made.
+If a contributor's patch is approved for inclusion (usually
+through the mailing list), someone on the current development team
+will @emph{push} the patch to the official repository.
 
-@c don't change the cgit link below to gitweb; gitweb uses
-@c long filenames like "scripts_auxiliar_lily-git.tcl"
+The Savannah software forge provides two separate interfaces for
+viewing the LilyPond Git repository online:
+@uref{http://git.sv.gnu.org/cgit/lilypond.git/, cgit} and
+@uref{http://git.sv.gnu.org/gitweb/?p=lilypond.git, gitweb}.
 
-@smallexample
-@uref{http://git.sv.gnu.org/cgit/lilypond.git/plain/scripts/auxiliar/lily-git.tcl}
-@end smallexample
+@ignore
+The cgit interface should work faster than gitweb
+in most situations, but only gitweb allows you to search through
+the source code using @command{grep}, which you may find useful.
+@end ignore
 
-@item
-To run the program from the command line, navigate to the
-directory containing @command{lily-git.tcl} and enter:
+Git is a complex and powerful tool, but tends to be confusing at
+first, particularly for users not familiar with the command line
+and/or version control systems.  We have created the
+@command{lily-git} graphical user interface to ease this
+difficulty.
 
-@example
-wish lily-git.tcl
-@end example
+@emph{Compiling} (@q{building}) LilyPond allows developers to see
+how changes to the source code affect the program itself.
+Compiling is also needed to package the program for specific
+operating systems or distributions.  LilyPond can be compiled from
+a local Git repository (for developers), or from a downloaded
+tarball (for packagers).  Compiling LilyPond is a rather involved
+process, and most contributor tasks do not require it.
 
-@item
-Click on the @qq{Get source} button.
-
-This will create a directory called @file{lilypond-git/} within
-your home directory, and will download the source code into that
-directory (around 150@tie{}Mb).  When the process is finished, the
-@qq{Command output} window will display @qq{Done}, and the button
-label will change to say @qq{Update source}.
-
-@item
-Navigate to the @file{lilypond-git/} directory to view the source
-files.
-
-@end enumerate
-
-@warning{Throughout the rest of this manual, most command-line
-input should be entered from @file{$LILYPOND_GIT}.  This is
-referred to as the @emph{top source directory}.}
-
-Further instructions are in @ref{How to use lily-git}.
+Contributors can contact the developers through the
+@q{lilypond-devel} mailing list.  The mailing list archive is
+located at
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/}.  If you
+have a question for the developers, search the archives first to
+see if the issue has already been discussed.  Otherwise, send an
+email to @email{lilypond-devel@@gnu.org}.  You can subscribe to
+the developers' mailing list here:
+@uref{http://lists.gnu.org/mailman/listinfo/lilypond-devel}.
 
 
 @node Starting with Git
@@ -111,8 +90,6 @@ multiple projects concurrently.
 @menu
 * Setting up::
 * Git for the impatient::
-* Other repositories::
-* Downloading remote branches::
 @end menu
 
 
@@ -124,7 +101,6 @@ command-line version of Git 1.7 or higher.}
 
 @menu
 * Installing Git::
-* Initializing a repository::
 * Configuring Git::
 @end menu
 
@@ -142,26 +118,6 @@ also useful (such as @command{gitk}).
 Alternatively, you can visit the Git website
 (@uref{http://git-scm.com/}) for downloadable binaries and
 tarballs.
-
-
-@node Initializing a repository
-@unnumberedsubsubsec Initializing a repository
-
-Once Git is installed, get a copy of the source code:
-
-@example
-git clone git://git.sv.gnu.org/lilypond.git ~/lilypond-git
-@end example
-
-The above command will put the it in @file{~/lilypond-git}, where
-@code{~} represents your home directory.
-
-@subsubheading Technical details
-
-This creates (within the @file{$LILYPOND_GIT} directory) a
-subdirectory called @file{.git/}, which Git uses to keep track of
-changes to the repository, among other things.  Normally you don't
-need to access it, but it's good to know it's there.
 
 
 @node Configuring Git
@@ -521,167 +477,279 @@ your branch (safe)}, but replace the @code{-d} on the final line with
 a @code{-D}.
 
 
-@node Other repositories
-@subsection Other repositories
 
-We have a few other code repositories.
+@node lily-git
+@section lily-git
 
-@menu
-* lilypond-extra::
-* Grand Unified Builder (GUB)::
-* lilypad::
-* yet more repositories::
-@end menu
-
-@node lilypond-extra
-@unnumberedsubsubsec lilypond-extra
-
-There is a separate repository for general administrative scripts,
-as well as pictures and media files for the website.  People
-interested in working on the website should download this
-repository, and set their @code{$LILYPOND_WEB_MEDIA_GIT}
-environment variable to point to that repository.
-
-@example
-@uref{https://github.com/gperciva/lilypond-extra}
-@end example
-
-To configure an environment variable in bash (the default for most
-GNU/Linux distributions),
-
-@example
-export LILYPOND_WEB_MEDIA_GIT=$HOME/dir/of/lilypond-extra/
-@end example
-
-Be aware that @code{lilypond-extra} is the definitive source for some binary
-files - in particular PDF versions of papers concerning LilyPond.  To add
-further PDFs of this sort, all that is necessary is to add the PDF to
-@code{lilypond-extra} and then add a reference to it in the documentation.  The
-file will then be copied to the website when @code{make website} is run.
-
-However, pictures that are also used in the documentation build are mastered in
-the main git repository.  If any of these is changed, it should be updated in
-git, and then the updates copied to @code{lilypond-extra}.
-
-@node Grand Unified Builder (GUB)
-@unnumberedsubsubsec Grand Unified Builder (GUB)
-
-Another item of interest might be the Grand Unified Builder, our
-cross-platform building tool.  Since it is used by other projects as
-well, it is not stored in our gub repository.  For more info, see
-@uref{http://lilypond.org/gub}.
-
-There are two locations for this repository: the version being used to
-build lilypond, which is at
-
-@example
-@uref{http://github.com/gperciva/gub}
-@end example
-
-and the original version by Jan Nieuwenhuizen, kept at
-
-@example
-@uref{http://github.com/janneke/gub}
-@end example
-
-
-@node lilypad
-@unnumberedsubsubsec lilypad
-
-Our binary releases on MacOS X and Windows contain a lightweight
-text editor.  This code is here:
-
-@example
-https://github.com/gperciva/lilypad
-@end example
-
-
-@node yet more repositories
-@unnumberedsubsubsec yet more repositories
-
-There are a few other repositories floating around, which will
-hopefully be documented in the near future.
-
-
-@node Downloading remote branches
-@subsection Downloading remote branches
-
-@warning{contains obsolete + misleading info}
+The @q{LilyPond Contributor's Git Interface} (otherwise known as
+@command{lily-git.tcl}) is a simple-to-use GUI to help you download and
+update the LilyPond source code as well as an aid to making software
+patches.
 
 @menu
-* Organization of remote branches::
-* LilyPond repository sources::
+* Where to get lily-git::
+* Manually installing lily-git.tcl::
+* Configuring lily-git and downloading the source code::
+* How to use lily-git::
 @end menu
 
+@node Where to get lily-git
+@unnumberedsubsec Where to get lily-git
 
-@node Organization of remote branches
-@unnumberedsubsubsec Organization of remote branches
-
-
-The main LilyPond repository is organized into @emph{branches} to
-facilitate development.  These are often called @emph{remote}
-branches to distinguish them from @emph{local} branches you might
-create yourself (see @ref{Using local branches}).
-
-The @code{master} branch contains all the source files used to
-build LilyPond, which includes the program itself (both stable and
-development releases), the documentation (and its translations),
-and the website.  Generally, the @code{master} branch is expected
-to compile successfully.
-
-The @code{translation} branch is a side branch that
-allows translators to work without needing to worry about
-compilation problems.  Periodically, the Translation Meister
-(after verifying that it doesn't break compilation), will
-@emph{merge} this branch into @code{staging} to incorporate
-recent translations.  Similarly, the @code{master} branch is
-usually merged into the @code{translation} branch after
-significant changes to the English documentation.  See
-@ref{Translating the documentation} for details.
-
-
-Most contributors will never need to touch the other branches.  If
-you wish to do so, you will need more familiarity with Git; please
-see @ref{Other Git documentation}.
+Depending on your development environment, lily-git may already be
+installed on your computer.
 
 @itemize
-@item @code{dev/XYZ}:
-These branches are for individual developers.  They store code
-which is not yet stable enough to be added to the @code{master}
-branch.
+@item
+If you are using LilyDev (see @ref{LilyDev}) then lily-git is already
+installed and ready to run.
 
-@item @code{stable/XYZ}:
-The branches are kept for archival reasons.
+@item
+For those not using LilyDev then lily-git can be obtained by downloading
+the software directly. See @ref{Manually installing lily-git.tcl}.
 
-@item @code{archive/XYZ}:
-The branches are kept for archival reasons.
+@item
+Finally, lily-git is always part of the LilyPond source code and is
+located in @file{$LILYPOND_GIT/scripts/auxillar/lily-git.tcl}.
 
 @end itemize
 
 
-@node LilyPond repository sources
-@unnumberedsubsubsec LilyPond repository sources
 
+@node Manually installing lily-git.tcl
+@subsection Manually installing lily-git.tcl
 
-The recommended source for downloading a copy of the main
-repository is:
+We have created an easy-to-use GUI to simplify git for new
+contributors.  If you are comfortable with the command-line, then
+skip ahead to @ref{Starting with Git}.
+
+@warning{These instructions are only for people who are @emph{not}
+using @ref{LilyDev}.}
+
+@c there's some duplication in this section with stuff covered in
+@c Quick Start, but moving it into a macro inside included/ would
+@c be getting a bit icky.  -gp
+
+@enumerate
+@item
+If you haven't already, download and install Git.
+
+@itemize
+
+@item Windows users: download the @code{.exe} file labeled
+@qq{Full installer for official Git} from:
 
 @example
-git://git.sv.gnu.org/lilypond.git
+@uref{http://code.google.com/p/msysgit/downloads/list}
 @end example
 
-However, if your internet router filters out connections using the
-GIT protocol, or if you experience difficulty connecting via GIT,
-you can try these other sources:
+@item Other operating systems: either install @command{git} with
+your package manager, or download it from the @qq{Binaries}
+section of:
 
 @example
-ssh://git.sv.gnu.org/srv/git/lilypond.git
-http://git.sv.gnu.org/r/lilypond.git
+@uref{http://git-scm.com/download}
 @end example
 
-The SSH protocol can only be used if your system is properly set
-up to use it.  Also, the HTTP protocol is slowest, so it should
-only be used as a last resort.
+@end itemize
+
+
+@item
+Download the @command{lily-git.tcl} script from:
+
+@c don't change the cgit link below to gitweb; gitweb uses
+@c long filenames like "scripts_auxiliar_lily-git.tcl"
+
+@smallexample
+@uref{http://git.sv.gnu.org/cgit/lilypond.git/plain/scripts/auxiliar/lily-git.tcl}
+@end smallexample
+
+@item
+To run the program from the command line, navigate to the
+directory containing @command{lily-git.tcl} and enter:
+
+@example
+wish lily-git.tcl
+@end example
+
+@item
+Click on the @qq{Get source} button.
+
+This will create a directory called @file{lilypond-git/} within
+your home directory, and will download the source code into that
+directory (around 150@tie{}Mb).  When the process is finished, the
+@qq{Command output} window will display @qq{Done}, and the button
+label will change to say @qq{Update source}.
+
+@item
+Navigate to the @file{lilypond-git/} directory to view the source
+files.
+
+@end enumerate
+
+@warning{Throughout the rest of this manual, most command-line
+input should be entered from @file{$LILYPOND_GIT}.  This is
+referred to as the @emph{top source directory}.}
+
+Further instructions are in @ref{How to use lily-git}.
+
+
+@node Configuring lily-git and downloading the source code
+@unnumberedsubsec Configuring lily-git and downloading the source code
+
+@warning{The rest of this manual assumes that you are using the
+command-line within a terminal.}
+
+@enumerate
+@item
+Type (or copy&paste) into the Terminal:
+
+@example
+lily-git.tcl
+@end example
+
+@noindent
+You will be prompted to enter your name and your email address.  This
+information is used only to identify and label any patches you create.
+This information can be edited if required later.  See
+@ref{Configuring Git}.  Click on the @emph{Submit} button to update
+lily-git with this information.
+
+@item
+Click on the @qq{Get source} button.
+
+A directory called @file{$LILYPOND_GIT} is now created within
+your home directory and the complete source code will start to be
+downloaded into it.
+
+@warning{Be patient! The complete source is around 150@tie{}Mb.}
+
+@noindent
+When the source code has been downloaded, the @qq{Command output} window
+in lily-git will update and display @qq{Done} on the very last line.
+The button label will change to say @qq{Update source}.
+
+@warning{Some contributors have reported that occasionally nothing
+happens at this step at all.  If this occurs, then try again in a few
+minutes -- it could be an intermittant network problem.  If the
+problem persists, please ask for help.}
+
+@item
+Close the lily-git GUI and navigate to the @file{$LILYPOND_GIT}
+directory to view and edit the source files.
+
+@end enumerate
+
+
+@node How to use lily-git
+@unnumberedsubsec How to use lily-git
+
+@warning{Throughout the rest of this manual, most command-line
+input should be entered from @file{~/lilypond-git/}.  This is
+known as the @emph{top source directory} and is often referred to as
+@var{$LILYPOND_GIT}.}
+
+@warning{Only work on one set of changes at once.  Do not start
+work on any new changes until your first set has been accepted.}
+
+@subsubheading 1. Update source
+
+At the beginning of each session of lilypond work, you should
+click the @qq{Update source} button to get the latest changes to
+the source code.
+
+@warning{In some rare and unfortunate circumstances, this will
+result in a @emph{merge conflict}.  If this occurs, follow the
+instructions for @qq{Abort changes}, below.  Your work will not be
+lost.}
+
+
+@subsubheading 2a. New local commit
+
+A single commit typically represents one logical set of related
+changes (such as a bug-fix), and may incorporate changes to
+multiple files at the same time.
+
+When you're finished making the changes for a commit, click the
+@qq{New local commit} button.  This will open the @qq{Git Commit
+Message} window.  The message header is required, and the message
+body is optional.
+
+After entering a commit message, click @qq{OK} to finalize the
+commit.
+
+@advanced{for more information regarding commits and commit
+messages, see @ref{Commits and patches}.}
+
+
+@subsubheading 2b. Amend previous commit
+
+You can go back and make changes to the most recent commit with
+the @qq{Amend previous commit} button.  This is useful if a
+mistake is found after you have clicked the @qq{New local commit}
+button.
+
+To amend the most recent commit, re-edit the source files as
+needed and then click the @qq{Amend previous commit} button.  The
+earlier version of the commit is not saved, but is replaced by the
+new one.
+
+@warning{This does not update the patch @strong{files}; if you
+have a patch file from an earlier version of the commit, you will
+need to make another patch set when using this feature.  The old
+patch file will not be saved, but will be replaced by the new one
+after you click on @qq{Make patch set}.}
+
+
+@subsubheading 3. Make patch set
+
+Before making a patch set from any commits, you should click the
+@qq{Update source} button to make sure the commits are based on
+the most recent remote snapshot.
+
+When you click the @qq{Make patch set} button,
+@command{lily-git.tcl} will produce patch files for any new
+commits, saving them to the current directory.  The command output
+will display the name of the new patch files near the end of the
+output:
+
+@example
+0001-CG-add-lily-git-instructions.patch
+Done.
+@end example
+
+Send patch files to the appropriate place:
+
+@itemize
+@item
+If you have a mentor, you may first send it to them via email.
+
+@item
+Translators should send patches to
+@email{translations@@lilynet.net}.
+TODO: is this info up-to-date?
+
+@item
+Other contributors should upload the patch for
+web-based review.  See @ref{Uploading a patch for review}.
+
+@item
+If you have trouble uploading the patch for review,
+ask for help on @email{lilypond-devel@@gnu.org}.
+
+@end itemize
+
+
+@subsubheading The @qq{Abort changes -- Reset to origin} button
+
+@warning{Only use this if your local commit history gets
+hopelessly confused!}
+
+The button labeled @qq{Abort changes -- Reset to origin} will copy
+all changed files to a subdirectory of @file{$LILYPOND_GIT} named
+@file{aborted_edits/}, and will reset the repository to the
+current state of the remote repository (at @code{git.sv.gnu.org}).
+
 
 
 @node Basic Git procedures
@@ -689,34 +757,10 @@ only be used as a last resort.
 
 
 @menu
-* The Git contributor's cycle::
 * Pulling and rebasing::
 * Using local branches::
 * Commits and patches::
 @end menu
-
-
-@node The Git contributor's cycle
-@subsection The Git contributor's cycle
-
-
-Here is a simplified view of the contribution process on Git:
-
-@enumerate
-@item
-Update your local repository by @emph{pulling} the most recent
-updates from the remote repository.
-
-@item
-Edit source files within your local repository's @emph{working
-directory}.
-
-@item
-@emph{Commit} the changes you've made to a local @emph{branch}.
-
-@item
-Generate a @emph{patch} to share your changes with the developers.
-@end enumerate
 
 
 @node Pulling and rebasing
@@ -941,7 +985,6 @@ checked that @code{translation} builds successfully.
 * Making commits::
 * Commit messages::
 * Making patches::
-* Uploading a patch for review::
 @end menu
 
 
@@ -1065,41 +1108,14 @@ that looks like this:
 #
 @end example
 
-Your commit message should begin with a one-line summary
-describing the change (no more than 50 characters long), and if
-necessary a blank line followed by several lines giving the
-details:
-
-@c $ git log -1 --pretty=medium 4d6f1e5
-@example
-Doc: add Baerenreiter and Henle solo cello suites
-
-Added comparison of solo cello suite engravings to new essay with
-high-res images, fixed cropping on Finale example.
-@end example
-
-Commit messages often start with a short prefix describing the
-general location of the changes.  If a commit affects the
-documentation in English (or in several languages simultaneously)
-the commit message should be prefixed with @qq{Doc:@tie{}}.  If
-the commit affects only one of the translations, the commit
-message should be prefixed with @qq{Doc-@var{**}:@tie{}}, where
-@var{**} is the two-letter language code.  Commits that affect the
-website should use @qq{Web:@tie{}} for English, and
-@qq{Web-@var{**}:@tie{}} for the other languages.  Also, changes
-to a single file are often prefixed with the name of the file
-involved.  Visit the links listed in @ref{Understanding commits}
-for examples.
-
 
 @node Making patches
 @unnumberedsubsubsec Making patches
 
-If you want to share your changes with other contributors and
-developers, you need to generate @emph{patches} from your commits.
-We prefer it if you follow the instructions in
-@ref{Uploading a patch for review}.  However, we present an
-alternate method here.
+One of the ways to share your changes with other contributors and
+developers is to generate @emph{patches} from your commits.
+(But we strongly prefer it if you follow the instructions in
+@ref{Uploading a patch for review}).
 
 You should always run @command{git@tie{}pull@tie{}-r} (translators
 should leave off the @option{-r}) before doing this to ensure that
@@ -1124,220 +1140,6 @@ will have names that look something like this:
 0002-Web-Remove-dead-links.patch
 ⋮
 @end example
-
-Send an email (must be less than 64 KB) to
-@email{lilypond-devel@@gnu.org} briefly explaining your work, with
-the patch files attached.  Translators should send patches to
-@email{translations@@lilynet.net}.  After your patches are
-reviewed, the developers may push one or more of them to the main
-repository or discuss them with you.
-
-
-@node Uploading a patch for review
-@unnumberedsubsubsec Uploading a patch for review
-
-Any non-trivial change should be uploaded to our @qq{Rietveld}
-code review website:
-
-@example
-@uref{http://codereview.appspot.com/}
-@end example
-
-@subsubheading @command{git-cl} install
-
-LilyDev users should skip over these @q{install} instructions.
-
-@enumerate
-
-@item
-Install @command{git-cl} by entering:
-
-@example
-git clone https://github.com/gperciva/git-cl.git
-@end example
-
-If that command fails for some reason, try this instead:
-
-@example
-git clone git://github.com/gperciva/git-cl.git
-@end example
-
-@item
-Add the @file{git-cl/} directory to your PATH,
-or create a symbolic link to the @command{git-cl}
-and @command{upload.py} scripts in one of your PATH
-directories (such as @file{$HOME/bin}).
-
-In Ubuntu (and LilyDev), you can add directories to PATH
-by adding this line to a hidden file @file{.bashrc},
-located in your home directory:
-
-@example
-PATH=~/type-here-directory-containing-git-cl:"$@{PATH@}"
-@end example
-
-@end enumerate
-
-@subsubheading @command{git-cl} configuration
-
-LilyDev users should perform these @q{configuration} instructions.
-
-@enumerate
-@item
-You must have a google account; please create one if you do not
-have one already.
-
-Note that a google account does not need to be a gmail account; you can
-use any email address for your google account when you sign up.
-
-@item
-Move into the top source directory and then configure @command{git
-cl} with the following commands:
-
-@example
-cd $LILYPOND_GIT
-git cl config
-@end example
-
-For the @qq{Rietveld server} question, the default value
-(@qq{codereview.appspot.com}) should be accepted by
-answering with a newline (CR).
-
-The @qq{CC list} question should be answered with:
-
-@example
-lilypond-devel@@gnu.org
-@end example
-
-The @qq{Tree status URL} value should be left blank.  So should
-the @qq{ViewVC URL} value, since it is used by @command{git cl
-dcommit} which is only for repositories which use @command{git
-svn} (LilyPond doesn't).
-
-@end enumerate
-
-@subsubheading Uploading patch set
-
-@warning{Unless you are familiar with branches, only work on one
-set of changes at once.}
-
-There are two methods, depending on your git setup.
-
-@itemize
-@item
-@strong{Master branch}: (easy option, and used in @command{lily-git.tcl})
-
-If you added your patch to @code{master}, then:
-
-@example
-git pull -r
-git cl upload origin/master
-@end example
-
-@c Mention staging here?
-If you have git push ability, make sure that you @emph{remove}
-your patch (with @command{git rebase} or @command{git reset})
-before pushing other stuff.
-
-@c don't make this one an @example; we don't want to make it easy
-@c for people to use this accidently
-Notifications of patches are automatically added to our issue
-tracker to reduce the chance of patches getting lost.  To suppress
-this (not recommended), add the @code{-n / --no-code-issue}
-option.
-
-@item
-@strong{Separate branch}: (complicated option)
-
-Ensure your changes are committed in a separate branch, which
-should differ from the reference branch to be used by just the
-changes to be uploaded.  If the reference branch is to be
-origin/master, ensure this is up-to-date.  If necessary, use git
-rebase to rebase the branch containing the changes to the head of
-origin/master.  Finally, check out branch with the changes and
-enter the command:
-
-@example
-git cl upload <reference SHA1 ID>
-@end example
-
-@noindent
-where <reference SHA1 ID> is the SHA1 ID of the commit to be used
-as a reference source for the patch.  Generally, this will be the
-SHA1 ID of origin/master, and in that case the command:
-
-@example
-git cl upload origin/master
-@end example
-
-@noindent
-can be used.
-
-@end itemize
-
-After prompting for your Google email address and password, the
-patch set will be posted to Rietveld, and you will be given a URL
-for your patch.
-
-@warning{Some installations of git-cl fail when uploading a patch
-with certain filename extensions.  If this happens, it can
-generally be fixed by editing the list of exceptions at top of
-@file{git-cl.py}.}
-
-@subsubheading Announcing your patch set
-
-You should then announce the patch by logging into the code review
-issue webpage and using @qq{Publish + Mail Comments} to add a
-(mostly bogus) comment to your issue.  The text of your comment
-will be sent to our developer mailing list.
-
-@warning{There is no automatic notification of a new patch; you
-must add a comment yourself.}
-
-@subsubheading Revisions
-
-As revisions are made in response to comments, successive patch sets
-for the same issue can be uploaded by reissuing the git-cl command
-with the modified branch checked out.
-
-Sometimes in response to comments on revisions, the best way to
-work may require creation of a new branch in git.  In order to
-associate the new branch with an existing Rietveld issue,
-the following command can be used:
-
-@example
-git cl issue issue-number
-@end example
-
-@noindent
-where @code{issue-number} is the number of the existing Rietveld
-issue.
-
-@subsubheading Resetting git cl
-
-If @command{git cl} becomes confused, you can @qq{reset} it by
-running:
-
-@example
-git cl issue 0
-@end example
-
-@subsubheading Wait for a countdown
-
-Your patch will be available for reviews for the next few hours or
-days.  Three times a week, patches with no known problems are
-gathered into a @qq{patch countdown} and their status changed to
-@code{patch-countdown}.  The countdown is a 48-hour waiting period
-in which any final reviews or complaints should be made.
-
-During the countdown, your patch may be set to
-@code{patch-needs_work}, indicating that you should fix something
-(or at least discuss why the patch needs no modification).  If no
-problems are found, the patch will be set to @code{patch-push}.
-
-Once a patch has @code{patch-push}, it should be sent to your
-mentor for uploading.  If you have git push ability, look at
-@ref{Pushing to staging}.
 
 
 @node Advanced Git procedures
@@ -1407,7 +1209,7 @@ git pull git://git.sv.gnu.org/lilypond.git/ @var{branch}:origin/@var{branch}
 @noindent
 where @code{@var{branch}} is typically @code{master} or
 @code{translation}; if you do not know or remember, see
-@ref{Downloading remote branches} to remember which commands you
+@ref{Organization of remote branches} to remember which commands you
 issued or which source code you wanted to get.
 
 A @emph{commit} is a set of changes made to the sources; it also
@@ -1879,14 +1681,6 @@ git push origin staging
 check of the visual history can save a great deal of frustration
 later on.  You should see that @code{staging} is only ahead of
 @code{origin/staging} by the commits from your branch.}
-
-
-@node Repository directory structure
-@section Repository directory structure
-
-
-@c TODO: integrate the roadmap better
-@verbatiminclude ROADMAP
 
 
 @node Other Git documentation
