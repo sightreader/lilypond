@@ -15,6 +15,8 @@ particularly if they are working on major new features.
 * lily-git::
 * Basic Git procedures::
 * Advanced Git procedures::
+* Push access::
+* Pushing to staging::
 * Other Git documentation::
 @end menu
 
@@ -1167,8 +1169,6 @@ several Git branches of LilyPond source code is presented.
 * Applying remote patches::
 * Sending and receiving patches via email::
 * Cleaning up multiple patches::
-* Push access::
-* Pushing to staging::
 @end menu
 
 
@@ -1349,7 +1349,7 @@ remove those commits.}
 
 
 @node Push access
-@subsection Push access
+@section Push access
 
 Most contributors are not able to commit patches directly to the
 main repository---only members of the LilyPond development team
@@ -1623,7 +1623,7 @@ to set the MTU in the local router to 1500.
 
 
 @node Pushing to staging
-@subsection Pushing to staging
+@section Pushing to staging
 
 Do not push directly to the git @code{master} branch.  Instead,
 push to @code{staging}.
