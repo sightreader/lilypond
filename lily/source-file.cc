@@ -152,7 +152,11 @@ Source_file::init_port ()
   // we do our own utf8 encoding and verification in the parser, so we
   // use the no-conversion equivalent of latin1
   SCM str = scm_from_latin1_string (c_str ());
-  str_port_ = scm_mkstrport (SCM_INUM0, str, SCM_OPN | SCM_RDNG, __FUNCTION__);
+  scm_dynwind_begin ((scm_t_dynwind_flags)0);
+  // Why doesn't scm_set_port_encoding_x work here?
+  scm_dynwind_fluid (ly_lily_module_constant ("%default-port-encoding"), SCM_BOOL_F);
+  str_port_ = scm_open_input_string (str);
+  scm_dynwind_end ();
   scm_set_port_filename_x (str_port_, ly_string2scm (name_));
 }
 
