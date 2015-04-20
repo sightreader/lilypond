@@ -231,6 +231,9 @@ regression testing.")
      #f
      "Pad left edge of the output EPS bounding box by
 given amount (in mm).")
+    (fontdir
+     #f
+     "Look for notation fonts in this directory.")
     (gs-load-fonts
      #f
      "Load fonts via Ghostscript.")
