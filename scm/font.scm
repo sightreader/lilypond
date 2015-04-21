@@ -286,20 +286,41 @@ this directory is first searched for fonts, otherwise only the
 installation's own font directory is used.
 
 @end itemize"
-    (let* ((fonts (create-empty-font-tree))
+    (let* ((fontdir 
+            (string-append
+             (let ((fd (ly:get-option 'fontdir)))
+               (if fd
+                   (symbol->string fd)
+                   (string-append
+                    (ly:get-option 'datadir)
+                    "/fonts")))
+             "/"
+             (cond
+              ((eq? 'svg (ly:get-option 'backend))
+               "svg")
+              ((eq? 'svg-woff (ly:get-option 'backend))
+               "woff")
+              (else "otf"))))
+                        
+           (fonts (create-empty-font-tree))
            (paper (ly:parser-lookup parser '$defaultpaper))
            (staff-height (ly:output-def-lookup paper 'staff-height))
            (pt (ly:output-def-lookup paper 'pt))
+           ;; font name is first or only element of the names list
            (name (symbol->string (car names)))
            (brace
-            (if (< 1 (length names))
-                (string-append
-                 (symbol->string (cadr names))
-                 "-brace")
-                (string-append
-                 name
-                 "-brace")))
+            (if
+             ;; One name: brace font = music font
+             (= 1 (length names))
+             (string-append
+              name
+              "-brace")
+             (string-append
+              (symbol->string (cadr names))
+              "-brace")))
+             ;; more than one names: 2nd is brace font
            )
+      (ly:message (format "fontdir: ~a" fontdir))
       (add-music-font fonts
         'feta name brace (/ staff-height pt 20))
       ;; Add default text fonts
