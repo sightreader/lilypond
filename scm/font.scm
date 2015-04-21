@@ -261,6 +261,45 @@ used.  This is used to select the proper design size for the text fonts.
      )))
 ;; *****************************************************************************
 
+(define (fonts-in-dir dir name brace ext)
+  "Iterates over the files in a given directory and collects
+    notation and brace fonts. Returns an alist that _can_ have these entries:
+    - 'opticals-font (if a font with optical sizes is found)
+    - 'font (if a font without optical sizes is found)
+    - 'brace (if a matching brace font is found)"
+  (let* ((result-tup '())
+         (font-list '())
+         (font-dir (opendir dir)))
+    ;; read all files in the directory
+    (do ((entry (readdir font-dir)(readdir font-dir)))
+      ((eof-object? entry))
+      (set! font-list
+            (append font-list (list entry))))
+    ;; test for presence of an opticals font
+    ;; (we already consider it present if one file is found)
+    (if (member (string-append name "-11." ext) font-list)
+        (set! result-tup
+              (assoc-set! result-tup
+                'opticals-font
+                (string-append
+                 dir "/" name))))
+    ;; test for presence of a non-opticals font
+    (if (member (string-append name "." ext) font-list)
+        (set! result-tup
+              (assoc-set! result-tup
+                'font
+                (string-append
+                 dir "/" name))))
+    ;; test for presence of a brace font
+    (if (member (string-append brace "-brace." ext) font-list)
+        (set! result-tup
+              (assoc-set! result-tup
+                'brace
+                (string-append
+                 dir "/" brace))))
+    (closedir font-dir)
+    result-tup))
+
 
 (define-public setNotationFont
   (define-scheme-function (parser location names)
