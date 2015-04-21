@@ -315,49 +315,93 @@ If two names are provided the second name is used for finding the
 brace font.  If the @var{fontdir} command line option has been set
 this directory is first searched for fonts, otherwise only the
 installation's own font directory is used.
+The function can load fonts that have optical variants or that
+have not.  In any case only the name of the font has to be
+provided, which is read case insensitive.
 
 @end itemize"
-    (let* ((fontdir 
-            (string-append
-             (let ((fd (ly:get-option 'fontdir)))
-               (if fd
-                   (symbol->string fd)
-                   (string-append
-                    (ly:get-option 'datadir)
-                    "/fonts")))
-             "/"
-             (cond
+    (let* (
+           ;; define include/search paths
+           ;; respect the active backend
+           (font-extension
+            (cond
               ((eq? 'svg (ly:get-option 'backend))
                "svg")
               ((eq? 'svg-woff (ly:get-option 'backend))
                "woff")
-              (else "otf"))))
-                        
-           (fonts (create-empty-font-tree))
-           (paper (ly:parser-lookup parser '$defaultpaper))
-           (staff-height (ly:output-def-lookup paper 'staff-height))
-           (pt (ly:output-def-lookup paper 'pt))
+              (else "otf")))
+           ;; external font dir, given by the 'fontdir option
+           (ext-fontdir
+            (let ((fd (ly:get-option 'fontdir)))
+              (if fd (symbol->string fd) #f)))
+           ;; font root in the LilyPond installation
+           (loc-fontdir
+            (string-append
+             (ly:get-option 'datadir)
+             ;
+             ; TODO
+             ; Check path handling on Windows
+             ;
+              "/fonts/"
+              (if (string=? "otf" font-extension)
+                  "otf"
+                  "svg")))
+
+           ;; font and brace font names
            ;; font name is first or only element of the names list
-           (name (symbol->string (car names)))
+           (name (string-downcase (symbol->string (car names))))
            (brace
             (if
              ;; One name: brace font = music font
-             (= 1 (length names))
-             (string-append
-              name
-              "-brace")
-             (string-append
-              (symbol->string (cadr names))
-              "-brace")))
-             ;; more than one names: 2nd is brace font
-           )
-      (ly:message (format "fontdir: ~a" fontdir))
-      (add-music-font fonts
-        'feta name brace (/ staff-height pt 20))
-      ;; Add default text fonts
+             (= 1 (length names)) name
+             ;; more than one name: 2nd is brace font or 'none'
+             ;; (none falls back to "emmentaler"
+             (if (eq? (cadr names) 'none)
+                 "emmentaler"
+                  (string-downcase (symbol->string (cadr names))))))
+
+           ;; actual fonts
+           (ext-fonts
+            (if ext-fontdir (fonts-in-dir ext-fontdir name brace font-extension) #f))
+           (loc-fonts (fonts-in-dir loc-fontdir name brace font-extension))
+           (use-opticals-font (or (assoc-ref ext-fonts 'opticals-font)
+                                  (assoc-ref loc-fonts 'opticals-font)))
+           (use-font (or (assoc-ref ext-fonts 'font)
+                         (assoc-ref loc-fonts 'font)))
+           (use-brace (or (assoc-ref ext-fonts 'brace)
+                          (assoc-ref loc-fonts 'brace)))
+
+           (fonts (create-empty-font-tree))
+           (paper (ly:parser-lookup parser '$defaultpaper))
+           (staff-height (ly:output-def-lookup paper 'staff-height))
+           (pt (ly:output-def-lookup paper 'pt)))
+
+      ;; test and fallback for nonexistent fonts
+      (if (not (or use-font use-opticals-font))
+          (begin
+           (ly:input-warning location
+             (format "Notation font \"~a\" not found. Falling back to Emmentaler" name))
+           (set! use-opticals-font "emmentaler")))
+      (if (not use-brace)
+          (begin
+           (ly:input-warning location
+             (format "Brace font \"~a\" not found. Falling back to Emmentaler" brace))
+           (set! use-brace "emmentaler")))
+
+      ;; Load font with opticals or without,
+      ;; depending on what has been found
+      (if use-opticals-font
+          (add-music-fonts fonts 'feta use-opticals-font use-brace '((20 . 20)) (/ staff-height pt 20))
+          (add-music-font fonts 'feta use-font use-brace (/ staff-height pt 20)))
+
+      ;; Add default text font (otherwise font tree node would be empty)
       (add-pango-fonts fonts 'roman
         "Century Schoolbook L"
         (/ staff-height pt 20))
+      ;
+      ; TODO:
+      ; Check back when the other default fonts have been added to LilyPond
+      ;
       fonts)))
 
 
