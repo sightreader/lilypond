@@ -261,6 +261,46 @@ used.  This is used to select the proper design size for the text fonts.
      )))
 ;; *****************************************************************************
 
+
+(define-public setNotationFont
+  (define-scheme-function (parser location names)
+    (symbol-list?)
+    "Set up a music font with or without optical sizes.
+
+Arguments:
+@itemize
+@item
+@var{names} is a font name or a list of font and brace names.
+If just one name is provided a corresponding brace font is assumed.
+If two names are provided the second name is used for finding the
+brace font.  If the @var{fontdir} command line option has been set
+this directory is first searched for fonts, otherwise only the
+installation's own font directory is used.
+
+@end itemize"
+    (let* ((fonts (create-empty-font-tree))
+           (paper (ly:parser-lookup parser '$defaultpaper))
+           (staff-height (ly:output-def-lookup paper 'staff-height))
+           (pt (ly:output-def-lookup paper 'pt))
+           (name (symbol->string (car names)))
+           (brace
+            (if (< 1 (length names))
+                (string-append
+                 (symbol->string (cadr names))
+                 "-brace")
+                (string-append
+                 name
+                 "-brace")))
+           )
+      (add-music-font fonts
+        'feta name brace (/ staff-height pt 20))
+      ;; Add default text fonts
+      (add-pango-fonts fonts 'roman
+        "Century Schoolbook L"
+        (/ staff-height pt 20))
+      fonts)))
+
+
 (define-public (add-pango-fonts node lily-family family factor)
   ;; Synchronized with the `text-font-size' variable in
   ;; layout-set-absolute-staff-size-in-module (see paper.scm).
