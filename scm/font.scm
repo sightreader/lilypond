@@ -145,14 +145,6 @@
     (23 . 22.45)
     (26 . 25.20)))
 
-;; If -dfontdir is not given on the command line
-;; we set it to the one inside the LilyPond installation.
-(if (not (ly:get-option 'fontdir))
-     (ly:set-option 'fontdir
-       (string-append
-        (ly:get-option 'datadir)
-        "/fonts")))
-
 ;; Each size family is a vector of fonts, loaded with a delay.  The
 ;; vector should be sorted according to ascending design size.
 (define-public (add-music-fonts node family name brace design-size-alist factor)
