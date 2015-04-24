@@ -467,6 +467,41 @@ provided, which is read case insensitive.
   (add-node 'italic 'normal)
   (add-node 'italic 'bold))
 
+
+; TODO
+; Currently this only *adds* a pango font to the font tree
+; when the family has not been set already, which is only
+; when \setNotationFont has been used with the "text-fonts = none" option.
+;
+; There should be a version of add-pango-fonts that
+; adds *or replaces* a font node in the tree.
+;
+(define-public setTextFont
+  (define-void-function (parser location family name)
+    (symbol? string?)
+    "Set any text font if setting of text fonts has been
+explicitly omitted in \\setNotationFont.
+Arguments:
+@itemize
+@item
+@var{family} is the family name of the text font (roman, sans, typewriter).
+
+@item
+@var{name} is the name for the text font.
+@end itemize"
+    (let*
+     ((paper (ly:parser-lookup parser '$defaultpaper))
+      (fonts (ly:output-def-lookup paper 'fonts))
+      (staff-height (ly:output-def-lookup paper 'staff-height))
+      (pt (ly:output-def-lookup paper 'pt))
+      )
+  (display "Before:\n\n")
+  (display fonts)(newline)(newline)
+     (add-pango-fonts fonts family name (/ staff-height pt 20))
+  (display "After:\n\n")
+  (display fonts)
+     (ly:output-def-set-variable! paper 'fonts fonts))))
+
 ; This function allows the user to change the specific fonts, leaving others
 ; to the default values. This way, "make-pango-font-tree"'s syntax doesn't
 ; have to change from the user's perspective.
