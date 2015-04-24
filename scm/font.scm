@@ -296,7 +296,7 @@ If this font isn't found by fontconfig #f is returned."
          ;;
          (string-take
           font-file
-          (- (string-contains font-file name) 1)))))
+          (string-contains font-file name)))))
 
 
 (define-public setNotationFont
@@ -389,6 +389,7 @@ provided, which is read case insensitive.
       (paper (ly:parser-lookup parser '$defaultpaper))
       (staff-height (ly:output-def-lookup paper 'staff-height))
       (pt (ly:output-def-lookup paper 'pt))
+      (factor (/ staff-height pt 20))
       )
 
      ;; Handle non-present fonts
@@ -409,44 +410,13 @@ provided, which is read case insensitive.
           (set! brace-path (font-path "emmentaler-20"))
           (set! brace "emmentaler")))
 
-     ;; Process fetaMusic, fetaText and fetaBraces structures
-     ;; and load the appropriate fonts
-     (for-each
-      (lambda (x)
-        (add-font fonts
-          (list (cons 'font-encoding (car x))
-            (cons 'font-family 'feta))
-          (cons
-           (* (/ staff-height pt 20) (cadr x))
-           (caddr x))))
+     (ly:message (format "Font: ~a" (string-append use-path name)))
 
-      `((fetaMusic ,(ly:pt 20.0)
-          ,(list->vector
-            (map
-             (lambda (size-tup)
-               (delay
-                (ly:system-font-load
-                 (if opticals-path
-                     (format "~a/~a-~a"
-                       use-path name (car size-tup))
-                     (ly:input-warning location "TODO: if fixed-path")))))
-             design-size-alist
-             )))
-
-        (fetaText ,(ly:pt 20.0)
-          ,(list->vector
-            (map (lambda (tup)
-                   (cons (ly:pt (cdr tup))
-                     (if opticals-path
-                         (format "~a-~a ~a"
-                           name
-                           (car tup)
-                           (ly:pt (cdr tup))))))
-              design-size-alist)))
-
-        (fetaBraces ,(ly:pt 20.0)
-          #(,(delay (ly:system-font-load
-                     (format #f "~a/~a-brace" brace-path brace)))))))
+     ;; finally add the determined music font to the font tree
+     (add-music-fonts fonts 'feta
+       (string-append use-path name)
+       (string-append use-path brace)
+       design-size-alist factor)
 
      ;; If not suppressed through the text-fonts = none option
      ;; set the text fonts too
