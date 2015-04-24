@@ -431,11 +431,7 @@ Arguments:
       (staff-height (ly:output-def-lookup paper 'staff-height))
       (pt (ly:output-def-lookup paper 'pt))
       )
-  (display "Before:\n\n")
-  (display fonts)(newline)(newline)
      (add-pango-fonts fonts family name (/ staff-height pt 20))
-  (display "After:\n\n")
-  (display fonts)
      (ly:output-def-set-variable! paper 'fonts fonts))))
 
 ; This function allows the user to change the specific fonts, leaving others
