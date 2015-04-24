@@ -108,6 +108,7 @@
   (let* ((current-mod (current-module))
          (parser (eval 'parser current-mod))
          (pap (ly:parser-lookup parser '$defaultpaper))
+         (fonts (ly:output-def-lookup pap 'fonts))
          (in-layout? (or (module-defined? current-mod 'is-paper)
                          (module-defined? current-mod 'is-layout)))
 
@@ -123,6 +124,7 @@
 
     (layout-set-absolute-staff-size-in-module new-scope
                                               (* sz (eval 'pt new-scope)))
+    (ly:output-def-set-variable! new-paper 'fonts fonts)
     (module-define! current-mod '$defaultpaper new-paper)))
 
 (define-public paper-alist
