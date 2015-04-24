@@ -226,64 +226,6 @@ used.  This is used to select the proper design size for the text fonts.
                              (format #f "~a-brace" brace)))))
       ))))
 
-;; *****************************************************************************
-;; custom function for loading a single-size music font
-;; *****************************************************************************
-(define-public (add-music-font node family name brace factor)
-  "Set up a music font without optical sizes.
-
-Arguments:
-@itemize
-@item
-@var{node} is the font tree to modify.
-
-@item
-@var{family} is the family name of the music font.
-
-@item
-@var{name} is the name for the music font.
-@file{@var{name}.otf} should be the music font,
-
-@item
-@var{brace} is the name for the brace font.
-@file{@var{brace}.otf} should have piano braces.
-
-@item
-@var{factor} is a size factor relative to the default size that is being
-used.  This is used to select the proper design size for the text fonts.
-@end itemize"
-  ;; These are dummy numbers that don't actually get used. I just didn't know
-  ;; how to get rid of at least one pair without breaking the code
-  (define design-size-alist '((20 . 20)))
-  (for-each
-   (lambda (x)
-     (add-font node
-               (list (cons 'font-encoding (car x))
-                     (cons 'font-family family))
-               (cons (* factor (cadr x))
-                     (caddr x))))
-
-   `((fetaText ,(ly:pt 20.0)
-               ,(list->vector
-                 (map (lambda (tup)
-                        (cons (ly:pt (cdr tup))
-                              (format #f "~a ~a"
-                                      name
-                                      (ly:pt (cdr tup)))))
-                      design-size-alist)))
-     (fetaMusic ,(ly:pt 20.0)
-                ,(list->vector
-                  (map (lambda (size-tup)
-                         (delay (ly:system-font-load
-                                 (format #f "~a" name))))
-                       design-size-alist
-                       )))
-     (fetaBraces ,(ly:pt 20.0)
-                 #(,(delay (ly:system-font-load
-                            (format #f "~a" brace)))))
-     )))
-;; *****************************************************************************
-
 
 (define (font-path name)
   "Return the path to the font that is given by its OpenType name.
