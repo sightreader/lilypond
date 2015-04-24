@@ -239,10 +239,11 @@ If this font isn't found by fontconfig #f is returned."
          ;; fallback font: No font available
          #f
          ;;
-         (string-take
-          font-file
-          (string-contains font-file name)))))
-
+         (substring font-file
+           0
+           (or (+ 1 (string-rindex font-file #\/) )
+               (string-length font-file)))))
+)
 
 (define-public setNotationFont
   (define-void-function (parser location options font-name)
