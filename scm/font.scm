@@ -176,34 +176,55 @@ loaded through pango/@/fontconfig.
 @var{factor} is a size factor relative to the default size that is being
 used.  This is used to select the proper design size for the text fonts.
 @end itemize"
-  (for-each
-   (lambda (x)
-     (add-font node
-               (list (cons 'font-encoding (car x))
-                     (cons 'font-family family))
-               (cons (* factor (cadr x))
-                     (caddr x))))
+  (let
+   ;; Determine behaviour from the given design size alist:
+   ;; single-sized fonts pass '((20 . 20))
+   ((has-optical-sizes (> (length design-size-alist) 1)))
+   (for-each
+    (lambda (x)
+      (add-font node
+                (list (cons 'font-encoding (car x))
+                      (cons 'font-family family))
+                (cons (* factor (cadr x))
+                      (caddr x))))
 
-   `((fetaText ,(ly:pt 20.0)
-               ,(list->vector
-                 (map (lambda (tup)
-                        (cons (ly:pt (cdr tup))
-                              (format #f "~a-~a ~a"
-                                      name
-                                      (car tup)
-                                      (ly:pt (cdr tup)))))
-                      design-size-alist)))
-     (fetaMusic ,(ly:pt 20.0)
+    `((fetaText ,(ly:pt 20.0)
                 ,(list->vector
-                  (map (lambda (size-tup)
-                         (delay (ly:system-font-load
-                                 (format #f "~a-~a" name (car size-tup)))))
-                       design-size-alist
-                       )))
-     (fetaBraces ,(ly:pt 20.0)
-                 #(,(delay (ly:system-font-load
-                            (format #f "~a-brace" brace)))))
-     )))
+                  (map
+                   (lambda (size-tup)
+                     (let
+                      (;; filter path from font name if given
+                       ;; (ly:system-font-load seems to need the path
+                       ;;  while selecting the fetaText font does not
+                       ;;  work with it).
+                       (font-name
+                        (substring name
+                          (+ 1 (or (string-rindex name #\/) 0))))
+                       ;; only pass size-tuplet-string for opticals fonts
+                       (size-str
+                        (if has-optical-sizes
+                            (format "-~a" (car size-tup)) ""))
+                       (point-size (ly:pt (cdr size-tup))))
+                      (cons point-size
+                        (format "~a~a ~a" font-name size-str point-size))))
+                   design-size-alist
+                   )))
+      (fetaMusic ,(ly:pt 20.0)
+                 ,(list->vector
+                   (map (lambda (size-tup)
+                          (delay (ly:system-font-load
+                                  (let
+                                   ((size-str
+                                     (if has-optical-sizes
+                                         (format "-~a" (car size-tup))
+                                         "")))
+                                  (format #f "~a~a" name size-str)))))
+                        design-size-alist
+                        )))
+      (fetaBraces ,(ly:pt 20.0)
+                  #(,(delay (ly:system-font-load
+                             (format #f "~a-brace" brace)))))
+      ))))
 
 ;; *****************************************************************************
 ;; custom function for loading a single-size music font
