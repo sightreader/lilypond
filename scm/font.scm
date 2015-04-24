@@ -148,7 +148,7 @@
 ;; Each size family is a vector of fonts, loaded with a delay.  The
 ;; vector should be sorted according to ascending design size.
 (define-public (add-music-fonts node family name brace design-size-alist factor)
-  "Set up music a set of optical music fonts.
+  "Set up a music font with or without optical variants.
 
 Arguments:
 @itemize
@@ -170,7 +170,10 @@ Arguments:
 @var{design-size-alist} is a list of @code{(rounded . designsize)}.
 @code{rounded} is a suffix for font filenames, while @code{designsize}
 should be the actual design size.  The latter is used for text fonts
-loaded through pango/@/fontconfig.
+loaded through pango/@/fontconfig.  For single-sized fonts (i.e. the
+new alternative fonts that don't have optical variants) pass
+@code{'((20 . 20))}, as the function uses the length of this arguemnt
+to discern the proper font name handling.
 
 @item
 @var{factor} is a size factor relative to the default size that is being
