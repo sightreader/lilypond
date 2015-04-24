@@ -145,6 +145,11 @@
     (23 . 22.45)
     (26 . 25.20)))
 
+(define-public pango-default-fonts
+  '((roman      . "Century Schoolbook L")
+    (sans       . "Nimbus Sans L")
+    (typewriter . "Nimbus Mono L")))
+
 ;; Each size family is a vector of fonts, loaded with a delay.  The
 ;; vector should be sorted according to ascending design size.
 (define-public (add-music-fonts node family name brace design-size-alist factor)
@@ -300,9 +305,12 @@ provided, which is read case insensitive.
              #f #t)))
 
       ;; Default text fonts
-      (roman (or (assoc-ref options 'roman) "Century Schoolbook L"))
-      (sans (or (assoc-ref options 'sans) "Nimbus Sans L"))
-      (typewriter (or (assoc-ref options 'typewriter) "Nimbus Mono L"))
+      (roman (or (assoc-ref options 'roman)
+                 (assoc-ref pango-default-fonts 'roman)))
+      (sans (or (assoc-ref options 'sans)
+                (assoc-ref pango-default-fonts 'sans)))
+      (typewriter (or (assoc-ref options 'typewriter)
+                      (assoc-ref pango-default-fonts 'typewriter)))
 
 
       (brace-option (assoc-ref options 'brace))
@@ -420,6 +428,7 @@ provided, which is read case insensitive.
 explicitly omitted in \\setNotationFont.
 Arguments:
 @itemize
+
 @item
 @var{family} is the family name of the text font (roman, sans, typewriter).
 
@@ -431,9 +440,18 @@ Arguments:
       (fonts (ly:output-def-lookup paper 'fonts))
       (staff-height (ly:output-def-lookup paper 'staff-height))
       (pt (ly:output-def-lookup paper 'pt))
+      (font-exists (font-path (string-downcase name)))
       )
+     (if (not font-exists)
+         (let ((fallback (assoc-ref pango-default-fonts family)))
+                 (ly:input-warning location
+                   (format "Requested text font \"~a\" not found. Fall back to \"~a\"."
+                     name fallback))
+                 (set! name fallback)))
      (add-pango-fonts fonts family name (/ staff-height pt 20))
-     (ly:output-def-set-variable! paper 'fonts fonts))))
+     (ly:output-def-set-variable! paper 'fonts fonts))
+         )
+     )
 
 ; This function allows the user to change the specific fonts, leaving others
 ; to the default values. This way, "make-pango-font-tree"'s syntax doesn't
@@ -455,9 +473,9 @@ Arguments:
 (define*-public (set-global-fonts #:key
   (music "emmentaler")
   (brace "emmentaler")
-  (roman "Century Schoolbook L")
-  (sans "Nimbus Sans L")
-  (typewriter "Nimbus Mono L")
+  (roman (assoc-ref pango-default-fonts 'roman))
+  (sans (assoc-ref pango-default-fonts 'sans))
+  (typewriter (assoc-ref pango-default-fonts 'typewriter))
   (factor 1))
   (let ((n (make-font-tree-node 'font-encoding 'fetaMusic)))
     (add-music-fonts n 'feta music brace feta-design-size-mapping factor)
@@ -482,9 +500,9 @@ Arguments:
 
 (define-public (make-century-schoolbook-tree factor)
   (make-pango-font-tree
-   "Century Schoolbook L"
-   "Nimbus Sans L"
-   "Nimbus Mono L"
+   (assoc-ref pango-default-fonts 'roman)
+   (assoc-ref pango-default-fonts 'sans)
+   (assoc-ref pango-default-fonts 'typewriter)
    factor))
 
 (define-public all-text-font-encodings
