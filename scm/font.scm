@@ -263,6 +263,183 @@ used.  This is used to select the proper design size for the text fonts.
      )))
 ;; *****************************************************************************
 
+
+(define (font-path name)
+  "Return the path to the font that is given by its OpenType name.
+If this font isn't found by fontconfig #f is returned."
+  (let*
+   ((font-file (ly:font-config-get-font-file name)))
+     (if (string-contains font-file "emmentaler-11")
+         ;; fallback font: No font available
+         #f
+         ;;
+         (string-take
+          font-file
+          (- (string-contains font-file name) 1)))))
+
+
+(define-public setNotationFont
+  (define-void-function (parser location options font-name)
+    ((ly:context-mod?) string?)
+    "Set up a music font with or without optical sizes,
+optionally set or don't set text fonts.
+
+@var{options} is a an optional set of key=value pairs.  Known
+options are: 
+
+@itemize
+@item @var{brace} Set the brace font to the given name.  If this
+is @var{none} the default Emmentaler will be used.
+
+@item @var{text-fonts = none} will suppress the setting of any text
+fonts.  This has to be done later using @code{add-pango-fonts},
+which can be useful when defining music fonts in a stylesheet
+without imposing text fonts.
+
+@item @var{roman} Set the font family for roman style.
+
+@item @var{sans} Set the font family for sans serif style.
+
+@item @var{typewriter} Set the font family for typewriter style.
+
+
+@end itemize
+
+The function can load fonts that have optical variants or that
+have not.  In any case only the name of the font has to be
+provided, which is read case insensitive.
+"
+    (let*
+     ;; Font name is lowercase
+     ((name (string-downcase font-name))
+
+      ;; create an alist with options if they are given.
+      ;; if the argument is not given or no options are defined
+      ;; we have an empty list.
+      (options
+       (if options
+           (map
+            (lambda (o)
+              (cons (cadr o) (caddr o)))
+            (ly:get-context-mods options))
+           '()))
+
+      ;; if text-fonts = none is given
+      ;; we don't set any text fonts at all
+      (text-fonts
+       (let ((tf-opt (assoc-ref options 'text-fonts)))
+         (if (and tf-opt
+                  (string=? tf-opt "none"))
+             #f #t)))
+
+      ;; Default text fonts
+      (roman (or (assoc-ref options 'roman) "Century Schoolbook L"))
+      (sans (or (assoc-ref options 'sans) "Nimbus Sans L"))
+      (typewriter (or (assoc-ref options 'typewriter) "Nimbus Mono L"))
+
+
+      (brace-option (assoc-ref options 'brace))
+      (brace
+       (cond
+        ((not brace-option) name)
+        ((string=? brace-option "none") "emmentaler")
+        (else (string-downcase brace-option))))
+
+      ;; Determine if the font has optical sizes or not.
+      ;; (We only check for the presence of one -20 font.
+      ;;  If this should lead to errors they indicate a real
+      ;;  issue with the installation, so we don't catch them.)
+      (opticals-path (font-path (string-append name "-20")))
+      (fixed-path (font-path name))
+      ;; Only one path may be set after this.
+      ;; If both should be successful we take the opticals first.
+      (use-path (or opticals-path fixed-path))
+
+      ;; Find the location of the brace font
+      (brace-path (font-path (string-append brace "-brace")))
+
+      ;; use 'real' or 'dummy' design-size mapping
+      ;; for the opticals or fixed-size fonts
+      (design-size-alist
+       (if opticals-path feta-design-size-mapping '((20 . 20))))
+
+      ;; Create font tree object and the \paper context
+      (fonts (create-empty-font-tree))
+      (paper (ly:parser-lookup parser '$defaultpaper))
+      (staff-height (ly:output-def-lookup paper 'staff-height))
+      (pt (ly:output-def-lookup paper 'pt))
+      )
+
+     ;; Handle non-present fonts
+     (if (not use-path)
+         (begin
+          (ly:input-warning location
+            (format "Font \"~a\" not found. Fall back to Emmentaler" name))
+          ;; set opticals-path because that will select the
+          ;; actual font loading routine
+          (set! opticals-path #t)
+          ;; set music font fallback
+          (set! use-path (font-path "emmentaler-20"))
+          (set! name "emmentaler")))
+     (if (not brace-path)
+         (begin
+          (ly:input-warning location
+            (format "Brace font \"~a\" not found. Fall back to Emmentaler" brace))
+          (set! brace-path (font-path "emmentaler-20"))
+          (set! brace "emmentaler")))
+
+     ;; Process fetaMusic, fetaText and fetaBraces structures
+     ;; and load the appropriate fonts
+     (for-each
+      (lambda (x)
+        (add-font fonts
+          (list (cons 'font-encoding (car x))
+            (cons 'font-family 'feta))
+          (cons
+           (* (/ staff-height pt 20) (cadr x))
+           (caddr x))))
+
+      `((fetaMusic ,(ly:pt 20.0)
+          ,(list->vector
+            (map
+             (lambda (size-tup)
+               (delay
+                (ly:system-font-load
+                 (if opticals-path
+                     (format "~a/~a-~a"
+                       use-path name (car size-tup))
+                     (ly:input-warning location "TODO: if fixed-path")))))
+             design-size-alist
+             )))
+
+        (fetaText ,(ly:pt 20.0)
+          ,(list->vector
+            (map (lambda (tup)
+                   (cons (ly:pt (cdr tup))
+                     (if opticals-path
+                         (format "~a-~a ~a"
+                           name
+                           (car tup)
+                           (ly:pt (cdr tup))))))
+              design-size-alist)))
+
+        (fetaBraces ,(ly:pt 20.0)
+          #(,(delay (ly:system-font-load
+                     (format #f "~a/~a-brace" brace-path brace)))))))
+
+     ;; If not suppressed through the text-fonts = none option
+     ;; set the text fonts too
+     (if text-fonts
+         (let ((factor (/ staff-height pt 20)))
+           (add-pango-fonts fonts 'roman roman factor)
+           (add-pango-fonts fonts 'sans sans factor)
+           (add-pango-fonts fonts 'typewriter typewriter factor)))
+
+     ;; finally set the fonts in the output definition
+     (ly:output-def-set-variable! paper 'fonts fonts))))
+
+
+
 (define-public (add-pango-fonts node lily-family family factor)
   ;; Synchronized with the `text-font-size' variable in
   ;; layout-set-absolute-staff-size-in-module (see paper.scm).
