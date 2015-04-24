@@ -246,7 +246,9 @@ used.  This is used to select the proper design size for the text fonts.
                ,(list->vector
                  (map (lambda (tup)
                         (cons (ly:pt (cdr tup))
-                              (format #f "~a" name)))
+                              (format #f "~a ~a"
+                                      name
+                                      (ly:pt (cdr tup)))))
                       design-size-alist)))
      (fetaMusic ,(ly:pt 20.0)
                 ,(list->vector
