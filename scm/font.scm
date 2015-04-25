@@ -207,7 +207,7 @@ used.  This is used to select the proper design size for the text fonts.
                        ;;  work with it).
                        (font-name
                         (substring name
-                          (+ 1 (or (string-rindex name #\/) 0))))
+                          (+ 1 (or (string-rindex name #\/) -1))))
                        ;; only pass size-tuplet-string for opticals fonts
                        (size-str
                         (if has-optical-sizes
