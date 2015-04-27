@@ -315,10 +315,9 @@ provided, which is read case insensitive.
 
       (brace-option (assoc-ref options 'brace))
       (brace
-       (cond
-        ((not brace-option) name)
-        ((string=? brace-option "none") "emmentaler")
-        (else (string-downcase brace-option))))
+       (if (not brace-option)
+           name
+           (string-downcase brace-option)))
 
       ;; Determine if the font has optical sizes or not.
       ;; (We only check for the presence of one -20 font.
