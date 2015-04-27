@@ -355,15 +355,13 @@ provided, which is read case insensitive.
           (set! opticals-path #t)
           ;; set music font fallback
           (set! use-path (font-path "emmentaler-20"))
-          (set! name "emmentaler")))
+          (set! name "emmentaler-20")))
      (if (not brace-path)
          (begin
           (ly:input-warning location
             (format "Brace font \"~a\" not found. Fall back to Emmentaler" brace))
           (set! brace-path (font-path "emmentaler-20"))
           (set! brace "emmentaler")))
-
-     (ly:message (format "Font: ~a" (string-append use-path name)))
 
      ;; finally add the determined music font to the font tree
      (add-music-fonts fonts 'feta
