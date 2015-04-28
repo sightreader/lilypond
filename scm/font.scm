@@ -239,7 +239,7 @@ used.  This is used to select the proper design size for the text fonts.
   "Return the full path to the given font if it is visible for font-config.
 We can't check against the file name, and the fallback font
 isn't stable enough."
-  (let ((font-file (ly:font-config-get-font-file font-name)))
+  (let ((font-file (ly:font-config-get-font-file-without-fallback font-name)))
     (if (string=? (string-downcase font-name)
           (string-downcase (ly:ttf-ps-name font-file)))
         font-file
