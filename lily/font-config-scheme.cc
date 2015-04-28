@@ -127,6 +127,35 @@ LY_DEFINE (ly_font_config_get_font_file, "ly:font-config-get-font-file", 1, 0, 0
   return scm_result;
 }
 
+LY_DEFINE (ly_font_config_get_font_file_without_fallback, "ly:font-config-get-font-file-without-fallback", 1, 0, 0,
+           (SCM name),
+           "Get the file for font @var{name}.")
+{
+  LY_ASSERT_TYPE (scm_is_string, name, 1);
+
+  FcPattern *pat = FcPatternCreate ();
+  FcValue val;
+
+  val.type = FcTypeString;
+  val.u.s = (const FcChar8 *)ly_scm2string (name).c_str (); // FC_SLANT_ITALIC;
+  FcPatternAdd (pat, FC_FAMILY, val, FcFalse);
+
+  FcResult result;
+  SCM scm_result = SCM_BOOL_F;
+
+  FcConfigSubstitute (NULL, pat, FcMatchFont);
+  FcDefaultSubstitute (pat);
+
+  pat = FcFontMatch (NULL, pat, &result);
+  FcChar8 *str = 0;
+  if (FcPatternGetString (pat, FC_FILE, 0, &str) == FcResultMatch)
+    scm_result = scm_from_utf8_string ((char const *)str);
+
+  FcPatternDestroy (pat);
+
+  return scm_result;
+}
+
 LY_DEFINE (ly_font_config_display_fonts, "ly:font-config-display-fonts", 0, 0, 0,
            (),
            "Dump a list of all fonts visible to FontConfig.")
