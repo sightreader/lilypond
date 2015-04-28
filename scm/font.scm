@@ -235,20 +235,26 @@ used.  This is used to select the proper design size for the text fonts.
       ))))
 
 
-(define (font-path name)
-  "Return the path to the font that is given by its OpenType name.
+(define-public (font-exists font-name)
+  "Return the full path to the given font if it is visible for font-config.
+We can't check against the file name, and the fallback font
+isn't stable enough."
+  (let ((font-file (ly:font-config-get-font-file font-name)))
+    (if (string=? (string-downcase font-name)
+          (string-downcase (ly:ttf-ps-name font-file)))
+        font-file
+        #f)))
+
+(define-public (font-path name)
+  "Return the path to the font that is given by its font name.
 If this font isn't found by fontconfig #f is returned."
-  (let*
-   ((font-file (ly:font-config-get-font-file name)))
-     (if (string-contains font-file "emmentaler-11")
-         ;; fallback font: No font available
-         #f
-         ;;
-         (substring font-file
-           0
-           (or (+ 1 (string-rindex font-file #\/) )
-               (string-length font-file)))))
-)
+  (let ((font-file (font-exists name)))
+    (if font-file
+      (substring font-file
+        0
+        (or (+ 1 (string-rindex font-file #\/) )
+            (string-length font-file)))
+      #f)))
 
 (define-public setNotationFont
   (define-void-function (parser location options font-name)
@@ -366,7 +372,7 @@ provided, which is read case insensitive.
      ;; finally add the determined music font to the font tree
      (add-music-fonts fonts 'feta
        (string-append use-path name)
-       (string-append use-path brace)
+       (string-append brace-path brace)
        design-size-alist factor)
 
      ;; If not suppressed through the text-fonts = none option
