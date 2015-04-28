@@ -127,11 +127,13 @@ LY_DEFINE (ly_font_config_get_font_file, "ly:font-config-get-font-file", 1, 0, 0
   return scm_result;
 }
 
-LY_DEFINE (ly_font_config_get_font_file_without_fallback, "ly:font-config-get-font-file-without-fallback", 1, 0, 0,
+LY_DEFINE (ly_font_config_font_exists, "ly:font-config-font-exists", 1, 0, 0,
            (SCM name),
-           "Get the file for font @var{name}.")
+           "Determine if font @var{name} exists.")
 {
   LY_ASSERT_TYPE (scm_is_string, name, 1);
+
+  FcChar8* in_name = (FcChar8 *)ly_scm2string (name).c_str ();
 
   FcPattern *pat = FcPatternCreate ();
   FcValue val;
@@ -148,11 +150,16 @@ LY_DEFINE (ly_font_config_get_font_file_without_fallback, "ly:font-config-get-fo
 
   pat = FcFontMatch (NULL, pat, &result);
   FcChar8 *str = 0;
-  if (FcPatternGetString (pat, FC_FILE, 0, &str) == FcResultMatch)
-    scm_result = scm_from_utf8_string ((char const *)str);
+  if ((FcPatternGetString (pat, FC_FAMILY, 0, &str) == FcResultMatch)
+  &&
+    (FcStrCmpIgnoreCase(in_name, str) == 0))
+      scm_result = SCM_BOOL_T;
+
+  // debug only:
+//  scm_result = scm_from_utf8_string ((char const *)in_name);
+  //scm_result = scm_from_utf8_string ((char const *)str);
 
   FcPatternDestroy (pat);
-
   return scm_result;
 }
 
