@@ -30,7 +30,6 @@
 class Performer : public Translator
 {
 public:
-  VIRTUAL_COPY_CONSTRUCTOR (Translator, Performer);
   friend class Performer_group;
   Performer_group *get_daddy_performer () const;
 

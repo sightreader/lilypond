@@ -165,9 +165,9 @@ Translator_group::create_child_translator (SCM sev)
       SCM definition = scm_car (s);
       bool is_scheme = false;
 
-      Translator *type = 0;
+      Translator_creator *type = 0;
       if (ly_is_symbol (definition))
-        type = get_translator (definition);
+        type = get_translator_creator (definition);
       else if (ly_is_pair (definition))
         {
           is_scheme = true;
@@ -186,7 +186,7 @@ Translator_group::create_child_translator (SCM sev)
       else
         {
           Translator *instance = is_scheme ? new Scheme_engraver (definition)
-            : type->clone ();
+            : type->get_translator (new_context);
 
           SCM str = instance->self_scm ();
 
@@ -201,7 +201,6 @@ Translator_group::create_child_translator (SCM sev)
           else
             trans_list = scm_cons (str, trans_list);
 
-          instance->daddy_context_ = new_context;
           instance->unprotect ();
         }
     }

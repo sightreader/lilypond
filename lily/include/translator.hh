@@ -28,9 +28,29 @@
 #include "std-vector.hh"
 #include "protected-scm.hh"
 
+class Translator_creator : public Smob<Translator_creator>
+{
+  SCM name_;
+  SCM description_;
+  SCM listener_list_;
+  Translator * (*allocate_) (Translator_creator const *, Context *);
+  Translator_creator (Translator_creator const &); // don't define
+public:
+  static const char * const type_p_name_; // = 0
+
+  Translator_creator (SCM name, SCM description, SCM listener_list,
+                      Translator * (*allocate)
+                      (Translator_creator const *, Context *));
+  Translator *get_translator (Context *c);
+  SCM mark_smob () const;
+  SCM get_name () const { return name_; }
+  SCM get_description () const { return description_; }
+  SCM get_listener_list () const { return listener_list_; }
+};
+
 #define TRANSLATOR_FAMILY_DECLARATIONS(NAME)                            \
   public:                                                               \
-  VIRTUAL_COPY_CONSTRUCTOR (Translator, NAME);                          \
+  DECLARE_CLASSNAME (NAME);                                             \
   static Drul_array<vector<Acknowledge_information> > acknowledge_static_array_drul_; \
   virtual void fetch_precomputable_methods (Callback methods[]);        \
   static Grob_info_callback static_get_acknowledger (SCM sym);          \
@@ -54,16 +74,10 @@
 
 #define TRANSLATOR_DECLARATIONS(NAME)                                   \
   TRANSLATOR_FAMILY_DECLARATIONS(NAME)                                  \
-  static SCM static_description_;                                       \
-  static Protected_scm listener_list_;                                  \
+  static Protected_scm static_listener_list_;                           \
 public:                                                                 \
   NAME ();                                                              \
-  virtual SCM static_translator_description () const;                   \
-  virtual SCM translator_description () const;                          \
-  virtual SCM get_listener_list () const                                \
-  {                                                                     \
-    return listener_list_;                                              \
-  }                                                                     \
+  static SCM static_translator_description ();                          \
   /* end #define */
 
 #define DECLARE_TRANSLATOR_LISTENER(m)                  \
@@ -99,13 +113,27 @@ public:
   SCM mark_smob () const;
   static const char type_p_name_[];
   virtual ~Translator ();
+  SCM get_name () const { return creator_->get_name (); }
+  SCM get_description () const { return creator_->get_description (); }
+  SCM get_listener_list () const { return creator_->get_listener_list (); }
 private:
-  void init ();
+  Translator_creator const * creator_;
 
 public:
-  Context *context () const { return daddy_context_; }
+  // needed for passing into Translator_creator initialization
+  template <class T>
+  static Translator *
+  allocate (Translator_creator const *tc, Context *c)
+  {
+    Translator * t (new T);
+    // Too hard to pass via creators without virtual base class or
+    // delegating constructors.
+    t->creator_ = tc;
+    t->daddy_context_ = c;
+    return t;
+  }
 
-  Translator (Translator const &);
+  Context *context () const { return daddy_context_; }
 
   SCM internal_get_property (SCM symbol) const;
 
@@ -136,11 +164,12 @@ protected:                      // should be private.
   friend class Callback_wrapper;
   virtual void derived_mark () const;
   static SCM event_class_symbol (const char *ev_class);
-  SCM static_translator_description (const char *grobs,
-                                     const char *desc,
-                                     SCM listener_list,
-                                     const char *read,
-                                     const char *write) const;
+  static SCM
+  static_translator_description (const char *grobs,
+                                 const char *desc,
+                                 SCM listener_list,
+                                 const char *read,
+                                 const char *write);
 
   friend class Translator_group;
 };
@@ -158,9 +187,9 @@ struct Acknowledge_information
 };
 
 
-void add_translator (Translator *trans);
+void add_translator_creator (Translator_creator *);
 
-Translator *get_translator (SCM s);
+Translator_creator *get_translator_creator (SCM s);
 Moment get_event_length (Stream_event *s, Moment now);
 Moment get_event_length (Stream_event *s);
 

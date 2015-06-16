@@ -24,9 +24,30 @@
 #include "warn.hh"
 #include "protected-scm.hh"
 
-/*
-  should delete these after exit.
-*/
+const char * const Translator_creator::type_p_name_ = 0;
+
+SCM
+Translator_creator::mark_smob () const
+{
+  scm_gc_mark (name_);
+  scm_gc_mark (description_);
+  return listener_list_;
+}
+
+Translator *
+Translator_creator::get_translator (Context *c)
+{
+  return allocate_ (this, c);
+}
+
+Translator_creator::Translator_creator (SCM name, SCM description, SCM listener_list,
+                                        Translator * (*allocate)
+                                        (Translator_creator const *, Context *))
+  : name_ (name), description_ (description), listener_list_ (listener_list),
+    allocate_ (allocate)
+{
+  smobify_self ();
+}
 
 Protected_scm global_translator_dict;
 
@@ -37,14 +58,18 @@ LY_DEFINE (get_all_translators, "ly:get-all-translators", 0, 0, 0, (),
   Scheme_hash_table *dict = unsmob<Scheme_hash_table> (global_translator_dict);
   SCM l = dict ? dict->to_alist () : SCM_EOL;
 
+  // Ok, this is a bit of a crutch: so far, the Scheme code base has
+  // no idea about the Translator_creator type and uses of
+  // ly:get-all-translators rely on the output being translators.
   for (SCM s = l; scm_is_pair (s); s = scm_cdr (s))
-    scm_set_car_x (s, scm_cdar (s));
+    scm_set_car_x (s, unsmob <Translator_creator> (scm_cdar (s))
+                        ->get_translator (0)->unprotect ());
 
   return l;
 }
 
 void
-add_translator (Translator *t)
+add_translator_creator (Translator_creator *t)
 {
   Scheme_hash_table *dict = unsmob<Scheme_hash_table> (global_translator_dict);
   if (!dict)
@@ -53,12 +78,11 @@ add_translator (Translator *t)
       dict = unsmob<Scheme_hash_table> (global_translator_dict);
     }
 
-  SCM k = ly_symbol2scm (t->class_name ());
-  dict->set (k, t->unprotect ());
+  dict->set (t->get_name (), t->unprotect ());
 }
 
-Translator *
-get_translator (SCM sym)
+Translator_creator *
+get_translator_creator (SCM sym)
 {
   SCM v = SCM_BOOL_F;
   Scheme_hash_table *dict = unsmob<Scheme_hash_table> (global_translator_dict);
@@ -71,5 +95,5 @@ get_translator (SCM sym)
       return 0;
     }
 
-  return unsmob<Translator> (v);
+  return unsmob<Translator_creator> (v);
 }

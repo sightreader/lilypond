@@ -39,7 +39,7 @@ LY_DEFINE (ly_translator_description, "ly:translator-description",
 {
   LY_ASSERT_SMOB (Translator, me, 1);
   Translator *tr = unsmob<Translator> (me);
-  return tr->translator_description ();
+  return tr->get_description ();
 }
 
 LY_DEFINE (ly_translator_context, "ly:translator-context",

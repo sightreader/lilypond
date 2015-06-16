@@ -32,44 +32,41 @@
    A macro to automate administration of translators.
 */
 #define ADD_THIS_TRANSLATOR(T)                                          \
-  SCM T::static_description_ = SCM_EOL;                                 \
   static void _ ## T ## _adder ()                                       \
   {                                                                     \
-    T *t = new T;                                                       \
-    T::static_description_ =                                            \
-      scm_permanent_object (t->static_translator_description ());       \
-    add_translator (t);                                                 \
+    Translator_creator *t                                               \
+    (new Translator_creator (scm_from_ascii_string (#T),                \
+                             T::static_translator_description (),       \
+                             T::static_listener_list_,                  \
+                             Translator::allocate<T>));                 \
+    add_translator_creator (t);                                         \
   }                                                                     \
-  SCM T::translator_description () const                                \
-  {                                                                     \
-    return static_description_;                                         \
-  }                                                                     \
-  ADD_GLOBAL_CTOR (_ ## T ## _adder); \
+  ADD_GLOBAL_CTOR (_ ## T ## _adder);                                   \
   /* end define */
 
-#define DEFINE_TRANSLATOR_LISTENER_LIST(T) \
-  Protected_scm T::listener_list_ (SCM_EOL);    \
+#define DEFINE_TRANSLATOR_LISTENER_LIST(T)              \
+  Protected_scm T::static_listener_list_ (SCM_EOL);     \
   /* end define */
 
-#define DEFINE_ACKNOWLEDGERS(classname) \
-  Drul_array< vector<Acknowledge_information> > classname::acknowledge_static_array_drul_;      \
+#define DEFINE_ACKNOWLEDGERS(classname)                                 \
+  Drul_array< vector<Acknowledge_information> > classname::acknowledge_static_array_drul_; \
   Translator::Grob_info_callback                                        \
   classname::static_get_acknowledger (SCM sym)                          \
   {                                                                     \
-    return generic_get_acknowledger (sym, &acknowledge_static_array_drul_[START]);      \
+    return generic_get_acknowledger (sym, &acknowledge_static_array_drul_[START]); \
   }                                                                     \
   Translator::Grob_info_callback                                        \
   classname::static_get_end_acknowledger (SCM sym)                      \
   {                                                                     \
-    return generic_get_acknowledger (sym, &acknowledge_static_array_drul_[STOP]);       \
+    return generic_get_acknowledger (sym, &acknowledge_static_array_drul_[STOP]); \
   }                                                                     \
   /* end define */
 
 #define DEFINE_TRANSLATOR_DOC(classname, desc, grobs, read, write)              \
   SCM                                                                   \
-  classname::static_translator_description () const                     \
+  classname::static_translator_description ()                           \
   {                                                                     \
-    return Translator::static_translator_description (grobs, desc, listener_list_, read, write); \
+    return Translator::static_translator_description (grobs, desc, static_listener_list_, read, write); \
   }
 
 #define ADD_TRANSLATOR_FAMILY(classname)                                \
@@ -133,15 +130,20 @@ generic_get_acknowledger (SCM sym,
 /*
   Implement the method cl::listen_##m, and make it listen to stream
   events of class m.
+
+  At macro call time, neither creator instances (which are anonymous
+  and only accessible via the translator registry) nor translator
+  instances exist, so the only named place where we can store it is in
+  a static member of the translator class.
  */
-#define IMPLEMENT_TRANSLATOR_LISTENER(cl, m)            \
-void                                                    \
-cl :: _internal_declare_ ## m ()                        \
-{                                                       \
-  listener_list_ = scm_acons                                            \
+#define IMPLEMENT_TRANSLATOR_LISTENER(cl, m)                            \
+void                                                                    \
+cl :: _internal_declare_ ## m ()                                        \
+{                                                                       \
+  static_listener_list_ = scm_acons                                     \
     (event_class_symbol (#m),                                           \
      Callback_wrapper::make_smob<cl, Stream_event *, &cl::listen_ ## m> (), \
-     listener_list_);                                                   \
+     static_listener_list_);                                            \
 }                                                                       \
                                                                         \
 ADD_SCM_INIT_FUNC (cl ## _declare_event_ ## m, cl::_internal_declare_ ## m);
