@@ -168,17 +168,18 @@ LIBS="$save_LIBS"
 AC_SUBST(CXXABI_LIBS)
 
 ## check rational bugfix.
-save_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$GUILE_CFLAGS $CPPFLAGS"
-AC_MSG_CHECKING(GUILE rational bugfix)
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <libguile.h>
-#ifdef SCM_FRACTION_REDUCED_BIT
-#error
-#endif
-]])],[AC_MSG_RESULT(ok)],[REQUIRED="$REQUIRED GUILE-with-rational-bugfix"
-AC_MSG_RESULT(Must have patched GUILE rational support. See INSTALL.txt)])
-CPPFLAGS="$save_CPPFLAGS"
-
+if test "$have_guile2" = "no"; then
+    save_CPPFLAGS="$CPPFLAGS"
+    CPPFLAGS="$GUILE_CFLAGS $CPPFLAGS"
+    AC_MSG_CHECKING(GUILE rational bugfix)
+    AC_PREPROC_IFELSE([AC_LANG_SOURCE([[#include <libguile.h>
+    #ifdef SCM_FRACTION_REDUCED_BIT
+    #error
+    #endif
+    ]])],[AC_MSG_RESULT(ok)],[REQUIRED="$REQUIRED GUILE-with-rational-bugfix"
+    AC_MSG_RESULT(Must have patched GUILE rational support. See INSTALL.txt)])
+    CPPFLAGS="$save_CPPFLAGS"
+fi
 
 STEPMAKE_PYTHON_DEVEL(REQUIRED, 2.4, 3.0)
 
