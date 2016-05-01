@@ -1246,7 +1246,12 @@ AC_DEFUN(PKG_CHECK_MODULES, [
             AC_MSG_CHECKING($1_LIBS)
             $1_LIBS=`$PKG_CONFIG --libs "$2"`
             AC_MSG_RESULT($$1_LIBS)
+
+            AC_MSG_CHECKING($1_VERSION)
+            $1_VERSION=`$PKG_CONFIG --modversion "$2" | tail -n 1`
+            AC_MSG_RESULT($$1_VERSION)
         else
+            AC_MSG_RESULT(no)
             $1_CFLAGS=""
             $1_LIBS=""
             ## If we have a custom action on failure, don't print errors, but 
@@ -1283,8 +1288,7 @@ AC_DEFUN(STEPMAKE_FREETYPE2, [
 	# UGR
      	#r="lib$1-dev or $1-devel"
      	r="libfreetype6-dev or freetype?-devel"
-     	ver="`pkg-config --modversion $1`"
-     	STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
+        STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $FREETYPE2_VERSION)"])
     fi
 ])
 
@@ -1307,8 +1311,7 @@ AC_DEFUN(STEPMAKE_PANGO, [
 	# UGR
      	#r="lib$1-dev or $1-devel"
      	r="libpango1.0-dev or pango1.0-devel"
-     	ver="`pkg-config --modversion $1`"
-     	STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
+        STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $PANGO_VERSION)"])
     fi
 ])
 
@@ -1332,8 +1335,7 @@ AC_DEFUN(STEPMAKE_PANGO_FT2, [
 	# UGR
      	#r="lib$1-dev or $1-devel"e
      	r="libpango1.0-dev or pango?-devel"
-     	ver="`pkg-config --modversion $1`"
-     	STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
+        STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $PANGO_FT2_VERSION)"])
     fi
 ])
 
@@ -1352,8 +1354,7 @@ AC_DEFUN(STEPMAKE_FONTCONFIG, [
 	LIBS="$save_LIBS"
     else
      	r="lib$1-dev or $1-devel"
-     	ver="`pkg-config --modversion $1`"
-     	STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
+        STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $FONTCONFIG_VERSION)"])
     fi
 ])
 
