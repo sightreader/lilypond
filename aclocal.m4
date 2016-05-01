@@ -1401,6 +1401,6 @@ AC_DEFUN(STEPMAKE_WINDOWS, [
     fi
     AC_MSG_RESULT([$PLATFORM_WINDOWS])
     AC_SUBST(PLATFORM_WINDOWS)
-    STEPMAKE_PROGS(WINDRES, $target-windres windres, x)
+    STEPMAKE_PROGS(WINDRES, $host-windres $target-windres windres, x)
     AC_SUBST(WINDRES)
 ])
