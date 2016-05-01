@@ -16,4 +16,6 @@ endif
 ifneq ($(DARWIN_BUILD),)
 SHARED_FLAGS = -bundle -flat_namespace -undefined suppress
 endif
+ifneq ($(PYTHON_LIBS),)
 OUT_SO_MODULES = $(addprefix $(outdir)/, $(C_FILES:.c=$(SHARED_MODULE_SUFFIX)))
+endif
