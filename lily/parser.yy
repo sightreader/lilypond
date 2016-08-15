@@ -2,7 +2,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2016 Han-Wen Nienhuys <hanwen@xs4all.nl>
                  Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -255,6 +255,7 @@ int yylex (YYSTYPE *s, YYLTYPE *loc, Lily_parser *parser);
 %token ALTERNATIVE "\\alternative"
 %token BOOK "\\book"
 %token BOOKPART "\\bookpart"
+%token BRAILLE "\\braille"
 %token CHANGE "\\change"
 %token CHORDMODE "\\chordmode"
 %token CHORDS "\\chords"
@@ -491,6 +492,8 @@ toplevel_expression:
 			id = ly_symbol2scm ("$defaultmidi");
 		else if (to_boolean (od->c_variable ("is-layout")))
 			id = ly_symbol2scm ("$defaultlayout");
+		else if (to_boolean (od->c_variable ("is-braille")))
+			id = ly_symbol2scm ("$defaultbraille");
 
 		parser->lexer_->set_identifier (id, $1);
 	}
@@ -1236,6 +1239,11 @@ output_def_head:
 	}
 	| MIDI    {
 		Output_def *p = get_midi (parser);
+		$$ = p->unprotect ();
+		parser->lexer_->add_scope (p->scope_);
+	}
+	| BRAILLE    {
+		Output_def *p = get_braille (parser);
 		$$ = p->unprotect ();
 		parser->lexer_->add_scope (p->scope_);
 	}

@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+;;;; Copyright (C) 1998--2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;; Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -316,6 +316,8 @@ null markup instead.")
                          "midi")
                     "Set the default file extension for MIDI output
 file to given string.")
+    (braille-extension , "pef"
+    "Set the default file extension for BRAILLE output (PEF format)") 
     (music-strings-to-paths
      #f
      "Convert text strings to paths when glyphs belong
@@ -610,6 +612,7 @@ messages into errors.")
     "define-context-properties.scm"
     "translation-functions.scm"
     "script.scm"
+    "braille.scm"
     "midi.scm"
     "layout-beam.scm"
     "parser-clef.scm"

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2015 by David Kastrup <dak@gnu.org>
+  Copyright (C) 2015-2016 by David Kastrup <dak@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -102,6 +102,7 @@ namespace Lily {
   Variable type_name ("type-name");
   Variable volta_bracket_calc_hook_visibility ("volta-bracket::calc-hook-visibility");
   Variable write_performances_midis ("write-performances-midis");
+  Variable write_embossings ("write-embossings");
 }
 
 namespace Syntax {

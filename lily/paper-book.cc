@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2004--2016 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ Paper_book::Paper_book ()
   scores_ = SCM_EOL;
   bookparts_ = SCM_EOL;
   performances_ = SCM_EOL;
+  embossings_ = SCM_EOL;
   systems_ = SCM_BOOL_F;
 
   paper_ = 0;
@@ -66,6 +67,7 @@ Paper_book::mark_smob () const
   scm_gc_mark (header_0_);
   scm_gc_mark (pages_);
   scm_gc_mark (performances_);
+  scm_gc_mark (embossings_);
   scm_gc_mark (scores_);
   scm_gc_mark (bookparts_);
   return systems_;
@@ -103,6 +105,13 @@ Paper_book::add_bookpart (SCM p)
   bookparts_ = scm_cons (p, bookparts_);
 }
 
+
+void
+Paper_book::add_embossing (SCM s)
+{
+  embossings_ = scm_cons (s, embossings_);
+}
+
 void
 Paper_book::add_performance (SCM s)
 {
@@ -122,6 +131,11 @@ Paper_book::output_aux (SCM output_channel,
                                       output_channel,
                                       scm_from_long (*first_performance_number));
       *first_performance_number += scm_ilength (performances_);
+    }
+
+  if (scm_is_pair (embossings_))
+    {
+      Lily::write_embossings (embossings (), output_channel);
     }
 
   if (scm_is_pair (bookparts_))
@@ -666,4 +680,11 @@ SCM
 Paper_book::performances () const
 {
   return scm_reverse (performances_);
+}
+
+
+SCM
+Paper_book::embossings () const
+{
+  return scm_reverse (embossings_);
 }

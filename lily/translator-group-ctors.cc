@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2016 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 #include "score-engraver.hh"
 #include "score-performer.hh"
+#include "score-embosser.hh"
 #include "warn.hh"
 #include "international.hh"
 
@@ -32,10 +33,14 @@ get_translator_group (SCM sym)
     return new Engraver_group ();
   else if (scm_is_eq (sym, ly_symbol2scm ("Performer_group")))
     return new Performer_group ();
+  else if (scm_is_eq (sym, ly_symbol2scm ("Embosser_group")))
+    return new Embosser_group ();
   else if (scm_is_eq (sym, ly_symbol2scm ("Score_engraver")))
     return new Score_engraver ();
   else if (scm_is_eq (sym, ly_symbol2scm ("Score_performer")))
     return new Score_performer ();
+  else if (scm_is_eq (sym, ly_symbol2scm ("Score_embosser")))
+    return new Score_embosser ();
 
   error (_f ("fatal error.  Couldn't find type: %s",
              ly_symbol2string (sym).c_str ()));

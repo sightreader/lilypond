@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>,
+  Copyright (C) 1997--2016 Han-Wen Nienhuys <hanwen@xs4all.nl>,
                  Erik Sandberg <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 #include "context-def.hh"
 #include "context.hh"
 #include "dispatcher.hh"
+#include "embosser.hh"
+#include "embosser-group.hh"
 #include "engraver.hh"
 #include "engraver-group.hh"
 #include "international.hh"
@@ -102,6 +104,20 @@ filter_performers (SCM ell)
   for (SCM p = ell; scm_is_pair (p); p = scm_cdr (p))
     {
       if (unsmob<Performer> (scm_car (*tail)))
+        *tail = scm_cdr (*tail);
+      else
+        tail = SCM_CDRLOC (*tail);
+    }
+  return ell;
+}
+
+SCM
+filter_embossers (SCM ell)
+{
+  SCM *tail = &ell;
+  for (SCM p = ell; scm_is_pair (p); p = scm_cdr (p))
+    {
+      if (unsmob<Embosser> (scm_car (*tail)))
         *tail = scm_cdr (*tail);
       else
         tail = SCM_CDRLOC (*tail);
@@ -211,6 +227,8 @@ Translator_group::create_child_translator (SCM sev)
   if (dynamic_cast<Engraver_group *> (g))
     g->simple_trans_list_ = filter_performers (trans_list);
   else if (dynamic_cast<Performer_group *> (g))
+    g->simple_trans_list_ = filter_engravers (trans_list);
+  else if (dynamic_cast<Embosser_group *> (g))
     g->simple_trans_list_ = filter_engravers (trans_list);
 
   // TODO: scrap Context::implementation

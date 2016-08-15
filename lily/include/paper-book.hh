@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015  Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2004--2016  Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ private:
   SCM systems_;
   SCM pages_;
   SCM performances_;
+  SCM embossings_;
 
   void add_score_title (SCM);
   SCM get_score_title (SCM);
@@ -56,8 +57,10 @@ public:
   void add_score (SCM);
   void add_bookpart (SCM);
   void add_performance (SCM);
+  void add_embossing (SCM);
 
   SCM performances () const;
+  SCM embossings () const;
   SCM systems ();
   SCM pages ();
   SCM get_system_specs ();

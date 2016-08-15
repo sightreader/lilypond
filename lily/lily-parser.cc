@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2016 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -227,6 +227,15 @@ get_midi (Lily_parser *parser)
   return layout;
 }
 
+Output_def *
+get_braille (Lily_parser *parser)
+{
+  SCM id = parser->lexer_->lookup_identifier ("$defaultbraille");
+  Output_def *layout = unsmob<Output_def> (id);
+  layout = layout ? layout->clone () : new Output_def;
+  layout->set_variable (ly_symbol2scm ("is-braille"), SCM_BOOL_T);
+  return layout;
+}
 /* Return a copy of the top of $papers stack, or $defaultpaper if the
  * stack is empty */
 Output_def *

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2016 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -57,6 +57,9 @@ class Dispatcher;
 class Dot_column;
 class Dot_configuration;
 class Dot_formatting_problem;
+class Embosser;
+class Embosser_group;
+class Embosser_output;
 class Engraver;
 class Engraver_group;
 class Event;
@@ -143,6 +146,7 @@ class Scm_module;
 class Scm_variable;
 class Score;
 class Score_engraver;
+class Score_embosser;
 class Score_performer;
 class Simple_music_iterator;
 class Simple_spacer;
@@ -156,6 +160,7 @@ class Source_file;
 class Sources;
 class Spacing_options;
 class Spanner;
+class Staff_embosser;
 class Staff_performer;
 class Stencil;
 class Stream_event;

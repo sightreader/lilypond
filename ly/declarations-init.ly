@@ -1,6 +1,6 @@
 %%%% This file is part of LilyPond, the GNU music typesetter.
 %%%%
-%%%% Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+%%%% Copyright (C) 1996--2016 Han-Wen Nienhuys <hanwen@xs4all.nl>
 %%%%                          Jan Nieuwenhuizen <janneke@gnu.org>
 %%%%
 %%%% LilyPond is free software: you can redistribute it and/or modify
@@ -131,6 +131,7 @@ repeatTie = #(make-music 'RepeatTieEvent)
 
 \include "grace-init.ly"
 \include "midi-init.ly"
+\include "braille-init.ly"
 \include "paper-defaults-init.ly"
 \include "context-mods-init.ly"
 
