@@ -59,7 +59,7 @@ class Dot_configuration;
 class Dot_formatting_problem;
 class Embosser;
 class Embosser_group;
-class Embosser_output;
+class Embossing;
 class Engraver;
 class Engraver_group;
 class Event;

@@ -239,13 +239,17 @@ void
 Paper_book::classic_output_aux (SCM output,
                                 long *first_performance_number)
 {
-  if (scm_is_pair (performances_))
-    {
-      Lily::write_performances_midis (performances (),
-                                      output,
-                                      scm_from_long (*first_performance_number));
-      *first_performance_number += scm_ilength (performances_);
-    }
+	  if (scm_is_pair (performances_))
+	    {
+	      Lily::write_performances_midis (performances (),
+	                                      output,
+	                                      scm_from_long (*first_performance_number));
+	      *first_performance_number += scm_ilength (performances_);
+	    }
+	  if (scm_is_pair (embossings_))
+	    {
+	      Lily::write_embossings (embossings (), output);
+	    }
 
   /* Generate all stencils to trigger font loads.  */
   systems ();

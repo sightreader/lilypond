@@ -22,7 +22,7 @@
 #include "context-def.hh"
 #include "dispatcher.hh"
 #include "global-context.hh"
-#include "embosser-output.hh"
+#include "embossing.hh"
 #include "output-def.hh"
 #include "string-convert.hh"
 #include "warn.hh"
@@ -41,7 +41,8 @@ ADD_TRANSLATOR_GROUP (Score_embosser,
                       ""
                      );
 
-Score_embosser::Score_embosser ()
+Score_embosser::Score_embosser ():
+		embossing_(NULL)
 {
 }
 
@@ -112,6 +113,11 @@ Score_embosser::derived_mark () const
 void
 Score_embosser::initialize ()
 {
+	embossing_ = new Embossing;
+	embossing_->unprotect ();
+	context ()->set_property ("output", embossing_->self_scm ());
+	embossing_->braille_ = context ()->get_output_def ();
+
 	Translator_group::initialize ();
 }
 

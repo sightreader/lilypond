@@ -1044,4 +1044,5 @@ print a warning and set an optional @var{default}."
 usually carrying context definitions (@code{\\midi} or
 @code{\\layout})."
   (or (module-ref module 'is-midi #f)
+      (module-ref module 'is-braille #f)
       (module-ref module 'is-layout #f)))

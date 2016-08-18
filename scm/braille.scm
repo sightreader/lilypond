@@ -18,18 +18,18 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
+
 (define-public (write-embossings embossings basename . rest)
-  (let ((embossing-ext (ly:get-option 'braille-extension)))
+  (let ((braille-ext (ly:get-option 'braille-extension)))
     (let
         loop
-      ((perfs embossings)
+      ((embs embossings)
        (count (if (null? rest) 0 (car rest))))
-      (if (pair? perfs)
-          (let ((perf (car perfs)))
+      (if (pair? embs)
+          (let ((emb (car embs)))
             (ly:embossing-write
-             perf
+             emb
              (if (> count 0)
-                 (format #f "~a-~a.~a" basename count embossing-ext)
-                 (format #f "~a.~a" basename midi-ext))
-             (embossing-name-from-header (ly:embossing-header perf)))
-            (loop (cdr perfs) (1+ count)))))))
+                 (format #f "~a-~a.~a" basename count braille-ext)
+                 (format #f "~a.~a" basename braille-ext)))
+            (loop (cdr embs) (1+ count)))))))

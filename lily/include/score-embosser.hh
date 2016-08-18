@@ -27,7 +27,7 @@ class Score_embosser : public Embosser_group
 {
 public:
   DECLARE_CLASSNAME (Score_embosser);
-  Embosser_output *embossing_;
+  Embossing *embossing_;
 
   ~Score_embosser ();
   Score_embosser ();

@@ -17,16 +17,16 @@
   along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "embosser-output.hh"
+#include "embossing.hh"
 
 LY_DEFINE (ly_embossing_write, "ly:embossing-write",
 	   2, 0, 0, (SCM embossing, SCM filename),
 	   "Write @var{embossing} to @var{filename}.")
 {
-  LY_ASSERT_SMOB (Embosser_output, embossing, 1);
+  LY_ASSERT_SMOB (Embossing, embossing, 1);
   LY_ASSERT_TYPE (scm_is_string, filename, 2);
 
-  unsmob<Embosser_output> (embossing)->write_output (ly_scm2string (filename));
+  unsmob<Embossing> (embossing)->write_output (ly_scm2string (filename));
   return SCM_UNSPECIFIED;
 }
 

@@ -469,6 +469,8 @@ toplevel_expression:
 				id = ly_symbol2scm ("$defaultpaper");
 			else if (to_boolean (od->c_variable ("is-midi")))
 				id = ly_symbol2scm ("$defaultmidi");
+			else if (to_boolean (od->c_variable ("is-braille")))
+				id = ly_symbol2scm ("$defaultbraille");
 			else if (to_boolean (od->c_variable ("is-layout")))
 				id = ly_symbol2scm ("$defaultlayout");
 

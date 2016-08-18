@@ -30,6 +30,7 @@ using namespace std;
 #include "text-interface.hh"
 #include "warn.hh"
 #include "performance.hh"
+#include "embossing.hh"
 #include "paper-score.hh"
 #include "page-marker.hh"
 #include "ly-module.hh"
@@ -240,6 +241,10 @@ Book::process_score (SCM s, Paper_book *output_paper_book, Output_def *layout)
                 perf->set_header (output_paper_book->header_);
               else if (ly_is_module (output_paper_book->header_0_))
                 perf->set_header (output_paper_book->header_0_);
+            }
+          else if (Embossing *embossing = dynamic_cast<Embossing *> (output))
+            {
+              output_paper_book->add_embossing (embossing->self_scm ());
             }
           else if (Paper_score *pscore = dynamic_cast<Paper_score *> (output))
             {
