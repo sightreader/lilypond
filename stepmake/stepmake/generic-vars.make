@@ -60,8 +60,8 @@ endif
 
 
 # no locale settings in the build process.
-LANG=
-export LANG
+#LANG=
+#export LANG
 
 
 INFO_DIRECTORIES = Documentation
