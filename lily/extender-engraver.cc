@@ -43,9 +43,9 @@ public:
   TRANSLATOR_DECLARATIONS (Extender_engraver);
 
 protected:
-  DECLARE_TRANSLATOR_LISTENER (extender);
-  DECLARE_TRANSLATOR_LISTENER (completize_extender);
-  DECLARE_ACKNOWLEDGER (lyric_syllable);
+  void listen_extender (Stream_event *);
+  void listen_completize_extender (Stream_event *);
+  void acknowledge_lyric_syllable (Grob_info);
 
   virtual void finalize ();
 
@@ -53,14 +53,14 @@ protected:
   void process_music ();
 };
 
-Extender_engraver::Extender_engraver ()
+Extender_engraver::Extender_engraver (Context *c)
+  : Engraver (c)
 {
   extender_ = 0;
   pending_extender_ = 0;
   ev_ = 0;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Extender_engraver, extender);
 void
 Extender_engraver::listen_extender (Stream_event *ev)
 {
@@ -73,7 +73,6 @@ Extender_engraver::listen_extender (Stream_event *ev)
   end before the associated voice (this prevents the right bound being extended
   to the next note-column if no lyric follows the extender)
 */
-IMPLEMENT_TRANSLATOR_LISTENER (Extender_engraver, completize_extender);
 void
 Extender_engraver::listen_completize_extender (Stream_event * /* ev */)
 {
@@ -131,7 +130,7 @@ Extender_engraver::stop_translation_timestep ()
       else
         {
           if (pending_extender_
-              && !get_property ("extendersOverRests"))
+              && !to_boolean (get_property ("extendersOverRests")))
             {
               completize_extender (pending_extender_);
               pending_extender_ = 0;
@@ -180,7 +179,14 @@ Extender_engraver::finalize ()
     }
 }
 
-ADD_ACKNOWLEDGER (Extender_engraver, lyric_syllable);
+void
+Extender_engraver::boot ()
+{
+  ADD_LISTENER (Extender_engraver, extender);
+  ADD_LISTENER (Extender_engraver, completize_extender);
+  ADD_ACKNOWLEDGER (Extender_engraver, lyric_syllable);
+}
+
 ADD_TRANSLATOR (Extender_engraver,
                 /* doc */
                 "Create lyric extenders.",

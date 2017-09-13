@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: d64a2407615c09ddd8f5c34e13a3ecfdf4284f1b
+   Translation of GIT committish: 1e5c6b0f54079eb3285dcc4c7e53f17d8bb03933
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -53,11 +53,8 @@ ligature et de mesure.
 @cindex longueur de note
 
 @funindex \longa
-@funindex longa
 @funindex \breve
-@funindex breve
 @funindex \maxima
-@funindex maxima
 
 Dans les modes de notes, d'accords et de paroles, les durées sont
 écrites avec des chiffres et des points : les durées sont indiquées
@@ -102,7 +99,7 @@ de la notation ancienne.  Pour plus de détails, voir
 
 Si la durée d'une note n'est pas précisée, elle est alors assimilée à la
 durée de la note précédente.  La valeur par défaut pour la première note
-est la noire (@code{4}).
+est la noire (@code{4}).
 
 @lilypond[quote,verbatim]
 \relative { a' a a2 a a4 a a1 a }
@@ -137,7 +134,7 @@ la même façon.
 @end lilypond
 
 Certaines durées ne peuvent s'obtenir à partir de chiffres et de points,
-mais uniquement en @qq{liant} deux ou plusieurs notes entre elles.  Voir
+mais uniquement en « liant » deux ou plusieurs notes entre elles.  Voir
 @ref{Liaisons de prolongation} à ce sujet.
 
 Quant à la manière de spécifier la durée des syllabes ou bien d'aligner
@@ -149,15 +146,12 @@ Pour plus de détails à ce sujet et sur les autres réglages propres à
 cette forme de notation, reportez vous à @ref{Notation proportionnelle}.
 
 @funindex \dotsUp
-@funindex dotsUp
 @funindex \dotsDown
-@funindex dotsDown
 @funindex \dotsNeutral
-@funindex dotsNeutral
 
 Les points sont normalement haussés pour éviter les lignes de portée,
 sauf dans certaines polyphonies.  Des commandes prédéfinies permettent
-de manuellement forcer une orientation particulière, comme indiqué au
+de manuellement forcer un positionnemenet particulièr, comme indiqué au
 chapitre @ref{Direction et positionnement}.
 
 @predefined
@@ -216,7 +210,6 @@ soupir à la maxime (valant huit pauses).
 @cindex triolets
 
 @funindex \tuplet
-@funindex tuplet
 
 Les n-olets -- triolets, quintolets, etc. -- sont obtenus en multipliant
 la vitesse d'une expression musicale par une fraction.
@@ -255,11 +248,8 @@ formés automatiquement :
 @cindex n-olet, positionnement du crochet
 
 @funindex \tupletUp
-@funindex tupletUp
 @funindex \tupletDown
-@funindex tupletDown
 @funindex \tupletNeutral
-@funindex tupletNeutral
 
 Des commandes prédéfinies permettent de déroger au positionnement
 automatique du crochet en surplomb ou au-dessous des notes :
@@ -387,7 +377,6 @@ tout simplement de sauter plusieurs mesures, comme par exemple un
 @cindex musique échelonnée
 
 @funindex \scaleDurations
-@funindex scaleDurations
 
 Il est tout à fait possible d'échelonner des fragments musicaux plus ou
 moins longs à l'aide d'une simple fraction, comme si chaque note, accord
@@ -477,7 +466,7 @@ longues doivent s'aligner sur les subdivisions de la mesure, comme ici :
 @c KEEP LY
 @lilypond[verbatim,quote]
 \relative {
-  r8^"oui" c'8~ 2 r4 |
+  r8 c'4.~ 4 r4 |
   r8^"non" c2~ 8 r4
 }
 @end lilypond
@@ -511,7 +500,6 @@ accords.
 @cindex liaison de prolongation et reprise avec alternative
 
 @funindex \repeatTie
-@funindex repeatTie
 
 Lorsqu'une mesure « de seconde fois » après une reprise commence sur
 une note liée, la liaison doit être répétée, comme ici :
@@ -532,7 +520,6 @@ une note liée, la liaison doit être répétée, comme ici :
 @cindex liaison, laissez vibrer
 
 @funindex \laissezVibrer
-@funindex laissezVibrer
 
 Les liaisons « Laissez vibrer » (@notation{L.v.}) sont utilisées pour
 le piano, la harpe et certains instruments de percussion.  Elles
@@ -546,11 +533,8 @@ lieu de l'étouffer.  Elles s'indiquent de la manière suivante :
 @cindex liaisons de prolongation, positionnement
 
 @funindex \tieUp
-@funindex tieUp
 @funindex \tieDown
-@funindex tieDown
 @funindex \tieNeutral
-@funindex tieNeutral
 
 Le positionnement vertical des liaisons de prolongation peut être affiné
 -- voir à ce sujet les « commandes prédéfinies » et, pour de plus
@@ -561,11 +545,8 @@ amples détails, @ref{Direction et positionnement}.
 @cindex liaison de prolongation, tirets
 
 @funindex \tieDotted
-@funindex tieDotted
 @funindex \tieDashed
-@funindex tieDashed
 @funindex \tieSolid
-@funindex tieSolid
 
 Les liaisons de prolongation peuvent s'imprimer sous la forme de ligne
 continue, discontinue ou pointillée.
@@ -691,14 +672,10 @@ notes.
 @cindex double pause
 
 @funindex \rest
-@funindex rest
 @funindex r
 @funindex \maxima
-@funindex maxima
 @funindex \longa
-@funindex longa
 @funindex \breve
-@funindex breve
 
 Les silences sont écrits comme des notes avec le nom de note @code{r} --
 premier caractère du mot @emph{rest}.  Les durées supérieures à la pause
@@ -780,7 +757,6 @@ soupir à la maxime (équivalant à huit pauses).
 
 @funindex s
 @funindex \skip
-@funindex skip
 
 Un silence invisible -- que l'on pourrait appeler un @qq{saut} --
 peut être entré comme une note avec le nom de note @code{s} ou avec
@@ -874,7 +850,6 @@ Référence des propriétés internes :
 @cindex silences, mesure entière
 @cindex une pause par mesure
 
-@funindex compressMMRests
 @funindex \compressMMRests
 @funindex R
 
@@ -953,7 +928,6 @@ R2.*2 |
 @cindex silence multimesure et point d'orgue
 
 @funindex \fermataMarkup
-@funindex fermataMarkup
 @funindex MultiMeasureRestText
 
 Vous pouvez aussi ajouter du texte à un silence multimesure en
@@ -989,13 +963,10 @@ Un silence multimesure placé directement après une commande
 numéros de mesure.
 
 @funindex \textLengthOn
-@funindex textLengthOn
 @funindex \textLengthOff
 @funindex textLenthOff
 @funindex \fermataMarkup
-@funindex fermataMarkup
 @funindex \compressMMRests
-@funindex compressMMRests
 
 @predefined
 @code{\textLengthOn},
@@ -1083,7 +1054,6 @@ silences.
 @cindex métrique
 
 @funindex \time
-@funindex time
 
 Le chiffre de mesure indique le mètre d'une pièce : une alternance
 régulière de temps forts et de temps faibles.  Il est indiqué par une
@@ -1121,9 +1091,7 @@ indiqué au chapitre @ref{Visibilité des objets}.
 @cindex styles de métrique
 
 @funindex \numericTimeSignature
-@funindex numericTimeSignature
 @funindex \defaultTimeSignature
-@funindex defaultTimeSignature
 
 Le symbole de métrique utilisé pour les mesures à 2/2 et 4/4 peut être
 changé pour un style numérique :
@@ -1329,7 +1297,6 @@ Références des propriétés internes :
 @cindex métronome, indication
 
 @funindex \tempo
-@funindex tempo
 
 Une indication métronomique s'insère tout simplement comme ceci :
 
@@ -1394,9 +1361,7 @@ parenthèses l'indication numérique :
 @end lilypond
 
 @funindex \markLengthOn
-@funindex markLengthOn
 @funindex \markLengthOff
-@funindex markLengthOff
 
 Dans le cas d'une partie où l'instrumentiste a de longs moments de
 silence, les indications de tempo peuvent être fort rapprochées
@@ -1465,7 +1430,6 @@ Référence des propriétés internes :
 
 @funindex measurePosition
 @funindex \partial
-@funindex partial
 
 Les mesures incomplètes, telles que les anacrouses ou levées, doivent
 être entrées avec la commande @code{\partial}.  La syntaxe de cette
@@ -1557,9 +1521,7 @@ Références des propriétés internes :
 @cindex musique non mesurée
 
 @funindex \cadenzaOn
-@funindex cadenzaOn
 @funindex \cadenzaOff
-@funindex cadenzaOff
 
 En matière de musique mesurée, le positionnement des barres et la
 numérotation sont calculés automatiquement.  Ceci n'est pas souhaitable
@@ -1692,9 +1654,7 @@ des sauts de ligne peuvent prendre place :
 
 @funindex timeSignatureFraction
 @funindex \scaleDurations
-@funindex scaleDurations
 @funindex \tuplet
-@funindex tuplet
 
 LilyPond gère les métriques composites, aussi bien de manière explicite
 que de manière détournée -- modification de l'indicateur de métrique
@@ -1805,7 +1765,7 @@ Une métrique composite se crée à l'aide de la fonction
 @code{\compoundMeter}, en suivant la syntaxe :
 
 @example
-\compoundMeter #'@code{(liste de listes)}
+\compoundMeter #'(liste de listes)
 @end example
 
 La construction la plus simple est constituée d'une seule liste, dans
@@ -1996,9 +1956,7 @@ sont ramenées à la même hauteur, sur une portée d'une seule ligne.
 
 @funindex Pitch_squash_engraver
 @funindex \improvisationOn
-@funindex improvisationOn
 @funindex \improvisationOff
-@funindex improvisationOff
 
 L'utilisation combinée du @code{Pitch_squash_engraver} et de
 @code{\improvisationOn} permet d'afficher la structure rythmique d'une
@@ -2021,6 +1979,24 @@ grille d'accords :
     c4 c8 c c4 c8 c
   }
 >>
+@end lilypond
+
+Une musique comportant des accords peut s'utiliser dans un
+@code{RhythmicStaff}, et avec le@code{Pitch_squash_engraver}, dès
+lors que les accords sont auparavant réduits en notes uniques à
+l'aide de la fonction musicale @code{\reduceChords} :
+
+@lilypond[quote,verbatim]
+\new RhythmicStaff {
+  \time 4/4
+  \reduceChords {
+    <c>2
+    <e>2
+    <c e g>2
+    <c e g>4
+    <c e g>4
+  }
+}
 @end lilypond
 
 @predefined
@@ -2065,9 +2041,7 @@ d'imprimer les ligatures.
 @cindex ligatures, personnalisation
 
 @funindex \autoBeamOn
-@funindex autoBeamOn
 @funindex \autoBeamOff
-@funindex autoBeamOff
 
 @lilypond[quote,verbatim]
 \relative c'' {
@@ -2174,9 +2148,7 @@ terminaison ne sera prise en compte qu'à l'occasion de la
 @funindex beatStructure
 @funindex measureLength
 @funindex \time
-@funindex time
 @funindex \set
-@funindex set
 
 Lorsque la fonction de ligature automatique est active, le
 positionnement des ligatures dépend des trois propriétés
@@ -2596,7 +2568,6 @@ indication attachée à une note :
 @end lilypond
 
 @funindex \noBeam
-@funindex noBeam
 
 Le fait d'affubler une note particulière d'un @code{\noBeam} aura pour
 effet de l'empêcher d'être ligaturée :
@@ -2679,7 +2650,6 @@ Référence des propriétés internes :
 @cindex ligature en soufflet
 
 @funindex \featherDurations
-@funindex featherDurations
 @funindex grow-direction
 
 Les ligatures en soufflet permettent d'indiquer qu'un petit groupe de
@@ -2760,7 +2730,6 @@ courts extraits, avec une faible amplitude.
 @cindex barres de reprise
 
 @funindex \bar
-@funindex bar
 
 Les barres de mesures délimitent les mesures, mais peuvent aussi
 indiquer une reprise.  En principe, elles sont insérées automatiquement
@@ -2873,7 +2842,7 @@ vous invitons dans ce cadre particulier à plutôt utiliser
 @code{\divisioMinima}, comme indiqué au paragraphe @ref{Divisions} du
 chapitre consacré au grégorien.
 
-Lilypond prend en charge la notation kiévienne, qui dispose d'une
+LilyPond prend en charge la notation kiévienne, qui dispose d'une
 barre de mesure spécifique :
 
 @lilypond[quote,fragment,verbatim]
@@ -2971,7 +2940,6 @@ surmontée d'un @emph{segno}, et sait coopérer avec l'instruction
 @cindex définition d'une barre de mesure
 
 @funindex \defineBarLine
-@funindex defineBarLine
 
 L'instruction @code{\defineBarLine} permet de définir ses propres
 types de barre de mesure, en respectant la syntaxe :
@@ -3094,7 +3062,6 @@ les portées d'un @code{StaffGroup}, d'un @code{PianoStaff} ou d'un
 @funindex whichBar
 @funindex defaultBarType
 @funindex \bar
-@funindex bar
 @funindex bartype
 
 La commande @samp{\bar @var{type_de_barre}} sert de raccourci pour
@@ -3293,7 +3260,6 @@ atteinte.
 @end lilypond
 
 @funindex \barNumberCheck
-@funindex barNumberCheck
 
 Lorsque l'on recopie de longues pièces, il peut être utile de vérifier
 que les numéros de mesure de LilyPond correspondent à l'original que
@@ -3319,7 +3285,6 @@ Morceaux choisis :
 @cindex repère, indication de
 
 @funindex \mark
-@funindex mark
 
 Indiquer un repère s'obtient grâce à la commande @code{\mark}.
 
@@ -3401,9 +3366,9 @@ est modifié pour imprimer un repère encadré.
 @end lilypond
 
 Le fichier @file{scm/translation-functions.scm} comporte les
-définitions de @code{format-mark-numbers} (comportement par défaut),
-@code{format-mark-box-numbers}, @code{format-mark-letters} et
-@code{format-mark-box-letters}.  Vous pouvez vous en inspirer pour
+définitions de @code{format-mark-letters} (comportement par défaut),
+@code{format-mark-box-letters}, @code{format-mark-numbers} et
+@code{format-mark-box-numbers}.  Vous pouvez vous en inspirer pour
 d'autres fonctions de formatage.
 
 @code{format-mark-barnumbers}, @code{format-mark-box-barnumbers} et
@@ -3431,7 +3396,6 @@ définis.  Un @code{\markup} peut néanmoins s'utiliser en argument.
 @cindex glyphes musicales
 
 @funindex \musicglyph
-@funindex musicglyph
 
 Un @code{\mark} peut contenir un glyphe musical tel que le signe
 @emph{segno}.
@@ -3447,7 +3411,7 @@ Un @code{\mark} peut contenir un glyphe musical tel que le signe
 
 @noindent
 Pour connaître les différents symboles accessibles par
-@code{\musicglyph}, consultez @ref{La fonte Feta}.
+@code{\musicglyph}, consultez @ref{La fonte Emmentaler}.
 
 Pour affiner le positionnement des repères, veuillez vous référer à
 @ref{Mise en forme du texte}, et tout particulièrement ce qui concerne
@@ -3462,7 +3426,7 @@ formatage.
 @seealso
 Manuel de notation :
 @ref{Alignement des objets},
-@ref{La fonte Feta},
+@ref{La fonte Emmentaler},
 @ref{Mise en forme du texte}.
 
 Fichiers d'initialisation :
@@ -3548,7 +3512,6 @@ pour chaque petite croche.
 @cindex notes d'ornement en fin de note
 
 @funindex \afterGrace
-@funindex afterGrace
 
 La commande @code{\afterGrace} sert à placer une petite note après une
 note réelle -- et non @emph{avant} comme d'ordinaire.  Cette commande
@@ -3559,11 +3522,21 @@ s'y rattachent.
 \relative { c''1 \afterGrace d1 { c16[ d] } c1 }
 @end lilypond
 
-Les petites notes se placent alors aux trois quarts de la durée de la
-note réelle.  Cette fraction peut être changée en définissant
-@code{afterGraceFraction}.  Dans l'exemple suivant, vous pouvez observer
-la différence entre le comportement par défaut, à 15/16 et enfin à la
-moitié de la durée de base.
+Les petites notes se placent alors @strong{après} la note réelle.  Leur
+positionnement est déterminé par une fraction de la durée de la note
+principale.  Cette fraction, fixée par défaut à
+
+@example
+afterGraceFraction = 3/4
+@end example
+
+@noindent
+peut être changée en début de fichier.  Elle peut aussi se définir à la
+suite de la commande @code{afterGraceFraction}.
+
+Dans l'exemple suivant, vous pouvez observer la différence entre le
+comportement par défaut, à @code{15/16} et enfin à la moitié de la durée
+de base.
 
 @lilypond[quote,verbatim]
 <<
@@ -3571,19 +3544,17 @@ moitié de la durée de base.
     c''1 \afterGrace d1 { c16[ d] } c1
   }
   \new Staff \relative {
-    #(define afterGraceFraction (cons 15 16))
-    c''1 \afterGrace d1 { c16[ d] } c1
+    c''1 \afterGrace 15/16 d1 { c16[ d] } c1
   }
   \new Staff \relative {
-    #(define afterGraceFraction (cons 1 2))
-    c''1 \afterGrace d1 { c16[ d] } c1
+    c''1 \afterGrace 1/2 d1 { c16[ d] } c1
   }
 >>
 @end lilypond
 
-Des silences invisibles permettent d'ajuster l'espace entre les petites
-notes et la note réelle.  Nous pourrions positionner ces petites notes à
-sept huitièmes de la durée de la note de base :
+Les effets d'une commande @code{\afterGrace} peuvent aussi s'obtenir à
+l'aide de silences invisibles.  Nous pourrions positionner ces petites
+notes à sept huitièmes de la durée de la note de base :
 
 @lilypond[quote,verbatim]
 \new Voice \relative {
@@ -3635,8 +3606,8 @@ désactivés dans cette même expression.
 @seealso
 Glossaire musicologique :
 @rglosnamed{grace notes,ornements},
-@rglosnamed{acciaccatura,acciacature},
-@rglosnamed{appoggiatura,appogiature}.
+@rglosnamed{acciaccatura,acciaccature},
+@rglosnamed{appoggiatura,appoggiature}.
 
 Manuel de notation :
 @ref{Barres de ligature manuelles},
@@ -3842,9 +3813,9 @@ La barre de mesure suivante tombera donc à 9/8 et non à 5/8.
 @end lilypond
 
 @noindent
-Comme le montre cet exemple, @code{ly:make-moment n d} construit une
-durée de n/d fois une ronde. Par conséquent, @code{ly:make-moment 1 8}
-correspond à une croche, et @code{ly:make-moment 7 16} à la durée de
+Comme le montre cet exemple, @code{ly:make-moment n/d} construit une
+durée de n/d fois une ronde. Par conséquent, @code{ly:make-moment 1/8}
+correspond à une croche, et @code{ly:make-moment 7/16} à la durée de
 sept doubles croches.
 
 @seealso

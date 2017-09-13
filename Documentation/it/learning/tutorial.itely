@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 
 @ignore
-    Translation of GIT committish: 88cfc9ee61dece9cffff98ab7f10318633698c39
+    Translation of GIT committish: 09ef86c87175cc6c1071eedb022ed1d01a93bcaf
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -14,6 +14,7 @@
 
 @node Tutorial
 @chapter Tutorial
+@translationof Tutorial
 
 Questo capitolo fornisce un'introduzione di base all'uso di LilyPond.
 
@@ -78,7 +79,7 @@ parentesi dovrebbero essere delimitate da degli spazi, a meno che non si
 trovino all'inizio o alla fine di una linea.  Può darsi che in alcuni esempi
 di questo manuale le parentesi verranno omesse, ma non dimenticarle
 nella tua musica! Per maggiori informazioni sull'aspetto degli esempi
-nel manuale, si veda @ref{How to read the manuals}.}
+nel manuale, si veda @ref{Come leggere i manuali}.}
 
 Inoltre, l'input di LilyPond è @strong{sensibile alle maiuscole}.
 @w{@samp{@{ c d e @}}} è un input valido; @w{@samp{@{ C D E @}}} invece
@@ -109,12 +110,12 @@ programmi che usi.
 @ref{Windows, Microsoft Windows} (grafico)
 
 @item
-@ref{Command-line, @sourceimage{logo-linux,,,}
+@ref{Linea di comando, @sourceimage{logo-linux,,,}
 @sourceimage{logo-freebsd,,,}
 @sourceimage{logo-macosx,,,}
 @sourceimage{logo-windows,,,}
 }
-@ref{Command-line, Tutti i sistemi operativi} (linea di comando)
+@ref{Linea di comando, Tutti i sistemi operativi} (linea di comando)
 
 @end itemize
 
@@ -210,7 +211,6 @@ casi questi valori sono utili.
 @cindex modo relativo, e alterazioni
 
 @funindex \relative
-@funindex relative
 @funindex '
 @funindex ,
 
@@ -387,7 +387,6 @@ Una @notation{pausa} viene inserita proprio come una nota ma col nome
 @cindex tempo, indicazione di
 
 @funindex \time
-@funindex time
 
 Glossario musicale: @rglosnamed{time signature,indicazione di tempo}.
 
@@ -412,7 +411,6 @@ Il @notation{tempo} si imposta con il comando @code{\time}:
 @cindex indicazioni metronomiche
 
 @funindex \tempo
-@funindex tempo
 
 Glossario musicale: @rglosnamed{tempo indication,indicazione di tempo},
 @rglosnamed{metronome,metronomo}.
@@ -446,7 +444,6 @@ impostano col comando @code{\tempo}:
 @cindex basso
 
 @funindex \clef
-@funindex clef
 
 Glossario musicale: @rglosnamed{clef,chiave}.
 
@@ -702,7 +699,7 @@ nella versione online della documentazione.
 
 L'input di LilyPond deve essere compreso dai segni @code{@{ @}} o da
 @q{@w{@code{@bs{}relative @{ @dots{} @}}}}, come abbiamo visto in
-@ref{Working on input files}.  Nel resto di questo manuale alcuni
+@ref{Lavorare sui file di input}.  Nel resto di questo manuale alcuni
 esempi brevi ometteranno questi segni.  Per replicare questi esempi, puoi
 copiare l'input mostrato e incollarlo tra @code{@{} e @code{@}} nel tuo
 file di input:
@@ -772,22 +769,21 @@ comprendere le sezioni successive.}
 
 @item
 @strong{Prima di fare @emph{qualsiasi} tentativo}: leggi il @ref{Tutorial}
-e la @ref{Common notation} del Manuale di apprendimento.  Se
+e la @ref{Notazione comunemente utilizzata} del Manuale di apprendimento.  Se
 ti imbatti in termini musicali che non conosci, cercali nel @rglosnamed{Top, Glossario}.
 
 @item
 @strong{Prima di tentare di scrivere un pezzo musicale completo}: leggi
-i @ref{Fundamental concepts} del Manuale di apprendimento.  Dopo puoi dare
+i @ref{Concetti fondamentali} del Manuale di apprendimento.  Dopo puoi dare
 un'occhiata alle sezioni rilevanti della @rusernamed{Top, Guida alla notazione}.
 
 @item
 @strong{Prima di cercare di cambiare l'output predefinito}: leggi
-@ref{Tweaking output} del Manuale di apprendimento.
+@ref{Modifica dell'output} del Manuale di apprendimento.
 
 @item
 @strong{Prima di iniziare un grande progetto}: leggi il documento
 @rprogram{Consigli su come scrivere i file} del manuale di Uso del programma.
 
 @end itemize
-
 

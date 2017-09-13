@@ -30,6 +30,11 @@ using namespace std;
 #include "output-def.hh"
 #include "warn.hh"
 
+Preinit_Global_context::Preinit_Global_context ()
+{
+  output_def_ = 0;
+}
+
 Global_context::Global_context (Output_def *o)
   : Context ()
 {
@@ -54,6 +59,13 @@ Global_context::Global_context (Output_def *o)
 
   default_child_ = ly_symbol2scm ("Score");
   accepts_list_ = scm_list_1 (default_child_);
+}
+
+void
+Global_context::derived_mark () const
+{
+  if (output_def_)
+    scm_gc_mark (output_def_->self_scm ());
 }
 
 Output_def *
@@ -168,7 +180,7 @@ Global_context::run_iterator_on_me (Music_iterator *iter)
       if (iter->ok ())
         iter->process (w);
 
-      send_stream_event (this, "OneTimeStep", 0, 0);
+      send_stream_event (this, "OneTimeStep", 0);
       apply_finalizations ();
       check_removal ();
     }

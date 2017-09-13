@@ -7,6 +7,10 @@
     Guide, node Updating translation committishes..
 @end ignore
 
+@c Translators: Walter Garcia-Fontes
+@c Translation checkers:
+
+
 @setfilename lilypond-learning.info
 @settitle Manual d'aprenentatge del GNU LilyPond
 @documentencoding UTF-8
@@ -33,7 +37,7 @@ Copyright @copyright{} 1999--2015 pels autors.
 @omfdescription Learning Manual of the LilyPond music engraving system
 @omftype program usage
 @omfcategory Applications|Publishing
-@omflanguage Spanish
+@omflanguage Catalan
 @end ignore
 
 @c Translators: Walter Garcia-Fontes
@@ -45,7 +49,7 @@ Copyright @copyright{} 1999--2015 pels autors.
 
 @menu
 * Tutorial::                       Fonaments de la tipografia musical amb el LilyPond.
-* Notació corrent::                Escripture de la notació molt comú.
+* Notació corrent::                Escriptura de la notació molt comú.
 * Conceptes fonamentals::          Conceptes bàsics per llegir la resta dels manuals.
 * Ajustament de la sortida::       Introducció a la modificació de la sortida.
 

@@ -36,7 +36,7 @@ protected:
 
   void process_music ();
   virtual void finalize ();
-  DECLARE_ACKNOWLEDGER (note_column);
+  void acknowledge_note_column (Grob_info);
 };
 
 void
@@ -114,12 +114,18 @@ Measure_grouping_engraver::process_music ()
     }
 }
 
-Measure_grouping_engraver::Measure_grouping_engraver ()
+Measure_grouping_engraver::Measure_grouping_engraver (Context *c)
+  : Engraver (c)
 {
   grouping_ = 0;
 }
 
-ADD_ACKNOWLEDGER (Measure_grouping_engraver, note_column);
+void
+Measure_grouping_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Measure_grouping_engraver, note_column);
+}
+
 ADD_TRANSLATOR (Measure_grouping_engraver,
                 /* doc */
                 "Create @code{MeasureGrouping} to indicate beat subdivision.",

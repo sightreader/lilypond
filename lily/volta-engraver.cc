@@ -43,7 +43,7 @@ public:
   TRANSLATOR_DECLARATIONS (Volta_engraver);
 protected:
 
-  DECLARE_ACKNOWLEDGER (bar_line);
+  void acknowledge_bar_line (Grob_info);
 
   virtual void derived_mark () const;
   void stop_translation_timestep ();
@@ -62,7 +62,8 @@ Volta_engraver::derived_mark () const
   scm_gc_mark (start_string_);
 }
 
-Volta_engraver::Volta_engraver ()
+Volta_engraver::Volta_engraver (Context *c)
+  : Engraver (c)
 {
   start_string_ = SCM_EOL;
   volta_bracket_ = 0;
@@ -189,7 +190,12 @@ Volta_engraver::stop_translation_timestep ()
 /*
   TODO: should attach volta to paper-column if no bar is found.
 */
-ADD_ACKNOWLEDGER (Volta_engraver, bar_line);
+void
+Volta_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Volta_engraver, bar_line);
+}
+
 ADD_TRANSLATOR (Volta_engraver,
                 /* doc */
                 "Make volta brackets.",

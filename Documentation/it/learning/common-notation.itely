@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 
 @ignore
-    Translation of GIT committish: 21be03e4b893ec2bbea745a713360310931337b9
+    Translation of GIT committish: 250f1bf95f84616b68932324d6b5026833080cc4
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -167,11 +167,8 @@ nomi per le @notation{alterazioni}, si veda @ruser{Nomi delle note in altre ling
 @cindex layout vs. contenuto
 
 @funindex \key
-@funindex key
 @funindex \major
-@funindex major
 @funindex \minor
-@funindex minor
 
 Glossario musicale: @rglosnamed{key signature,armatura di chiave},
 @rglosnamed{major,maggiore}, @rglosnamed{minor,minore}.
@@ -441,11 +438,8 @@ meglio lasciare che sia LilyPond a determinare le direzioni delle articolazioni.
 @funindex \mf
 @funindex \pp
 @funindex \<
-@funindex <
 @funindex \>
-@funindex >
 @funindex \!
-@funindex !
 
 Glossario musicale: @rglosnamed{dynamics,dinamiche}, @rglos{crescendo},
 @rglos{decrescendo}.
@@ -484,7 +478,6 @@ Guida alla notazione:
 @cindex markup
 
 @funindex \markup
-@funindex markup
 
 Puoi aggiungere del testo nei tuoi spartiti:
 
@@ -521,9 +514,7 @@ Guida alla notazione:
 @funindex [
 @funindex ]
 @funindex \autoBeamOff
-@funindex autoBeamOff
 @funindex \autoBeamOn
-@funindex autoBeamOn
 
 Glossario musicale: @rglosnamed{beam,travatura}.
 
@@ -580,7 +571,6 @@ Guida alla notazione:
 @cindex battuta parziale
 
 @funindex \partial
-@funindex partial
 
 Glossario musicale: @rglos{anacrusis}.
 
@@ -603,7 +593,6 @@ Un' @notation{anacrusi} può essere inserita con la parola chiave
 @cindex terzine
 
 @funindex \tuplet
-@funindex tuplet
 
 Glossario musicale: @rglosnamed{note value,durata},
 @rglosnamed{triplet,gruppo irregolare}.
@@ -633,9 +622,7 @@ due, quindi una @notation{terzina} ha 3/2 come frazione:
 @cindex appoggiatura
 
 @funindex \grace
-@funindex grace
 @funindex \acciaccatura
-@funindex acciaccatura
 @funindex \appoggiatura
 @funindex acciaccatura
 
@@ -824,16 +811,14 @@ su un singolo rigo.
 @cindex contesto della notazione
 
 @funindex \new Staff
-@funindex new Staff
 @funindex Staff
 @funindex \new
-@funindex new
 @funindex Score
 @funindex Voice
 @funindex Lyrics
 @funindex ChordNames
 
-Come abbiamo visto in @ref{Music expressions explained}, i file di input
+Come abbiamo visto in @ref{Espressioni musicali}, i file di input
 di LilyPond si costruiscono in base alle espressioni musicali.  Se la partitura
 inizia con espressioni musicali simultanee, LilyPond crea più di un
 rigo musicale.  Tuttavia, è più facile vedere quel che accade se creiamo
@@ -905,7 +890,7 @@ Glossario musicale:
 La musica per pianoforte viene stampata su due righi musicali collegati
 con una @notation{graffa}.
 Produrre un pentagramma di questo tipo è simile all'esempio polifonico in
-@ref{Multiple staves}.  In questo caso, però, l'intera espressione
+@ref{Righi multipli}.  In questo caso, però, l'intera espressione
 è inserita all'interno di @code{PianoStaff}:
 
 @example
@@ -1005,7 +990,7 @@ a spiegarli via via.
 
 @seealso
 Manuale di Apprendimento:
-@ref{Voices contain music}.
+@ref{Le voci contengono la musica}.
 
 Guida alla notazione:
 @ruser{Note simultanee}.
@@ -1031,7 +1016,6 @@ Questa sezione presenta la musica vocale e gli spartiti di semplici canzoni.
 @cindex canzoni
 
 @funindex \addlyrics
-@funindex addlyrics
 
 Glossario musicale: @rglosnamed{lyrics,testo}.
 
@@ -1106,7 +1090,7 @@ alle note.  La parola @notation{shine} dovrebbe essere cantata su due note, non
 una.  Questo si chiama @notation{melisma}, una singola sillaba che viene
 cantata per più di una nota.  Ci sono molti modi per estendere una sillaba
 su molteplici note, e il più semplice è aggiungere una legatura di portamento
-che le colleghi, per i dettagli si veda @ref{Ties and slurs}:
+che le colleghi, per i dettagli si veda @ref{Legature di valore e di portamento}:
 
 @lilypond[verbatim,quote]
 <<
@@ -1127,7 +1111,7 @@ Adesso le parole sono allineate correttamente con le note, ma il raggruppamento
 automatico per le note che si trovano sopra @notation{shine as} non ha un
 aspetto corretto.  Possiamo correggerlo inserendo i comandi per il raggruppamento
 manuale così da scavalcare, in questo caso, il raggruppamento automatico; per i
-dettagli si veda @ref{Automatic and manual beams}.
+dettagli si veda @ref{Code automatiche e manuali}.
 
 @lilypond[verbatim,quote]
 <<
@@ -1277,7 +1261,7 @@ più semplice, ovvero @code{\addlyrics}.  Ecco un esempio tratto dal
 Per scrivere partiture un po' più complesse di questi semplici esempi,
 è meglio separare la struttura dello spartito dalle note e dai testi
 mediante l'uso di variabili. Di queste si parla più approfonditamente
-in @ref{Organizing pieces with variables}.
+in @ref{Organizzare i brani con le variabili}.
 
 
 @seealso
@@ -1354,8 +1338,8 @@ cello = \new Staff {
 @end lilypond
 
 @noindent
-Il nome di una variabile deve contenere soltanto caratteri alfabetici, non
-può avere numeri, trattini bassi (underscore) o trattini di altro tipo.
+Per convenzione, il nome di una variabile è composto soltanto da caratteri
+alfabetici.
 
 Le variabili devono essere definite @emph{prima} della principale espressione
 musicale, ma possono poi essere usate quante volte si vuole e ovunque, una
@@ -1376,9 +1360,9 @@ Le variabili possono essere utilizzate per molti tipi di oggetto
 nell'input.  Ad esempio,
 
 @example
-width = 4.5\cm
-name = "Wendy"
-aFivePaper = \paper @{ paperheight = 21.0 \cm @}
+larghezza = 60  % un numero da passare a una variabile di \paper (l'unità di misura è il millimetro)
+nome = "Wendy"  % una stringa da passare a un markup
+foglioA5 = \paper @{ #(set-paper-size "a5") @}
 @end example
 
 A seconda dei suoi contesti, la variabile può essere usata in punti
@@ -1386,11 +1370,11 @@ differenti.  L'esempio seguente usa le variabili mostrate sopra:
 
 @example
 \paper @{
-  \aFivePaper
-  line-width = \width
+  \foglioA5
+  line-width = \larghezza
 @}
 @{
-  c4^\name
+  c4^\nome
 @}
 @end example
 
@@ -1404,7 +1388,6 @@ differenti.  L'esempio seguente usa le variabili mostrate sopra:
 @cindex blocco dell'intestazione
 
 @funindex \header
-@funindex header
 
 Titolo, compositore, numero di opus e informazioni simili vengono
 inserite nel blocco @code{\header}.  Questo si trova fuori dalla
@@ -1536,11 +1519,11 @@ modalità relativa:
 
 Dopo aver finito di leggere la guida, probabilmente dovresti cercare
 di scrivere uno o due brani.  Puoi iniziare aggiungendo delle note a uno
-dei @ref{Templates}.  Se necessiti di una qualche notazione che non è
+dei @ref{Modelli}.  Se necessiti di una qualche notazione che non è
 stata coperta nel tutorial, dai un'occhiata alla Guida alla notazione,
 a cominciare da @ruser{Notazione musicale}.  Se vuoi scrivere per un gruppo
 di strumenti che non è incluso nei template, dai un'occhiata a
-@ref{Extending the templates}.
+@ref{Estendere i modelli}.
 
 Una volta che hai scritto alcuni brevi pezzi, puoi proseguire la lettura
 del Manuale di Apprendimento (capitoli 3-5).  Ovviamente non c'è niente
@@ -1557,7 +1540,7 @@ la lettura di tutto il Manuale di Apprendimento, potrai rileggere alcune
 sezioni e seguire i riferimenti incrociati per letture di approfondimento.
 
 Se non lo hai già fatto, @emph{ti consigliamo} di leggere
-@ref{Overview of manuals}.  Contiene molte informazioni su LilyPond,
+@ref{Panoramica dei manuali}.  Contiene molte informazioni su LilyPond,
 ed è quindi utile per i nuovi utenti, che spesso non sanno dove cercare
 aiuto.  Se dedichi cinque  minuti all'attenta lettura di quella sezione,
 potresti risparmiarti ore di frustrazione sprecate a guardare in posti sbagliati!

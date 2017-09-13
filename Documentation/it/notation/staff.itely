@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 @ignore
-    Translation of GIT committish: 45c9b27033acc2890f44e7eb08c29c737ca9111f
+    Translation of GIT committish: 041cb33a404a829a8cdeeaebce17e45f613f10d8
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -65,7 +65,6 @@ Questa sezione presenta i diversi metodi per creare e raggruppare i righi.
 @cindex tablatura
 
 @funindex \drummode
-@funindex drummode
 @funindex DrumStaff
 @funindex RhythmicStaff
 @funindex TabStaff
@@ -74,7 +73,7 @@ Questa sezione presenta i diversi metodi per creare e raggruppare i righi.
 @funindex GregorianTranscriptionStaff
 
 Il @notation{rigo musicale} si crea con i comandi @code{\new} o
-@code{\context}.  Ulteriori dettagli in @ref{Creating and referencing contexts}.
+@code{\context}.  Ulteriori dettagli in @ref{Creazione e citazione di un contesto}.
 
 Il contesto di base del rigo è @code{Staff}:
 
@@ -122,14 +121,14 @@ il canto gregoriano moderno.  Non mostra le stanghette delle battute.
 @end lilypond
 
 Si possono creare nuovi contesti per un singolo rigo, come è spiegato
-dettagliatamente in @ref{Defining new contexts}.
+dettagliatamente in @ref{Definizione di nuovi contesti}.
 
 @seealso
 Glossario musicale:
 @rglosnamed{staff,rigo},
 
 Guida alla notazione:
-@ref{Creating and referencing contexts},
+@ref{Creazione e citazione di un contesto},
 @ref{Percussion staves},
 @ref{Showing melody rhythms},
 @ref{Default tablatures},
@@ -137,7 +136,7 @@ Guida alla notazione:
 @ref{Staff symbol},
 @ref{Gregorian chant contexts},
 @ref{Mensural contexts},
-@ref{Defining new contexts}.
+@ref{Definizione di nuovi contesti}.
 
 Frammenti:
 @rlsr{Staff notation}.
@@ -221,8 +220,8 @@ differenza che permette di mostrare il nome dello strumento direttamente.  Ulter
 dettagli in @ref{Instrument names}.
 
 @lilypond[verbatim,quote]
-\new PianoStaff <<
-  \set PianoStaff.instrumentName = #"Piano"
+\new PianoStaff \with { instrumentName = #"Piano" }
+<<
   \new Staff \relative { c''1 c }
   \new Staff \relative { \clef bass c1 c }
 >>
@@ -235,7 +234,7 @@ Ogni contesto per il gruppo di righi imposta la proprietà
 @code{SystemStartSquare}, ma deve essere indicato esplicitamente.
 
 Si possono definire nuovi contesti di gruppi di rigo.  I dettagli sono
-spiegati in @ref{Defining new contexts}.
+spiegati in @ref{Definizione di nuovi contesti}.
 
 
 @snippets
@@ -264,7 +263,7 @@ Glossario musicale:
 
 Guida alla notazione:
 @ref{Instrument names},
-@ref{Defining new contexts}.
+@ref{Definizione di nuovi contesti}.
 
 Frammenti:
 @rlsr{Staff notation}.
@@ -313,7 +312,7 @@ accanto alla parentesi del gruppo superiore.
 @end lilypond
 
 Si possono definire nuovi gruppi di righi annidati.  Ulteriori dettagli
-in @ref{Defining new contexts}.
+in @ref{Definizione di nuovi contesti}.
 
 
 @snippets
@@ -325,7 +324,7 @@ in @ref{Defining new contexts}.
 Guida alla notazione:
 @ref{Grouping staves},
 @ref{Instrument names},
-@ref{Defining new contexts}.
+@ref{Definizione di nuovi contesti}.
 
 Frammenti:
 @rlsr{Staff notation}.
@@ -421,9 +420,7 @@ le sezioni ossia.
 @cindex tagli addizionali, modificare
 
 @funindex \startStaff
-@funindex startStaff
 @funindex \stopStaff
-@funindex stopStaff
 
 I comandi @code{\stopStaff} e @code{\startStaff} servono a fermare o
 (ri)avviare le linee del rigo, per impedire che appaiano in un punto
@@ -484,7 +481,7 @@ rigo i gambi puntano in su, mentre in quella superiore sono rivolti in giù),
 occorre allineare la linea centrale (o lo spazio) del rigo personalizzato
 alla posizione della linea centrale normale (0).  Potrà essere necessario
 regolare la posizione della chiave e del Do@tie{}centrale per adattarsi
-alle nuove linee.  Si veda @ref{Clef}.
+alle nuove linee.  Si veda @ref{Chiave}.
 
 Si può modificare lo spessore della linea del rigo.  Per impostazione predefinita,
 questa modifica ha effetto anche sui tagli addizionali e sui gambi.
@@ -575,7 +572,7 @@ Glossario musicale:
 @rglosnamed{staff,rigo (o pentagramma)}.
 
 Guida alla notazione:
-@ref{Clef}.
+@ref{Chiave}.
 
 Frammenti:
 @rlsr{Staff notation}.
@@ -595,9 +592,7 @@ Guida al funzionamento interno:
 @cindex ridimensionamento dei righi
 
 @funindex \startStaff
-@funindex startStaff
 @funindex \stopStaff
-@funindex stopStaff
 
 I righi @notation{ossia} si possono creare aggiungendo un nuovo rigo
 simultaneo nel punto giusto:
@@ -681,10 +676,10 @@ esempio.
 @end lilypond
 
 
-Come alternativa, si può usare il comando @code{\Staff \RemoveEmptyStaves}
+Altrimenti si può usare il comando @code{\RemoveAllEmptyStaves}
 per creare i righi ossia.  Questo metodo conviene quando i righi ossia
 si trovano subito dopo un'interruzione di linea.  Ulteriori informazioni
-su @code{\Staff \RemoveEmptyStaves} si trovano in @ref{Hiding staves}.
+su @code{\RemoveAllEmptyStaves} si trovano in @ref{Hiding staves}.
 
 @lilypond[verbatim,quote,ragged-right]
 <<
@@ -692,6 +687,7 @@ su @code{\Staff \RemoveEmptyStaves} si trovano in @ref{Hiding staves}.
     \remove "Time_signature_engraver"
     \hide Clef
     \magnifyStaff #2/3
+    \RemoveAllEmptyStaves
   } \relative {
     R1*3
     c''4 e8 d c2
@@ -706,12 +702,6 @@ su @code{\Staff \RemoveEmptyStaves} si trovano in @ref{Hiding staves}.
   }
 >>
 
-\layout {
-  \context {
-    \Staff \RemoveEmptyStaves
-    \override VerticalAxisGroup.remove-first = ##t
-  }
-}
 @end lilypond
 
 
@@ -750,11 +740,14 @@ Guida al funzionamento interno:
 @cindex rigo, nascondere
 @cindex rigo vuoto
 @cindex nascondere i righi
+@cindex nascondere i righi antichi
+@cindex nascondere i righi ritmici
+@cindex nascondere i tetragrammi
 
 @funindex \RemoveEmptyStaves
+@funindex \RemoveAllEmptyStaves
 @funindex Staff_symbol_engraver
 @funindex \stopStaff
-@funindex stopStaff
 
 
 Le linee del rigo si possono nascondere togliendo l'incisore
@@ -769,11 +762,14 @@ si può usare @code{\stopStaff}.
 @end lilypond
 
 
-I righi vuoti si possono nascondere inserendo il comando
-@code{\Staff \RemoveEmptyStaves} nel blocco @code{\layout}.  Nelle
-partiture per orchestra, questo stile è noto come @q{Partitura
-alla francese}.  Questo comando nasconde e toglie tutti i righi
-vuoti di una partitura eccetto quelli nel primo sistema.
+I righi vuoti si possono nascondere (per la cosiddetta @q{partitura alla francese})
+applicando il comando @code{\RemoveEmptyStaves} a un contesto, che può
+essere fatto globalmente (in un blocco @code{\layout}) oppure soltanto per
+righi specifici (in un blocco @code{\with}).  Questo comando toglie tutti i
+righi vuoti di una partitura eccetto quelli nel primo sistema.  Per nascondere
+anche quelli del primo sistema usare il comando @code{\RemoveAllEmptyStaves}.
+I contesti supportati sono @code{Staff}, @code{RhythmicStaff} e
+@code{VaticanaStaff}.
 
 @warning{Un rigo viene considerato vuoto quando contiene soltanto  pause
 multiple,  pause, salti, pause spaziatrici o una combinazione di questi
@@ -803,31 +799,13 @@ elementi.}
 @cindex ossia
 
 @noindent
-@code{\Staff \RemoveEmptyStaves} si può usare anche per creare sezioni ossia
+@code{\RemoveAllEmptyStaves} si può usare anche per creare sezioni ossia
 per un rigo.  I dettagli si trovano in @ref{Ossia staves}.
 
-@cindex nascondere i righi antichi
-@cindex nascondere i righi ritmici
-
-@funindex \RemoveEmptyStaves
-
-Per nascondere i righi vuoti nei contesti della musica antica si può usare
-il comando @code{\VaticanaStaff \RemoveEmptyStaves}.  Analogalmente,
-@code{\RhythmicStaff \RemoveEmptyStaves} permette di nascondere i contesti
-@code{RhythmicStaff} vuoti.
-
-
 @predefined
-@code{\Staff \RemoveEmptyStaves},
-@code{\VaticanaStaff \RemoveEmptyStaves},
-@code{\RhythmicStaff \RemoveEmptyStaves}.
+@code{\RemoveEmptyStaves},
+@code{\RemoveAllEmptyStaves}.
 @endpredefined
-
-
-@snippets
-
-@lilypondfile[verbatim,quote,texidoc,doctitle]
-{removing-the-first-empty-line.ly}
 
 @seealso
 Glossario musicale:
@@ -837,7 +815,7 @@ Manuale d'apprendimento:
 @rlearning{Visibilità e colore degli oggetti}.
 
 Guida alla notazione:
-@ref{Changing context default settings},
+@ref{Modifica delle impostazioni predefinite di un contesto},
 @ref{Staff symbol},
 @ref{Ossia staves},
 @ref{Hidden notes},
@@ -868,7 +846,7 @@ conviene usare i seguenti comandi invece di togliere l'incisore:
 
 Per i problemi noti e gli avvertimenti relativi a
 @code{\Staff \RemoveEmptyStaves} si veda
-@ref{Changing context default settings}.
+@ref{Modifica delle impostazioni predefinite di un contesto}.
 
 
 @node Scrittura delle parti
@@ -997,20 +975,14 @@ successive saranno ignorate:
 @lilypond[verbatim,quote,ragged-right]
 prepPiccolo = <>^\markup \italic { muta in Piccolo }
 
+prepFlute = <>^\markup \italic { muta in Flauto }
+
 setPiccolo = {
-  \set Staff.instrumentName = #"Piccolo"
-  \set Staff.shortInstrumentName = #"Picc."
-  \set Staff.midiInstrument = #"piccolo"
   <>^\markup \bold { Piccolo }
   \transposition c''
 }
 
-prepFlute = <>^\markup \italic { muta in Flauto }
-
 setFlute = {
-  \set Staff.instrumentName = #"Flute"
-  \set Staff.shortInstrumentName = #"Flt."
-  \set Staff.midiInstrument = #"flute"
   <>^\markup \bold { Flute }
   \transposition c'
 }
@@ -1018,14 +990,17 @@ setFlute = {
 \new Staff \with {
   instrumentName = #"Flute"
   shortInstrumentName = #"Flt."
-  midiInstrument = #"flute"
 }
 \relative {
   g'1 g g g \break
   g1 g \prepPiccolo R R \break
+  \set Staff.instrumentName = #"Piccolo"
+  \set Staff.shortInstrumentName = #"Picc."
   \setPiccolo
   g1 g g g \break
   g1 g \prepFlute R R \break
+  \set Staff.instrumentName = #"Flute"
+  \set Staff.shortInstrumentName = #"Flt."
   \setFlute
   g1 g g g
 }
@@ -1056,11 +1031,8 @@ Guida al funzionamento interno:
 @cindex note in corpo più piccolo
 
 @funindex \addQuote
-@funindex addQuote
 @funindex \quoteDuring
-@funindex quoteDuring
 @funindex \transposition
-@funindex transposition
 
 È molto comune che una voce usi le stesse note di un'altra voce.  Per esempio,
 il primo e il secondo violino che suonano la stessa frase durante un particolare
@@ -1118,9 +1090,9 @@ oboeNotes = \relative {
 @end lilypond
 
 @c Frase non chiara, traduco letteralmente. - fb
-Se un comando @code{\unfoldRepeat} in un'espressione musicale deve essere
+Se un comando @code{\unfoldRepeats} in un'espressione musicale deve essere
 stampato quando si usa @code{\quoteDuring}, allora anch'esso deve contenere
-il suo comando @code{\unfoldRepeat};
+il suo comando @code{\unfoldRepeats};
 
 @lilypond[verbatim,quote]
 fluteNotes = \relative {
@@ -1257,13 +1229,9 @@ terzine annidate potrebbe produrre una notazione mediocre.
 
 
 @funindex \cueDuring
-@funindex cueDuring
 @funindex \cueClef
-@funindex cueClef
 @funindex \cueDuringWithClef
-@funindex cueDuringWithClef
 @funindex \quoteDuring
-@funindex quoteDuring
 
 @cindex note più piccole
 @cindex CueVoice
@@ -1446,7 +1414,6 @@ bassoonNotes = \relative c {
 @end lilypond
 
 @funindex \transposedCueDuring
-@funindex transposedCueDuring
 
 Come @code{\quoteDuring}, @code{\cueDuring} prende in considerazione la
 trasposizione degli strumenti.  Le citazioni in corpo più piccolo vengono mostrate nelle altezze
@@ -1487,7 +1454,6 @@ bassClarinetNotes = \relative c' {
 @cindex citazioni in corpo più piccolo, togliere le
 
 @funindex \killCues
-@funindex killCues
 
 Il comando @code{\killCues} toglie le citazioni in corpo più piccolo da un'espressione
 musicale, in modo che la stessa espressione musicale possa essere
@@ -1540,7 +1506,7 @@ Guida alla notazione:
 @ref{Quoting other voices},
 @ref{Instrument transpositions},
 @ref{Instrument names},
-@ref{Clef},
+@ref{Chiave},
 @ref{Musical cues},
 @ref{Using tags}.
 

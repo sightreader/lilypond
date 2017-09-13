@@ -327,6 +327,7 @@ approximately 12% larger; 6@tie{}steps are exactly a factor@tie{}2
 larger.  If the context property @code{fontSize} is set, its value is
 added to this before the glyph is printed.  Fractional values are
 allowed.")
+     (font-features ,list? "Opentype features.")
      (footnote ,boolean? "Should this be a footnote or in-note?")
      (footnote-music ,ly:music? "Music creating a footnote.")
      (footnote-text ,markup? "A footnote for the grob.")
@@ -372,6 +373,9 @@ Default @code{none} for markup fret diagrams, @code{below-string} for
 @item
 @code{fret-count} -- The number of frets.  Default@tie{}4.
 @item
+@code{fret-distance} -- Multiplier to adjust the distance between frets.
+Default@tie{}1.0.
+@item
 @code{fret-label-custom-format} -- The format string to be used label
 the lowest fret number, when @code{number-type} equals to
 @code{custom}.  Default@tie{}\"~a\".
@@ -411,6 +415,9 @@ string.  Default @code{\"o\"}.
 Default @code{normal}.
 @item
 @code{string-count} -- The number of strings.  Default@tie{}6.
+@item
+@code{string-distance} -- Multiplier to adjust the distance between strings.
+Default@tie{}1.0.
 @item
 @code{string-label-font-mag} -- The magnification of the font used to
 label fingerings at the string, rather than in the dot.  Default value
@@ -524,13 +531,7 @@ left and one to the right of this grob.")
 ;;;
 ;;; i
 ;;;
-     (id ,string? "An id string for the grob.  Depending on the typestting
-backend being used, this id will be assigned to a group containing all of
-the stencils that comprise a given grob.  For example, in the svg backend,
-the string will be assigned to the @code{id} attribute of a group (<g>)
-that encloses the stencils that comprise the grob.  In the Postscript
-backend, as there is no way to group items, the setting of the id property
-will have no effect.")
+     (id ,string? "An id string for the grob.")
      (ignore-ambitus ,boolean? "If set, don't consider this notehead
 for ambitus calculation.")
      (ignore-collision ,boolean? "If set, don't do note collision
@@ -575,8 +576,13 @@ lines for.")
 lines.  It is the sum of 2@tie{}numbers: The first is the factor for
 line thickness, and the second for staff space.  Both contributions
 are added.")
-     (ledger-positions ,list? "Repeating pattern for the vertical positions
-of ledger lines.  Bracketed groups are always shown together.")
+     (ledger-positions ,list? "Vertical positions of ledger lines.
+When set on a @code{StaffSymbol} grob it defines a repeating
+pattern of ledger lines and any parenthesized groups will always be
+shown together.")
+     (ledger-positions-function ,scheme? "A quoted Scheme procedure that
+takes a @code{StaffSymbol} grob and the vertical position of a note head
+as arguments and returns a list of ledger line positions.")
      (left-bound-info ,list? "An alist of properties for determining
 attachments of spanners to edges.")
      (left-padding ,ly:dimension? "The amount of space that is put
@@ -612,6 +618,8 @@ visual output is influenced by changes to
 to beams from this stem.  Further beams are typeset as beamlets.")
      (maximum-gap ,number? "Maximum value allowed for @code{gap}
 property.")
+     (max-symbol-separation ,number? "The maximum distance between
+symbols making up a church rest.")
      (measure-count ,integer? "The number of measures for a
 multi-measure rest.")
      (measure-length ,ly:moment? "Length of a measure.  Used in some
@@ -670,7 +678,7 @@ object.")
 get stems extending to the middle staff line.")
      (non-break-align-symbols ,list? "A list of symbols that determine
 which NON-break-aligned interfaces to align this to.")
-     (non-default ,boolean? "Set for manually specified clefs.")
+     (non-default ,boolean? "Set for manually specified clefs and keys.")
      (non-musical ,boolean? "True if the grob belongs to a
 @code{NonMusicalPaperColumn}.")
      (nonstaff-nonstaff-spacing ,list? "The spacing alist
@@ -715,6 +723,14 @@ different voices. Default value@tie{}1.")
 ;;;
 ;;; o
 ;;;
+     (output-attributes ,list? "An alist of attributes for the grob, to
+be included in output files.  When the SVG typesetting backend is used,
+the attributes are assigned to a group (<g>) containing all of the
+stencils that comprise a given grob.  For example,
+@code{'((id . 123) (class . foo) (data-whatever . @qq{bar}))} will produce
+@code{<g id=@qq{123} class=@qq{foo} data-whatever=@qq{bar}> @dots{} </g>}.
+In the Postscript backend, where there is no way to group items, the
+setting of the output-attributes property will have no effect.")
      (outside-staff-horizontal-padding ,number? "By default, an
 outside-staff-object can be placed so that is it very close to another
 grob horizontally.  If this property is set, the outside-staff-object
@@ -804,12 +820,16 @@ number, the quicker the slur attains its @code{height-limit}.")
 interesting items.")
      (remove-first ,boolean? "Remove the first staff of an orchestral
 score?")
-     (remove-layer ,integer? "The @code{Keep_alive_together_engraver}
-removes all @code{VerticalAxisGroup} grobs with a @code{remove-layer}
-larger than the smallest retained @code{remove-layer}.  Set to
-@code{#f} to make a layer invisible to the
-@code{Keep_alive_together_engraver}, set to @code{'()} to have it not
-participate in the layering decisions.")
+     (remove-layer ,key? "When set as a positive integer, the
+@code{Keep_alive_together_engraver} removes all
+@code{VerticalAxisGroup} grobs with a @code{remove-layer} larger than
+the smallest retained @code{remove-layer}. Set to @code{#f} to make a
+layer independent of the @code{Keep_alive_together_engraver}. Set to
+@code{'()}, the layer does not participate in the layering decisions.
+The property can also be set as a symbol for common behaviors:
+@code{#'any} to keep the layer alive with any other layer in the
+group; @code{#'above} or @code{#'below} to keep the layer alive with
+the context immediately before or after it, respectively.")
      (replacement-alist ,list? "Alist of strings.
 The key is a string of the pattern to be replaced.  The value is a
 string of what should be displayed.  Useful for ligatures.")
@@ -864,9 +884,10 @@ of the staff-position at which each clef places C:
 If the list contains a single element it applies for all clefs.
 A single number in place of a pair sets accidentals within the octave
 ending at that staff-position.")
-     (shorten-pair ,number-pair? "The lengths to shorten a
-text-spanner on both sides, for example a pedal bracket.  Positive
-values shorten the text-spanner, while negative values lengthen it.")
+     (shorten-pair ,number-pair? "The lengths to shorten on both sides
+a hairpin or text-spanner such as a pedal bracket.  Positive values
+shorten the hairpin or text-spanner, while negative values lengthen
+it.")
      (shortest-duration-space ,number? "Start with this multiple of
 @code{spacing-increment} space for the shortest duration.  See also
 @rinternals{spacing-spanner-interface}.")
@@ -987,7 +1008,7 @@ override:
 \\override MultiMeasureRest
   #'spacing-pair = #'(staff-bar . staff-bar)
 @end example")
-     (spanner-id ,string? "An identifier to distinguish concurrent spanners.")
+     (spanner-id ,key? "An identifier to distinguish concurrent spanners.")
      (springs-and-rods ,boolean? "Dummy variable for triggering
 spacing routines.")
      (stacking-dir ,ly:dir? "Stack objects in which direction?")
@@ -1149,11 +1170,15 @@ one below this grob.")
 printed over a white background to white-out underlying material, if
 the grob is visible.  A number indicates how far the white background
 extends beyond the bounding box of the grob as a multiple of the
-staff-line thickness.  The shape of the background is determined by
-@code{whiteout-style}.  Usually @code{#f} by default.")
+staff-line thickness.  The @code{LyricHyphen} grob uses a special
+implementation of whiteout:  A positive number indicates how far the
+white background extends beyond the bounding box in multiples of
+@code{line-thickness}.  The shape of the background is determined by
+@code{whiteout-style}.  Usually @code{#f} by default. ")
      (whiteout-style ,symbol? "Determines the shape of the
 @code{whiteout} background.  Available are @code{'outline},
-@code{'rounded-box}, and the default @code{'box}.")
+@code{'rounded-box}, and the default @code{'box}.  There is one
+exception: Use @code{'special} for @code{LyricHyphen}.")
      (width ,ly:dimension? "The width of a grob measured in staff
 space.")
      (word-space ,ly:dimension? "Space to insert between words in
@@ -1232,6 +1257,7 @@ for positioning elements that align with a column.")
 column as start/@/begin point.  Only columns that have grobs or act as
 bounds are spaced.")
      (bracket ,ly:grob? "The bracket for a number.")
+     (bracket-text ,ly:grob? "The text for an analysis bracket.")
 
      (c0-position ,integer? "An integer indicating the position of
 middle@tie{}C.")

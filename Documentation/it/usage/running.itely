@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 
 @ignore
-    Translation of GIT committish: 8706e77a804e412e751fdd47385c8ccfdc28e732
+    Translation of GIT committish: cd1ac38996d3de35770ea31f819b392fe686bf39
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -213,7 +213,7 @@ pdfsizeopt.py --use-multivalent=no gsout.pdf final.pdf
 @end example
 
 @item -d, --define-default=@var{variabile}=@var{valore}
-Si veda @ref{Advanced command line options for LilyPond}.
+Si veda @ref{Opzioni avanzate della linea di comando per LilyPond}.
 
 @cindex Scheme, valutazione dell'espressione
 @cindex valutazione dell'espressione, Scheme
@@ -251,6 +251,10 @@ Formati di output.  Come @code{formato} si può scegliere tra
 
 Esempio: @code{lilypond -fpng @var{file}.ly}
 
+@noindent
+Per i formati @code{svg} e @code{eps} usare l'opzione @code{-dbackend}.
+Vedi @ref{Opzioni avanzate della linea di comando per LilyPond}.
+
 @item -h, --help
 Mostra una sintesi dell'utilizzo.
 
@@ -278,7 +282,7 @@ Esegue @command{lilypond} in una gabbia chroot.
 L'opzione @option{--jail} fornisce un'alternativa più flessibile a
 @option{--safe} quando la formattazione di LilyPond è messa a disposizione attraverso
 un server web o quando LilyPond esegue sorgenti provenienti dall'esterno
-(si veda @ref{Advanced command line options for LilyPond}).
+(si veda @ref{Opzioni avanzate della linea di comando per LilyPond}).
 
 L'opzione @option{--jail} modifica la radice di @command{lilypond} in
 @var{gabbia} appena prima di iniziare il vero processo di compilazione.  L'utente
@@ -328,7 +332,7 @@ con privilegi di superutente (che ovviamente perderà immediatamente),
 possibilmente con l'uso di @command{sudo}.  È una buona idea limitare il
 numero di secondi di tempo della CPU che LilyPond può usare (ad esempio con
 @command{ulimit -t}), e, se il sistema operativo lo permette, la quantità di
-memoria che può essere allocata.  Si veda anche @ref{LilyPond in chroot jail}.
+memoria che può essere allocata.  Si veda anche @ref{LilyPond in una gabbia chroot}.
 @end table
 
 @cindex loglevel
@@ -483,22 +487,22 @@ di @code{-dno-print-pages}.
 @item
 @tab @code{svg}
 @tab Scalable Vector Graphics.
-Viene creato un singolo file SVG per ogni pagina dell'output.  Eccetto i
-glifi musicali di LilyPond, nessun altro tipo di carattere verrà incorporato
-nel file.  Dunque qualsiasi lettore SVG dovrà avere accesso ai tipi di
-carattere per rendere in modo adeguato il testo.  Si raccomanda di non usare
-gli @q{alias} o le @q{liste} dei tipi di carattere se il lettore SVG non è
+Viene creato un singolo file SVG per ogni pagina dell'output.  I glifi
+musicali vengono tradotti in grafica vettoriale, ma i tipi di carattere
+del testo @emph{non} sono incorporati nei file SVG.  Dunque qualsiasi
+lettore SVG dovrà avere accesso ai tipi di carattere necessari per
+rendere in modo adeguato il testo.  Si raccomanda di non usare
+@q{liste} o @q{alias} dei tipi di carattere se il lettore SVG non è
 in grado di gestirli.  Se si usano i file @emph{Web Open Font Format} (WOFF),
 è richiesta anche l'opzione @code{svg-woff}.
 @end multitable
 
 @noindent
 @strong{Nota per l'output del backend svg:}
-I tipi di carattere predefiniti di LilyPond (@code{LilyPond Serif},
-@code{LilyPond Sans Serif} e @code{LilyPond Monospace}) sono solo alias
-@emph{locali}.  Dunque quando si usa il backend @code{svg} è obbligatorio
-definire esplicitamente i tipi di carattere predefiniti nel proprio file
-di input:
+Nell'output svg LilyPond usa i valori generici @code{serif}, @code{sans-serif} o
+@code{monospace} di @code{font-family}.  Dunque quando si usa il backend
+@code{svg} è obbligatorio definire esplicitamente specifici tipi di carattere
+predefiniti nel proprio file di input:
 
 @quotation
 @verbatim
@@ -579,10 +583,18 @@ la compilazione.
 @tab @code{#f}
 @tab Scarica le firme dell'output di ogni sistema. Usato per testare le regressioni.
 
+@item @code{embed-source-code}
+@tab @code{#f}
+@tab Incorpora i file sorgente LilyPond nel documento PDF generato.
+
 @item @code{eps-box-padding}
 @tab @code{#f}
 @tab Sposta il margine sinistro della cornice EPS dell'output della quantità
 specificata (in mm).
+
+@item @code{font-export-dir}
+@tab @code{#f [dir]}
+@tab Directory per esportare i font come file PostScript.
 
 @item @code{gs-load-fonts}
 @tab @code{#f}
@@ -591,6 +603,11 @@ specificata (in mm).
 @item @code{gs-load-lily-fonts}
 @tab @code{#f}
 @tab Carica solo i font LilyPond attraverso Ghostscript.
+
+@item @code{gs-never-embed-fonts}
+@tab @code{#f}
+@tab Fa sì che Ghostscript incorpori solo i font TrueType e nessun altro
+formato per font.
 
 @item @code{gui}
 @tab @code{#f}
@@ -659,7 +676,7 @@ essere compresa tra virgolette precedute dal segno di escape.
 @item @code{point-and-click}
 @tab @code{#t}
 @tab Aggiunge i collegamenti @q{punta e clicca} all'output PDF e SVG. Si veda
-@ref{Point and click}.
+@ref{Punta e clicca}.
 
 @item @code{preview}
 @tab @code{#f}
@@ -749,7 +766,7 @@ La modalità sicura bloccherà la compilazione di molti utili frammenti di codic
 LilyPond.
 
 L'opzione @option{--jail} è un'alternativa più sicura, ma richiede più lavoro
-per configurarla.  Si veda @ref{Basic command line options for LilyPond}.
+per configurarla.  Si veda @ref{Opzioni di base della linea di comando per LilyPond}.
 
 @multitable @columnfractions .33 .16 .51
 @item @code{separate-log-files}
@@ -1045,7 +1062,7 @@ contesti, potrebbe apparire lo stesso messaggio molteplici volte.  Anche
 la diagnosi eseguita in uno degli @q{ultimi} passaggi (es: controlli di
 battuta) può apparire varie volte.
 
-Maggiori informazioni sugli errori si trovano in @ref{Common errors}.
+Maggiori informazioni sugli errori si trovano in @ref{Errori comuni}.
 
 
 @node Errori comuni

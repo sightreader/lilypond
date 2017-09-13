@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: es -*-
 @ignore
-    Translation of GIT committish: 16661f7f6a78f04d056228d11bdc9e17a7cdf760
+    Translation of GIT committish: 4244c3a9fbf1f3ff2e20e665f92516d35b61de53
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -367,7 +367,6 @@ otros efectos no deseados (consulte también
 @cindex racimo (cluster)
 
 @funindex \makeClusters
-@funindex makeClusters
 
 Un «cluster» o racimo indica que se deben tocar simultáneamente un
 conjunto de notas consecutivas.  Se escriben aplicando la función
@@ -433,11 +432,9 @@ pentagramas.
 @cindex letra asignada a una voz
 
 @funindex \voiceOne
-@funindex voiceOne
 @funindex \voiceOne ... \voiceFour
 @funindex Voice
 @funindex \oneVoice
-@funindex oneVoice
 
 @subsubsubheading Instanciar las voces explícitamente
 
@@ -598,6 +595,28 @@ arriba, y las de numeración par reciben plicas hacia abajo:
 >>
 @end lilypond
 
+@funindex \voices
+Si se desea introducir las voces en un orden distinto, puede ser de
+utilidad la instrucción @code{\voices}:
+
+@lilypond[quote,verbatim]
+\new Staff \voices 1,3,5,6,4,2 <<
+  \time 2/4
+  { f''2 }  % 1: highest
+  \\
+  { d''2 }  % 3: second-highest
+  \\
+  { b'2  }  % 5: third-highest
+  \\
+  { g'2  }  % 6: third-lowest
+  \\
+  { e'2  }  % 4: second-lowest
+  \\
+  { c'2  }  % 2: lowest
+>>
+@end lilypond
+
+
 @warning{No se pueden crear letras ni elementos de extensión (como
 ligaduras, reguladores, etc.) que se crucen de una voz a otra.}
 
@@ -704,21 +723,13 @@ Fragmentos de código:
 @cindex desplazamiento, silencio automático de
 @cindex desplazamiento de silencios, automático
 @funindex \shiftOn
-@funindex shiftOn
 @funindex \shiftOnn
-@funindex shiftOnn
 @funindex \shiftOnnn
-@funindex shiftOnnn
 @funindex \shiftOff
-@funindex shiftOff
 @funindex \mergeDifferentlyDottedOn
-@funindex mergeDifferentlyDottedOn
 @funindex \mergeDifferentlyDottedOff
-@funindex mergeDifferentlyDottedOff
 @funindex \mergeDifferentlyHeadedOn
-@funindex mergeDifferentlyHeadedOn
 @funindex \mergeDifferentlyHeadedOff
-@funindex mergeDifferentlyHeadedOff
 
 Las cabezas de notas que están en diferentes voces y tienen la
 misma altura, la misma forma de cabeza, y dirección opuesta de la
@@ -954,7 +965,6 @@ tienen también distinto puntillo, no están claros.
 @cindex a due, partes
 @cindex solo, partes
 @funindex \partcombine
-@funindex partcombine
 
 La combinación automática de particellas se usa para mezclar dos
 partes musicales distintas sobre un pentagrama.  Esto puede ser de
@@ -1065,17 +1075,11 @@ Una sección @code{\relative} que se encuentra fuera de
 @code{@var{expresión_musical_2}}.
 
 @funindex \partcombineChords
-@funindex partcombineChords
 @funindex \partcombineApart
-@funindex partcombineApart
 @funindex \partcombineUnisono
-@funindex partcombineUnisono
 @funindex \partcombineSoloI
-@funindex partcombineSoloI
 @funindex \partcombineSoloII
-@funindex partcombineSoloII
 @funindex \partcombineAutomatic
-@funindex partcombineAutomatic
 
 En las partituras profesionales, las voces con frecuencia se
 mantienen separadas entre sí durante pasajes prolongados incluso
@@ -1226,7 +1230,6 @@ utilizar barrado automático.
 @cindex música intercalada
 @cindex paralelo, música en
 @funindex \parallelMusic
-@funindex parallelMusic
 
 La música para varias partes se puede intercalar dentro del código
 de entrada.  La función @code{\parallelMusic} admite una lista que

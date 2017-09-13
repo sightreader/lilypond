@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 
 @ignore
-    Translation of GIT committish: dbe1fd47441d21aadd5669e9e69edfecb38ae45a
+    Translation of GIT committish: 1e5c6b0f54079eb3285dcc4c7e53f17d8bb03933
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -22,7 +22,7 @@
 * Formati carta predefiniti::
 * Strumenti MIDI::
 * Elenco dei colori::
-* Il tipo di carattere Feta::
+* Il font Emmentaler::
 * Stili delle teste di nota::
 * Stili della chiave::
 * Comandi per markup::
@@ -208,7 +208,7 @@ Triade aumentata, @*settima minore
 @tab
 @code{aug7}
 @tab
-@code{c1:aug}
+@code{c1:aug7}
 @tab
 @lilypond[line-width=2.1\cm,noragged-right,notime]
 <<
@@ -240,7 +240,7 @@ Triade minore, @*settima maggiore
 @tab
 @code{m7+}
 @tab
-@code{m7+}
+@code{c1:m7+}
 @tab
 @lilypond[line-width=2.1\cm,noragged-right,notime]
 <<
@@ -853,7 +853,7 @@ cello                     lead 6 (voice)
 
 @subsubheading Colori normali
 
-La sintassi è descritta in @ref{Coloring objects}.
+La sintassi è descritta in @ref{Colorare gli oggetti}.
 
 @cindex elenco dei colori
 @cindex colori, elenco dei
@@ -950,19 +950,38 @@ greyN
 dove N è un numero compreso tra 0 e 100.
 
 
-@node Il tipo di carattere Feta
-@appendixsec Il tipo di carattere Feta
-@translationof The Feta font
+@node Il font Emmentaler
+@appendixsec Il font Emmentaler
+@translationof The Emmentaler font
 
-@cindex tipo di carattere Feta
-@cindex Feta, tipo di carattere
+@cindex Emmentaler, font
+@cindex font Emmentaler
+@cindex Feta, font
+@cindex font Feta
+@cindex Parmesan, font
+@cindex font Parmesan
+@cindex tipi di carattere
 
-I simboli seguenti sono disponibili nel tipo di carattere Emmentaler e
-si possono utilizzare all'interno di un comando @code{\markup} specificando
-il nome del glifo, come mostrato nelle seguenti tabelle, per esempio
-@code{g^\markup @{\musicglyph #"scripts.segno" @}} o
-@code{\markup @{\musicglyph #"five"@}}.  Maggiori informazioni in
-@ref{Formatting text}.
+Il font Emmentaler è composto da due @emph{sottoinsiemi} di glifi.
+@qq{Feta}, usato nella notazione classica e @qq{Parmesan}, usato
+nella notazione antica.
+
+A qualsiasi glifo del font Emmentaler si può accedere direttamente usando
+del testo insieme al nome del glifo (come è mostrato nelle tabelle
+seguenti).  Per esempio:
+
+@example
+g^\markup @{\musicglyph #"scripts.segno" @}
+@end example
+
+@noindent
+oppure
+
+@example
+\markup @{\musicglyph #"five"@}.
+@end example
+
+Maggiori informazioni in @ref{Formattazione del testo}.
 
 
 @menu
@@ -1542,7 +1561,7 @@ Tutti i comandi seguenti possono essere usati all'interno di @code{\markuplist}:
 @translationof List of special characters
 
 Si possono usare i seguenti riferimenti per i caratteri speciali;
-maggiori informazioni in @ref{ASCII aliases}.
+maggiori informazioni in @ref{Alias ASCII}.
 
 Si usa la sintassi HTML. Di questi riferimenti molti sono
 identici a quelli HTML, alcuni sono ispirati a @LaTeX{}.

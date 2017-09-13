@@ -1090,9 +1090,9 @@ scoreTitleMarkup = \markup @{ \column @{
 以下の構文を用います:
 
 @example
-@code{variable} = @code{\markup} @{
+variable = \markup @{
   ...
-  @code{\on-the-fly}  #@var{procedure}  @var{markup}
+  \on-the-fly  #@var{procedure}  @var{markup}
   ...
 @}
 @end example
@@ -1155,9 +1155,9 @@ scoreTitleMarkup = \markup @{ \column @{
 できます。例えば、
 
 @example
-  @code{\on-the-fly #first-page}
-  @code{\on-the-fly #last-page}
-  @code{@{ \markup ... \fromproperty #'header: ... @}}
+  \on-the-fly #first-page
+  \on-the-fly #last-page
+  @{ \markup ... \fromproperty #'header: ... @}
 @end example
 
 これは、出力が単一のページかどうかを判断します。
@@ -2188,7 +2188,7 @@ LilyPond は UTF-8 エンコーディング
 LilyPond は多言語テキストを、Pango ライブラリを用いて、@c
 レイアウトして描画します。
 
-Lilypond は入力のエンコーディング変換をまったく行いません。@c
+LilyPond は入力のエンコーディング変換をまったく行いません。@c
 これは非 ASCII 文字を含むすべてのテキスト
  -- タイトル、歌詞テキストあるいは演奏指示 --
 を UTF-8 でエンコードして入力する必要があるということを意味します。@c
@@ -2486,7 +2486,7 @@ Portable Network Graphics (PNG) 出力フォーマットが利用可能です。
 @subsection 記譜フォントを置換する
 @translationof Replacing the notation font
 
-LilyPond で使用される Feta フォントの代わりに Gonville に使うことができます。@c
+LilyPond で使用される Emmentaler フォントの代わりに Gonville に使うことができます。@c
 Gonville は以下からダウンロードできます:
 @example
 @uref{http://www.chiark.greenend.org.uk/~sgtatham/gonville/ ,http://www.chiark.greenend.org.uk/~sgtatham/gonville/}
@@ -2498,7 +2498,7 @@ Gonville のサンプル小節です:
 @c       for the font comparison.  -gp
 @sourceimage{Gonville_after,,,}
 
-LilyPond の Feta フォントのサンプル小節です:
+LilyPond の Emmentaler フォントのサンプル小節です:
 
 @sourceimage{Gonville_before,,,}
 
@@ -2510,11 +2510,14 @@ ZIP ファイルをダウンロードして、伸張します。@c
 -- 更なる情報は、@rlearning{Other sources of information} を参照してください。@c
 既存の @code{fonts} ディレクトリを @code{fonts_orig} にリネームして、@c
 @code{lilyfonts} ディレクトリを @code{fonts} にリネームします。@c
-Feta フォントに戻すには、@code{fonts_orig} を @code{fonts} に戻します。
+Emmentaler フォントに戻すには、@code{fonts_orig} を @code{fonts} に戻します。
 
 @seealso
 学習マニュアル:
 @rlearning{Other sources of information}
+
+記譜法リファレンス:
+@ref{The Emmentaler font}.
 
 @knownissues
 Gonville では @q{古代の音楽} を記譜することはできません。@c

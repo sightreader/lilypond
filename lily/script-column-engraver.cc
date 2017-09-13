@@ -35,12 +35,13 @@ class Script_column_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Script_column_engraver);
 protected:
-  DECLARE_ACKNOWLEDGER (side_position);
+  void acknowledge_side_position (Grob_info);
   void process_acknowledged ();
   void stop_translation_timestep ();
 };
 
-Script_column_engraver::Script_column_engraver ()
+Script_column_engraver::Script_column_engraver (Context *c)
+  : Engraver (c)
 {
   script_column_ = 0;
 }
@@ -77,7 +78,12 @@ Script_column_engraver::process_acknowledged ()
     script_column_ = make_item ("ScriptColumn", SCM_EOL);
 }
 
-ADD_ACKNOWLEDGER (Script_column_engraver, side_position);
+void
+Script_column_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Script_column_engraver, side_position);
+}
+
 ADD_TRANSLATOR (Script_column_engraver,
                 /* doc */
                 "Find potentially colliding scripts and put them into a"

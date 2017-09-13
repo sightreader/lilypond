@@ -10,6 +10,9 @@
 
 @c \version "2.19.21"
 
+@c Translators: Walter Garcia-Fontes
+@c Translation checkers:
+
 @node Suggeriments per escriure fitxers d'entrada
 @chapter Suggeriments per escriure fitxers d'entrada
 @translationof Suggestions for writing files
@@ -73,8 +76,8 @@ fa uns anys.  @code{convert-ly} requereix que declareu quina
 versió del LilyPond fèieu servir.
 
 @item @strong{Incloeu comprovacions}:
-@rusernamed{Bar and bar number checks,Comprovació de compàs i de número de compàs},
-@rusernamed{Octave checks,Comprovació d'octava}.
+@ruser{Comprovació de compàs i de número de compàs},
+@ruser{Comprovació d'octava}.
 Si incloeu comprovacions de tant en tant, en cas que cometeu un
 error podreu localitzar-lo molt més ràpidament.  Amb quina
 freqüència és @q{de tant en tant}?  Depèn de la complexitat de la
@@ -98,7 +101,7 @@ i també si li passeu la font a un amic, serà tot un desafiament
 determinar les seves intencions o de quina menara estava
 estructurat el fitxer si no li heu afegit els comentaris.
 
-@item @strong{Apliqueu marges als claudàtors}.  Molts problemes
+@item @strong{Apliqueu marges a les claus}.  Molts problemes
 estan casat per una falta d'equilibri en el nombre de @code{@{} i
 @code{@}}.
 
@@ -631,4 +634,4 @@ copy sortida\elmeuprojecte.pdf ElMeuProjecte.pdf
 @seealso
 Manual d'utilització del programa:
 @rprogram{Utilització des de la línia d'ordres},
-@rprogram{LilyPond-book}
+@rprogram{lilypond-book}

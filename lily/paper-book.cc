@@ -53,7 +53,7 @@ Paper_book::~Paper_book ()
 {
 }
 
-const char Paper_book::type_p_name_[] = "ly:paper-book?";
+const char * const Paper_book::type_p_name_ = "ly:paper-book?";
 
 SCM
 Paper_book::mark_smob () const
@@ -217,6 +217,25 @@ Paper_book::output (SCM output_channel)
         }
       else
         warning (_f ("program option -dpreview not supported by backend `%s'",
+                     get_output_backend_name ()));
+    }
+
+  if (get_program_option ("crop"))
+    {
+      SCM framework
+        = ly_module_lookup (mod, ly_symbol2scm ("output-crop-framework"));
+
+      if (scm_is_true (framework))
+        {
+          SCM func = scm_variable_ref (framework);
+          scm_call_4 (func,
+                      output_channel,
+                      self_scm (),
+                      scopes,
+                      dump_fields ());
+        }
+      else
+        warning (_f ("program option -dcrop not supported by backend `%s'",
                      get_output_backend_name ()));
     }
 }
@@ -514,7 +533,7 @@ Paper_book::get_system_specs ()
               SCM footnotes = get_footnotes (unsmob<Stencil> (t)->expr ());
               ps->set_property ("footnotes", footnotes);
               ps->set_property ("is-title", SCM_BOOL_T);
-              if (list == texts)
+              if (scm_is_eq (list, texts))
                 first = ps;
               else
                 {

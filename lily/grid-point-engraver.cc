@@ -44,8 +44,15 @@ Grid_point_engraver::process_music ()
     }
 }
 
-Grid_point_engraver::Grid_point_engraver ()
+Grid_point_engraver::Grid_point_engraver (Context *c)
+  : Engraver (c)
 {
+}
+
+void
+Grid_point_engraver::boot ()
+{
+
 }
 
 ADD_TRANSLATOR (Grid_point_engraver,

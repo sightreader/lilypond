@@ -35,25 +35,6 @@
              (scm framework-ps)
              (lily))
 
-;;; helper functions, not part of output interface
-;;;
-
-
-;; ice-9 format uses a lot of memory
-;; using simple-format almost halves lilypond cell usage
-
-(define (str4 num)
-  (if (or (nan? num) (inf? num))
-      (begin
-        (ly:warning (_ "Found infinity or nan in output.  Substituting 0.0"))
-        (if (ly:get-option 'strict-infinity-checking)
-            (exit 1))
-        "0.0")
-      (ly:number->string num)))
-
-(define (number-pair->string4 numpair)
-  (ly:format "~4l" numpair))
-
 ;;;
 ;;; Lily output interface, PostScript implementation --- cleanup and docme
 ;;;
@@ -71,10 +52,10 @@
        "false")
    radius thick))
 
-(define (start-enclosing-id-node s)
+(define (start-group-node attributes)
   "")
 
-(define (end-enclosing-id-node)
+(define (end-group-node)
   "")
 
 (define (dashed-line thick on off dx dy phase)
@@ -157,6 +138,10 @@
                                 (ly:in-event-class? cause t))
                               point-and-click))))
             (let* ((location (ly:input-file-line-char-column music-origin))
+                   (raw-file (car location))
+                   (file (if (is-absolute? raw-file)
+                             raw-file
+                             (string-append (ly-getcwd) "/" raw-file)))
                    (x-ext (ly:grob-extent grob grob X))
                    (y-ext (ly:grob-extent grob grob Y)))
 
@@ -171,7 +156,7 @@
                              ;; Backslashes are not valid
                              ;; file URI path separators.
                              (ly:string-percent-encode
-                              (ly:string-substitute "\\" "/" (car location)))
+                              (ly:string-substitute "\\" "/" file))
 
                              (cadr location)
                              (caddr location)

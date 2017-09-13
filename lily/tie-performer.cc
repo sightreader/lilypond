@@ -51,17 +51,17 @@ protected:
   void start_translation_timestep ();
   virtual void acknowledge_audio_element (Audio_element_info);
   void process_music ();
-  DECLARE_TRANSLATOR_LISTENER (tie);
+  void listen_tie (Stream_event *);
 public:
   TRANSLATOR_DECLARATIONS (Tie_performer);
 };
 
-Tie_performer::Tie_performer ()
+Tie_performer::Tie_performer (Context *c)
+  : Performer (c)
 {
   event_ = 0;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Tie_performer, tie);
 void
 Tie_performer::listen_tie (Stream_event *ev)
 {
@@ -182,6 +182,12 @@ Tie_performer::stop_translation_timestep ()
   event_ = 0;
   now_heads_.clear ();
   now_tied_heads_.clear ();
+}
+
+void
+Tie_performer::boot ()
+{
+  ADD_LISTENER (Tie_performer, tie);
 }
 
 ADD_TRANSLATOR (Tie_performer,

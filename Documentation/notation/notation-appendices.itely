@@ -21,7 +21,7 @@
 * Predefined paper sizes::
 * MIDI instruments::
 * List of colors::
-* The Feta font::
+* The Emmentaler font::
 * Note head styles::
 * Clef styles::
 * Text markup commands::
@@ -859,12 +859,12 @@ darkcyan    darkmagenta    darkyellow
 X color names come several variants:
 
 Any name that is spelled as a single word with capitalization
-(e.g. @q{LightSlateBlue}) can also be spelled as space separated
-words without capitalization (e.g. @q{light slate blue}).
+(e.g., @q{LightSlateBlue}) can also be spelled as space separated
+words without capitalization (e.g., @q{light slate blue}).
 
-The word @q{grey} can always be spelled @q{gray} (e.g. @q{DarkSlateGray}).
+The word @q{grey} can always be spelled @q{gray} (e.g., @q{DarkSlateGray}).
 
-Some names can take a numerical suffix (e.g. @q{LightSalmon4}).
+Some names can take a numerical suffix (e.g., @q{LightSalmon4}).
 
 
 @subsubheading Color Names without a numerical suffix:
@@ -937,18 +937,37 @@ greyN
 Where N is in the range 0-100.
 
 
-@node The Feta font
-@appendixsec The Feta font
+@node The Emmentaler font
+@appendixsec The Emmentaler font
 
+
+@cindex Emmentaler font
+@cindex Font, Emmentaler
 @cindex Feta font
 @cindex Font, Feta
+@cindex Parmesan font
+@cindex Font, Parmesan
 
-The following symbols are available in the Emmentaler font and may be
-accessed directly using text markup with the name of the glyph
-as shown in the tables below,
-such as @code{g^\markup @{\musicglyph #"scripts.segno" @}} or
-@code{\markup @{\musicglyph #"five"@}}.  For more information,
-see @ref{Formatting text}.
+The Emmentaler font consists of two @emph{sub-sets} of glyphs.
+@qq{Feta}, used for classical notation and @qq{Parmesan}, used for
+Ancient notation.
+
+Any glyph within the Emmentaler font can be accessed directly by using
+text markup along with the name of the glyph (as shown in the tables
+below).  For example;
+
+@example
+g^\markup @{\musicglyph #"scripts.segno" @}
+@end example
+
+@noindent
+or
+
+@example
+\markup @{\musicglyph #"five"@}
+@end example
+
+For more information see @ref{Formatting text}.
 
 
 @menu
@@ -1475,6 +1494,12 @@ c1
 
 @node Text markup commands
 @appendixsec Text markup commands
+
+@ignore
+All the .tely files included in this appendix are automatically
+generated from source files during the build.
+For translators: you cannot translate the content of these files.
+@end ignore
 
 @include markup-commands.tely
 
@@ -2366,7 +2391,7 @@ An association list or @strong{alist} for short is a Scheme pair
 which associates a value with a key: @w{@code{(key . value)}}.  For
 example, in @file{scm/lily.scm}, the alist
 @w{@qq{type-p-name-alist}} associates certain type predicates
-(e.g.@tie{}@code{ly:music?}) with names (e.g.@tie{}@qq{music}) so
+(e.g., @code{ly:music?}) with names (e.g., @qq{music}) so
 that type-check failures can be reported with a console message that
 includes the name of the expected type predicate.
 
@@ -2392,7 +2417,7 @@ performed.
 In Scheme, a @strong{closure} is created when a function, usually
 a lambda expression, is passed as a variable.  The closure contains
 the function's code plus references to the lexical bindings of the
-function's free variables (i.e. those variables used in the
+function's free variables (i.e., those variables used in the
 expression but defined outside it).  When this function is applied
 to different arguments later, the free variable bindings that were
 captured in the closure are used to obtain the values of the free
@@ -2691,4 +2716,3 @@ within a @code{\layout} or @code{\with} block.
 @appendixsec Scheme functions
 
 @include scheme-functions.tely
-

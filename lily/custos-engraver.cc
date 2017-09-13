@@ -39,8 +39,8 @@ class Custos_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Custos_engraver);
   void start_translation_timestep ();
-  DECLARE_ACKNOWLEDGER (bar);
-  DECLARE_ACKNOWLEDGER (note_head);
+  void acknowledge_bar (Grob_info);
+  void acknowledge_note_head (Grob_info);
   void process_acknowledged ();
   void stop_translation_timestep ();
   virtual void finalize ();
@@ -52,7 +52,8 @@ private:
   vector<Pitch> pitches_;
 };
 
-Custos_engraver::Custos_engraver ()
+Custos_engraver::Custos_engraver (Context *c)
+  : Engraver (c)
 {
   custos_permitted_ = false;
 }
@@ -142,8 +143,13 @@ Custos_engraver::finalize ()
   custodes_.clear ();
 }
 
-ADD_ACKNOWLEDGER (Custos_engraver, bar);
-ADD_ACKNOWLEDGER (Custos_engraver, note_head);
+
+void
+Custos_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Custos_engraver, bar);
+  ADD_ACKNOWLEDGER (Custos_engraver, note_head);
+}
 
 ADD_TRANSLATOR (Custos_engraver,
                 /* doc */

@@ -37,12 +37,13 @@ class Fingering_column_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Fingering_column_engraver);
 protected:
-  DECLARE_ACKNOWLEDGER (finger);
+  void acknowledge_finger (Grob_info);
   void process_acknowledged ();
   void stop_translation_timestep ();
 };
 
-Fingering_column_engraver::Fingering_column_engraver ()
+Fingering_column_engraver::Fingering_column_engraver (Context *c)
+  : Engraver (c)
 {
   for (LEFT_and_RIGHT (d))
     fingering_columns_[d] = 0;
@@ -101,7 +102,12 @@ Fingering_column_engraver::process_acknowledged ()
     }
 }
 
-ADD_ACKNOWLEDGER (Fingering_column_engraver, finger);
+void
+Fingering_column_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Fingering_column_engraver, finger);
+}
+
 ADD_TRANSLATOR (Fingering_column_engraver,
                 /* doc */
                 "Find potentially colliding scripts and put them into a"

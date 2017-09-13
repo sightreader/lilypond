@@ -82,7 +82,7 @@ Context_def::~Context_def ()
 {
 }
 
-const char Context_def::type_p_name_[] = "ly:context-def?";
+const char * const Context_def::type_p_name_ = "ly:context-def?";
 
 int
 Context_def::print_smob (SCM port, scm_print_state *) const
@@ -291,11 +291,8 @@ Context_def::get_translator_names (SCM user_mod) const
 
       if (scm_is_eq (tag, ly_symbol2scm ("consists")))
         l1 = scm_cons (arg, l1);
-      else if (scm_is_eq (tag, ly_symbol2scm ("remove"))
-               && (scm_is_pair (arg)
-                   || ly_is_procedure (arg)
-                   || get_translator (arg)))
-        l1 = scm_delete_x (arg, l1);
+      else if (scm_is_eq (tag, ly_symbol2scm ("remove")))
+        l1 = scm_delq_x (arg, l1);
     }
 
   return l1;

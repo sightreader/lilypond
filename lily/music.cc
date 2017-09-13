@@ -45,12 +45,15 @@ Music::internal_is_music_type (SCM k) const
   return scm_is_true (scm_c_memq (k, ifs));
 }
 
-Music::Music (SCM init)
-  : Prob (ly_symbol2scm ("Music"), init)
+Preinit_Music::Preinit_Music ()
 {
   length_callback_ = SCM_EOL;
   start_callback_ = SCM_EOL;
+}
 
+Music::Music (SCM init)
+  : Prob (ly_symbol2scm ("Music"), init)
+{
   length_callback_ = get_property ("length-callback");
   if (!ly_is_procedure (length_callback_))
     length_callback_ = duration_length_callback_proc;
@@ -234,7 +237,7 @@ Prob::transpose (Pitch delta)
                && scm_is_pair (val))
         new_val = ly_transpose_key_alist (val, delta.smobbed_copy ());
 
-      if (val != new_val)
+      if (!scm_is_eq (val, new_val))
         scm_set_cdr_x (entry, new_val);
     }
 }

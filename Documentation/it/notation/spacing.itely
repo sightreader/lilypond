@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 
 @ignore
-    Translation of GIT committish: 410fe169a1eeff173aed62d85b79686532b379ff
+    Translation of GIT committish: 24dd6365d3d05f13b9259f547be9b2517851a5d1
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -142,7 +142,7 @@ sezione, @ref{Paper size and automatic scaling}.  Le variabili
 @code{\paper} che si occupano della formattazione della pagina sono
 trattate in sezioni successive.  Le definizioni di markup relative a
 intestazioni, piè di pagina e titoli sono trattate in
-@ref{Custom titles headers and footers}.
+@ref{Titoli intestazioni e piè di pagina personalizzati}.
 
 La maggior parte delle variabili @code{\paper} funzionano soltanto in
 un blocco @code{\paper}.  Le poche che funzionano anche in un blocco
@@ -189,7 +189,7 @@ L'equivalente Scheme dell'esempio precedente è:
 @seealso
 Guida alla notazione:
 @ref{Paper size and automatic scaling},
-@ref{Custom titles headers and footers},
+@ref{Titoli intestazioni e piè di pagina personalizzati},
 @ref{The layout block,,Il blocco @code{@bs{}layout}}.
 
 File installati:
@@ -252,7 +252,7 @@ a tutte le pagine.  Se il blocco @code{\paper} si trova dentro un blocco
 
 Quando si usa la funzione @code{set-paper-size}, questa deve essere
 posta @emph{prima} di qualsiasi altra funzione usata nello stesso blocco
-@code{\paper}.  Vedi @ref{Automatic scaling to paper size}.
+@code{\paper}.  Vedi @ref{Ridimensionamento automatico al formato carta}.
 
 I formati carta sono definiti in @file{scm/paper.scm}, e sebbene sia
 possibile aggiungere formati personalizzati in questo file, tali aggiunte
@@ -303,7 +303,7 @@ usato per la formattazione.
 
 @seealso
 Guida alla notazione:
-@ref{Automatic scaling to paper size},
+@ref{Ridimensionamento automatico al formato carta},
 @ref{Predefined paper sizes}.
 
 File installati:
@@ -359,7 +359,7 @@ File installati:
 @warning{Alcune dimensioni definite nel blocco @code{@bs{}paper} sono
 ridimensionate automaticamente in base al formato carta, portando a
 possibili risultati imprevisti. Vedi
-@ref{Automatic scaling to paper size}.}
+@ref{Ridimensionamento automatico al formato carta}.}
 
 I valori predefiniti (prima del ridimensionamento) sono definiti in
 @file{ly/paper-defaults-init.ly}.
@@ -403,7 +403,7 @@ giustificate verticalmente come nelle pagine precedenti.
 
 @seealso
 Guida alla notazione:
-@ref{Automatic scaling to paper size}.
+@ref{Ridimensionamento automatico al formato carta}.
 
 File installati:
 @file{ly/paper-defaults-init.ly}.
@@ -630,7 +630,7 @@ Frammenti:
 
 @warning{Alcune dimensioni in @code{@bs{}paper} sono ridimensionate
 automaticamente in base al formato carta, producendo talvolta un
-risultato inatteso. Vedi @ref{Automatic scaling to paper size}.}
+risultato inatteso. Vedi @ref{Ridimensionamento automatico al formato carta}.}
 
 @menu
 * Variabili paper per larghezze e margini::
@@ -745,7 +745,7 @@ Questa variabile può essere impostata anche in un blocco @code{\layout}.
 
 @seealso
 Guida alla notazione:
-@ref{Automatic scaling to paper size}.
+@ref{Ridimensionamento automatico al formato carta}.
 
 File installati:
 @file{ly/paper-defaults-init.ly}.
@@ -803,7 +803,7 @@ Funziona soltanto con @code{two-sided} impostato su vero.
 
 @seealso
 Guida alla notazione:
-@ref{Automatic scaling to paper size}.
+@ref{Ridimensionamento automatico al formato carta}.
 
 File installati:
 @file{ly/paper-defaults-init.ly}.
@@ -850,7 +850,7 @@ anche in blocchi @code{\layout} per impostare le brevi indentazioni brano per br
 
 @seealso
 Guida alla notazione:
-@ref{Automatic scaling to paper size}.
+@ref{Ridimensionamento automatico al formato carta}.
 
 File installati:
 @file{ly/paper-defaults-init.ly}.
@@ -926,8 +926,9 @@ I valori predefiniti non elencati qui sono visibili in
 
 L'algoritmo di interruzione di pagina da usare.  Le opzioni sono
 @code{ly:minimal-breaking}, @code{ly:page-turn-breaking},
-@code{ly:one-line-breaking} e @code{ly:optimal-breaking}
-(predefinito).
+@code{ly:one-page-breaking}, @code{ly:one-line-breaking},
+@code{ly:one-line-auto-height-breaking} e
+@code{ly:optimal-breaking} (predefinito).
 
 @item page-breaking-system-system-spacing
 @funindex page-breaking-system-system-spacing
@@ -1007,7 +1008,9 @@ Guida alla notazione:
 @ref{Optimal page breaking},
 @ref{Optimal page turning},
 @ref{Minimal page breaking},
-@ref{One-line page breaking}.
+@ref{One-page page breaking},
+@ref{One-line page breaking},
+@ref{One-line-auto-height page breaking}.
 
 File installati:
 @file{ly/paper-defaults-init.ly}.
@@ -1167,7 +1170,7 @@ musica.  Le impostazioni che possono apparire in un blocco
 La funzione @code{layout-set-staff-size} è spiegata nella prossima
 sezione, @ref{Setting the staff size}.  Le modifiche di contesto sono
 trattate in un capitolo separato; vedi @ref{Modifying context plug-ins} e
-@ref{Changing context default settings}.
+@ref{Modifica delle impostazioni predefinite di un contesto}.
 
 Le variabili @code{\paper} che possono apparire in un blocco @code{\layout},
 con valori predefiniti presi dal blocco @code{\paper}, sono:
@@ -1304,7 +1307,7 @@ per ripristinare la configurazione di @code{\layout} a uno stato conosciuto.
 
 @seealso
 Guida alla notazione:
-@ref{Changing context default settings}.
+@ref{Modifica delle impostazioni predefinite di un contesto}.
 
 Frammenti:
 @rlsr{Spacing}.
@@ -1395,12 +1398,11 @@ evitare di ridurre lo spessore delle linee del rigo.
 
 @subheading Corpo automatico dei tipi di carattere a dimensioni diverse
 
-Il tipo di carattere Feta fornisce simboli musicali in otto dimensioni
-diverse.  Ogni tipo di carattere è calibrato per una specifica dimensione
-del rigo: via via che la dimensione del rigo diventa più piccola, il corpo
-del carattere diventa più grosso, per abbinarsi alle linee del rigo più
-spesse.  Le dimensioni del carattere consigliate sono elencate nella
-seguente tabella:
+Il font Emmentaler fornisce l'insieme di glifi musicali @emph{Feta} in otto
+dimensioni diverse, ciascuna calibrata per una specifica dimensione
+del rigo.  Più piccola è la dimensione del glifo, più @qq{grosso} diventa,
+per abbinarsi alle linee del rigo più spesse.  Le dimensioni dei glifi
+consigliate sono elencate nella seguente tabella:
 
 @multitable @columnfractions .15 .2 .22 .2
 @item @b{nome del tipo di carattere} @tab @b{altezza del rigo (pt)} @tab @b{altezza del rigo (mm)} @tab @b{uso}
@@ -1416,7 +1418,8 @@ seguente tabella:
 
 @seealso
 Guida alla notazione:
-@ref{Selecting notation font size}.
+@ref{Impostare la dimensione del rigo},
+@ref{Il font Emmentaler}.
 
 Frammenti:
 @rlsr{Spacing}.
@@ -1462,10 +1465,11 @@ il comando @code{\break}:
 }
 @end lilypond
 
-Per impostazione predefinita, un comando @code{\break} nel mezzo di una
-misura viene ignorato e apparirà un avvertimento nella console.  Per forzare
-un'interruzione di linea nel mezzo di una misura, aggiungere una stanghetta
-invisibile con @w{@samp{\bar ""}}:
+Per impostazione predefinita, un comando @code{\break} inserito nel mezzo di una
+misura viene ignorato (e apparirà un messaggio di avvertimento durante la
+compilazione del file LilyPond).  L'aggiunta di una stanghetta invisibile
+-- @w{@samp{\bar ""}} -- prima del comando @code{\break} forzerà l'interruzione
+di linea:
 
 @lilypond[quote,ragged-right,verbatim]
 \relative c'' {
@@ -1476,14 +1480,12 @@ invisibile con @w{@samp{\bar ""}}:
 }
 @end lilypond
 
-Un @code{\break} successivo a una stanghetta viene ignorato se la
-misura precedente termina nel mezzo di una nota, come quando un
-gruppo irregolare inizia e termina in misure diverse.  Per far sì
-che i comandi @code{\break} funzionino in queste situazioni, togliere
-l'incisore @code{Forbid_line_break_engraver} dal contesto @code{Voice}.
-@c TODO: frase originale non chiara - fb
-Nota che le interruzioni di linea forzate manualmente devono essere
-aggiunte in parallelo con la musica:
+Un comando @code{\break} successivo a una stanghetta viene ignorato se la
+misura precedente termina nel mezzo di una nota (per esempio, quando un
+gruppo irregolare inizia in una misura e termina in un'altra).  In questo
+caso conviene togliere l'incisore @code{Forbid_line_break_engraver} dal
+contesto @code{Voice} e usare una costruzione musicale simultanea inserendo
+il @code{\break} nel punto giusto della seconda voce:
 
 @lilypond[quote,ragged-right,verbatim]
 \new Voice \with {
@@ -1496,9 +1498,9 @@ aggiunte in parallelo con la musica:
 }
 @end lilypond
 
-Analogalmente, le interruzioni di linea sono normalmente proibite quando le
-travature oltrepassano una stanghetta.  Tale comportamento può essere
-modificato impostando @code{\override Beam.breakable = ##t}:
+Analogalmente, le interruzioni di linea vengono ignorate quando le travature
+oltrepassano una stanghetta.  Tale comportamento predefinito può
+essere modificato col comando @code{\override Beam.breakable = ##t}:
 
 @lilypond[quote,ragged-right,verbatim]
 \relative c'' {
@@ -1508,7 +1510,7 @@ modificato impostando @code{\override Beam.breakable = ##t}:
 }
 @end lilypond
 
-Il comando @code{\noBreak} vieta un'interruzione di linea sulla
+Il comando @code{\noBreak} impedisce un'interruzione di linea sulla
 stanghetta in cui è inserito.
 
 In una partitura, l'interruzione di linea automatica è vietata per
@@ -1611,7 +1613,9 @@ spiega come modificarli.
 * Interruzione di pagina manuale::
 * Interruzione di pagina ottimale::
 * Interruzione di pagina minimale::
+* Interruzione di pagina di una pagina::
 * Interruzione di pagina su una linea::
+* Interruzione di pagina su una linea con altezza automatica::
 * Voltata di pagina ottimale::
 @end menu
 
@@ -1653,8 +1657,8 @@ pagina (o in fondo all'ultima pagina di ciascun
 @ref{Fixed vertical spacing paper variables,,Variabili fisse della spaziatura verticale di @code{@bs{}paper}}.
 
 Le interruzioni di pagina sono calcolate dalla funzione @code{page-breaking}.
-LilyPond fornisce tre algoritmi per calcolare le interruzioni di pagina:
-@code{ly:optimal-breaking}, @code{ly:page-turn-breaking} e
+LilyPond fornisce vari algoritmi per calcolare le interruzioni di pagina, tra
+cui @code{ly:optimal-breaking}, @code{ly:page-turn-breaking} e
 @code{ly:minimal-breaking}.  Quello predefinito è
 @code{ly:optimal-breaking}, ma il valore può essere modificato nel
 blocco @code{\paper}:
@@ -1766,6 +1770,27 @@ Frammenti:
 @rlsr{Spacing}.
 
 
+@node Interruzione di pagina di una pagina
+@unnumberedsubsubsec Interruzione di pagina di una pagina
+@translationof One-page page breaking
+
+@funindex ly:one-page-breaking
+
+La funzione @code{ly:one-page-breaking} è un algoritmo di interruzione di
+pagina per casi speciali che regola automaticamente l'altezza della pagina
+per farci entrare la musica, in modo che stia tutto in una sola pagina.
+La variabile @code{paper-height} del blocco paper viene ignorata, ma le
+altre impostazioni funzionano normalmente.  In particolare, la spaziatura
+tra l'ultimo sistema (o il testo markup di livello superiore) e il piè di pagina
+può essere personalizzata grazie a @code{last-bottom-spacing} nel blocco paper.
+La larghezza della pagina non viene modificata ma può essere impostata con
+@code{paper-width} nel blocco paper.
+
+@knownissues
+@code{ly:one-page-breaking} non è attualmente compatibile con
+@code{\bookpart}.
+
+
 @node Interruzione di pagina su una linea
 @unnumberedsubsubsec Interruzione di pagina su una linea
 @translationof One-line page breaking
@@ -1774,14 +1799,33 @@ Frammenti:
 
 La funzione @code{ly:one-line-breaking} è un algoritmo di interruzione
 di pagina per uso speciale in quanto pone ogni brano su una sola pagina e
-una singola linea.  Tale funzione non fa apparire titoli e margini,
-viene mostrato solo il brano musicale.
+una singola linea.  Non appaiono né titoli né margini, ma viene
+mostrato solo il brano musicale.
 
-La larghezza della pagina sarà regolata in modo che il brano più
+La larghezza della pagina è regolata in modo che il brano più
 lungo stia su una sola linea.  In particolare, le variabili @code{paper-width},
-@code{line-width} e @code{indent} del blocco @code{\paper} saranno
-ignorati, sebbene @code{left-margin} e @code{right-margin} saranno
-comunque considerati.  L'altezza della pagina resterà invariata.
+@code{line-width} e @code{indent} del blocco @code{\paper} vengono
+ignorate, sebbene @code{left-margin} e @code{right-margin} siano
+comunque considerate.  L'altezza della pagina resta invariata.
+
+
+@node Interruzione di pagina su una linea con altezza automatica
+@unnumberedsubsubsec Interruzione di pagina su una linea con altezza automatica
+@translationof One-line-auto-height page breaking
+
+@funindex ly:one-line-auto-height-breaking
+
+La funzione @code{ly:one-line-auto-height-breaking} funziona proprio come
+@code{ly:one-line-breaking} con la differenza che l'altezza della pagina
+viene modificata automaticamente per adattarsi all'altezza della musica.
+Più precisamente, la variabile @code{paper-height} del blocco @code{\paper}
+viene impostata in modo che abbracci l'altezza della partitura più alta
+e i margini superiore e inferiore (@code{top-margin} e @code{bottom-margin}).
+
+Fare attenzione al fatto che l'impostazione @code{top-system-spacing} avrà
+effetto sulla posizione verticale della musica.  Impostarla su @code{##f} in
+un blocco @code{\paper} per posizionare la musica tra i margini superiore e
+inferiore.
 
 
 @node Voltata di pagina ottimale
@@ -1842,14 +1886,14 @@ impostarla su un valore @qq{molto grande}.
 @end example
 
 @funindex minimumRepeatLengthForPageTurn
-In caso di ripetizioni con finali alternativi, @code{Page_turn_engraver}
+Quando si usano ripetizioni con finali alternativi, l'incisore @code{Page_turn_engraver}
 permetterà una voltata di pagina durante la ripetizione soltanto se c'è
 abbastanza tempo all'inizio e alla fine della ripetizione per voltare
-indietro la pagina.  Se la ripetizione è molto breve, si può usare
-@code{Page_turn_engraver} anche per disabilitare le voltate impostando
-un valore per la proprietà di contesto @code{minimumRepeatLengthForPageTurn},
-dato che @code{Page_turn_engraver} consente le voltate soltanto nelle ripetizioni
-la cui durata sia maggiore di questo valore.
+indietro la pagina.  Se la ripetizione è troppo breve, si può usare
+@code{Page_turn_engraver} per @emph{disabilitare} le voltate impostando
+un valore appropriato per la proprietà di contesto @code{minimumRepeatLengthForPageTurn}.
+In questo caso @code{Page_turn_engraver} consentirà le voltate soltanto nelle
+ripetizioni la cui durata sia maggiore del valore specificato.
 
 I comandi per le voltate di pagina (@code{\pageTurn}, @code{\noPageTurn}
 e @code{\allowPageTurn}), possono essere usati anche nel livello superiore,
@@ -2468,11 +2512,12 @@ il padding verticale, @code{NonMusicalPaperColumn.line-break-system-details}
 indica precisamente le posizioni verticali esatte sulla pagina.
 
 @code{NonMusicalPaperColumn.line-break-system-details} accetta una
-lista associativa di tre diverse impostazioni:
+lista associativa di quattro diverse impostazioni:
 
 @itemize
 @item @code{X-offset}
 @item @code{Y-offset}
+@item @code{extra-offset}
 @item @code{alignment-distances}
 @end itemize
 
@@ -2545,12 +2590,12 @@ vedendo un esempio che non contiene alcuna modifica.
 Questa partitura isola l'informazione sulle interruzioni di linea e di pagina
 in una voce apposita.  Questa tecnica di creare una voce per le interruzioni
 permette di tenere la formattazione separata dalla musica via via che il
-nostro esempio diventa più complicato.  Vedi @ref{Breaks}.
+nostro esempio diventa più complicato.  Vedi anche @ref{Interruzioni}.
 
-I @code{\break} espliciti dividono proporzionalmente la musica in cinque
-misure per linea.  La spaziatura verticale è quella predefinita di
-LilyPond.  Per impostare esplicitamente il punto di inizio verticale di
-ogni sistema, possiamo impostare la coppia @code{Y-offset} dell'attributo
+Usando comandi @code{\break} espliciti, la musica viene divisa proporzionalmente
+in cinque misure per linea.  La spaziatura verticale è quella predefinita di
+LilyPond ma il punto di inizio verticale di ogni sistema è impostato
+esplicitamente con la coppia @code{Y-offset} dell'attributo
 @code{line-break-system-details} del grob @code{NonMusicalPaperColumn}:
 
 @lilypond[verbatim,quote,staffsize=16]
@@ -2585,6 +2630,41 @@ Nota che @code{line-break-system-details} accetta una lista associativa di
 molti valori, ma ne abbiamo impostato solo uno in questo esempio.  Nota
 anche che la proprietà @code{Y-offset} qui determina la posizione verticale
 esatta sulla pagina in cui ogni nuovo sistema verrà visualizzato.
+
+Oltre al posizionamento assoluto che si ottiene con @code{Y-offset} e
+@code{X-offset}, è possibile anche il posizionamento relativo tramite
+la proprietà @code{extra-offset} di @code{line-break-system-details}.
+Il posizionamento è relativo alla formattazione predefinita o al posizionamento
+assoluto determinato dall'uso di @code{X-offset} e @code{Y-offset}.  La
+proprietà @code{extra-offset} accetta una @code{coppia} di numeri che
+determinano lo spostamento lungo gli assi X e Y.
+
+@lilypond[verbatim,quote,staffsize=16]
+\header { tagline = ##f }
+\paper { left-margin = 0\mm }
+\book {
+  \score {
+    <<
+      \new Staff <<
+        \new Voice {
+          s1*5 \break
+          \overrideProperty Score.NonMusicalPaperColumn.line-break-system-details
+            #'((extra-offset . (0 . 10)))
+          s1*5 \break
+          \overrideProperty Score.NonMusicalPaperColumn.line-break-system-details
+            #'((extra-offset . (0 . 10)))
+          s1*5 \break
+        }
+        \new Voice { \repeat unfold 15 { c'4 c' c' c' } }
+      >>
+      \new Staff {
+        \repeat unfold 15 { d'4 d' d' d' }
+      }
+    >>
+  }
+}
+@end lilypond
+
 
 Ora che abbiamo impostato esplicitamente il punto di inizio verticale di
 ogni sistema, possiamo impostare manualmente anche le distanze verticali
@@ -2671,8 +2751,8 @@ Alcuni punti da considerare:
 che non sono righi non contano come rigo.
 
 @item Le unità dei numeri assegnati a @code{X-offset},
-@code{Y-offset} e @code{alignment-distances} sono interpretati come
-multipli della distanza tra linee del rigo adiacenti.  Valori positivi
+@code{Y-offset}, @code{extra-offset} e @code{alignment-distances} sono interpretati
+come multipli della distanza tra linee del rigo adiacenti.  Valori positivi
 spostano in su righi e testo, valori negativi li spostano in giù.
 
 @item Dato che le impostazioni di @code{NonMusicalPaperColumn.line-break-system-details}
@@ -2716,6 +2796,9 @@ prende gli oggetti esterni al rigo e li dispone in modo che non entrino in
 collisione con alcun oggetto che sia già stato disposto.  Ovvero, se due
 grob esterni al rigo si contendono lo stesso spazio, quello col valore
 di @code{outside-staff-priority} più basso sarà posto più vicino al rigo.
+
+Un elenco delle proprietà esterne al rigo si trova in
+@rlearning{La proprietà outside-staff-priority}.
 
 @lilypond[quote,ragged-right,verbatim]
 \relative c'' {
@@ -2852,16 +2935,17 @@ seguiti dalla metà di LTN:
 @end lilypond
 
 
-Nel saggio @emph{Essay on automated music engraving}, è spiegato che
-le direzioni del gambo influenzano la spaziatura (vedi
-@ressay{Optical spacing}).  Ciò è regolato dalla proprietà
-@code{stem-spacing-correction} nell'oggetto
-@rinternals{NoteSpacing}.  Questi oggetti sono generati per ogni
-contesto @rinternals{Voice}.  L'oggetto @code{StaffSpacing}
-(generato nel contesto @rinternals{Staff}) contiene la stessa
-propreità per regolare la spaziatura tra gambo e stanghetta.  L'esempio
-seguente mostra queste correzioni, una volta con le impostazioni predefinite
-e una volta con correzioni esagerate:
+Come è spiegato nel saggio @emph{Essay on automated music engraving}, le
+direzioni del gambo influenzano la spaziatura (vedi @ressay{Optical spacing}) e
+possono essere aggiustate usando la proprietà @code{stem-spacing-correction}
+dell'oggetto @rinternals{NoteSpacing} (che sono generati per ogni
+contesto @rinternals{Voice}.
+
+L'oggetto @code{StaffSpacing} (generato nel contesto @rinternals{Staff})
+contiene la stessa proprietà per regolare la spaziatura tra gambo e stanghetta.
+
+L'esempio seguente mostra tutto questo: una volta con le impostazioni
+predefinite e una volta con un aggiustamento esagerato:
 
 @lilypond[quote,ragged-right]
 \fixed c' {
@@ -2912,11 +2996,13 @@ Non esiste alcun trucco per diminuire la quantità di spazio.
 @cindex note, spaziatura orizzontale
 
 Nuove sezioni con parametri di spaziatura diversi possono essere iniziati
-con @code{newSpacingSection}.  Ciò può essere utile quando ci sono sezioni
-con nozioni diverse di note lunghe e brevi.
+col comando @code{\newSpacingSection}.  Ciò può essere utile per sezioni
+con nozioni diverse di note @q{lunghe} e note @q{brevi}.  Il comando
+@code{\newSpacingSection} crea un nuovo oggetto @code{SpacingSpanner} in
+quel momento musicale.
 
 Nell'esempio seguente, il cambio di indicazione di tempo introduce una
-nuova sezione, quindi i sedicesimi hanno automaticamente una spaziatura
+nuova sezione, e i sedicesimi hanno automaticamente una spaziatura
 un po' più larga.
 
 @lilypond[verbatim,quote]
@@ -2930,13 +3016,11 @@ un po' più larga.
 }
 @end lilypond
 
-Il comando @code{\newSpacingSection} crea un nuovo oggetto
-@code{SpacingSpanner} in quel momento musicale.
 Se gli aggiustamenti automatici della spaziatura non producono la
 spaziatura richiesta, si possono applicare degli @code{\override}
 manuali alle sue proprietà.  Questi devono essere applicati nello
-stesso momento musicale del comando @code{\newSpacingSection} stesso.
-Avranno effetto sulla spaziatura di tutta la musica seguente finché
+stesso momento musicale del comando @code{\newSpacingSection} stesso e
+avranno effetto sulla spaziatura di tutta la musica seguente finché
 le proprietà non vengono cambiate in una nuova sezione.  Per esempio:
 
 @lilypond[verbatim,quote]
@@ -3455,7 +3539,7 @@ se c'è molto spazio nelle pagine precedenti.
 Quando si studiano i problemi di formattazione, uno strumento irrinunciabile
 è @code{annotate-spacing}, un comando che mostra i valori delle diverse
 variabili di spaziatura.  Maggiori dettagli nella prossima sezione,
-@ref{Displaying spacing}.
+@ref{Visualizzare la spaziatura}.
 
 @menu
 * Visualizzare la spaziatura::
@@ -3586,7 +3670,7 @@ rigo:
 
 @item
 Modificare la spaziatura orizzontale tramite @code{SpacingSpanner}.  Maggiori
-informazioni in @ref{Changing horizontal spacing}.  L'esempio seguente mostra
+informazioni in @ref{Modifica della spaziatura orizzontale}.  L'esempio seguente mostra
 la spaziatura predefinita:
 
 @lilypond[verbatim,quote]
@@ -3636,7 +3720,7 @@ così che sia applicata all'intera partitura.
 @seealso
 Guida alla notazione:
 @ref{Page layout},
-@ref{Changing horizontal spacing}.
+@ref{Modifica della spaziatura orizzontale}.
 
 Frammenti:
 @rlsr{Spacing}.

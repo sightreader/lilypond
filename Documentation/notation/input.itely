@@ -228,7 +228,7 @@ input file, LilyPond will implicitly treat the whole
 file as a single \book block, see
 @ref{File structure}.
 
-When producing multiple files from a single source file, Lilypond
+When producing multiple files from a single source file, LilyPond
 ensures that none of the output files from any @code{\book} block
 overwrites the output file produced by a preceding @code{\book} from
 the same input file.
@@ -273,10 +273,10 @@ will produce
 @funindex \bookOutputSuffix
 @funindex \bookOutputName
 
-Lilypond provides facilities to allow you to control what file names
+LilyPond provides facilities to allow you to control what file names
 are used by the various back-ends when producing output files.
 
-In the previous section, we saw how Lilypond prevents name-clashes when
+In the previous section, we saw how LilyPond prevents name-clashes when
 producing several outputs from a single source file.  You also have the
 ability to specify your own suffixes for each @code{\book} block, so
 for example you can produce files called
@@ -365,17 +365,18 @@ A direct scheme expression, such as
 @code{#(ly:set-option 'point-and-click #f)}.
 
 @item
-A @code{\header} block.  This sets the global (i.e. the top of
+A @code{\header} block.  This sets the global (i.e., the top of
 file) header block.  This is the block containing the default
-settings of titling fields like composer, title, etc. for all
+settings of titling fields like composer, title, etc., for all
 books within the file (see @ref{Titles explained}).
 
 @item
 A @code{\score} block.  This score will be collected with other
 toplevel scores, and combined as a single @code{\book}.
 This behavior can be changed by setting the variable
-@code{toplevel-score-handler} at toplevel.  The default handler is
-defined in the init file @file{../scm/lily.scm}.
+@code{toplevel-score-handler} at toplevel.  (The default handler is
+defined in the file @file{../scm/lily-library.scm} and set in the file
+@file{../ly/declarations-init.ly}.)
 
 @item
 A @code{\book} block logically combines multiple movements
@@ -496,11 +497,11 @@ circumstances to avoid errors:
 
 @item Around every opening and closing curly bracket.
 
-@item After every command or variable, i.e. every item that
+@item After every command or variable, i.e., every item that
 begins with a @code{\} sign.
 
 @item After every item that is to be interpreted as a Scheme
-expression, i.e. every item that begins with a @code{#}@tie{}sign.
+expression, i.e., every item that begins with a @code{#}@tie{}sign.
 
 @item To separate all elements of a Scheme expression.
 
@@ -531,7 +532,7 @@ some pieces include a lot more information.
 @menu
 * Creating titles headers and footers::
 * Custom titles headers and footers::
-* Creating PDF metadata::
+* Creating output file metadata::
 * Creating footnotes::
 * Reference to page numbers::
 * Table of contents::
@@ -1119,16 +1120,16 @@ markup conditionally to header and footer text defined within the
 @code{\paper} block, using the following syntax:
 
 @example
-@code{variable} = @code{\markup} @{
+variable = \markup @{
   @dots{}
-  @code{\on-the-fly}  \@var{procedure}  @var{markup}
+  \on-the-fly  \@var{procedure}  @var{markup}
   @dots{}
 @}
 @end example
 
 The @var{procedure} is called each time the @code{\markup} command
 in which it appears is evaluated.  The @var{procedure} should test
-for a particular condition and interpret (i.e. print) the
+for a particular condition and interpret (i.e., print) the
 @var{markup} argument if and only if the condition is true.
 
 A number of ready-made procedures for testing various conditions are
@@ -1143,10 +1144,11 @@ provided:
 @item create-page-number-stencil    @tab  print-page-numbers true?
 @item print-all-headers             @tab  print-all-headers true?
 @item first-page                    @tab  first page in the book?
+@item not-first-page                @tab  not first page in the book?
 @item (on-page nmbr)                @tab  page number = nmbr?
 @item last-page                     @tab  last page in the book?
-@item not-first-page                @tab  not first page in the book?
 @item part-first-page               @tab  first page in the book part?
+@item not-part-first-page           @tab  not first page in the book part?
 @item part-last-page                @tab  last page in the book part?
 @item not-single-page               @tab  pages in book part > 1?
 
@@ -1185,8 +1187,8 @@ Several @code{\on-the-fly} conditions can be combined with an
 @q{and} operation, for example,
 
 @example
-  @code{\on-the-fly \first-page}
-  @code{\on-the-fly \last-page}
+  \on-the-fly \first-page
+  \on-the-fly \last-page
   @code{@{ \markup @dots{} \fromproperty #'header: @dots{} @}}
 @end example
 
@@ -1200,21 +1202,30 @@ Notation Reference:
 Installed Files:
 @file{../ly/titling-init.ly}.
 
-@node Creating PDF metadata
-@subsection Creating PDF metadata
+@node Creating output file metadata
+@subsection Creating output file metadata
 
 @cindex PDF metadata
+@cindex MIDI metadata
 
 In addition to being shown in the printed output, @code{\header} variables
-are also used to set PDF metadata (the information displayed by PDF readers
-as the @code{properties} of the PDF file).  For example, setting the
-@code{title} property of the @code{header} block @q{Symphony I} will also give
-this title to the PDF document.
+are also used to set metadata for output files.  For example, with PDF
+files, this metadata could be displayed by PDF readers as the
+@code{properties} of the PDF file.  For each type of output file, only the
+@code{\header} definitions of blocks that define separate files of that
+type, and blocks higher in the block hierarchy, will be consulted.
+Therefore, for PDF files, only the @code{\book} level and the top level
+@code{\header} definitions affect the document-wide PDF metadata, whereas
+for MIDI files, all headers above or at the @code{\score} level are used.
+
+For example, setting the @code{title} property of the @code{header} block
+to @q{Symphony I} will also give this title to the PDF document, and use
+it as the sequence name of the MIDI file.
 
 @example
-  @code{\header@{}
-    @code{title = "Symphony I"}
-  @code{@}}
+\header@{
+  title = "Symphony I"
+@}
 @end example
 
 If you want to set the title of the printed output to one value, but have the
@@ -1222,10 +1233,10 @@ title property of the PDF to have a different value, you can use
 @code{pdftitle}, as below.
 
 @example
-  @code{\header@{}
-    @code{title = "Symphony I"}
-    @code{pdftitle = "Symphony I by Beethoven"}
-  @code{@}}
+\header@{
+  title = "Symphony I"
+  pdftitle = "Symphony I by Beethoven"
+@}
 @end example
 
 The variables @code{title}, @code{subject}, @code{keywords},
@@ -1238,6 +1249,10 @@ the current LilyPond version, and @code{CreationDate} and @code{ModDate} are
 both set to the current date and time.  @code{ModDate} can be overridden by
 setting the header variable @code{moddate} (or @code{pdfmoddate}) to a
 valid PDF date string.
+
+The @code{title} variable sets also the sequence name for MIDI.  The
+@code{midititle} variable can be used to set the sequence name
+independently of the value used for typeset output.
 
 @node Creating footnotes
 @subsection Creating footnotes
@@ -1325,7 +1340,7 @@ left/bottom edge and zero implies the mark is centered on the edge.
 
 @item Context
 is the context in which the grob being footnoted is created.  It
-may be omitted if the grob is in a bottom context, e.g. a
+may be omitted if the grob is in a bottom context, e.g., a
 @code{Voice} context.
 
 @item GrobName
@@ -1890,7 +1905,7 @@ tocAct =
   \markuplist \table-of-contents
   \tocAct \markup { Atto Primo }
   \tocItem \markup { Coro. Viva il nostro Alcide }
-  \tocItem \markup { Cesare. Presti omai l'Egizzia terra }
+  \tocItem \markup { Cesare. Presti omai l'Egizia terra }
   \tocAct \markup { Atto Secondo }
   \tocItem \markup { Sinfonia }
   \tocItem \markup { Cleopatra. V'adoro, pupille, saette d'Amore }
@@ -2206,7 +2221,7 @@ followed by a music expression.  If @emph{and only if} the symbols
 are valid LilyPond identifiers (alphabetic characters only, no
 numbers, underscores, or dashes) which cannot be confused with notes,
 the @code{#'} may be omitted and, as a shorthand, a list of symbols
-can use the dot separator: i.e. @code{\tag #'(violinI violinII)} can
+can use the dot separator: i.e., @code{\tag #'(violinI violinII)} can
 be written @code{\tag violinI.violinII}.  The same applies to
 @code{\keepWithTag} and @code{\removeWithTag}.
 
@@ -2251,7 +2266,7 @@ music = \relative {
 }
 @end lilypond
 
-Tagged filtering can be applied to articulations, texts, etc. by
+Tagged filtering can be applied to articulations, texts, etc., by
 prepending
 
 @example
@@ -2285,8 +2300,8 @@ music = \relative c'' {
 
 Multiple @code{\removeWithTag} filters may be applied to a single
 music expression to remove several differently named tagged
-sections.  Alternatively, you can use a single
-@code{\removeWithTag} with a list of tags.
+sections.  Alternatively, you can use a single @code{\removeWithTag}
+with a list of tags.
 
 @lilypond[verbatim,quote]
 music = \relative c'' {
@@ -2304,41 +2319,73 @@ music = \relative c'' {
 }
 @end lilypond
 
-Two or more @code{\keepWithTag} filters applied to a single music
-expression will cause @emph{all} tagged sections to be removed, as
-the first filter will remove all tagged sections except the one
-named, and the second filter will remove even that tagged section.
-Usually you would rather want to use a single @code{\keepWithTag}
-command with a list of multiple tags: this will only remove tagged
-sections not given in @emph{any} of the tags.
+Using two or more @code{\keepWithTag} filters on a single music
+expression will cause @emph{all} of the tagged sections to be removed.
+The first filter will remove all except the one named and any subsequent
+filters will remove the rest.  Using one @code{\keepWithTag} command
+with a list of multiple tags will only remove tagged sections that are
+not specified in that list.
+
+@lilypond[verbatim,quote]
+music = \relative c'' {
+  \tag #'violinI { a4 a a a }
+  \tag #'violinII { b4 b b b }
+  \tag #'viola { c4 c c c }
+  \tag #'cello { d4 d d d }
+}
+
+\new Staff {
+  \keepWithTag #'(violinI violinII)
+  \music
+}
+@end lilypond
+
+@noindent
+will print @code{\tag}s @var{violinI} and @var{violinII} but not
+@var{viola} or @var{cello}.
 
 @cindex tag groups
 @funindex \tagGroup
-While @code{\keepWithTag} is convenient when dealing with
-@emph{one} set of alternatives, the removal of music tagged with
-@emph{unrelated} tags is problematic when using tags for more than
-one purpose.  For that reason, @q{tag groups} of related tags can
-be declared:
+
+While @code{\keepWithTag} is convenient when dealing with @emph{one} set
+of alternatives, the removal of music tagged with @emph{unrelated} tags
+is problematic when using them for more than one purpose.  In that case
+@q{groups} of tags can be declared:
 
 @example
 \tagGroup #'(violinI violinII viola cello)
 @end example
 
-declares the respective tags as belonging to one tag group.
+@noindent
+Now all the different tags belong to a single @q{tag group}.  Note that
+individual tags cannot be members of more than one @emph{tag group}.
 
 @example
 \keepWithTag #'violinI @dots{}
 @end example
 
-will then only be concerned with tags from @code{violinI}'s tag
-group: any element of the included music that is tagged with one
-or more of tags from this set but @emph{not} with @code{violinI}
-will get removed.
+@noindent
+will now only show music tagged from @code{violinI}'s tag group and any
+music tagged with one of the @emph{other} tags will removed.
 
-To any @code{\keepWithTag} command, only tags from the tag groups
-of the tags given in the command are visible.
+@lilypond[verbatim,quote]
+music = \relative {
+  \tagGroup #'(violinI violinII viola cello)
+  \tag #'violinI { c''4^"violinI" c c c }
+  \tag #'violinII { a2 a }
+  \tag #'viola { e8 e e2. }
+  \tag #'cello { d'2 d4 d }
+  R1^"untagged"
+}
 
-Tags cannot be members of more than one tag group.
+\new Voice {
+  \keepWithTag #'violinI
+  \music
+}
+@end lilypond
+
+When using the @code{\keepWithTag} command, only tags from the tag
+groups of the tags given in the command are visible.
 
 @funindex \pushToTag
 @funindex \appendToTag
@@ -2352,15 +2399,15 @@ construct has @code{elements}, but sequential and simultaneous music are
 safe bets:
 
 @lilypond[verbatim,quote]
-test = { \tag #'here { \tag #'here <<c''>> } }
+music = { \tag #'here { \tag #'here <<c''>> } }
 
 {
   \pushToTag #'here c'
   \pushToTag #'here e'
-  \pushToTag #'here g' \test
+  \pushToTag #'here g' \music
   \appendToTag #'here c'
   \appendToTag #'here e'
-  \appendToTag #'here g' \test
+  \appendToTag #'here g' \music
 }
 @end lilypond
 
@@ -2452,7 +2499,7 @@ instruction containing non-ASCII characters, must be encoded in
 UTF-8.  The easiest way to enter such text is by using a
 Unicode-aware editor and saving the file with UTF-8 encoding.  Most
 popular modern editors have UTF-8 support, for example, vim, Emacs,
-jEdit, and GEdit do.  All MS Windows systems later than NT use
+jEdit, and Gedit do.  All MS Windows systems later than NT use
 Unicode as their native character encoding, so even Notepad can
 edit and save a file in UTF-8 format.  A more functional
 alternative for Windows is BabelPad.
@@ -2469,9 +2516,10 @@ will be generated.
 Here is an example showing Cyrillic, Hebrew and Portuguese
 text:
 
+@c NOTE: No verbatim in the following example as the code does not
+@c display correctly in PDF Font settings for Cyrillic and Hebrew
+
 @lilypond[quote]
-%c No verbatim here as the code does not display correctly in PDF
-% Font settings for Cyrillic and Hebrew
 % Linux Libertine fonts contain Cyrillic and Hebrew glyphs.
 \paper {
   #(define fonts
@@ -2666,7 +2714,7 @@ generated.
 Notation Reference:
 @ref{The layout block}.
 
-Application Usage
+Application Usage:
 @rprogram{Command-line usage}.
 
 
@@ -2695,7 +2743,7 @@ in your source file.  This will render only the last 5 measures
 (assuming 4/4 time signature) of every @code{\score} in the input
 file.  For longer pieces, rendering only a small part is often an order
 of magnitude quicker than rendering it completely.  When working on the
-beginning of a score you have already typeset (e.g. to add a new part),
+beginning of a score you have already typeset (e.g., to add a new part),
 the @code{showFirstLength} property may be useful as well.
 
 Skipping parts of a score can be controlled in a more fine-grained
@@ -2738,8 +2786,10 @@ see @rprogram{Basic command line options for LilyPond}.
 @node Replacing the notation font
 @subsection Replacing the notation font
 
-Gonville is an alternative to the Feta font used in LilyPond and can
-be downloaded from:
+Gonville is an alternative set of glyphs to @emph{Feta}
+-- part of the Emmentaler font -- and used in LilyPond.  They can be
+downloaded from:
+
 @example
 @uref{http://www.chiark.greenend.org.uk/~sgtatham/gonville/ ,http://www.chiark.greenend.org.uk/~sgtatham/gonville/}
 @end example
@@ -2750,22 +2800,66 @@ Here are a few sample bars of music set in Gonville:
 @c       for the font comparison.  -gp
 @sourceimage{Gonville_after,15cm,,}
 
-Here are a few sample bars of music set in LilyPond's Feta font:
+Here are a few sample bars of music set in LilyPond's Feta glyphs:
 
 @sourceimage{Gonville_before,15cm,,}
 
-@subsubheading Installation Instructions for MacOS
+@subsubheading Installation Instructions
 
-Download and extract the zip file.  Copy the @code{lilyfonts}
-directory to @file{@var{SHARE_DIR}/lilypond/current}; for more
-information, see @rlearning{Other sources of information}.  Rename the
-existing @code{fonts} directory to @code{fonts_orig} and the
-@code{lilyfonts} directory to @code{fonts}.  To revert back to Feta,
-reverse the process.
+Download and extract the font files.
+Copy the
+@file{gonville-11.otf},
+@file{gonville-13.otf},
+@file{gonville-14.otf},
+@file{gonville-16.otf},
+@file{gonville-18.otf},
+@file{gonville-20.otf},
+@file{gonville-23.otf},
+@file{gonville-26.otf}, and @file{gonville-brace.otf}
+files to @file{@dots{}/share/lilypond/current/fonts/otf} or
+@file{@dots{}/share/lilypond/@var{X.Y.Z}/fonts/otf}.
+If you have @file{gonville-*.svg} and @file{gonville-*.woff} files,
+copy them to @file{@dots{}/share/lilypond/current/fonts/svg} or
+@file{@dots{}/share/lilypond/@var{X.Y.Z}/fonts/svg}.
+For more information, see @rlearning{Other sources of information}.
+
+Note: @file{gonville-*.otf} files are
+for @code{ps} and @code{eps} backend (for PDF and PostScript outputs).
+@file{gonville-*.svg} files are
+for @code{svg} backend without @code{svg-woff} option.
+@file{gonville-*.woff} files are
+for @code{svg} backend with @code{svg-woff} option.
+For more information, see @rprogram{Advanced command line options for LilyPond}.
+
+The following syntax changes the notation font (general and brace)
+to the Gonville font.
+
+@example
+\paper @{
+  #(define fonts
+    (set-global-fonts
+     #:music "gonville"
+     #:brace "gonville"
+   ))
+@}
+@end example
+
+Note: Each call to @code{set-global-fonts} completely resets both the main
+notation and text fonts. If any category is left unspecified, then the default
+font will be used for that category.
+Each call to @code{set-global-fonts} changes the fonts for each @code{\book}
+that follows it, whether created explicitly or implicitly. This means that each
+@code{\book} can have its own set of main fonts by calling
+@code{set-global-fonts} before it.
+For more information, see @ref{Entire document fonts}.
 
 @seealso
 Learning Manual:
 @rlearning{Other sources of information}.
+
+Notation Reference:
+@ref{The Emmentaler font},
+@ref{Entire document fonts}.
 
 @knownissues
 Gonville cannot be used to typeset @q{Ancient Music} notation and it is
@@ -2774,6 +2868,43 @@ Gonville font family.  Please refer to the author's website for more
 information on these and other specifics, including licensing of
 Gonville.
 
+@subsubheading Other notation fonts
+
+If you have other notation fonts like @file{@var{fontname}-*.otf},
+@file{@var{fontname}-*.svg}, and @file{@var{fontname}-*.woff},
+you can use them in the same way as Gonville.
+
+That is, copy the
+@file{@var{fontname}-*.otf}
+files to @file{@dots{}/share/lilypond/current/fonts/otf} or
+@file{@dots{}/share/lilypond/@var{X.Y.Z}/fonts/otf}.
+If you have @file{@var{fontname}-*.svg} and @file{@var{fontname}-*.woff} files,
+copy them to @file{@dots{}/share/lilypond/current/fonts/svg} or
+@file{@dots{}/share/lilypond/@var{X.Y.Z}/fonts/svg}.
+
+Note: At the moment, LilyPond expects the font file names to have the following
+suffixes, all of which must be present in the above installation folder(s) to
+work properly:
+@file{-11}, @file{-13}, @file{-14}, @file{-16},
+@file{-18}, @file{-20}, @file{-23}, @file{-26}, @file{-brace}.
+For example, @file{emmentaler-11.otf}, @file{emmentaler-20.svg},
+and @file{emmentaler-brace.woff} etc.
+
+The following syntax changes the notation font (general and brace)
+to the @var{fontname} font.
+
+@example
+\paper @{
+  #(define fonts
+    (set-global-fonts
+     #:music "@var{fontname}" ; font filename without suffix and extension
+     #:brace "@var{fontname}" ; font filename without suffix and extension
+   ))
+@}
+@end example
+
+Note: For @code{music} and @code{brace} categories,
+specify the font filename without the suffix and extension.
 
 @node Creating MIDI output
 @section Creating MIDI output
@@ -2839,7 +2970,7 @@ When combined with the @file{articulate} script the following,
 additional musical notation can be output to MIDI;
 
 @itemize
-@item Appogiaturas.  These are made to take half the value of the note
+@item Appoggiaturas.  These are made to take half the value of the note
 following (without taking dots into account).  For example;
 
 @example
@@ -2849,7 +2980,7 @@ following (without taking dots into account).  For example;
 @noindent
 The c will take the value of a crotchet.
 
-@item Ornaments (i.e. mordents, trills and turns et al.)
+@item Ornaments (i.e., mordents, trills and turns et al.)
 @item Rallentando, accelerando, ritardando and a tempo
 @item Slurs, including phrasing slurs
 @item Tenuto
@@ -2874,8 +3005,8 @@ and portato
 @item Glissandi
 @item Falls and doits
 @item Microtonal chords
-@item Rhythms entered as annotations, e.g. swing
-@item Tempo changes without @code{\tempo} (e.g. entered as annotations)
+@item Rhythms entered as annotations, e.g., swing
+@item Tempo changes without @code{\tempo} (e.g., entered as annotations)
 @item Tremolos that @emph{are} entered with a @q{@code{:}[@var{number}]}
 value
 @end itemize
@@ -2897,8 +3028,8 @@ To create a MIDI output file from a LilyPond input file, insert a
 @}
 @end example
 
-@warning{ A @code{@bs{}score} block that, as well as the music, contains
-only a @code{@bs{}midi} block (i.e. @emph{without} the @code{@bs{}layout}
+@warning{A @code{@bs{}score} block that, as well as the music, contains
+only a @code{@bs{}midi} block (i.e., @emph{without} the @code{@bs{}layout}
 block), will only produce MIDI output files.  No notation will be
 printed.}
 
@@ -2919,7 +3050,8 @@ either the @code{\book}, @code{\bookpart} or @code{\score} blocks.  See
 
 @seealso
 Notation Reference:
-@ref{File structure}.
+@ref{File structure},
+@ref{Creating output file metadata}.
 
 Installed Files:
 @file{scm/midi.scm}.
@@ -3532,10 +3664,10 @@ Installed Files:
 @warning{The @file{articulate} script may shorten chords, which might
 not be appropriate for some types of instrument, such as organ music.
 Notes that do not have any articulations attached to them may also be
-shortened; so to compensate for this, restrict the use of the
-@code{\articulate} function to shorter segments of music or modify the
+shortened; so to allow for this, restrict the use of the
+@code{\articulate} function to shorter segments of music, or modify the
 values of the variables defined in the @file{articulate} script to
-compentate for the note-shortening behavior.}
+compensate for the note-shortening behavior.}
 
 
 
@@ -3582,17 +3714,18 @@ lilypond file.ly >display.txt
 @end example
 
 @funindex \void
-Note that Lilypond does not just display the music expression, but
+Note that LilyPond does not just display the music expression, but
 also interprets it (since @code{\displayLilyMusic} returns it in
-addition to displaying it).  This is convenient since you can just
-insert @code{\displayLilyMusic} into existing music in order to get
-information about it.  If you don't actually want Lilypond to
-interpret the displayed music as well as display it, use @code{\void}
-in order to have it ignored:
+addition to displaying it).  Just insert @code{\displayLilyMusic} into
+the existing music in order to get information about it.
+
+To interpret and display a music section in the console but, at the same
+time, remove it from the output file use the @code{\void} command.
 
 @example
 @{
   \void \displayLilyMusic \transpose c a, @{ c4 e g a bes @}
+  c1
 @}
 @end example
 

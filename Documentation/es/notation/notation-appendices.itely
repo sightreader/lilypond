@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: es -*-
 
 @ignore
-    Translation of GIT committish: dbe1fd47441d21aadd5669e9e69edfecb38ae45a
+    Translation of GIT committish: 1e5c6b0f54079eb3285dcc4c7e53f17d8bb03933
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -22,7 +22,7 @@
 * Tamaños de página predefinidos::
 * Instrumentos MIDI::
 * Lista de colores::
-* La tipografía Feta::
+* La tipografía Emmentaler::
 * Estilos de cabezas de nota::
 * Estilos de clave::
 * Instrucciones de marcado de texto::
@@ -207,7 +207,7 @@ Tríada aumentada y séptima @*menor
 @tab
 @code{aug7}
 @tab
-@code{c1:aug}
+@code{c1:aug7}
 @tab
 @lilypond[line-width=2.1\cm,noragged-right,notime]
 <<
@@ -239,7 +239,7 @@ Tríada menor con séptima @*mayor
 @tab
 @code{m7+}
 @tab
-@code{m7+}
+@code{c1:m7+}
 @tab
 @lilypond[line-width=2.1\cm,noragged-right,notime]
 <<
@@ -952,20 +952,39 @@ greyN
 donde N es un número entre 0 y 100.
 
 
-@node La tipografía Feta
-@appendixsec La tipografía Feta
-@translationof The Feta font
+@node La tipografía Emmentaler
+@appendixsec La tipografía Emmentaler
+@translationof The Emmentaler font
 
+@cindex Emmentaler, tipografía
+@cindex tipografía, Emmentaler
 @cindex Feta, tipografía
-@cindex tipografía Feta
+@cindex tipografía, Feta
+@cindex Parmesan, tipografía
+@cindex tipografía Parmesan
 
-Los símbolos siguientes están disponibles en la tipografía
-Emmentaler y es posible acceder a ellos directamente utilizando
-elementos de marcado textual con el nombre del glifo tal y como se
-muestra en las tablas de abajo, por ejemplo @code{g^\markup
-@{\musicglyph #"scripts.segno" @}} ó @code{\markup @{\musicglyph
-#"five"@}}.  Para ver más información, consulte @ref{Formatear el
-texto}.
+La fuente tipográfica Emmentaler consiste en dos
+@emph{subconjuntos} de glifos.  @qq{Feta}, utilizado para la
+notación clásica, y @qq{Parmesan}, usado para la notación de la
+música antigua.
+
+Cualquier glifo que esté comprendido dentro de la tipografía
+Emmentaler se puede acceder directamente usando elementos de
+marcado de texto junto con el nombre del glifo (según se muestra
+en las tablas, más adelante).  Por ejemplo:
+
+@example
+g^\markup @{\musicglyph #"scripts.segno" @}
+@end example
+
+@noindent
+or
+
+@example
+\markup @{\musicglyph #"five"@}
+@end example
+
+Para ver más información, consulte @ref{Formatear el texto}.
 
 @menu
 * Glifos de clave::
@@ -1561,7 +1580,7 @@ legibilidad.
 
 
 Las listas siguientes relacionan todos los símbolos de la
-tipografía Feta que se pueden adjuntar a las notas
+tipografía Emmentaler que se pueden adjuntar a las notas
 (p. ej. @samp{f\accent} o @samp{f->}).  Cada ejemplo muestra el
 símbolo en las posiciones @emph{superior}, @emph{inferior} y
 @emph{neutra}, respectivamente.
@@ -2430,8 +2449,8 @@ Una lista asociativa o abreviadamente una @strong{lista-A} (alist
 en inglés) es una pareja de Scheme que asocia un valor con una
 clave: @w{@code{(clave . valor)}}.  Por ejemplo, en
 @file{scm/lily.scm}, la lista-A @w{@qq{type-p-name-alist}} asocia
-ciertos predicadps de tipo (p.ej.@tie{}@code{ly:music?})  con
-nombres (p.ej.@tie{}@qq{music}) de forma que se pueda informar de
+ciertos predicadps de tipo (p.ej. @code{ly:music?})  con
+nombres (p.ej. @qq{music}) de forma que se pueda informar de
 los fallos de comprobación de tipo con un mensaje de consola que
 incluye el nombre del predicado de tipo esperado.
 

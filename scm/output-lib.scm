@@ -1165,21 +1165,51 @@ between the two text elements."
                                              '(bound-details left padding)
                                              (+ my-padding script-padding)))))))
 
+(define-public (make-connected-line points grob)
+  "Takes a list of points, @var{points}.
+Returns a line connecting @var{points}, using @code{ly:line-interface::line},
+gets layout information from @var{grob}"
+  (define (connected-points grob ls pts)
+    (if (not (pair? (cdr pts)))
+        (reduce ly:stencil-add empty-stencil ls)
+        (connected-points
+          grob
+          (cons
+            (ly:line-interface::line
+              grob
+              (car (first pts))
+              (cdr (first pts))
+              (car (second pts))
+              (cdr (second pts)))
+            ls)
+          (cdr pts))))
+  (if (< (length points) 2)
+      (begin
+        (ly:warning
+          "´make-connected-line´ needs at least two points: ~a"
+          points)
+        empty-stencil)
+      (connected-points grob '() points)))
+
 (define ((elbowed-hairpin coords mirrored?) grob)
   "Create hairpin based on a list of @var{coords} in @code{(cons x y)}
 form.  @code{x} is the portion of the width consumed for a given line
 and @code{y} is the portion of the height.  For example,
-@code{'((0.3 . 0.7) (0.8 . 0.9) (1.0 . 1.0))} means that at the point
+@code{'((0 . 0) (0.3 . 0.7) (0.8 . 0.9) (1.0 . 1.0))} means that at the point
 where the hairpin has consumed 30% of its width, it must
 be at 70% of its height.  Once it is to 80% width, it
-must be at 90% height.  It finishes at
-100% width and 100% height.  @var{mirrored?} indicates if the hairpin
-is mirrored over the Y-axis or if just the upper part is drawn.
+must be at 90% height.  It finishes at 100% width and 100% height.
+If @var{coords} does not begin with @code{'(0 . 0)} the final hairpin may have
+an open tip.  For example '(0 . 0.5) will cause an open end of 50% of the usual
+height.
+@var{mirrored?} indicates if the hairpin is mirrored over the Y-axis or if
+just the upper part is drawn.
 Returns a function that accepts a hairpin grob as an argument
 and draws the stencil based on its coordinates.
+
 @lilypond[verbatim,quote]
 #(define simple-hairpin
-  (elbowed-hairpin '((1.0 . 1.0)) #t))
+  (elbowed-hairpin '((0 . 0)(1.0 . 1.0)) #t))
 
 \\relative c' {
   \\override Hairpin #'stencil = #simple-hairpin
@@ -1187,50 +1217,52 @@ and draws the stencil based on its coordinates.
 }
 @end lilypond
 "
-  (define (pair-to-list pair)
-    (list (car pair) (cdr pair)))
-  (define (normalize-coords goods x y)
+  (define (scale-coords coords-list x y)
     (map
-     (lambda (coord)
-       (cons (* x (car coord)) (* y (cdr coord))))
-     goods))
-  (define (my-c-p-s points thick decresc?)
-    (make-connected-path-stencil
-     points
-     thick
-     (if decresc? -1.0 1.0)
-     1.0
-     #f
-     #f))
+      (lambda (coord) (cons (* x (car coord)) (* y (cdr coord))))
+      coords-list))
+
+  (define (hairpin::print-part points decresc? me)
+    (let ((stil (make-connected-line points me)))
+      (if decresc? (ly:stencil-scale stil -1 1) stil)))
+
   ;; outer let to trigger suicide
   (let ((sten (ly:hairpin::print grob)))
     (if (grob::is-live? grob)
-        (let* ((decresc? (eq? (ly:grob-property grob 'grow-direction) LEFT))
-               (thick (ly:grob-property grob 'thickness 0.1))
-               (thick (* thick (layout-line-thickness grob)))
+        (let* ((decresc? (eqv? (ly:grob-property grob 'grow-direction) LEFT))
                (xex (ly:stencil-extent sten X))
                (lenx (interval-length xex))
                (yex (ly:stencil-extent sten Y))
                (leny (interval-length yex))
                (xtrans (+ (car xex) (if decresc? lenx 0)))
                (ytrans (car yex))
-               (uplist (map pair-to-list
-                            (normalize-coords coords lenx (/ leny 2))))
-               (downlist (map pair-to-list
-                              (normalize-coords coords lenx (/ leny -2)))))
-          (ly:stencil-translate
-           (ly:stencil-add
-            (my-c-p-s uplist thick decresc?)
-            (if mirrored? (my-c-p-s downlist thick decresc?) empty-stencil))
-           (cons xtrans ytrans)))
+               (uplist (scale-coords coords lenx (/ leny 2)))
+               (downlist (scale-coords coords lenx (/ leny -2)))
+               (stil
+                 (ly:stencil-aligned-to
+                   (ly:stencil-translate
+                     (ly:stencil-add
+                       (hairpin::print-part uplist decresc? grob)
+                       (if mirrored?
+                           (hairpin::print-part downlist decresc? grob)
+                           empty-stencil))
+                     (cons xtrans ytrans))
+                   Y CENTER))
+               (stil-y-extent (ly:stencil-extent stil Y)))
+        ;; Return a final stencil properly aligned in Y-axis direction and with
+        ;; proper extents. Otherwise stencil-operations like 'box-stencil' will
+        ;; return badly. Extent in X-axis direction is taken from the original,
+        ;; in Y-axis direction from the new stencil.
+        (ly:make-stencil (ly:stencil-expr stil) xex stil-y-extent))
+        ;; return empty, if no Hairpin.stencil present.
         '())))
 (export elbowed-hairpin)
 
 (define-public flared-hairpin
-  (elbowed-hairpin '((0.95 . 0.4) (1.0 . 1.0)) #t))
+  (elbowed-hairpin '((0 . 0) (0.95 . 0.4) (1.0 . 1.0)) #t))
 
 (define-public constante-hairpin
-  (elbowed-hairpin '((1.0 . 0.0) (1.0 . 1.0)) #f))
+  (elbowed-hairpin '((0 . 0) (1.0 . 0.0) (1.0 . 1.0)) #f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lyrics
@@ -1508,44 +1540,67 @@ parent or the parent has no setting."
 ;; measure counter
 
 (define-public (measure-counter-stencil grob)
-  "Print a number for a measure count.  The number is centered using
-the extents of @code{BreakAlignment} grobs associated with the left and
-right bounds of a @code{MeasureCounter} spanner.  Broken measures are
-numbered in parentheses."
-  (let* ((num (markup (number->string (ly:grob-property grob 'count-from))))
+  "Print a number for a measure count.  Broken measures are numbered in
+parentheses."
+  (let* ((num (make-simple-markup
+                (number->string (ly:grob-property grob 'count-from))))
          (orig (ly:grob-original grob))
          (siblings (ly:spanner-broken-into orig)) ; have we been split?
          (num
-          (if (or (null? siblings)
-                  (eq? grob (car siblings)))
+           (if (or (null? siblings)
+                   (eq? grob (car siblings)))
               num
               (make-parenthesize-markup num)))
          (num (grob-interpret-markup grob num))
-         (num (ly:stencil-aligned-to num X (ly:grob-property grob 'self-alignment-X)))
+         (num (ly:stencil-aligned-to
+                num X (ly:grob-property grob 'self-alignment-X)))
          (left-bound (ly:spanner-bound grob LEFT))
          (right-bound (ly:spanner-bound grob RIGHT))
-         (elts-L (ly:grob-array->list (ly:grob-object left-bound 'elements)))
-         (elts-R (ly:grob-array->list (ly:grob-object right-bound 'elements)))
-         (break-alignment-L
-           (filter
-             (lambda (elt) (grob::has-interface elt 'break-alignment-interface))
-             elts-L))
-         (break-alignment-R
-           (filter
-             (lambda (elt) (grob::has-interface elt 'break-alignment-interface))
-             elts-R))
-         (refp (ly:grob-system grob))
-         (break-alignment-L-ext (ly:grob-extent (car break-alignment-L) refp X))
-         (break-alignment-R-ext (ly:grob-extent (car break-alignment-R) refp X))
+         (refp (ly:grob-common-refpoint left-bound right-bound X))
+         (spacing-pair
+           (ly:grob-property grob
+                             'spacing-pair
+                             '(break-alignment . break-alignment)))
+         (ext-L (ly:paper-column::break-align-width left-bound
+                                                    (car spacing-pair)))
+         (ext-R (ly:paper-column::break-align-width right-bound
+                                                    (cdr spacing-pair)))
          (num
            (ly:stencil-translate-axis
              num
-             (+ (interval-length break-alignment-L-ext)
-                (* 0.5
-                   (- (car break-alignment-R-ext)
-                      (cdr break-alignment-L-ext))))
+             (+ (* 0.5 (- (car ext-R)
+                          (cdr ext-L)))
+                (- (cdr ext-L)
+                   (ly:grob-relative-coordinate grob refp X)))
              X)))
     num))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HorizontalBracketText
+
+(define-public (ly:horizontal-bracket-text::print grob)
+  (let ((text (ly:grob-property grob 'text)))
+    (if (or (null? text)
+            (equal? text "")
+            (equal? text empty-markup))
+        (begin
+          (ly:grob-suicide! grob)
+          '())
+        (let* ((orig (ly:grob-original grob))
+               (siblings (ly:spanner-broken-into orig))
+               (text
+                 (if (or (null? siblings)
+                         (eq? grob (car siblings)))
+                     text
+                     (if (string? text)
+                         (string-append "(" text ")")
+                         (make-parenthesize-markup text)))))
+          (grob-interpret-markup grob text)))))
+
+(define-public (ly:horizontal-bracket-text::calc-direction grob)
+  (let* ((bracket (ly:grob-object grob 'bracket))
+         (bracket-dir (ly:grob-property bracket 'direction DOWN)))
+    bracket-dir))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; make-engraver helper macro

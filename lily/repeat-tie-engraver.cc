@@ -32,14 +32,15 @@ class Repeat_tie_engraver : public Engraver
   vector<Grob *> semi_ties_;
 
   void stop_translation_timestep ();
-  DECLARE_ACKNOWLEDGER (note_head);
-  DECLARE_TRANSLATOR_LISTENER (repeat_tie);
+  void acknowledge_note_head (Grob_info);
+  void listen_repeat_tie (Stream_event *);
 
 public:
   TRANSLATOR_DECLARATIONS (Repeat_tie_engraver);
 };
 
-Repeat_tie_engraver::Repeat_tie_engraver ()
+Repeat_tie_engraver::Repeat_tie_engraver (Context *c)
+  : Engraver (c)
 {
   event_ = 0;
   semi_tie_column_ = 0;
@@ -53,7 +54,6 @@ Repeat_tie_engraver::stop_translation_timestep ()
   semi_ties_.clear ();
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Repeat_tie_engraver, repeat_tie);
 void
 Repeat_tie_engraver::listen_repeat_tie (Stream_event *ev)
 {
@@ -88,7 +88,13 @@ Repeat_tie_engraver::acknowledge_note_head (Grob_info inf)
 
 }
 
-ADD_ACKNOWLEDGER (Repeat_tie_engraver, note_head);
+void
+Repeat_tie_engraver::boot ()
+{
+  ADD_LISTENER (Repeat_tie_engraver, repeat_tie);
+  ADD_ACKNOWLEDGER (Repeat_tie_engraver, note_head);
+}
+
 ADD_TRANSLATOR (Repeat_tie_engraver,
                 /* doc */
                 "Create repeat ties.",

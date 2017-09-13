@@ -383,7 +383,7 @@ Its appearance may be customized by overrides for @code{thickness},
     ;; The final stencil: lined-up bows
     (apply ly:stencil-add
       (map
-        (lambda (stil pt) (ly:stencil-translate stil pt))
+        ly:stencil-translate
         (circular-list init-bow-up init-bow-down)
         list-of-starts))))
 
@@ -1595,16 +1595,11 @@ equivalent to @code{\"fi\"}.
                         (cons arg result-list))))
                 '()
                 arg-list))
-
-  (interpret-markup layout
-                    (prepend-alist-chain 'word-space 0 props)
-                    (make-line-markup
-                     (make-override-lines-markup-list
-                      (cons 'word-space
-                            (chain-assoc-get 'word-space props))
-                      (if (markup-command-list? args)
-                          args
-                          (concat-string-args args))))))
+  (stack-stencil-line 0
+                      (interpret-markup-list layout props
+                                             (if (markup-command-list? args)
+                                                 args
+                                                 (concat-string-args args)))))
 
 (define (wordwrap-stencils stencils
                            justify base-space line-width text-dir)
@@ -2251,6 +2246,14 @@ Set the dimensions of @var{arg} to @var{x} and@tie{}@var{y}."
       `(delay-stencil-evaluation ,(delay expr))
       x y))))
 
+(define-markup-command (with-outline layout props outline arg)
+  (markup? markup?)
+  #:category other
+  "
+Print @var{arg} with the outline and dimensions of @var{outline}."
+  (ly:stencil-outline (interpret-markup layout props arg)
+                      (interpret-markup layout props outline)))
+
 (define-markup-command (with-dimensions-from layout props arg1 arg2)
   (markup? markup?)
   #:category other
@@ -2333,10 +2336,7 @@ Add padding @var{amount} around @var{arg} in the X@tie{}direction.
   }
 }
 @end lilypond"
-  (let* ((m (interpret-markup layout props arg))
-         (x (ly:stencil-extent m X))
-         (y (ly:stencil-extent m Y)))
-    (ly:make-stencil (list 'transparent-stencil (ly:stencil-expr m)) x y)))
+  (ly:stencil-outline empty-stencil (interpret-markup layout props arg)))
 
 (define-markup-command (pad-to-box layout props x-ext y-ext arg)
   (number-pair? number-pair? markup?)
@@ -2637,6 +2637,7 @@ may be any property supported by @rinternals{font-interface},
 
 (define-markup-command (abs-fontsize layout props size arg)
   (number? markup?)
+  #:properties ((word-space 0.6) (baseline-skip 3))
   #:category font
   "Use @var{size} as the absolute font size (in points) to display @var{arg}.
 Adjusts @code{baseline-skip} and @code{word-space} accordingly.
@@ -2652,14 +2653,12 @@ Adjusts @code{baseline-skip} and @code{word-space} accordingly.
 @end lilypond"
   (let* ((ref-size (ly:output-def-lookup layout 'text-font-size 12))
          (text-props (list (ly:output-def-lookup layout 'text-font-defaults)))
-         (ref-word-space (chain-assoc-get 'word-space text-props 0.6))
-         (ref-baseline (chain-assoc-get 'baseline-skip text-props 3))
          (magnification (/ size ref-size)))
     (interpret-markup
      layout
      (cons
-      `((baseline-skip . ,(* magnification ref-baseline))
-        (word-space . ,(* magnification ref-word-space))
+      `((baseline-skip . ,(* magnification baseline-skip))
+        (word-space . ,(* magnification word-space))
         (font-size . ,(magnification->font-size magnification)))
       props)
      arg)))
@@ -3102,7 +3101,7 @@ normal text font, no matter what font was used earlier.
   #:category music
   "@var{glyph-name} is converted to a musical symbol; for example,
 @code{\\musicglyph #\"accidentals.natural\"} selects the natural sign from
-the music font.  See @ruser{The Feta font} for a complete listing of
+the music font.  See @ruser{The Emmentaler font} for a complete listing of
 the possible glyphs.
 
 @lilypond[verbatim,quote]
@@ -3701,17 +3700,18 @@ mensural-flags.  Both are supplied for convenience.
            (raw-length (if stem-up upflag-length downflag-length))
            (angle (if stem-up upflag-angle downflag-angle))
            (flag-length (+ (* raw-length factor) half-stem-thickness))
-           (flag-end (if (= angle 0)
-                         (cons flag-length (* half-stem-thickness dir))
-                         (polar->rectangular flag-length angle)))
+           (flag-end (polar->rectangular flag-length angle))
            (thickness (* flag-thickness factor))
            (thickness-offset (cons 0 (* -1 thickness dir)))
            (spacing (* -1 flag-spacing factor dir))
            (start (cons (- half-stem-thickness) (* half-stem-thickness dir)))
-           (points (list start
-                         flag-end
-                         (offset-add flag-end thickness-offset)
-                         (offset-add start thickness-offset)))
+           (raw-points
+             (list
+               '(0 . 0)
+               flag-end
+               (offset-add flag-end thickness-offset)
+               thickness-offset))
+           (points (map (lambda (coord) (offset-add coord start)) raw-points))
            (stencil (ly:round-filled-polygon points half-stem-thickness))
            ;; Log for 1/8 is 3, so we need to subtract 3
            (flag-stencil (buildflags stencil (- log 3) stencil spacing)))
@@ -3720,6 +3720,10 @@ mensural-flags.  Both are supplied for convenience.
   (let* ((font (ly:paper-get-font layout (cons '((font-encoding . fetaMusic)
                                                  (font-name . #f))
                                                props)))
+         ;; default for text-font-size is 11
+         ;; hence we use (/ text-font-size 11) later, to ensure proper scaling
+         ;; of stem-length and thickness
+         (text-font-size (ly:output-def-lookup layout 'text-font-size 11))
          (size-factor (magstep font-size))
          (blot (ly:output-def-lookup layout 'blot-diameter))
          (head-glyph-name
@@ -3743,8 +3747,9 @@ mensural-flags.  Both are supplied for convenience.
          (attach-indices (ly:note-head::stem-attachment font head-glyph-name))
          (stem-length (* size-factor (max 3 (- log 1))))
          ;; With ancient-flags we want a tighter stem
-         (stem-thickness (* size-factor (if ancient-flags? 0.1 0.13)))
-         (stemy (* dir stem-length))
+         (stem-thickness
+           (* size-factor (/ text-font-size 11) (if ancient-flags? 0.1 0.13)))
+         (stemy (* dir (/ text-font-size 11) stem-length))
          (attach-off (cons (interval-index
                             (ly:stencil-extent head-glyph X)
                             (* (sign dir) (car attach-indices)))
@@ -3812,7 +3817,6 @@ mensural-flags.  Both are supplied for convenience.
                                     stem-thickness
                                     0))
                              (+ stemy flag-style-Y-corr))))))
-
     ;; If there is a flag on an upstem and the stem is short, move the dots
     ;; to avoid the flag.  16th notes get a special case because their flags
     ;; hang lower than any other flags.
@@ -3857,28 +3861,30 @@ and return a (log dots) list."
         (ly:error (_ "not a valid duration string: ~a") duration-string))))
 
 (define-markup-command (note layout props duration dir)
-  (string? number?)
+  (ly:duration? number?)
   #:category music
   #:properties (note-by-number-markup)
   "
-@cindex notes within text by string
+@cindex notes within text by duration
 
 This produces a note with a stem pointing in @var{dir} direction, with
 the @var{duration} for the note head type and augmentation dots.  For
-example, @code{\\note #\"4.\" #-0.75} creates a dotted quarter note, with
+example, @code{\\note @{4.@} #-0.75} creates a dotted quarter note, with
 a shortened down stem.
 
 @lilypond[verbatim,quote]
 \\markup {
   \\override #'(style . cross) {
-    \\note #\"4..\" #UP
+    \\note {4..} #UP
   }
   \\hspace #2
-  \\note #\"breve\" #0
+  \\note {\\breve} #0
 }
 @end lilypond"
-  (let ((parsed (parse-simple-duration duration)))
-    (note-by-number-markup layout props (car parsed) (cadr parsed) dir)))
+  (note-by-number-markup layout props
+                         (ly:duration-log duration)
+                         (ly:duration-dot-count duration)
+                         dir))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; the rest command.
@@ -4432,7 +4438,7 @@ Draw vertical brackets around @var{arg}.
 @lilypond[verbatim,quote]
 \\markup {
   \\bracket {
-    \\note #\"2.\" #UP
+    \\note {2.} #UP
   }
 }
 @end lilypond"
@@ -4447,6 +4453,7 @@ Draw vertical brackets around @var{arg}.
                 (padding)
                 (size 1)
                 (thickness 1)
+                (line-thickness 0.1)
                 (width 0.25))
   "
 @cindex placing parentheses around text
@@ -4477,12 +4484,11 @@ a column containing several lines of text.
   (let* ((m (interpret-markup layout props arg))
          (scaled-width (* size width))
          (scaled-thickness
-          (* (chain-assoc-get 'line-thickness props 0.1)
-             thickness))
+          (* line-thickness thickness))
          (half-thickness
           (min (* size 0.5 scaled-thickness)
                (* (/ 4 3.0) scaled-width)))
-         (padding (chain-assoc-get 'padding props half-thickness)))
+         (padding (or padding half-thickness)))
     (parenthesize-stencil
      m half-thickness scaled-width angularity padding)))
 
@@ -4745,10 +4751,10 @@ Overriding @code{baseline-skip} to increase rows vertical distance.
     #'(0 1 0 -1)
     {
       \\underline { center-aligned right-aligned center-aligned left-aligned }
-      one \number 1 thousandth \number 0.001
-      eleven \number 11 hundredth \number 0.01
-      twenty \number 20 tenth \number 0.1
-      thousand \number 1000 one \number 1.0
+      one \\number 1 thousandth \\number 0.001
+      eleven \\number 11 hundredth \\number 0.01
+      twenty \\number 20 tenth \\number 0.1
+      thousand \\number 1000 one \\number 1.0
     }
 }
 @end lilypond

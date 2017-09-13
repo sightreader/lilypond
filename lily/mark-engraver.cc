@@ -54,11 +54,12 @@ protected:
   void stop_translation_timestep ();
   virtual void finalize ();
 
-  DECLARE_TRANSLATOR_LISTENER (mark);
-  DECLARE_ACKNOWLEDGER (break_alignment);
+  void listen_mark (Stream_event *);
+  void acknowledge_break_alignment (Grob_info);
 };
 
-Mark_engraver::Mark_engraver ()
+Mark_engraver::Mark_engraver (Context *c)
+  : Engraver (c)
 {
   text_ = 0;
   final_text_ = 0;
@@ -111,7 +112,6 @@ Mark_engraver::create_items (Stream_event *ev)
   text_ = make_item ("RehearsalMark", ev->self_scm ());
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Mark_engraver, mark);
 void
 Mark_engraver::listen_mark (Stream_event *ev)
 {
@@ -146,18 +146,26 @@ Mark_engraver::process_music ()
               m = scm_call_2 (proc, m, context ()->self_scm ());
             }
           else
-            /* FIXME: constant error message.  */
-            warning (_ ("rehearsalMark must have integer value"));
+            /* Score.rehearsalMark is initialized to #1 so we
+               never should see this case without user error */
+            mark_ev_->origin ()->warning
+              (_ ("rehearsalMark must have integer value"));
         }
 
       if (Text_interface::is_markup (m))
         text_->set_property ("text", m);
       else
-        warning (_ ("mark label must be a markup object"));
+        mark_ev_->origin ()->warning (_ ("mark label must be a markup object"));
     }
 }
 
-ADD_ACKNOWLEDGER (Mark_engraver, break_alignment);
+
+void
+Mark_engraver::boot ()
+{
+  ADD_LISTENER (Mark_engraver, mark);
+  ADD_ACKNOWLEDGER (Mark_engraver, break_alignment);
+}
 
 ADD_TRANSLATOR (Mark_engraver,
                 /* doc */

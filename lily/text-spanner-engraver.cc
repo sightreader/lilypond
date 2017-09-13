@@ -34,8 +34,8 @@ public:
   TRANSLATOR_DECLARATIONS (Text_spanner_engraver);
 protected:
   virtual void finalize ();
-  DECLARE_TRANSLATOR_LISTENER (text_span);
-  DECLARE_ACKNOWLEDGER (note_column);
+  void listen_text_span (Stream_event *);
+  void acknowledge_note_column (Grob_info);
   void stop_translation_timestep ();
   void process_music ();
 
@@ -47,7 +47,8 @@ private:
   void typeset_all ();
 };
 
-Text_spanner_engraver::Text_spanner_engraver ()
+Text_spanner_engraver::Text_spanner_engraver (Context *c)
+  : Engraver (c)
 {
   finished_ = 0;
   current_event_ = 0;
@@ -55,7 +56,6 @@ Text_spanner_engraver::Text_spanner_engraver ()
   event_drul_.set (0, 0);
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Text_spanner_engraver, text_span);
 void
 Text_spanner_engraver::listen_text_span (Stream_event *ev)
 {
@@ -156,7 +156,13 @@ Text_spanner_engraver::acknowledge_note_column (Grob_info info)
     }
 }
 
-ADD_ACKNOWLEDGER (Text_spanner_engraver, note_column);
+
+void
+Text_spanner_engraver::boot ()
+{
+  ADD_LISTENER (Text_spanner_engraver, text_span);
+  ADD_ACKNOWLEDGER (Text_spanner_engraver, note_column);
+}
 
 ADD_TRANSLATOR (Text_spanner_engraver,
                 /* doc */

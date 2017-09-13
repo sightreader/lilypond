@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: cee6cea4ed55eb4fa1f9d83c997ebc19744a6e1a
+   Translation of GIT committish: 1e5c6b0f54079eb3285dcc4c7e53f17d8bb03933
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -87,7 +87,7 @@ Manuel de notation :
 
 
 @node Formes de notation ancienne prises en charge
-@unnumberedsubsubsec Formes de notation ancienne prises en charge
+@subsection Formes de notation ancienne prises en charge
 @translationof Overview of the supported styles
 
 En matière de chant grégorien, LilyPond dispose de trois différents
@@ -2594,7 +2594,7 @@ Glossaire musicologique :
 Manuel de notation :
 @ref{Altérations},
 @ref{Altérations accidentelles automatiques},
-@ref{La fonte Feta}
+@ref{La fonte Emmentaler}.
 
 
 @node Barre de mesure kiévienne
@@ -2612,8 +2612,10 @@ d'un @code{\bar "k"}.
 @end lilypond
 
 @seealso
+Manuel de notation :
 @ref{Barres de mesure},
-@ref{La fonte Feta}
+@ref{La fonte Emmentaler}.
+
 
 @node Mélismes kiéviens
 @unnumberedsubsubsec Mélismes kiéviens
@@ -2723,7 +2725,6 @@ une édition en notation moderne à partir d'une même source.
 @cindex ajout d'incipit
 
 @funindex \incipit
-@funindex incipit
 
 Il est d'usage, lorsque l'on transcrit de la musique ancienne en
 notation moderne, d'indiquer aussi comment apparaissaient les silences

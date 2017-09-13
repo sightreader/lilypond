@@ -157,8 +157,8 @@ A		[a-zA-Z\200-\377]
 AA		{A}|_
 N		[0-9]
 ANY_CHAR	(.|\n)
-WORD		{A}([-_]{A}|{A})*
-COMMAND		\\{WORD}
+SYMBOL		{A}([-_]{A}|{A})*
+COMMAND		\\{SYMBOL}
 /* SPECIAL category is for every letter that needs to get passed to
  * the parser rather than being redefinable by the user */
 SPECIAL		[-+*/=<>{}!?_^'',.:]
@@ -362,7 +362,7 @@ BOM_UTF8	\357\273\277
 
     /* Flex picks the longest matching pattern including trailing
      * contexts.  Without the backup pattern, r-. does not trigger the
-     * {RESTNAME} rule but rather the {WORD}/[-_] rule coming later,
+     * {RESTNAME} rule but rather the {SYMBOL}/[-_] rule coming later,
      * needed for avoiding backup states.
      */
 
@@ -417,6 +417,19 @@ BOM_UTF8	\357\273\277
 
 	sval = eval_scm (sval, hi, '$');
 
+	if (YYSTATE == markup && ly_is_procedure (sval))
+	{
+		SCM sig = Lily::markup_command_signature (sval);
+		if (scm_is_true (sig))
+		{
+			yylval = sval;
+			int token = MARKUP_FUNCTION;
+			if (scm_is_true (Lily::markup_list_function_p (sval)))
+				token = MARKUP_LIST_FUNCTION;
+			push_markup_predicates (sig);
+			return token;
+		}
+	}
 	int token = scan_scm_id (sval);
 	if (!scm_is_eq (yylval, SCM_UNSPECIFIED))
 		return token;
@@ -476,8 +489,8 @@ BOM_UTF8	\357\273\277
 }
 
 <notes,figures>{
-	{WORD}/[-_]	| // backup rule
-	{WORD}	{
+	{SYMBOL}/[-_]	| // backup rule
+	{SYMBOL}	{
 		return scan_bare_word (YYText_utf8 ());
 	}
 	\\\"	{
@@ -583,7 +596,7 @@ BOM_UTF8	\357\273\277
 		s = lyric_fudge (s);
 		yylval = ly_string2scm (s);
 
-		return STRING;
+		return SYMBOL;
 	}
 	/* This should really just cover {} */
 	[{}] {
@@ -592,8 +605,8 @@ BOM_UTF8	\357\273\277
 	}
 }
 <chords>{
-	{WORD}/[-_]	| // backup rule
-	{WORD}	{
+	{SYMBOL}/[-_]	| // backup rule
+	{SYMBOL}	{
 		return scan_bare_word (YYText_utf8 ());
 	}
 	\\\"	{
@@ -684,25 +697,15 @@ BOM_UTF8	\357\273\277
 		// value (for token type MARKUP_FUNCTION or
 		// MARKUP_LIST_FUNCTION).
 
-		push_extra_token (here_input (), EXPECT_NO_MORE_ARGS);
-		s = scm_cdr(s);
-		for (; scm_is_pair(s); s = scm_cdr(s)) {
-		  SCM predicate = scm_car(s);
+		push_markup_predicates (scm_cdr (s));
 
-		  if (predicate == Lily::markup_list_p)
-		    push_extra_token (here_input (), EXPECT_MARKUP_LIST);
-		  else if (predicate == Lily::markup_p)
-		    push_extra_token (here_input (), EXPECT_MARKUP);
-		  else
-		    push_extra_token (here_input (), EXPECT_SCM, predicate);
-		}
 		return token_type;
 	}
 	[^$#{}\"\\ \t\n\r\f]+ {
 		string s (YYText_utf8 ()); 
 
 		yylval = ly_string2scm (s);
-		return STRING;
+		return SYMBOL;
 	}
 	[{}]  {
                 yylval = SCM_UNSPECIFIED;
@@ -756,8 +759,8 @@ BOM_UTF8	\357\273\277
 }
 
 <INITIAL>{
-	{WORD}/[-_]	| // backup rule
-	{WORD}	{
+	{SYMBOL}/[-_]	| // backup rule
+	{SYMBOL}	{
 		return scan_bare_word (YYText_utf8 ());
 	}
 	\\\"	{
@@ -892,6 +895,23 @@ Lily_lexer::pop_state ()
 
 }
 
+void
+Lily_lexer::push_markup_predicates (SCM sig)
+{
+	push_extra_token (here_input (), EXPECT_NO_MORE_ARGS);
+	for (SCM s = sig; scm_is_pair(s); s = scm_cdr(s)) {
+		SCM predicate = scm_car(s);
+
+		if (scm_is_eq (predicate, SCM (Lily::markup_list_p)))
+			push_extra_token (here_input (), EXPECT_MARKUP_LIST);
+		else if (scm_is_eq (predicate, SCM (Lily::markup_p)))
+			push_extra_token (here_input (), EXPECT_MARKUP);
+		else
+			push_extra_token (here_input (), EXPECT_SCM, predicate);
+	}
+}
+
+
 int
 Lily_lexer::identifier_type (SCM sid)
 {
@@ -927,7 +947,7 @@ Lily_lexer::scan_escaped_word (const string &str)
 
 	yylval = ly_string2scm (str);
 
-	return STRING;
+	return STRING; // SYMBOL would cause additional processing
 }
 
 int
@@ -967,9 +987,9 @@ Lily_lexer::scan_scm_id (SCM sid)
 			cs = SCM_CAR (cs);
 		}
 
-		if (scm_is_eq (cs, Lily::ly_music_p))
+		if (scm_is_eq (cs, SCM (Lily::ly_music_p)))
 			funtype = MUSIC_FUNCTION;
-		else if (scm_is_eq (cs, Lily::ly_event_p))
+		else if (scm_is_eq (cs, SCM (Lily::ly_event_p)))
 			funtype = EVENT_FUNCTION;
 		else if (ly_is_procedure (cs))
 			funtype = SCM_FUNCTION;
@@ -1004,16 +1024,15 @@ Lily_lexer::scan_scm_id (SCM sid)
 }
 
 int
-Lily_lexer::scan_bare_word (const string &str)
+Lily_lexer::scan_word (SCM & output, SCM sym)
 {
-	SCM sym = ly_symbol2scm (str.c_str ());
 	if ((YYSTATE == notes) || (YYSTATE == chords)) {
 		SCM handle = SCM_BOOL_F;
 		if (scm_is_pair (pitchname_tab_stack_))
 			handle = scm_hashq_get_handle (scm_cdar (pitchname_tab_stack_), sym);
 
 		if (scm_is_pair (handle)) {
-			yylval = scm_cdr (handle);
+			output = scm_cdr (handle);
 			if (unsmob<Pitch> (yylval))
 	                    return (YYSTATE == notes) ? NOTENAME_PITCH : TONICNAME_PITCH;
 			else if (scm_is_symbol (yylval))
@@ -1022,12 +1041,24 @@ Lily_lexer::scan_bare_word (const string &str)
 		else if ((YYSTATE == chords)
 			&& scm_is_true (handle = scm_hashq_get_handle (chordmodifier_tab_, sym)))
 		{
-		    yylval = scm_cdr (handle);
+		    output = scm_cdr (handle);
 		    return CHORD_MODIFIER;
 		}
 	}
+	output = SCM_UNDEFINED;
+	return -1;
+}
+
+int
+Lily_lexer::scan_bare_word (const string &str)
+{
+	int state = scan_word (yylval, ly_symbol2scm (str.c_str ()));
+	if (state >= 0)
+	{
+		return state;
+	}
 	yylval = ly_string2scm (str);
-	return STRING;
+	return SYMBOL;
 }
 
 int

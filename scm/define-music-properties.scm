@@ -108,7 +108,7 @@ property, e.g., @code{(beamed-lengths details)}.")
      (iterator-ctor ,procedure? "Function to construct a
 @code{music-event-iterator} object for this music.")
 
-     (label ,markup? "Label of a mark.")
+     (label ,number-or-markup? "Label of a mark.")
      (last-pitch ,ly:pitch? "The last pitch after relativization.")
      (length ,ly:moment? "The duration of this music.")
      (length-callback ,procedure? "How to compute the duration of this music.
@@ -183,7 +183,7 @@ If zero, signals a beat containing varying durations.")
 Options are @code{'text} and @code{'hairpin}.")
      (span-text ,markup? "The displayed text for dynamic text
 spanners (e.g., cresc.)")
-     (spanner-id ,string? "Identifier to distinguish concurrent spanners.")
+     (spanner-id ,key? "Identifier to distinguish concurrent spanners.")
      (start-callback ,procedure? "Function to compute the negative length
 of starting grace notes.  This property can only be defined as initializer
 in @file{scm/@/define-music-types.scm}.")

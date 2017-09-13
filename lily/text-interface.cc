@@ -92,8 +92,44 @@ Text_interface::interpret_string (SCM layout_smob,
                                      SCM_BOOL_F);
   SCM music_encodings = Lily::all_music_font_encodings;
 
+  SCM features = ly_chain_assoc_get (ly_symbol2scm ("font-features"),
+                                     props,
+                                     SCM_BOOL_F);
+
+  // The font-features value is stored in a scheme list. This joins the entries
+  // with commas for processing with pango.
+  string features_str = string ();
+  if (scm_is_pair (features))
+    {
+      bool first = true;
+      for (SCM s = features; scm_is_pair (s); s = scm_cdr (s))
+        {
+          SCM feature = scm_car (s);
+          if (scm_is_string (feature))
+            {
+              if (first)
+                {
+                  first = false;
+                }
+              else
+                {
+                  features_str += ",";
+                }
+              features_str += ly_scm2string (feature);
+            }
+          else
+            {
+              scm_misc_error (__FUNCTION__, "Found non-string in font-features list", SCM_EOL);
+            }
+        }
+    }
+  else if (!scm_is_false (features))
+    {
+      scm_misc_error (__FUNCTION__, "Expecting a list for font-features value", SCM_EOL);
+    }
+
   bool is_music = scm_is_true (scm_memq (encoding, music_encodings));
-  return fm->text_stencil (layout, str, is_music).smobbed_copy ();
+  return fm->text_stencil (layout, str, is_music, features_str).smobbed_copy ();
 }
 
 static size_t markup_depth = 0;
@@ -134,6 +170,7 @@ Text_interface::interpret_markup (SCM layout_smob, SCM props, SCM markup)
       scm_dynwind_unwind_handler (markup_down_depth, 0, SCM_F_WIND_EXPLICITLY);
       if (markup_depth > max_depth)
         {
+          scm_dynwind_end ();
           string name = ly_symbol2string (scm_procedure_name (func));
           // TODO: Also print the arguments of the markup!
           non_fatal_error (_f ("Markup depth exceeds maximal value of %d; "
@@ -173,14 +210,9 @@ Text_interface::is_markup (SCM x)
 {
   return scm_is_string (x)
     || (scm_is_pair (x)
-        && scm_is_true
-        (scm_object_property (scm_car (x),
-                              ly_symbol2scm ("markup-signature")))
-        && scm_is_false
-        (scm_object_property (scm_car (x),
-                              ly_symbol2scm ("markup-list-command"))));
+        && scm_is_true (Lily::markup_command_signature (scm_car (x)))
+        && scm_is_false (Lily::markup_list_function_p (scm_car (x))));
 }
-
 bool
 Text_interface::is_markup_list (SCM x)
 {

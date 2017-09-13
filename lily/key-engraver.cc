@@ -46,9 +46,9 @@ protected:
   void stop_translation_timestep ();
   void process_music ();
 
-  DECLARE_TRANSLATOR_LISTENER (key_change);
-  DECLARE_ACKNOWLEDGER (clef);
-  DECLARE_ACKNOWLEDGER (bar_line);
+  void listen_key_change (Stream_event *);
+  void acknowledge_clef (Grob_info);
+  void acknowledge_bar_line (Grob_info);
 };
 
 void
@@ -56,7 +56,8 @@ Key_engraver::finalize ()
 {
 }
 
-Key_engraver::Key_engraver ()
+Key_engraver::Key_engraver (Context *c)
+  : Engraver (c)
 {
   key_event_ = 0;
   item_ = 0;
@@ -117,10 +118,10 @@ Key_engraver::create_key (bool is_default)
     {
       SCM visibility = get_property ("explicitKeySignatureVisibility");
       item_->set_property ("break-visibility", visibility);
+      item_->set_property ("non-default", SCM_BOOL_T);
     }
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Key_engraver, key_change);
 void
 Key_engraver::listen_key_change (Stream_event *ev)
 {
@@ -147,7 +148,8 @@ void
 Key_engraver::process_music ()
 {
   if (key_event_
-      || get_property ("lastKeyAlterations") != get_property ("keyAlterations"))
+      || !scm_is_eq (get_property ("lastKeyAlterations"),
+                     get_property ("keyAlterations")))
     create_key (false);
 }
 
@@ -212,8 +214,14 @@ Key_engraver::initialize ()
   context ()->set_property ("tonic", p.smobbed_copy ());
 }
 
-ADD_ACKNOWLEDGER (Key_engraver, clef);
-ADD_ACKNOWLEDGER (Key_engraver, bar_line);
+
+void
+Key_engraver::boot ()
+{
+  ADD_LISTENER (Key_engraver, key_change);
+  ADD_ACKNOWLEDGER (Key_engraver, clef);
+  ADD_ACKNOWLEDGER (Key_engraver, bar_line);
+}
 
 ADD_TRANSLATOR (Key_engraver,
                 /* doc */

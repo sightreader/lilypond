@@ -70,7 +70,7 @@ Line_interface::make_trill_line (Grob *me,
     }
   while (len + elt_len < dz.length ());
 
-  line.rotate (dz.arg (), Offset (LEFT, CENTER));
+  line.rotate (dz.angle_degrees (), Offset (LEFT, CENTER));
   line.translate (from);
 
   return line;
@@ -123,7 +123,7 @@ Line_interface::make_dashed_line (Real thick, Offset from, Offset to,
                                   Real dash_period, Real dash_fraction)
 {
   dash_fraction = min (max (dash_fraction, 0.0), 1.0);
-  Real on = dash_fraction * dash_period + thick;
+  Real on = dash_fraction * dash_period;
   Real off = max (0.0, dash_period - on);
 
   SCM at = scm_list_n (ly_symbol2scm ("dashed-line"),
@@ -226,16 +226,21 @@ Line_interface::line (Grob *me, Offset from, Offset to)
         return Stencil ();
 
       Real len = (to - from).length ();
-
-      int n = (int) rint ((len - period * fraction) / period);
-      n = max (0, n);
-      if (n > 0)
+      /*
+        Dashed lines should begin and end with a dash.  Therefore,
+        there will be one more dash than complete dash + whitespace
+        units (full periods).
+      */
+      int full_period_count =
+        (int) rint ((len - period * fraction) / period);
+      full_period_count = max (0, full_period_count);
+      if (full_period_count > 0)
         {
           /*
             TODO: figure out something intelligent for really short
             sections.
-           */
-          period = ((to - from).length () - period * fraction) / n;
+          */
+          period = len / (fraction + full_period_count);
         }
       stencil = make_dashed_line (thick, from, to, period, fraction);
     }

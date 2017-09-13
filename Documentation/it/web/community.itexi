@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 @ignore
-    Translation of GIT committish: 674ed28bf0355426499a9ce19562d11d1addca42
+    Translation of GIT committish: 3f5d679ade0f797d5f907569656223d09b09d5db
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -9,6 +9,7 @@
 
 @include included/acknowledge.itexi
 @include included/authors.itexi
+@include included/gsoc.itexi
 @include included/helpus.itexi
 
 @node Comunità
@@ -70,10 +71,10 @@ quando si discute di LilyPond.
 @ref{Pubblicazioni}: cosa abbiamo scritto, e cosa è stato scritto su di noi.
 
 @item
-@ref{Notizie vecchie}: un archivio.
+@ref{Notizie}: notizie sul progetto LilyPond.
 
 @item
-@ref{Attic}: annunci e changelog delle versioni precedenti.
+@ref{Soffitta}: annunci e changelog delle versioni precedenti.
 
 @end itemize
 @divEnd
@@ -92,7 +93,7 @@ quando si discute di LilyPond.
 * Autori::
 * Riconoscimenti::
 * Pubblicazioni::
-* Notizie vecchie::
+* Notizie::
 * Soffitta::
 @end menu
 @divEnd
@@ -140,7 +141,7 @@ e aggiungi i tuoi esempi!
 @end example
 
 Esempi particolarmente istruttivi provenienti dal LSR sono inclusi nella
-nostra documentazione ufficiale, in @ref{Snippets}.
+nostra documentazione ufficiale, in @ref{Frammenti}.
 
 @subsubheading IRC
 
@@ -416,7 +417,7 @@ allora si tratta di un bug.
 Potremmo già essere a conoscenza di questo bug.  Controlla qui:
 
 @example
-@uref{http://code.google.com/p/lilypond/issues/list}
+@uref{http://sourceforge.net/p/testlilyissues/issues/}
 @end example
 
 @warning{Per favore @strong{NON} aggiungere segnalazioni di bug direttamente
@@ -494,9 +495,10 @@ quando la segnalazione viene aggiunta al bug tracker.  Una risposta può richied
 fino a 4 giorni, perché abbiamo un numero limitato di volontari per questo compito.
 
 Una volta che un bug è stato aggiunto al tracker, puoi commentarlo per aggiungere
-informazioni a riguardo.  Puoi anche contrassegnare il bug in modo da ricevere
-automaticamente delle email ogni volta capiti un'attività relativa al bug.  Per
-fare questo occorre avere un account google.
+informazioni a riguardo.  Per ricevere automaticamente delle notifiche su
+qualsiasi attività relativa al bug, puoi iscriverti cliccando sul simbolo
+della busta vicino al titolo del bug.  Per commentare e iscriversi occorre un
+account sourceforge.
 @divEnd
 
 @divClass{column-center-bottom}
@@ -598,11 +600,10 @@ Un buon modo per sapere quali sono gli sviluppatori più attivi e preparati
 
 Sviluppatori interessati:
 @table @asis
-@item @email{dak@@gnu.org, David Kastrup}
-Le donazioni mi permettono di continuare il mio lavoro a tempo
-pieno su LilyPond.  Mi occupo in particolare di progettazione, coerenza,
-implementazione, semplificazione, documentazione e debug dell'interfaccia
-utente e programmatore.
+@item @email{lilypond-devel@@gnu.org, mailing list degli sviluppatori di LilyPond}
+In questo momento nessuno programmatore si è proposto per fornire miglioramenti
+di LilyPond a pagamento, ma è comunque possibile provare a chiedere nella
+mailing list degli sviluppatori.
 
 @c Format
 @c @item @email{name@@adress.domain, Name}
@@ -620,10 +621,10 @@ utente e programmatore.
 
 @divClass{heading-center}
 @ifclear web_version
-  @heading Development for LilyPond @version
+  @heading Sviluppo di LilyPond @version
 @end ifclear
 @ifset web_version
-  @heading Development for LilyPond @versionDevel
+  @heading Sviluppo di LilyPond @versionDevel
 @end ifset
 
 @c we normally don't allow named references, but in this case
@@ -760,7 +761,7 @@ I collaudi lilypond-book per questa versione.
 @itemize
 @item @uref{http://lilypond.org/test, Confronto tra i collaudi di regressione}
 
-@item @uref{http://lilypond.org/download/binaries/test-output/,
+@item @uref{http://lilypond.org/downloads/binaries/test-output/,
 Archivio di tutti i collaudi di regressione}
 
 @end itemize
@@ -783,43 +784,43 @@ manuali sono reperibili su @url{http://lilypond.org}}
 @headitem Introduzione
 
 @item
-@docLinkSplit{Learning,learning,@manualDevelLearningSplit-it}
+@docLinkSplit{Apprendimento,learning,@manualDevelLearningSplit-it}
 @tab
-@docLinkBig{Learning,learning,@manualDevelLearningBig-it}
+@docLinkBig{Apprendimento,learning,@manualDevelLearningBig-it}
 @tab
-@docLinkPdf{Learning,learning,@manualDevelLearningPdf-it}
+@docLinkPdf{Apprendimento,learning,@manualDevelLearningPdf-it}
 
 @item
-@docLinkSplit{Glossary,music-glossary,@manualDevelGlossarySplit}
+@docLinkSplit{Glossario,music-glossary,@manualDevelGlossarySplit}
 @tab
-@docLinkBig{Glossary,music-glossary,@manualDevelGlossaryBig}
+@docLinkBig{Glossario,music-glossary,@manualDevelGlossaryBig}
 @tab
-@docLinkPdf{Glossary,music-glossary,@manualDevelGlossaryPdf}
+@docLinkPdf{Glossario,music-glossary,@manualDevelGlossaryPdf}
 
 @item
-@docLinkSplit{Essay,essay,@manualDevelEssaySplit-it}
+@docLinkSplit{Saggio,essay,@manualDevelEssaySplit-it}
 @tab
-@docLinkBig{Essay,essay,@manualDevelEssayBig-it}
+@docLinkBig{Saggio,essay,@manualDevelEssayBig-it}
 @tab
-@docLinkPdf{Essay,essay,@manualDevelEssayPdf-it}
+@docLinkPdf{Saggio,essay,@manualDevelEssayPdf-it}
 @end multitable
 
 @multitable @columnfractions .3 .3 .3
 @headitem Regolare
 
 @item
-@docLinkSplit{Notation,notation,@manualDevelNotationSplit-it}
+@docLinkSplit{Notazione,notation,@manualDevelNotationSplit-it}
 @tab
-@docLinkBig{Notation,notation,@manualDevelNotationBig-it}
+@docLinkBig{Notazione,notation,@manualDevelNotationBig-it}
 @tab
-@docLinkPdf{Notation,notation,@manualDevelNotationPdf-it}
+@docLinkPdf{Notazione,notation,@manualDevelNotationPdf-it}
 
 @item
-@docLinkSplit{Usage,usage,@manualDevelUsageSplit-it}
+@docLinkSplit{Utilizzo,usage,@manualDevelUsageSplit-it}
 @tab
-@docLinkBig{Usage,usage,@manualDevelUsageBig-it}
+@docLinkBig{Utilizzo,usage,@manualDevelUsageBig-it}
 @tab
-@docLinkPdf{Usage,usage,@manualDevelUsagePdf-it}
+@docLinkPdf{Utilizzo,usage,@manualDevelUsagePdf-it}
 
 @item
 @docLinkSplit{Snippets,snippets,@manualDevelSnippetsSplit}
@@ -840,11 +841,11 @@ manuali sono reperibili su @url{http://lilypond.org}}
 @docLinkPdf{Web,web,@manualDevelWebPdf-it}
 
 @item
-@docLinkSplit{Changes,changes,@manualDevelChangesSplit}
+@docLinkSplit{Cambiamenti,changes,@manualDevelChangesSplit-it}
 @tab
-@docLinkBig{Changes,changes,@manualDevelChangesBig}
+@docLinkBig{Cambiamenti,changes,@manualDevelChangesBig-it}
 @tab
-@docLinkPdf{Changes,changes,@manualDevelChangesPdf}
+@docLinkPdf{Cambiamenti,changes,@manualDevelChangesPdf-it}
 
 @item
 @docLinkSplit{Extending,extending,@manualDevelExtendingSplit}
@@ -879,167 +880,8 @@ manuali sono reperibili su @url{http://lilypond.org}}
 @unnumberedsec Google Summer of Code
 @translationof Google Summer of Code
 
-@divClass{column-center-top}
-@subheading Che cos'è il Google Summer of Code?
+@gsocCurrent
 
-È un programma internazionale organizzato da Google che offre agli studenti
-degli stipendi per lavorare a progetti di software libero durante le
-vacanze estive.
-
-È un'ottima opportunità per trovare nuovi collaboratori e per stimolare gli
-studenti che già partecipano allo sviluppo di LilyPond ad impegnarsi di
-più in esso.  Uno dei nostri sviluppatori è stato accettato
-per il programma 2012 sotto l'egida del @uref{http://www.gnu.org/, progetto GNU} e
-siamo sempre in cerca di persone che vogliano partecipare ai programmi futuri.
-
-@divEnd
-
-@divClass{column-center-middle-color2}
-@subheading La lista delle nostre idee
-
-Ecco una lista di progetti suggeriti agli studenti del GSoC 2012.  Viene
-conservata qui come fonte di ispirazione per chiunque sia interessato a
-contribuire allo sviluppo di LilyPond in futuri progetti GSoC.
-Ci sono molte altre cose da fare per migliorare LilyPond e i membri del
-team di sviluppo sono sempre disponibili a aiutare chi volesse affrontare
-progetti simili a quelli elencati sotto.
-
-Una lista completa di tutti i problemi da risolvere si trova
-@uref{http://code.google.com/p/lilypond/issues/list, qui}.
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Abbellimenti
-
-Correggere i problemi di sincronizzazione degli abbellimenti.
-Gli abbellimenti possono interferire col modo in cui LilyPond
-gestisce il tempo e causare strani effetti, specialmente quando si usano
-più righi e alcuni di questi hanno degli abbellimenti mentre altri
-non ce li hanno.
-
-@strong{Difficoltà:} media
-@strong{Requisiti:} C++, MIDI
-@strong{Consigliato:} familiarità col funzionamento interno di LilyPond
-@strong{Mentore/i:} Mike Solomon, Carl Sorensen
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading MusicXML
-
-Migliorare le funzioni di importazione e esportazione di MusicXML:
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-Gestire l'esportazione del contenuto musicale principale come l'esportazione
-MIDI (ovvero usando classi dedicate dell'esportatore, derivate dalla classe
-del traduttore).
-
-@item
-Costruire l'albero XML del contenuto musicale di base,
-aggiungere un collegamento dall'evento musicale al tag XML.
-
-@item
-Far sì che tutti gli incisori di LilyPond facciano il loro lavoro.
-
-@item
-Aggiungere la capacità di collegare ogni oggetto dell'output
-(ovvero ogni stampo (stencil) / gruppo di stampi) alla sua causa musicale
-(e quindi al tag XML nell'albero XML).
-
-@item
-Creare un backend di output XML, che possa aggiungere le informazioni di
-formattazione per ogni oggetto di output ai tag XML.
-
-@end itemize
-@divEnd
-
-
-@strong{Difficoltà:} media
-@strong{Requisiti:} MusicXML, Python, conoscenza di base di LilyPond
-@strong{Mentore/i:} Reinhold Kainhofer, Mike Solomon
-
-È auspicabile una certa familiarità con altri software di notazione musicale (a
-fine comparativo).
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Migliorare le legature di portamento e di valore
-
-La forma predefinita delle curve delle legature di portamento e di valore è spesso
-non soddisfacente.  Le legature di valore "spezzate" da una chiave o da
-un cambio di rigo non sono gestite al meglio.  Il progetto potrebbe
-includere la raccolta e la classificazione di esempi di output scadente, la
-decisione sull'output desiderato e la scrittura del codice per migliorarlo.
-
-@strong{Difficoltà:} difficile
-@strong{Requisiti:} C++, esperienza con la scrittura di euristica
-@strong{Conoscenze consigliate:} conoscenza di LilyPond, senso estetico
-@strong{Mentore/i:} Mike Solomon
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Aggiungere varianti dei glifi dei tipi di carattere
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-Aggiungere varianti @q{sulla} linea del rigo e @q{tra} le linee dei righi.
-
-@item
-Varianti più corte e più strette di alcuni glifi, come ad esempio le
-alterazioni.  Un altro esempio più specifico è la testa della nota
-breve nella notazione antica che ha due varianti, con un @q{buco} più
-piccolo e più grande.
-
-@end itemize
-@divEnd
-
-@strong{Difficoltà:} facile
-@strong{Requisiti:} MetaFont, C++, buon occhio per il dettaglio
-@strong{Conoscenze consigliate:} conoscenza di base di LilyPond
-@strong{Mentore/i:} Werner Lemberg
-
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Migliorare la disposizione predefinita delle travature
-
-Il posizionamento predefinito delle travature normali, tra i righi, spezzate e
-angolari deve essere migliorato.  La disposizione delle travature deve dipendere
-dal contesto e dalle note vicine (si veda la
-@uref{http://icking-music-archive.org/lists/sottisier/sottieng.pdf, sezione 2.2
-qui}). Se possibile, ridurre anche il tempo di elaborazione della disposizione
-delle travature.
-
-@strong{Difficoltà:} media
-@strong{Requisiti:} C++, esperienza con la scrittura di euristiche
-@strong{Conoscenze consigliate:} senso estetico
-@strong{Mentore/i:} Mike Solomon, Carl Sorensen
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Migliorare il comportamento durante la compilazione
-
-Strumenti di analisi automatica del codice, come il rilevamento di
-perdite di memoria di valgrind e i profilatori di codice di callgrind,
-forniscono informazioni utili per individuare possibili errori nel
-nostro codice C++.  Pulire gli avvisi ci permetterebbe di automatizzare
-il rifiuto di qualsiasi patch che introduca avvisi ulteriori.
-
-@strong{Difficoltà:} media
-@strong{Requisiti:} C++
-@strong{Mentore/i:} Joe Neeman, Reinhold Kainhofer
-
-@divEnd
 
 
 @node Autori
@@ -1169,18 +1011,22 @@ il rifiuto di qualsiasi patch che introduca avvisi ulteriori.
 
 @contactUsAbout{articoli accademici}
 
-@node Notizie vecchie
-@unnumberedsec Notizie vecchie
-@translationof Old news
+@node Notizie
+@unnumberedsec Notizie
+@translationof News
 
 @divClass{heading-center}
 @warning{Molti dei vecchi annunci e changelog si possono trovare
 in @ref{Soffitta}}
 @divEnd
 
-@include web/news-front.itexi
+@include web/news-new.itexi
 
-@include web/news.itexi
+@divClass{column-center-bottom}
+@subheading Vecchie notizie
+Le vecchie notizie si trovano in @ref{Soffitta}, insieme a vecchi annunci
+e registri di modifiche (changelog).
+@divEnd
 
 
 @node Soffitta
@@ -1221,6 +1067,7 @@ Elenco descrittivo dei cambiamenti per ogni versione:
 
 @divEnd
 
+@divClass{column-center-middle-color3}
 @subheading Grazie
 
 Grazie a sviluppatori, collaboratori, cacciatori di bug e a chi ci ha dato
@@ -1238,7 +1085,7 @@ preziosi suggerimenti
 
 @divEnd
 
-@divClass{column-center-bottom}
+@divClass{column-center-middle-color3}
 @subheading Lista dei cambiamenti
 
 Lista dei cambiamenti apportati da ciascun sviluppatore in ogni versione:
@@ -1256,3 +1103,16 @@ Lista dei cambiamenti apportati da ciascun sviluppatore in ogni versione:
 @miscLink{CHANGES-0.0,v0.0}
 
 @divEnd
+
+@divClass{column-center-middle-color2 bigger-subsubheadings}
+@gsocInactive
+@divEnd
+
+@divClass{column-center-middle-color2}
+@subheading Vecchie notizie
+
+Le vecchie notizie che risalgono fino al luglio 2003.  Le notizie più recenti
+si trovano alla pagina @ref{Notizie}.
+@divEnd
+
+@include web/news-old.itexi

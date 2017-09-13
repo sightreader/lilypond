@@ -71,9 +71,9 @@ public:
   TRANSLATOR_DECLARATIONS (New_fingering_engraver);
 protected:
   void stop_translation_timestep ();
-  DECLARE_ACKNOWLEDGER (rhythmic_head);
-  DECLARE_ACKNOWLEDGER (inline_accidental);
-  DECLARE_ACKNOWLEDGER (stem);
+  void acknowledge_rhythmic_head (Grob_info);
+  void acknowledge_inline_accidental (Grob_info);
+  void acknowledge_stem (Grob_info);
   void add_fingering (Grob *, SCM,
                       vector<Finger_tuple> *,
                       Stream_event *, Stream_event *);
@@ -176,9 +176,7 @@ New_fingering_engraver::add_fingering (Grob *head,
 {
   Finger_tuple ft;
 
-  ft.script_ = internal_make_item (grob_sym, event->self_scm (),
-                                   ly_symbol2string (grob_sym).c_str (),
-                                   __FILE__, __LINE__, __FUNCTION__);
+  ft.script_ = make_item (grob_sym, event->self_scm ());
 
   Side_position_interface::add_support (ft.script_, head);
 
@@ -366,14 +364,20 @@ New_fingering_engraver::position_all ()
   articulations_.clear ();
 }
 
-New_fingering_engraver::New_fingering_engraver ()
+New_fingering_engraver::New_fingering_engraver (Context *c)
+  : Engraver (c)
 {
   stem_ = 0;
 }
 
-ADD_ACKNOWLEDGER (New_fingering_engraver, rhythmic_head);
-ADD_ACKNOWLEDGER (New_fingering_engraver, inline_accidental);
-ADD_ACKNOWLEDGER (New_fingering_engraver, stem);
+
+void
+New_fingering_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (New_fingering_engraver, rhythmic_head);
+  ADD_ACKNOWLEDGER (New_fingering_engraver, inline_accidental);
+  ADD_ACKNOWLEDGER (New_fingering_engraver, stem);
+}
 
 ADD_TRANSLATOR (New_fingering_engraver,
                 /* doc */

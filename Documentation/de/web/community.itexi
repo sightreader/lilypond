@@ -799,7 +799,7 @@ lilypond-book-Tests dieser Version.
 @itemize
 @item @uref{http://lilypond.org/test, Vergleiche zweier Versionen}:
 
-@item @uref{http://lilypond.org/download/binaries/test-output/,
+@item @uref{http://lilypond.org/downloads/binaries/test-output/,
 Archiv aller Regressionstests}
 
 @end itemize
@@ -1203,16 +1203,14 @@ automatisiert Patches, die zusätzliche Warnungen erzeugen, abzulehnen.
 
 @node Ältere Neuigkeiten
 @unnumberedsec Ältere Neuigkeiten
-@translationof Old news
+@translationof News
 
 @divClass{heading-center}
 @warning{Viele alte Ankündigungen und Listen der Änderungen finden sich in der
 @ref{Abstellkammer}}
 @divEnd
 
-@include web/news-front.itexi
-
-@include web/news.itexi
+@include web/news-new.itexi
 
 
 
@@ -1289,3 +1287,5 @@ Thanks to developers, contributors, bug hunters and suggestions for
 @miscLink{CHANGES-0.0,v0.0}
 
 @divEnd
+
+@include web/news-old.itexi

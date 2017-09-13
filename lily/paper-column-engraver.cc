@@ -34,7 +34,8 @@
 
 #include "translator.icc"
 
-Paper_column_engraver::Paper_column_engraver ()
+Paper_column_engraver::Paper_column_engraver (Context *c)
+  : Engraver (c)
 {
   last_moment_.main_part_ = Rational (-1, 1);
   command_column_ = 0;
@@ -142,14 +143,12 @@ Paper_column_engraver::set_columns (Paper_column *new_command,
   system_->add_column (musical_column_);
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Paper_column_engraver, break);
 void
 Paper_column_engraver::listen_break (Stream_event *ev)
 {
   break_events_.push_back (ev);
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Paper_column_engraver, label);
 void
 Paper_column_engraver::listen_label (Stream_event *ev)
 {
@@ -231,6 +230,18 @@ Paper_column_engraver::stop_translation_timestep ()
   command_column_->set_property ("when", m);
   musical_column_->set_property ("when", m);
 
+  SCM mpos = get_property ("measurePosition");
+  SCM barnum = get_property ("internalBarNumber");
+  if (unsmob<Moment> (mpos)
+      && scm_is_integer (barnum))
+    {
+      SCM where = scm_cons (barnum,
+                            mpos);
+
+      command_column_->set_property ("rhythmic-location", where);
+      musical_column_->set_property ("rhythmic-location", where);
+    }
+
   for (vsize i = 0; i < items_.size (); i++)
     {
       Item *elem = items_[i];
@@ -276,18 +287,6 @@ Paper_column_engraver::stop_translation_timestep ()
 
   first_ = false;
   label_events_.clear ();
-
-  SCM mpos = get_property ("measurePosition");
-  SCM barnum = get_property ("internalBarNumber");
-  if (unsmob<Moment> (mpos)
-      && scm_is_integer (barnum))
-    {
-      SCM where = scm_cons (barnum,
-                            mpos);
-
-      command_column_->set_property ("rhythmic-location", where);
-      musical_column_->set_property ("rhythmic-location", where);
-    }
 }
 
 void
@@ -301,9 +300,16 @@ Paper_column_engraver::start_translation_timestep ()
     }
 }
 
-ADD_ACKNOWLEDGER (Paper_column_engraver, item);
-ADD_ACKNOWLEDGER (Paper_column_engraver, note_spacing);
-ADD_ACKNOWLEDGER (Paper_column_engraver, staff_spacing);
+
+void
+Paper_column_engraver::boot ()
+{
+  ADD_LISTENER (Paper_column_engraver, break);
+  ADD_LISTENER (Paper_column_engraver, label);
+  ADD_ACKNOWLEDGER (Paper_column_engraver, item);
+  ADD_ACKNOWLEDGER (Paper_column_engraver, note_spacing);
+  ADD_ACKNOWLEDGER (Paper_column_engraver, staff_spacing);
+}
 
 ADD_TRANSLATOR (Paper_column_engraver,
                 /* doc */

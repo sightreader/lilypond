@@ -43,7 +43,7 @@ protected:
   void process_music ();
 public:
   TRANSLATOR_DECLARATIONS (Time_signature_engraver);
-  DECLARE_TRANSLATOR_LISTENER (time_signature);
+  void listen_time_signature (Stream_event *);
 };
 
 void
@@ -53,14 +53,14 @@ Time_signature_engraver::derived_mark () const
   scm_gc_mark (time_cause_);
 }
 
-Time_signature_engraver::Time_signature_engraver ()
+Time_signature_engraver::Time_signature_engraver (Context *c)
+  : Engraver (c)
 {
   time_signature_ = 0;
   time_cause_ = SCM_EOL;
   last_time_fraction_ = SCM_BOOL_F;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Time_signature_engraver, time_signature);
 void
 Time_signature_engraver::listen_time_signature (Stream_event *ev)
 {
@@ -74,8 +74,7 @@ Time_signature_engraver::process_music ()
     return;
 
   SCM fr = get_property ("timeSignatureFraction");
-  if (last_time_fraction_ != fr
-      && scm_is_pair (fr))
+  if (!scm_is_eq (last_time_fraction_, fr) && scm_is_pair (fr))
     {
       time_signature_ = make_item ("TimeSignature", time_cause_);
       time_signature_->set_property ("fraction", fr);
@@ -114,6 +113,12 @@ Time_signature_engraver::stop_translation_timestep ()
 
   time_signature_ = 0;
   time_cause_ = SCM_EOL;
+}
+
+void
+Time_signature_engraver::boot ()
+{
+  ADD_LISTENER (Time_signature_engraver, time_signature);
 }
 
 ADD_TRANSLATOR (Time_signature_engraver,

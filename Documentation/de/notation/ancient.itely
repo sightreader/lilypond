@@ -528,12 +528,11 @@ Beispiel den Schlüssel auf der zweiten Linie)
 Mensuraler F-Schlüssel im Petrucci-Stil, kann auf verschiedenen
 Notenlinien benutzt werden (im Beispiel auf der dritten Linie)
 @tab
-@code{petrucci-c1}, @code{petrucci-c2},@*
-@code{petrucci-c3}, @code{petrucci-c4},@*
-@code{petrucci-c5}
+@code{petrucci-f3}, @code{petrucci-f4},@*
+@code{petrucci-f5}
 @tab
 @lilypond[relative=1,notime]
-  \clef "petrucci-c2"
+  \clef "petrucci-f3"
   \override NoteHead.style = #'mensural
   c
 @end lilypond
@@ -2664,7 +2663,7 @@ Glossar:
 Notationsreferenz:
 @ref{Versetzungszeichen},
 @ref{Automatische Versetzungszeichen},
-@ref{Die Feta-Schriftart}
+@ref{Die Emmentaler-Schriftart}.
 
 @node Kiever Taktstriche
 @unnumberedsubsubsec Kiever Taktstriche
@@ -2682,7 +2681,7 @@ Schlussstrich bezeichnen kann.  Es wird gesetzt mit @code{\bar "k"}.
 
 @seealso
 @ref{Takte},
-@ref{Die Feta-Schriftart}
+@ref{Die Emmentaler-Schriftart}
 
 @c Working with ancient music: scenarios and solutions::  {{{1
 @node Musiksatz Alter Musik in der Praxis -- Szenarien und Lösungen

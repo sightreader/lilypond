@@ -32,7 +32,7 @@ class Grob : public Smob<Grob>
 public:
   int print_smob (SCM, scm_print_state *) const;
   SCM mark_smob () const;
-  static const char type_p_name_[];
+  static const char * const type_p_name_;
   virtual ~Grob ();
 private:
   DECLARE_CLASSNAME (Grob);
@@ -141,6 +141,7 @@ public:
   /* offsets */
   void translate_axis (Real, Axis);
   Real relative_coordinate (Grob const *refp, Axis) const;
+  Real parent_relative (Grob const *refp, Axis) const;
   Real pure_relative_y_coordinate (Grob const *refp, int start, int end);
   Real maybe_pure_coordinate (Grob const *refp, Axis a, bool pure, int start, int end);
 

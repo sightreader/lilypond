@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: 10bc01482b78c62ad095ceb95963b1800571e408
+   Translation of GIT committish: 1e5c6b0f54079eb3285dcc4c7e53f17d8bb03933
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -395,7 +395,8 @@ avec les autres partitions se trouvant au même niveau pour composer le
 @code{\book}.  Vous pouvez modifier ce comportement à l'aide de la
 variable @code{toplevel-score-handler} placée en tête.  Le gestionnaire
 par défaut est défini dans le fichier d'initialisation
-@file{../scm/lily.scm}.
+@file{../scm/lily.scm}, et les réglages par défaut dans le fichier
+@file{../ly/declarations-init.ly}.
 
 @item
 Un bloc @code{\book} permet de regrouper naturellement plusieurs
@@ -561,7 +562,7 @@ d'informations.
 @menu
 * Création de titres et entête ou pied de page::
 * Titrages personnalisés::
-* Création de métadonnées PDF::
+* Création des métadonnées des fichiers de sortie::
 * Notes de bas de page::
 * Référencement des numéros de page::
 * Table des matières::
@@ -1176,9 +1177,9 @@ au texte des entête et pied de page définis dans le bloc @code{\paper}.
 En voici la syntaxe :
 
 @example
-@code{variable} = @code{\markup} @{
+variable = \markup @{
   @dots{}
-  @code{\on-the-fly} \@var{procédure} @var{markup}
+  \on-the-fly \@var{procédure} @var{markup}
   @dots{}
 @}
 @end example
@@ -1200,10 +1201,12 @@ LilyPond dispose d'ores et déjà d'un certain nombre de procédures :
 @item create-page-number-stencil    @tab  print-page-numbers est vrai.
 @item print-all-headers             @tab  print-all-headers est vrai.
 @item first-page                    @tab  c'est la première page du @emph{book}.
+@item not-first-page                @tab  ce n'est pas la première page du @emph{book}.
 @item (on-page nombre)              @tab  numéro de page = nombre
 @item last-page                     @tab  c'est la dernière page du @emph{book}.
 @item not-first-page                @tab  ce n'est la première page du @emph{book}.
 @item part-first-page               @tab  c'est la première page de la partie.
+@item not-part-first-page           @tab  ce n'est pas la première page de la partie.
 @item part-last-page                @tab  c'est la dernière page de la partie.
 @item not-single-page               @tab  cette partie fait plus d'une page.
 
@@ -1242,8 +1245,8 @@ Plusieurs conditions @code{\on-the-fly} mentionnées l'une à la suite de
 l'autre se cumulent.  Ainsi, par exemple,
 
 @example
-  @code{\on-the-fly \first-page}
-  @code{\on-the-fly \last-page}
+  \on-the-fly \first-page
+  \on-the-fly \last-page
   @code{@{ \markup @dots{} \fromproperty #'header: @dots{} @}}
 @end example
 
@@ -1258,33 +1261,45 @@ fichiers d'initialisation :
 @file{../ly/titling-init.ly}.
 
 
-@node Création de métadonnées PDF
-@subsection Création de métadonnées PDF
-@translationof Creating PDF metadata
+@node Création des métadonnées des fichiers de sortie
+@subsection Création des métadonnées des fichiers de sortie
+@translationof Creating output file metadata
 
 @cindex PDF metadata
+@cindex MIDI metadata
 @cindex métadonnées PDF
+@cindex métadonnées MIDI
 
 En plus de s'imprimer sur la partition, les variables du bloc
-@code{\header} permettent de générer les métadonnées PDF (informations
-par les lecteurs de PDF en tant que @code{propriétés} du fichier PDF).
+@code{\header} permettent de générer les métadonnées des fichiers de
+sortie.  Dans le cas d'un fichier PDF, ces métadonnées pourront être
+affichées par le lecteur en tant que propriétés du document.  Quel que
+soit le type de fichier de sortie, seules seront analysées les variables
+déterminées dans le @code{\header} du bloc définissant le fichier à
+générer, ainsi que celles des blocs hiérarchiquement supérieurs. Pour les
+fichiers PDF, seules les définitions du @code{\header} en dehors ou au
+niveau d'un bloc @code{\book} affecteront les métadonnées des documents
+PDF ; pour les fichiers MIDI seront utilisées les définitions jusqu'au
+niveau @code{\score}.
+
 Par exemple, affecter « Symphony I » à la propriété @code{title} dans le
-bloc @code{\header} donnera aussi ce titre au document PDF.
+bloc @code{\header} donnera aussi ce titre au document PDF et à la
+séquence MIDI.
 
 @example
-  @code{\header@{}
-    @code{title = "Symphony I"}
-  @code{@}}
+\header@{
+  title = "Symphony I"
+@}
 @end example
 
 Lorsque le titre imprimé diffère de celui affiché en tant que propriété
 du PDF, devra être renseignée la propriété @code{pdftitle}.
 
 @example
-  @code{\header@{}
-    @code{title = "Symphony I"}
-    @code{pdftitle = "Symphony I by Beethoven"}
-  @code{@}}
+\header@{
+  title = "Symphony I"
+  pdftitle = "Symphony I by Beethoven"
+@}
 @end example
 
 Les variables @code{title}, @code{subject}, @code{keywords},
@@ -1299,6 +1314,10 @@ La propriété PDF @code{Creator} prend automatiquement la valeur
 courantes -- @code{ModDate} peut être écrasé par la variable de
 @code{\header} @code{moddate} (ou @code{pdfmoddate}) pour un horodatage
 PDF valide.
+
+La variable @code{title} détermine aussi le nom de la séquence MIDI.
+L'utilisation de la variable @code{midititle} permet d'attribuer à la
+séquence MIDI un nom différent de celui attribué au fichier imprimable.
 
 
 @node Notes de bas de page
@@ -2004,7 +2023,7 @@ tocAct =
   \markuplist \table-of-contents
   \tocAct \markup { Atto Primo }
   \tocItem \markup { Coro. Viva il nostro Alcide }
-  \tocItem \markup { Cesare. Presti omai l'Egizzia terra }
+  \tocItem \markup { Cesare. Presti omai l'Egizia terra }
   \tocAct \markup { Atto Secondo }
   \tocItem \markup { Sinfonia }
   \tocItem \markup { Cleopatra. V'adoro, pupille, saette d'Amore }
@@ -2448,6 +2467,24 @@ liste de balises est en pareil cas des plus pertinente : seront
 exclus tous les fragments non concernés par l'une quelconque des
 balises mentionnées.
 
+@lilypond[verbatim,quote]
+music = \relative c'' {
+  \tag #'violinI { a4 a a a }
+  \tag #'violinII { b4 b b b }
+  \tag #'viola { c4 c c c }
+  \tag #'cello { d4 d d d }
+}
+
+\new Staff {
+  \keepWithTag #'(violinI violinII)
+  \music
+}
+@end lilypond
+
+@noindent
+imprimera les @code{\tag}s @var{violinI} et @var{violinII}, mais ni
+@var{viola} ni @var{cello}.
+
 @cindex regroupements de balises
 @cindex balises, regroupement
 @funindex \tagGroup
@@ -2462,21 +2499,38 @@ alors être déclarés :
 \tagGroup #'(violinI violinII viola cello)
 @end example
 
-stipule que ces filtres respectifs appartiennent à un même groupe.
+@noindent
+Les différents filtres appartiennent désormais tous à un seul
+regroupement.  Notez bien qu'une balise ne saurait être membre de
+plusieurs regroupements.
 
 @example
 \keepWithTag #'violinI @dots{}
 @end example
 
-ne sera donc concerné que par les balises @code{violinI} contenues dans
-le groupe de filtres : tout élément de la musique incluse qui serait
-balisé par un ou plusieurs des filtres de ce jeu mais @emph{pas} par
-@code{violinI} sera rejeté.
+@noindent
+ne prendra désormais en compte que la musique concernée par la balise
+@code{violinI} du groupe de filtres : tout élément de la musique qui
+serait balisé par l'un des autres filtres de ce jeu sera rejeté.
 
-Pour toute commande @code{\keepWithTag}, seules les balises du
+@lilypond[verbatim,quote]
+music = \relative {
+  \tagGroup #'(violinI violinII viola cello)
+  \tag #'violinI { c''4^"violinI" c c c }
+  \tag #'violinII { a2 a }
+  \tag #'viola { e8 e e2. }
+  \tag #'cello { d'2 d4 d }
+  R1^"non balisé"
+}
+
+\new Voice {
+  \keepWithTag #'violinI
+  \music
+}
+@end lilypond
+
+Dans le cadre de la commande @code{\keepWithTag}, seules les balises du
 regroupement mentionnées dans la commande seront visibles.
-
-Une balise ne peut faire partie que d'un seul regroupement.
 
 @funindex \pushToTag
 @funindex \appendToTag
@@ -2490,15 +2544,15 @@ d'une construction musicale existante.  La musique séquentielle ou
 simultanée comporte assurément des @code{éléments} :
 
 @lilypond[verbatim,quote]
-test = { \tag #'here { \tag #'here <<c''>> } }
+music = { \tag #'here { \tag #'here <<c''>> } }
 
 {
   \pushToTag #'here c'
   \pushToTag #'here e'
-  \pushToTag #'here g' \test
+  \pushToTag #'here g' \music
   \appendToTag #'here c'
   \appendToTag #'here e'
-  \appendToTag #'here g' \test
+  \appendToTag #'here g' \music
 }
 @end lilypond
 
@@ -2596,7 +2650,7 @@ instruction musicale -- comportant des caractères non ASCII soit
 codé en UTF-8.  Le plus sûr moyen de saisir du texte de la sorte
 consiste à utiliser un éditeur supportant l'unicode et à enregistrer vos
 fichier en UTF-8.  C'est le cas pour la plupart des éditeurs actuels,
-que ce soit vim, Emacs, jEdit et GEdit.  Tous les systèmes Windows
+que ce soit vim, Emacs, jEdit et Gedit.  Tous les systèmes Windows
 postérieurs à NT utilisent Unicode en natif ; même Notepad est
 capable d'éditer et sauvegarder un fichier en UTF-8 -- sans parler de
 l'excellente alternative qu'est BabelPad.
@@ -2612,9 +2666,10 @@ FT_Get_Glyph_Name () erreur : invalid argument
 Voici un exemple utilisant du texte en cyrillique, en hébreux et en
 portugais.
 
+@c NOTE: No verbatim in the following example as the code does not
+@c display correctly in PDF Font settings for Cyrillic and Hebrew
+
 @lilypond[quote]
-%c No verbatim here as the code does not display correctly in PDF
-% Font settings for Cyrillic and Hebrew
 % Linux Libertine fonts contain Cyrillic and Hebrew glyphs.
 \paper {
   #(define fonts
@@ -2894,8 +2949,9 @@ commande avec l'option @i{ad hoc} -- voir
 @subsection Changement des fontes musicales
 @translationof Replacing the notation font
 
-Gonville est une alternative à la fonte Feta que LilyPond utilise par
-défaut.  Vous pouvez la télécharger à partir de
+Gonville est une alternative au jeu de glyphes @emph{Feta} inclus dans
+la fonte Emmentaler que LilyPond utilise par défaut.  Vous pouvez la
+télécharger à partir de
 @example
 @uref{http://www.chiark.greenend.org.uk/~sgtatham/gonville/ ,http://www.chiark.greenend.org.uk/~sgtatham/gonville/}
 @end example
@@ -2906,7 +2962,7 @@ Voici quelques mesures utilisant la police Gonville :
 @c       for the font comparison.  -gp
 @sourceimage{Gonville_after,15cm,,}
 
-Et ces même mesures avec la police de LilyPond, Feta :
+Et ces même mesures avec les glyphes @emph{Feta} de LilyPond :
 
 @sourceimage{Gonville_before,15cm,,}
 
@@ -2919,11 +2975,15 @@ Téléchargez puis décompressez l'archive zip.  Recopiez le répertoire
 @rlearning{Autres sources de documentation} à ce sujet.  Renommez le
 répertoire @code{fonts} qui s'y trouve en @code{fonts_orig}, puis le
 répertoire @code{lilyfonts} en @code{fonts}.  Il vous suffira, pour
-retrouver la fonte Feta, de renommer @code{fonts_orig} en @code{fonts}.
+retrouver la fonte Emmentaler, de renommer @code{fonts_orig} en
+@code{fonts}.
 
 @seealso
 Manuel d'initiation :
 @rlearning{Autres sources de documentation}.
+
+Manuel de notation :
+@ref{La fonte Emmentaler}.
 
 @knownissues
 Gonville ne permet pas de générer de la notation ancienne, et certains
@@ -3000,7 +3060,7 @@ En combinaison avec le script @file{articulate}, d'autres éléments
 seront aussi reportés en MIDI :
 
 @itemize
-@item les appogiatures -- celles-ci prendront la moitié de la valeur,
+@item les appoggiatures -- celles-ci prendront la moitié de la valeur,
 dépourvue de point, de la note qui les suit --  par exemple,
 
 @example
@@ -3786,14 +3846,17 @@ lilypond fichier.ly > affichage.txt
 Vous noterez que LilyPond ne se contente pas de simplement afficher
 l'expression musicale, mais procède aussi à son interprétation -- du
 fait que @code{\displayLilyMusic} renvoie l'expression tout en
-l'affichant.  S'il est bien pratique d'insérer un
-@code{\displayLilyMusic} dans une expression musicale pour en obtenir
-des informations, l'interprétation de cette expression peut toutefois
-être évitée en ajoutant un @code{\void} avant l'instruction :
+l'affichant.  La simple insertion d'un @code{\displayLilyMusic} dans une
+expression musicale permet d'obtenir l'information la concernant.
+
+Si l'instruction @code{\displayLilyMusic} interprète et affiche des
+informations sur un fragment, la faire précéder d'un @code{\void} aura
+pour effet de l'exclure du fichier résultant.
 
 @example
 @{
   \void \displayLilyMusic \transpose c a, @{ c4 e g a bes @}
+  c1
 @}
 @end example
 

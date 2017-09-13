@@ -35,14 +35,15 @@ protected:
   void start_translation_timestep ();
   void process_music ();
   void set_melisma (bool);
-  DECLARE_TRANSLATOR_LISTENER (beam);
+  void listen_beam (Stream_event *);
 private:
   Stream_event *start_ev_;
   Stream_event *now_stop_ev_;
   bool beam_;
 };
 
-Beam_performer::Beam_performer ()
+Beam_performer::Beam_performer (Context *c)
+  : Performer (c)
 {
   beam_ = false;
   start_ev_ = 0;
@@ -80,7 +81,6 @@ Beam_performer::start_translation_timestep ()
   now_stop_ev_ = 0;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Beam_performer, beam);
 void
 Beam_performer::listen_beam (Stream_event *ev)
 {
@@ -90,6 +90,12 @@ Beam_performer::listen_beam (Stream_event *ev)
     start_ev_ = ev;
   else if (d == STOP)
     now_stop_ev_ = ev;
+}
+
+void
+Beam_performer::boot ()
+{
+  ADD_LISTENER (Beam_performer, beam);
 }
 
 ADD_TRANSLATOR (Beam_performer,

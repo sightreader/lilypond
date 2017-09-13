@@ -189,11 +189,11 @@ Grob::get_print_stencil () const
           retval = Stencil (retval.extent_box (), expr);
         }
 
-      SCM id = get_property ("id");
-      if (scm_is_string (id))
+      SCM attributes = get_property ("output-attributes");
+      if (scm_is_pair (attributes))
         {
-          SCM expr = scm_list_3 (ly_symbol2scm ("id"),
-                                 id,
+          SCM expr = scm_list_3 (ly_symbol2scm ("output-attributes"),
+                                 attributes,
                                  retval.expr ());
 
           retval = Stencil (retval.extent_box (), expr);
@@ -333,18 +333,21 @@ Real
 Grob::relative_coordinate (Grob const *refp, Axis a) const
 {
   /* eaa - hmmm, should we do a programming_error() here? */
-  if ((this == NULL) || (refp == this))
+  if (refp == this)
     return 0.0;
 
   /* We catch PARENT_L_ == nil case with this, but we crash if we did
      not ask for the absolute coordinate (ie. REFP == nil.)  */
-  Real off = get_offset (a);
-  if (refp == dim_cache_[a].parent_)
-    return off;
 
-  off += dim_cache_[a].parent_->relative_coordinate (refp, a);
+  return get_offset (a) + parent_relative (refp, a);
+}
 
-  return off;
+Real
+Grob::parent_relative (Grob const *refp, Axis a) const
+{
+  if (Grob *p = get_parent (a))
+    return p->relative_coordinate (refp, a);
+  return 0.0;
 }
 
 Real
@@ -813,16 +816,17 @@ ADD_INTERFACE (Grob,
                "cause "
                "color "
                "cross-staff "
-               "id "
                "extra-offset "
                "footnote-music "
                "forced-spacing "
                "horizontal-skylines "
+               "id "
                "interfaces "
                "layer "
                "meta "
                "minimum-X-extent "
                "minimum-Y-extent "
+               "output-attributes "
                "parenthesis-friends "
                "pure-Y-offset-in-progress "
                "rotation "

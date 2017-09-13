@@ -1118,17 +1118,11 @@ StaffDefaults = \with {
 @cindex engravers, including in contexts (エングラーバをコンテキストに含める)
 
 @funindex \alias
-@funindex alias
 @funindex \name
-@funindex name
 @funindex \type
-@funindex type
 @funindex \consists
-@funindex consists
 @funindex \accepts
-@funindex accepts
 @funindex \denies
-@funindex denies
 
 @code{Staff} や @code{Voice} のようなコンテキストは、@c
 簡単なブロックの組み合わせで構成されています。
@@ -1367,7 +1361,7 @@ squashedPosition = #0
 @qq{main} というコンテキストの上に配置し直すには以下のようにします:
 
 @example
-@code{\new Staff \with @{ alignAboveContext = #"main" @} }
+\new Staff \with @{ alignAboveContext = #"main" @}
 @end example
 
 @code{ChoirStaff} のような複数の譜のレイアウトで一時的な歌詞を配置する場合
@@ -4220,8 +4214,8 @@ XinO = {
 @end lilypond
 
 @code{\musicglyph} マークアップ コマンドには、@c
-Feta フォントに含まれる任意の図柄を提供することができます。@c
-@ref{The Feta font} を参照してください。
+Emmentaler フォントに含まれる任意の図柄を提供することができます。@c
+@ref{The Emmentaler font} を参照してください。
 
 @c TODO Add inserting eps files or ref to later
 
@@ -4232,7 +4226,7 @@ Feta フォントに含まれる任意の図柄を提供することができま
 @ref{マークアップ内部でのグラフィック記譜法},
 @ref{テキストをフォーマットする},
 @ref{Text markup commands},
-@ref{The Feta font}
+@ref{The Emmentaler font}.
 
 
 @node 形状を変更する
@@ -4306,7 +4300,7 @@ Web でベジエ曲線が描かれる様子を示すアニメーションを@c
 @code{\shape} の構文は以下の通りです:
 
 @example
-[-]@code{\shape} @var{displacements} @var{item}
+[-]\shape @var{displacements} @var{item}
 @end example
 
 これは @var{item} の制御ポイントを @var{displacements} だけ移動させます。@c

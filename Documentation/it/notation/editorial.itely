@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; -*-
 @ignore
-    Translation of GIT committish: a22f2ad68fccb81e52f805ba69cb8c0e6bf8cd82
+    Translation of GIT committish: dbc2dd143e50e000a39883fc8217b4ec60e08657
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -69,7 +69,6 @@ Questa sezione spiega come aggiungere enfasi agli elementi interni al rigo.
 @funindex tiny
 @funindex teeny
 @funindex \magnifyMusic
-@funindex magnifyMusic
 @funindex magnification->font-size
 
 @warning{@*
@@ -336,7 +335,6 @@ e @code{\revert}:
 @cindex dita, cambio
 
 @funindex \finger
-@funindex finger
 
 Le indicazioni di diteggiatura si inseriscono con
 @samp{@var{nota}-@var{numero}}:
@@ -357,7 +355,6 @@ indicare un cambio di dito.
 @cindex pollice, indicazione
 
 @funindex \thumb
-@funindex thumb
 
 Si può aggiungere il simbolo del pollice  per indicare che una nota deve essere
 suonata col pollice (ad esempio, nella musica per violoncello).
@@ -380,7 +377,7 @@ accordo specificandola dopo ciascuna altezza.
 @end lilypond
 
 Le indicazioni di diteggiatura possono essere poste sopra o sotto il
-rigo, come è spiegato in @ref{Direction and placement}.
+rigo, come è spiegato in @ref{Direzione e posizionamento}.
 
 @snippets
 
@@ -395,7 +392,7 @@ rigo, come è spiegato in @ref{Direction and placement}.
 
 @seealso
 Guida alla notazione:
-@ref{Direction and placement}.
+@ref{Direzione e posizionamento}.
 
 Frammenti:
 @rlsr{Editorial annotations}.
@@ -420,9 +417,7 @@ Guida al funzionamento interno:
 @cindex trasparenti, note
 
 @funindex \hideNotes
-@funindex hideNotes
 @funindex \unHideNotes
-@funindex unHideNotes
 
 Le note nascoste (o invisibili o trasparenti) possono essere utili nella
 preparazione di esercizi di teoria e composizione.
@@ -493,11 +488,10 @@ Guida al funzionamento interno:
 
 @funindex color
 @funindex \with-color
-@funindex with-color
 @funindex x11-color
 
 Si possono assegnare dei colori a ciascun oggetto.  I nomi dei colori validi
-sono elencati nella @ref{List of colors}.
+sono elencati nell'@ref{Elenco dei colori}.
 
 @lilypond[verbatim,quote,fragment]
 \override NoteHead.color = #red
@@ -521,12 +515,13 @@ La funzione @code{x11-color}, se non riesce a comprendere il parametro,
 restituisce il colore nero.
 
 @lilypond[verbatim,quote]
-\relative c'' {
-  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
   }
-
+  \relative c'' {
+  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
   gis8 a
   \override Beam.color = #(x11-color "medium turquoise")
   gis a
@@ -534,7 +529,7 @@ restituisce il colore nero.
   gis a
   \override NoteHead.color = #(x11-color "LimeGreen")
   gis a
-  % questo parametro è volutamente assurdo; notare che i gambi restano neri
+  % this is deliberate nonsense; note that the stems remain black
   \override Stem.color = #(x11-color 'Boggle)
   b2 cis
 }
@@ -549,12 +544,13 @@ restituisce il colore nero.
 I colori RGB esatti si specificano con la funzione Scheme @code{rgb-color}.
 
 @lilypond[verbatim,quote]
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
+  }
 \relative c'' {
   \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
-  }
-
   \override Stem.color = #(rgb-color 0 0 0)
   gis8 a
   \override Stem.color = #(rgb-color 1 1 1)
@@ -566,8 +562,7 @@ I colori RGB esatti si specificano con la funzione Scheme @code{rgb-color}.
 
 @seealso
 Guida alla notazione:
-@ref{List of colors}, @ref{The
-tweak command}.
+@ref{Elenco dei colori}, @ref{Il comando tweak}.
 
 Frammenti:
 @rlsr{Editorial annotations}.
@@ -589,7 +584,7 @@ e @code{ForestGreen}.  Per il web si consiglia di usare i colori normali
 
 Le note in un accordo non possono essere colorate separatamente con un
 @code{\override}; al suo posto si usa @code{\tweak} o l'equivalente
-@code{\single\override}, vedi @ref{The tweak command}.
+@code{\single\override}, vedi @ref{Il comando tweak}.
 
 
 @node Parentesi
@@ -602,7 +597,6 @@ Le note in un accordo non possono essere colorate separatamente con un
 @cindex parentesi quadre
 
 @funindex \parenthesize
-@funindex parenthesize
 
 Gli oggetti possono essere messi tra parentesi se si usa il comando @code{\parenthesize}
 prima dell'evento musicale.  Se precede un accordo, viene messa tra parentesi
@@ -650,11 +644,8 @@ nota dell'accordo invece di una sola grande parentesi per l'intero accordo.
 @cindex invisibile, gambo
 
 @funindex \stemUp
-@funindex stemUp
 @funindex \stemDown
-@funindex stemDown
 @funindex \stemNeutral
-@funindex stemNeutral
 @cindex gambo, direzione
 @cindex gambo, su
 @cindex gambo, giù
@@ -665,7 +656,7 @@ Vale anche per le semibrevi e le pause, anche se i loro gambi sono resi
 invisibili.
 
 I gambi si possono posizionare sopra o sotto, vedi
-@ref{Direction and placement}.
+@ref{Direzione e posizionamento}.
 
 
 @predefined
@@ -685,7 +676,7 @@ I gambi si possono posizionare sopra o sotto, vedi
 
 @seealso
 Guida alla notazione:
-@ref{Direction and placement}.
+@ref{Direzione e posizionamento}.
 
 Frammenti:
 @rlsr{Editorial annotations}.
@@ -724,9 +715,7 @@ delle note esterne al rigo.
 @funindex balloonGrobText
 @funindex balloonText
 @funindex \balloonLengthOn
-@funindex balloonLengthOn
 @funindex \balloonLengthOff
-@funindex balloonLengthOff
 
 Si possono contrassegnare e nominare gli elementi della notazione tramite
 una nuvoletta quadrata.  La sua funzione principale è spiegare la notazione.
@@ -863,9 +852,7 @@ Guida al funzionamento interno:
 
 @funindex Horizontal_bracket_engraver
 @funindex \startGroup
-@funindex startGroup
 @funindex \stopGroup
-@funindex stopGroup
 
 Nell'analisi musicale si usano le parentesi per indicare la struttura
 dei brani musicali.  Sono  supportate delle semplici parentesi orizzontali.
@@ -900,14 +887,22 @@ Le parentesi analitiche si possono annidare.
 }
 @end lilypond
 
-@seealso
-Frammenti:
-@rlsr{Editorial annotations}.
+@snippets
 
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-above-the-staff.ly}
+
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-with-labels.ly}
+
+
+@seealso
 Guida al funzionamento interno:
 @rinternals{Horizontal_bracket_engraver},
 @rinternals{HorizontalBracket},
 @rinternals{horizontal-bracket-interface},
+@rinternals{HorizontalBracketText},
+@rinternals{horizontal-bracket-text-interface},
 @rinternals{Staff}.
 
 @c  LocalWords:  gis

@@ -44,7 +44,8 @@ Time_signature_performer::derived_mark () const
   scm_gc_mark (prev_fraction_);
 }
 
-Time_signature_performer::Time_signature_performer ()
+Time_signature_performer::Time_signature_performer (Context *c)
+  : Performer (c)
 {
   prev_fraction_ = SCM_BOOL_F;
   audio_ = 0;
@@ -80,6 +81,12 @@ Time_signature_performer::stop_translation_timestep ()
 }
 
 #include "translator.icc"
+
+void
+Time_signature_performer::boot ()
+{
+
+}
 
 ADD_TRANSLATOR (Time_signature_performer,
                 /* doc */

@@ -150,6 +150,11 @@ or 15 (two octaves), but LilyPond allows any integer here."
    common-shortest-duration))
 
 (ly:add-interface
+ 'horizontal-bracket-text-interface
+ "Label for an analysis bracket."
+ '(bracket columns))
+
+(ly:add-interface
  'inline-accidental-interface
  "An inlined accidental (i.e. normal accidentals, cautionary
 accidentals)."
@@ -199,7 +204,8 @@ accidentals)."
  'measure-counter-interface
  "A counter for numbering measures."
  '(columns
-   count-from))
+   count-from
+   spacing-pair))
 
 (ly:add-interface
  'metronome-mark-interface

@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 @ignore
-    Translation of GIT committish: 16661f7f6a78f04d056228d11bdc9e17a7cdf760
+    Translation of GIT committish: 4244c3a9fbf1f3ff2e20e665f92516d35b61de53
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -141,7 +141,7 @@ Manuale d'apprendimento:
 
 Guida alla notazione:
 @ref{Chord notation},
-@ref{Articulations and ornamentations},
+@ref{Articolazioni e abbellimenti},
 @ref{Relative octave entry},
 @ref{Multiple voices}.
 
@@ -164,7 +164,7 @@ la trascrizione enarmonica di una o più altezze,
 @samp{<e f ges>}, oppure
 
 @item
-i @ref{Clusters}.
+i @ref{Cluster}.
 
 @end itemize
 
@@ -263,7 +263,7 @@ stati già elaborati.
 @seealso
 Guida alla notazione:
 @ref{Chord notation},
-@ref{Articulations and ornamentations}.
+@ref{Articolazioni e abbellimenti}.
 
 File installati:
 @file{ly/chord-repetition-init.ly}.
@@ -342,7 +342,7 @@ apparirà durante la compilazione del file.  Si può evitare con:
 
 Tuttavia, questo comando non si limita a eliminare l'avvertimento, ma impedisce qualsiasi
 risoluzione delle collisioni, e potrebbe comportare altri effetti indesiderati
-(vedi anche i @emph{Problemi noti} in @ref{Collision resolution}).
+(vedi anche i @emph{Problemi noti} in @ref{Risoluzione delle collisioni}).
 
 
 @node Cluster
@@ -353,7 +353,6 @@ risoluzione delle collisioni, e potrebbe comportare altri effetti indesiderati
 @cindex cluster di note
 
 @funindex \makeClusters
-@funindex makeClusters
 
 Un cluster prescrive l'esecuzione simultanea di tutti i suoni compresi in un determinato intervallo.  Può
 essere rappresentato come un involucro che contiene le note che ne fanno parte.  Si
@@ -415,11 +414,9 @@ Questa sezione presenta le note simultanee in più voci o più righi.
 @cindex testo assegnato a una voce
 
 @funindex \voiceOne
-@funindex voiceOne
 @funindex \voiceOne ... \voiceFour
 @funindex Voice
 @funindex \oneVoice
-@funindex oneVoice
 
 @subsubsubheading Istanziare esplicitamente le voci
 
@@ -572,6 +569,28 @@ gambi in giù:
 >>
 @end lilypond
 
+@funindex \voices
+Quando si desidera inserire le voci in un ordine diverso, conviene usare
+il comando @code{\voices}:
+
+@lilypond[quote,verbatim]
+\new Staff \voices 1,3,5,6,4,2 <<
+  \time 2/4
+  { f''2 }  % 1: la più alta
+  \\
+  { d''2 }  % 3: seconda più alta
+  \\
+  { b'2  }  % 5: terza più alta
+  \\
+  { g'2  }  % 6: terza più bassa
+  \\
+  { e'2  }  % 4: seconda più bassa
+  \\
+  { c'2  }  % 2: la più bassa
+>>
+@end lilypond
+
+
 @warning{Il testo e gli estensori (come le legature di portamento e di valore,
 le forcelle, etc.) non possono @q{attraversare} le voci.}
 
@@ -681,21 +700,13 @@ Frammenti:
 @cindex spostamento automatico della pausa
 @cindex pausa, spostamento automatico
 @funindex \shiftOn
-@funindex shiftOn
 @funindex \shiftOnn
-@funindex shiftOnn
 @funindex \shiftOnnn
-@funindex shiftOnnn
 @funindex \shiftOff
-@funindex shiftOff
 @funindex \mergeDifferentlyDottedOn
-@funindex mergeDifferentlyDottedOn
 @funindex \mergeDifferentlyDottedOff
-@funindex mergeDifferentlyDottedOff
 @funindex \mergeDifferentlyHeadedOn
-@funindex mergeDifferentlyHeadedOn
 @funindex \mergeDifferentlyHeadedOff
-@funindex mergeDifferentlyHeadedOff
 
 Le teste di note che si trovano in voci diverse ma hanno stessa altezza,
 stessa testa e direzione del gambo opposta vengono unite automaticamente;
@@ -923,7 +934,6 @@ are at the same time differently dotted are not clear.
 @cindex parte a due
 @cindex parte solista
 @funindex \partcombine
-@funindex partcombine
 
 La combinazione automatica delle parti si usa per combinare in un unico rigo due
 parti musicali separate.  Ciò è utile soprattutto quando si scrivono partiture
@@ -1029,17 +1039,11 @@ effetto sulle altezze di @code{@var{espressione-musicale1}} e
 @code{@var{espressione-musicale2}}.
 
 @funindex \partcombineChords
-@funindex partcombineChords
 @funindex \partcombineApart
-@funindex partcombineApart
 @funindex \partcombineUnisono
-@funindex partcombineUnisono
 @funindex \partcombineSoloI
-@funindex partcombineSoloI
 @funindex \partcombineSoloII
-@funindex partcombineSoloII
 @funindex \partcombineAutomatic
-@funindex partcombineAutomatic
 
 Nelle partiture professionali, spesso le voci sono tenute separate per
 lunghi passaggi anche se alcune note sono le stesse in entrambe le voci
@@ -1165,7 +1169,7 @@ ignorati.
 
 Consultare i @emph{Problemi noti e avvertimenti} in @ref{Default tablatures}
 se si usa @code{\partcombine} con l'intavolatura, e la @emph{Nota} in
-@ref{Automatic beams} se si usa la disposizione automatica delle travature.
+@ref{Travature automatiche} se si usa la disposizione automatica delle travature.
 
 
 @node Scrivere la musica in parallelo
@@ -1176,7 +1180,6 @@ se si usa @code{\partcombine} con l'intavolatura, e la @emph{Nota} in
 @cindex musica parallela
 @cindex parallela, musica
 @funindex \parallelMusic
-@funindex parallelMusic
 
 La musica che contiene parti diverse può essere messa in parallelo nel codice
 di input.  La funzione @code{\parallelMusic} accetta una lista contenente

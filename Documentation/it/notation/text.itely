@@ -1,13 +1,13 @@
 @c -*- coding: utf-8; mode: texinfo; -*-
 @ignore
-    Translation of GIT committish: bfc3420ada8810d57156e9fc871560188f044a64
+    Translation of GIT committish: 18d03fa6a724b0102ccc47d194209802cea02f2e
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.21"
+@c \version "2.21.0"
 
 @c Translators: Federico Bruni
 @c Translation checkers:
@@ -62,7 +62,7 @@ in @ref{Text encoding}.}
 Si possono aggiungere a una partitura delle semplici indicazioni con
 del @qq{testo tra virgolette}, come mostrato nell'esempio seguente.
 Tali indicazioni possono essere posizionate sopra o sotto il rigo,
-usando la sintassi descritta in @ref{Direction and placement}.
+usando la sintassi descritta in @ref{Direzione e posizionamento}.
 
 @lilypond[quote,verbatim]
 \relative { a'8^"pizz." g f e a4-"scherz." f }
@@ -70,7 +70,7 @@ usando la sintassi descritta in @ref{Direction and placement}.
 
 In realtà questa sintassi è una scorciatoia; si può specificare una formattazione
 del testo più complessa usando in modo esplicito un blocco @code{\markup}, come
-è spiegato in @ref{Formatting text}.
+è spiegato in @ref{Formattazione del testo}.
 
 @lilypond[quote,verbatim]
 \relative {
@@ -92,15 +92,13 @@ mentre la seconda sì.
 @end lilypond
 
 Oltre alle scritte, si possono attaccare alle note anche le
-articolazioni.  Ulteriori informazioni in @ref{Articulations and ornamentations}.
+articolazioni.  Ulteriori informazioni in @ref{Articolazioni e abbellimenti}.
 
 Per maggiori informazioni sull'ordinamento relativo delle scritte e delle
 articolazioni si veda @rlearning{Posizionamento degli oggetti}.
 
 @funindex \textLengthOn
-@funindex textLengthOn
 @funindex \textLengthOff
-@funindex textLengthOff
 
 @predefined
 @code{\textLengthOn},
@@ -112,9 +110,9 @@ Manuale d'apprendimento:
 @rlearning{Posizionamento degli oggetti}.
 
 Guida alla notazione:
-@ref{Formatting text},
-@ref{Direction and placement},
-@ref{Articulations and ornamentations}.
+@ref{Formattazione del testo},
+@ref{Direzione e posizionamento},
+@ref{Articolazioni e abbellimenti}.
 
 Frammenti:
 @rlsr{Text}.
@@ -164,7 +162,7 @@ con la seguente sintassi:
 La stringa testuale da stampare viene impostata attraverso le proprietà
 dell'oggetto.  Per impostazione predefinita, appare in corsivo, ma si
 può ottenere una formattazione diversa tramite i blocchi @code{\markup}, come
-è spiegato in @ref{Formatting text}.
+è spiegato in @ref{Formattazione del testo}.
 
 @lilypond[quote,verbatim]
 \relative {
@@ -179,11 +177,8 @@ Lo stile della linea, così come la stringa testuale, può essere definito come
 una proprietà dell'oggetto.  Questa sintassi è descritta in @ref{Line styles}.
 
 @funindex \textSpannerUp
-@funindex textSpannerUp
 @funindex \textSpannerDown
-@funindex textSpannerDown
 @funindex \textSpannerNeutral
-@funindex textSpannerNeutral
 
 
 @predefined
@@ -206,8 +201,8 @@ LilyPond è capace di gestire un solo estensore del testo per ogni voce.
 @seealso
 Guida alla notazione:
 @ref{Line styles},
-@ref{Dynamics},
-@ref{Formatting text}.
+@ref{Dinamiche},
+@ref{Formattazione del testo}.
 
 Frammenti:
 @rlsr{Text},
@@ -231,9 +226,7 @@ Guida al funzionamento interno:
 @cindex stanghette, simboli sulle
 
 @funindex \mark
-@funindex mark
 @funindex \markup
-@funindex markup
 
 Si possono aggiungere vari elementi testuali a una partitura tramite la
 sintassi descritta in @ref{Rehearsal marks}:
@@ -254,7 +247,7 @@ sintassi descritta in @ref{Rehearsal marks}:
 
 Questa sintassi permette di porre del testo sopra una stanghetta;
 una formattazione del testo più complessa è possibile grazie al
-blocco @code{\markup}, come è spiegato in @ref{Formatting text}:
+blocco @code{\markup}, come è spiegato in @ref{Formattazione del testo}:
 
 @lilypond[quote,verbatim]
 \relative {
@@ -295,9 +288,7 @@ successiva.
 @end lilypond
 
 @funindex \markLengthOn
-@funindex markLengthOn
 @funindex \markLengthOff
-@funindex markLengthOff
 
 @predefined
 @code{\markLengthOn},
@@ -315,9 +306,9 @@ successiva.
 @seealso
 Guida alla notazione:
 @ref{Rehearsal marks},
-@ref{Formatting text},
+@ref{Formattazione del testo},
 @ref{Music notation inside markup},
-@ref{The Feta font}.
+@ref{Il font Emmentaler}.
 
 Frammenti:
 @rlsr{Text}.
@@ -337,7 +328,6 @@ Guida al funzionamento interno:
 @cindex testo al livello superiore
 
 @funindex \markup
-@funindex markup
 
 Un blocco @code{\markup} può esistere di per sé, fuori da qualsiasi
 blocco @code{\score}, come un'@tie{@qq{espressione di livello superiore}}.  Questa
@@ -372,9 +362,7 @@ Questa funzionalità, e la sintassi specifica che richiede, è descritta
 in @ref{Multi-page markup}.
 
 @funindex \markup
-@funindex markup
 @funindex \markuplist
-@funindex markuplist
 
 @predefined
 @code{\markup},
@@ -389,7 +377,7 @@ in @ref{Multi-page markup}.
 
 @seealso
 Guida alla notazione:
-@ref{Formatting text},
+@ref{Formattazione del testo},
 @ref{File structure},
 @ref{Multiple scores in a book},
 @ref{Multi-page markup}.
@@ -426,7 +414,6 @@ usando la sintassi specifica della modalità @code{\markup}.
 @cindex annotazione
 
 @funindex \markup
-@funindex markup
 
 Un blocco @code{\markup} permette di comporre del testo con un'ampia
 sintassi chiamata @qq{modalità markup}.
@@ -524,7 +511,8 @@ File installati:
 @file{scm/markup.scm}.
 
 @knownissues
-Gli errori di sintassi relativi alla modalità markup possono essere poco chiari.
+I messaggi di errore di sintassi relativi alla modalità markup possono
+essere poco chiari.
 
 
 @node Scelta del tipo di carattere e della dimensione
@@ -536,11 +524,8 @@ Gli errori di sintassi relativi alla modalità markup possono essere poco chiari
 @cindex font, cambiare
 
 @funindex \italic
-@funindex italic
 @funindex \bold
-@funindex bold
 @funindex \underline
-@funindex underline
 
 La modalità markup permette di cambiare il tipo di carattere:
 
@@ -563,18 +548,14 @@ La modalità markup permette di cambiare il tipo di carattere:
 
 @funindex \abs-fontsize
 @funindex \fontsize
-@funindex fontsize
 @funindex \smaller
-@funindex smaller
 @funindex \larger
-@funindex larger
 @funindex \magnify
-@funindex magnify
 
 Si può modificare la dimensione del tipo di carattere, rispetto alla
 dimensione globale del rigo, in vari modi.
 
-Si può impostare su una dimensione predefinita,
+Si può impostare su una dimensione predefinita.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -584,7 +565,7 @@ Si può impostare su una dimensione predefinita,
 }
 @end lilypond
 
-oppure in modo proporzionale rispetto al valore precedente,
+oppure in modo proporzionale rispetto al valore precedente.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -595,7 +576,7 @@ oppure in modo proporzionale rispetto al valore precedente,
 @end lilypond
 
 Può essere aumentata o diminuita rispetto al valore impostato per la
-dimensione globale del rigo:
+dimensione globale del rigo.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -606,7 +587,7 @@ dimensione globale del rigo:
 @end lilypond
 
 Si può impostare anche su una dimensione fissa (in punti), indipendentemente
-dalla dimensione globale del rigo:
+dalla dimensione globale del rigo.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -629,11 +610,8 @@ altri caratteri.
 @cindex apice
 
 @funindex \super
-@funindex super
 @funindex \sub
-@funindex sub
 @funindex \normal-size-super
-@funindex normal-size-super
 
 È possibile stampare il testo come pedice o apice.  Per impostazione
 predefinita, questo appaiono in corpo più piccolo, ma si può usare
@@ -704,21 +682,13 @@ tipi di carattere personalizzati si trova in @ref{Font}.
 è spiegato in @ref{Fonts}.
 
 @funindex \teeny
-@funindex teeny
 @funindex \tiny
-@funindex tiny
 @funindex \small
-@funindex small
 @funindex \normalsize
-@funindex normalsize
 @funindex \large
-@funindex large
 @funindex \huge
-@funindex huge
 @funindex \smaller
-@funindex smaller
 @funindex \larger
-@funindex larger
 
 
 @predefined
@@ -774,11 +744,8 @@ tramite la sintassi descritta in @rlearning{Spostare gli oggetti}.
 @cindex allineamento orizzontale del testo
 
 @funindex \left-align
-@funindex left-align
 @funindex \center-align
-@funindex center-align
 @funindex \right-align
-@funindex right-align
 
 Gli oggetti di markup possono essere allineati in vari modi.  Per impostazione
 predefinita, l'indicazione testuale è allineata rispetto al suo margine
@@ -798,7 +765,6 @@ secondo markup.
 @end lilypond
 
 @funindex \halign
-@funindex halign
 
 L'allineamento orizzontale può essere ritoccato usando un valore numerico:
 
@@ -824,11 +790,8 @@ oggetti di markup tutti insieme, come mostrato ad esempio in
 @cindex allineamento verticale del testo
 
 @funindex \raise
-@funindex raise
 @funindex \lower
-@funindex lower
 @funindex \null
-@funindex null
 
 @c QUERY Should the function of ``\null'' be clarified? rp
 
@@ -860,11 +823,8 @@ punto di riferimento e di conseguenza non si muove.
 @end lilypond
 
 @funindex \general-align
-@funindex general-align
 @funindex \translate
-@funindex translate
 @funindex \translate-scaled
-@funindex translate-scaled
 
 Alcuni comandi possono cambiare l'allineamento sia orizzontale che verticale
 degli oggetti testuali in modalità markup.  Qualsiasi oggetto interessato
@@ -898,9 +858,7 @@ da questi comandi deve essere preceduto da un punto di riferimento:
 @cindex colonne, testo
 
 @funindex \column
-@funindex column
 @funindex \center-column
-@funindex center-column
 
 Un oggetto markup può includere varie linee di testo.  Nell'esempio
 seguente, ogni elemento o espressione viene posizionato sulla sua
@@ -927,7 +885,6 @@ linea, allineato a sinistra o centrato:
 @cindex markup, centrare sulla pagina
 
 @funindex \fill-line
-@funindex fill-line
 
 Analogalmente, una lista di elementi o espressioni può essere distesa
 per riempire l'intera larghezza orizzontale della linea (se c'è un solo
@@ -960,9 +917,7 @@ espressione di markup:
 @cindex markup, testo giustificato
 
 @funindex \wordwrap
-@funindex wordwrap
 @funindex \justify
-@funindex justify
 
 Indicazioni testuali lunghe possono andare a capo automaticamente in base
 alla larghezza della linea specificata.  Possono essere allineate a
@@ -1040,15 +995,10 @@ i comandi di markup.
 @cindex markup, incorniciatura
 
 @funindex \box
-@funindex box
 @funindex \circle
-@funindex circle
 @funindex \rounded-box
-@funindex rounded-box
 @funindex \bracket
-@funindex bracket
 @funindex \hbracket
-@funindex hbracket
 
 Alcuni comandi di markup consentono di decorare gli elementi testuali con
 degli elementi grafici, come è illustrato nell'esempio seguente.
@@ -1075,13 +1025,9 @@ degli elementi grafici, come è illustrato nell'esempio seguente.
 @cindex markup, padding
 
 @funindex \pad-markup
-@funindex pad-markup
 @funindex \pad-x
-@funindex pad-x
 @funindex \pad-to-box
-@funindex pad-to-box
 @funindex \pad-around
-@funindex pad-around
 
 Alcuni comandi possono richiedere un aumento del padding intorno al
 testo;  per farlo si usano dei comandi di markup, descritti in modo
@@ -1113,17 +1059,11 @@ Flute quartet keeps very uneven time."
 @cindex simboli non musicali
 
 @funindex \combine
-@funindex combine
 @funindex \draw-circle
-@funindex draw-circle
 @funindex \filled-box
-@funindex filled-box
 @funindex \triangle
-@funindex triangle
 @funindex \draw-line
-@funindex draw-line
 @funindex \arrow-head
-@funindex arrow-head
 
 Si possono produrre altri elementi grafici o simboli che non richiedono
 alcun testo.  Come con qualsiasi espressione di markup, tali oggetti
@@ -1150,9 +1090,7 @@ possono essere combinati.
 @cindex postscript
 
 @funindex \epsfile
-@funindex epsfile
 @funindex \postscript
-@funindex postscript
 
 Le funzionalità grafiche avanzate comprendono la possibilità di includere
 file di immagini convertite nel formato Encapsulated PostScript
@@ -1186,8 +1124,8 @@ Una lista completa dei comandi specifici per la grafica si trova in
 @seealso
 Guida alla notazione:
 @ref{Align},
-@ref{Dimensions},
-@ref{Editorial annotations},
+@ref{Dimensioni},
+@ref{Note editoriali},
 @ref{Graphic}.
 
 File installati:
@@ -1216,7 +1154,7 @@ Per le note e le alterazioni esistono dei comandi markup appositi:
 
 @lilypond[quote,verbatim,fragment]
 a'2 a'^\markup {
-  \note #"4" #1
+  \note {4} #1
   =
   \note-by-number #1 #1 #1.5
 }
@@ -1254,7 +1192,7 @@ modalità markup:
 Più in generale, qualsiasi simbolo musicale disponibile può essere incluso
 separatamente in un oggetto markup, come è illustrato sotto.  Una lista
 completa di questi simboli e dei loro nomi si trova in
-@ref{The Feta font}.
+@ref{Il font Emmentaler}.
 
 @lilypond[quote,verbatim]
 \relative {
@@ -1323,7 +1261,7 @@ in @ref{Music}.
 @seealso
 Guida alla notazione:
 @ref{Music},
-@ref{The Feta font},
+@ref{Il font Emmentaler},
 @ref{Fonts explained}.
 
 File installati:
@@ -1348,11 +1286,8 @@ Guida al funzionamento interno:
 @cindex testo esteso su più pagine
 
 @funindex \markuplist
-@funindex markuplist
 @funindex \justified-lines
-@funindex justified-lines
 @funindex \wordwrap-lines
-@funindex wordwrap-lines
 
 Sebbene gli oggetti di markup standard non possano avere interruzioni, una
 specifica sintassi permette di inserire linee di testo che possono estendersi
@@ -1402,7 +1337,6 @@ Guida al funzionamento interno:
 @rinternals{TextScript}.
 
 @funindex \markuplist
-@funindex markuplist
 
 @predefined
 @code{\markuplist}.
@@ -1440,8 +1374,8 @@ sono riprodotti con Pango.
 
 I tipi di carattere della notazione musicale possono essere descritti
 come un insieme di glifi specifici, ordinati in varie famiglie.  La
-seguente sintassi permette di usare vari caratteri @code{feta} di LilyPond
-(non testuali) direttamente nella modalità markup:
+seguente sintassi permette di usare vari glifi @emph{Feta} di LilyPond
+direttamente nella modalità markup:
 
 @lilypond[quote,verbatim,fragment]
 a'1^\markup {
@@ -1526,11 +1460,11 @@ caso è preferibile usare la sintassi più semplice spiegata in
 
 Sebbene sia semplice passare a un tipo di carattere preconfigurato, è anche
 possibile usare altri tipi, come viene spiegato nelle sezioni successive:
-@ref{Single entry fonts} e @ref{Entire document fonts}.
+@ref{Single entry fonts} e @ref{Tipi di carattere per l'intero documento}.
 
 @seealso
 Guida alla notazione:
-@ref{The Feta font},
+@ref{Il font Emmentaler},
 @ref{Music notation inside markup},
 @ref{Rotating objects},
 @ref{Selecting font and font size},
@@ -1578,7 +1512,7 @@ lilypond -dshow-available-fonts x
 @seealso
 Guida alla notazione:
 @ref{Fonts explained},
-@ref{Entire document fonts}.
+@ref{Tipi di carattere per l'intero documento}.
 
 Frammenti:
 @rlsr{Text}.

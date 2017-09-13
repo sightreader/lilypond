@@ -112,7 +112,7 @@ Font_metric::print_smob (SCM port, scm_print_state *) const
   return 1;
 }
 
-const char Font_metric::type_p_name_[] = "ly:font-metric?";
+const char * const Font_metric::type_p_name_ = "ly:font-metric?";
 
 SCM
 Font_metric::font_file_name () const
@@ -147,7 +147,9 @@ Font_metric::sub_fonts () const
 
 Stencil
 Font_metric::text_stencil (Output_def *state,
-                           const string&, bool) const
+                           const string&,
+                           bool,
+                           const string&) const
 {
   (void) state;
 

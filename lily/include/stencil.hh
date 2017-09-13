@@ -59,7 +59,7 @@ class Stencil : public Simple_smob<Stencil>
 {
 public:
   SCM mark_smob () const;
-  static const char type_p_name_[];
+  static const char * const type_p_name_;
 private:
   Box dim_;
   SCM expr_;
@@ -90,6 +90,7 @@ public:
   bool is_empty () const;
   bool is_empty (Axis) const;
   Stencil in_color (Real r, Real g, Real b) const;
+  Stencil with_outline (Stencil const &ol) const;
   static SCM skylines_from_stencil (SCM, Real, Axis);
 };
 

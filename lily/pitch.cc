@@ -218,7 +218,7 @@ Pitch::down_to (int notename)
   notename_ = notename;
 }
 
-const char Pitch::type_p_name_[] = "ly:pitch?";
+const char * const Pitch::type_p_name_ = "ly:pitch?";
 
 SCM
 Pitch::mark_smob () const
@@ -238,8 +238,8 @@ Pitch::print_smob (SCM port, scm_print_state *) const
 SCM
 Pitch::equal_p (SCM a, SCM b)
 {
-  Pitch *p = (Pitch *) SCM_CELL_WORD_1 (a);
-  Pitch *q = (Pitch *) SCM_CELL_WORD_1 (b);
+  Pitch *p = unsmob<Pitch> (a);
+  Pitch *q = unsmob<Pitch> (b);
 
   bool eq = p->notename_ == q->notename_
             && p->octave_ == q->octave_

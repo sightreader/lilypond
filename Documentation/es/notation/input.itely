@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: es -*-
 
 @ignore
-    Translation of GIT committish: 8016f31ef2a25bf9492a6ba65dc627622beac4af
+    Translation of GIT committish: 1e5c6b0f54079eb3285dcc4c7e53f17d8bb03933
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -247,7 +247,7 @@ archivo como un solo bloque @code{\book}, véase @ref{Estructura
 del archivo}.
 
 Al producir varios archivos a partir de un solo archivo fuente,
-Lilypond se asegura de que ninguno de los archivos de salida de
+LilyPond se asegura de que ninguno de los archivos de salida de
 ningún bloque @code{\book} sobreescribe el archivo de salida
 producido por un @code{\book} anterior del mismo archivo de
 entrada.
@@ -293,11 +293,11 @@ en el archivo fuente @file{eightminiatures.ly}, produce
 @funindex \bookOutputSuffix
 @funindex \bookOutputName
 
-Lilypond le ofrece unos mecanismos que le permiten controlar los
+LilyPond le ofrece unos mecanismos que le permiten controlar los
 nombres de archivo que se utilizan por parte de los diversos
 motores finales al producir los archivos de salida.
 
-En la sección anterior vimos cómo Lilypond evita las
+En la sección anterior vimos cómo LilyPond evita las
 coincidencias de nombres al producir varias salidas a partir de
 un único archivo fuente de entrada.  También podemos especificar
 nuestros propios sufijos para cada bloque @code{\book}, de manera
@@ -404,9 +404,10 @@ Un bloque @code{\score}.  Esta partitura se reúne con otras
 partituras del nivel superior, y se combina con ellas formando un
 @code{\book} (libro) único.  Este comportamiento se puede cambiar
 estableciendo el valor de la variable
-@code{toplevel-score-handler} en el nivel superior.  El
-@emph{handler} predeterminado se define en el archivo de inicio
-@file{../scm/lily.scm}.
+@code{toplevel-score-handler} en el nivel superior (el
+@emph{handler} predeterminado se define en el archivo
+@file{../scm/lily-library.scm} y su valor se establece en el archivo
+@file{../ly/declarations-init.ly}.)
 
 @item
 Un bloque @code{\book} combina lógicamente varios movimientos (es
@@ -574,7 +575,7 @@ compositor; ciertas piezas tienen mucha más información.
 @menu
 * Crear títulos encabezamientos y pies de página::
 * Títulos encabezamientos y pies de página personalizados::
-* Creación de metadatos de PDF::
+* Crear metadatos en los archivos de salida::
 * Crear notas al pie::
 * Referencia a números de página::
 * Índice general::
@@ -1211,9 +1212,9 @@ encabezamiento y pie de página definido dentro del bloque
 @code{\paper}, usando la sintaxis siguiente:
 
 @example
-@code{variable} = @code{\markup} @{
+variable = \markup @{
   @dots{}
-  @code{\on-the-fly}  \@var{procedimiento}  @var{marcado}
+  \on-the-fly  \@var{procedimiento}  @var{marcado}
   @dots{}
 @}
 @end example
@@ -1232,14 +1233,15 @@ comprobación de diversas condiciones:
 
 @headitem  Nombre del procedimiento @tab  Condición que se comprueba
 
-@item print-page-number-check-first @tab  ¿debería imprimirse esta página?
+@item print-page-number-check-first @tab  ¿debería imprimirse este número de página?
 @item create-page-number-stencil    @tab  ¿es print-page-numbers verdadero?
 @item print-all-headers             @tab  ¿es print-all-headers verdadero?
 @item first-page                    @tab  ¿es la primera página del libro?
+@item not-first-page                @tab  ¿no es la primera página del libro?
 @item (on-page nmbr)                @tab  ¿es el número de página = nmbr?
 @item last-page                     @tab  ¿es la última página del libro?
-@item not-first-page                @tab  ¿no es la primera página del libro?
 @item part-first-page               @tab  ¿es la primera página de la parte de libro?
+@item not-part-first-page           @tab  ¿no es la primera página de la parte de libro?
 @item part-last-page                @tab  ¿es la última página de la parte de libro?
 @item not-single-page               @tab  ¿es el núm. de páginas en la parte de libro > 1?
 
@@ -1280,8 +1282,8 @@ Se pueden combinar varias condiciones de @code{\on-the-fly} con
 un operador @q{and}, por ejemplo:
 
 @example
-  @code{\on-the-fly \first-page}
-  @code{\on-the-fly \last-page}
+  \on-the-fly \first-page
+  \on-the-fly \last-page
   @code{@{ \markup @dots{} \fromproperty #'header: @dots{} @}}
 @end example
 
@@ -1295,24 +1297,36 @@ Referencia de la notación:
 Archivos instalados:
 @file{../ly/titling-init.ly}.
 
-@node Creación de metadatos de PDF
-@subsection Creación de metadatos de PDF
-@translationof Creating PDF metadata
+@node Crear metadatos en los archivos de salida
+@subsection Crear metadatos en los archivos de salida
+@translationof Creating output file metadata
 
 @cindex metadatos de PDF
+@cindex metadatos de MIDI
 
 Además de mostrarse en la salida impresa, las variables de
 encabezamiento de @code{\header} se usan para establecer los
-metadatos de PDF (la información que muestran los lectores de PDF
-como @code{propiedades} del archivo).  Por ejemplo, si se
+metadatos para los archivos de salida.  Por ejemplo, con los
+archivos PDF, estos metadatos pueden mostrarse por parte de los
+lectores de documentos como @code{propiedades} del PDF.  Para cada
+tipo de archivo de salida, solamente se consultan las definiciones
+de @code{\header} de los bloques que definen archivos separados de
+ese tipo, y los bloques más altos en la jerarquía de bloques.  Por
+tanto, para los archivos PDF, solo afectan a los metadatos de PDF
+de cada documento las definiciones de @code{\header} de los
+niveles de @code{\book} y de nivel superior, mientras que para
+archivos MIDI, se usan todas las cabeceras que están por encima o
+al nivel de @code{\score}.
+
+Por ejemplo, si se
 establece la propiedad @code{title} del bloque @code{header} como
 @q{Sinfonía núm. 1}, el documento PDF llevará también este
-título.
+título, y lo usará como el nombre de la secuencia del archivo MIDI.
 
 @example
-  @code{\header@{}
-    @code{title = "Sinfonía núm. 1"}
-  @code{@}}
+\header@{
+  title = "Sinfonía núm. 1"
+@}
 @end example
 
 Si quiere fijar el título de la salida impresa con un texto pero
@@ -1321,10 +1335,10 @@ diferente, puede usar @code{pdftitle} como se muestra a
 continuación.
 
 @example
-  @code{\header@{}
-    @code{title = "Sinfonía núm. 1"}
-    @code{pdftitle = "Sinfonía núm. 1 de Beethoven"}
-  @code{@}}
+\header@{
+  title = "Sinfonía núm. 1"
+  pdftitle = "Sinfonía núm. 1 de Beethoven"
+@}
 @end example
 
 Todas las variables @code{title}, @code{subject},
@@ -1341,6 +1355,11 @@ actuales.  Se puede sobreescribir @code{ModDate} mediante el
 establecimiento de un valor para la variable de cabecera
 @code{moddate} (o @code{pdfmoddate}) a una cadena de fecha de PDF
 válida.
+
+La variable @code{title} establece también el nombre de la
+secuencia para el archivo MIDI.  Se puede usar la variable
+@code{midititle} para fijar el nombre de la secuencia
+independientemente del valor usado para la salida impresa.
 
 @node Crear notas al pie
 @subsection Crear notas al pie
@@ -2040,7 +2059,7 @@ tocAct =
   \markuplist \table-of-contents
   \tocAct \markup { Atto Primo }
   \tocItem \markup { Coro. Viva il nostro Alcide }
-  \tocItem \markup { Cesare. Presti omai l'Egizzia terra }
+  \tocItem \markup { Cesare. Presti omai l'Egizia terra }
   \tocAct \markup { Atto Secondo }
   \tocItem \markup { Sinfonia }
   \tocItem \markup { Cleopatra. V'adoro, pupille, saette d'Amore }
@@ -2296,7 +2315,7 @@ sopranoMusic = \relative { a'4 b c b8( a) }
 altoMusic = \relative { e'4 e e f }
 tenorMusic = \relative { c'4 b e d8( c) }
 bassMusic = \relative { a4 gis a d, }
-allLyrics = \lyricmode {King of glo -- ry }
+allLyrics = \lyricmode { King of glo -- ry }
 <<
   \new Staff = "Soprano" \sopranoMusic
   \new Lyrics \allLyrics
@@ -2314,17 +2333,11 @@ allLyrics = \lyricmode {King of glo -- ry }
   \new Lyrics \allLyrics
   \new PianoStaff <<
     \new Staff = "RH" {
-      \set Staff.printPartCombineTexts = ##f
-      \partcombine
-      \sopranoMusic
-      \altoMusic
+      \partcombine \sopranoMusic \altoMusic
     }
     \new Staff = "LH" {
-      \set Staff.printPartCombineTexts = ##f
       \clef "bass"
-      \partcombine
-      \tenorMusic
-      \bassMusic
+      \partcombine \tenorMusic \bassMusic
     }
   >>
 >>
@@ -2487,46 +2500,78 @@ music = \relative c'' {
 }
 @end lilypond
 
-Dos o más filtros @code{\keepWithTag} aplicados a una sola
-expresión musical producen la eliminación de @emph{todas} las
-secciones etiquetadas, porque el primer filtro quita todas las
-secciones etiquetadas excepto la que se nombra, y el segundo
-filtro elimina incluso esa sección etiquetada.  Por lo general,
-querrá usar una sola instrucción @code{\keepWithTag} con una
-lista de varias etiquetas: de esta forma solamente se suprimirán
-las secciones etiquetadas que no aparezcan en @emph{ninguna} de
-las etiquetas.
+El uso de dos o más filtros @code{\keepWithTag} sobre una sola
+expresión musical produce la eliminación de @emph{todas} las
+secciones etiquetadas.  El primer filtro quita todas excepto la
+que se nombra, y cualquier filtro posterior elimina el resto.
+Usando una sola instrucción @code{\keepWithTag} con una lista de
+varias etiquetas se suprimirán solamente las secciones etiquetadas
+que no aparezcan especificadas en la lista.
+
+@lilypond[verbatim,quote]
+music = \relative c'' {
+  \tag #'violinI { a4 a a a }
+  \tag #'violinII { b4 b b b }
+  \tag #'viola { c4 c c c }
+  \tag #'cello { d4 d d d }
+}
+
+\new Staff {
+  \keepWithTag #'(violinI violinII)
+  \music
+}
+@end lilypond
+
+@noindent
+will print @code{\tag}s @var{violinI} and @var{violinII} but not
+@var{viola} or @var{cello}.
 
 @cindex grupos de etiquetas
 @funindex \tagGroup
 Aunque @code{\keepWithTag} es útil para el manejo de @emph{un
 solo} conjunto de alternativas, la eliminación de música
 etiquetada con otras etiquetas @emph{no relacionadas} es
-problemática si se utilizan para más de un propósito. Por tal
-motivo pueden declararse @q{grupos de etiquetas} relacionadas:
+problemática si se utilizan para más de un propósito.  En ese caso
+pueden declararse @q{grupos de etiquetas}:
 
 @example
 \tagGroup #'(violinI violinII viola cello)
 @end example
 
-declara las etiquetas respectivas como pertenecientes a un grupo
-de etiquetas.
+@noindent
+Ahora todas las etiquetas pertenecen a un solo @q{grupo de etiquetas}.
+Observe que las etiquetas individuales no pueden ser miembros
+de más de un @emph{grupo de etiquetas}.
 
 @example
 \keepWithTag #'violinI @dots{}
 @end example
 
-se ocupará solamente de las etiquetas del grupo @code{violinI}:
-cualquier elemento de la música incluida que lleve una o más
-etiquetas de este conjunto pero @emph{no} con la etiqueta
-@code{violinI} resultará suprimida.
+@noindent
+mostrará solamente la música etiquetada a partir del
+grupo de etiquetas de @code{violinI} y
+cualquier fragmento musical etiquetado con una de las
+@emph{otras} etiquetas resultará suprimido.
 
-Para cualquier instrucción @code{\keepWithTag}, solamente son
-visibles las etiquetas de los grupos de aquellas etiquetas dadas
-en la propia instrucción.
+@lilypond[verbatim,quote]
+music = \relative {
+  \tagGroup #'(violinI violinII viola cello)
+  \tag #'violinI { c''4^"violinI" c c c }
+  \tag #'violinII { a2 a }
+  \tag #'viola { e8 e e2. }
+  \tag #'cello { d'2 d4 d }
+  R1^"untagged"
+}
 
-Las etiquetas no pueden ser miembros de más de un grupo de
-etiquetas.
+\new Voice {
+  \keepWithTag #'violinI
+  \music
+}
+@end lilypond
+
+Al usar la instrucción @code{\keepWithTag} solo son visibles
+las etiquetas de los grupos de aquellas etiquetas se se incluyen
+en la instrucción.
 
 @funindex \pushToTag
 @funindex \appendToTag
@@ -2541,15 +2586,15 @@ musical existente.  No toda construcción musical tiene la parte
 dos apuestas seguras:
 
 @lilypond[verbatim,quote]
-test = { \tag #'here { \tag #'here <<c''>> } }
+music = { \tag #'here { \tag #'here <<c''>> } }
 
 {
   \pushToTag #'here c'
   \pushToTag #'here e'
-  \pushToTag #'here g' \test
+  \pushToTag #'here g' \music
   \appendToTag #'here c'
   \appendToTag #'here e'
-  \appendToTag #'here g' \test
+  \appendToTag #'here g' \music
 }
 @end lilypond
 
@@ -2655,8 +2700,8 @@ caracteres distintos a los del conjunto ASCII, se deben codificar
 en UTF-8.  La forma más fácil de escribir dicho texto es utilizar
 un editor preparado para Unicode y guardar el archivo con la
 codificación UTF-8.  Casi todos los editores modernos populares
-contemplan el UTF-8, por ejemplo lo hacen vim, Emacs, jEdit, y
-GEdit.  Todos los sistemas MS Windows posteriores a NT usan
+contemplan el UTF-8, por ejemplo lo hacen vim, Emacs, jEdit y
+Gedit.  Todos los sistemas MS Windows posteriores a NT usan
 Unicode como codificación de caracteres nativa, de manera que
 incluso el accesorio Bloc de Notas (Notepad) puede editar y
 guardar un archivo en el formato UTF-8.  Una alternativa más
@@ -2672,9 +2717,10 @@ FT_Get_Glyph_Name () error: argumento inválido
 
 He aquí un ejemplo que muestra texto cirílico, hebreo y portugués:
 
+@c NOTE: No verbatim in the following example as the code does not
+@c display correctly in PDF Font settings for Cyrillic and Hebrew
+
 @lilypond[quote]
-%c No verbatim here as the code does not display correctly in PDF
-% Font settings for Cyrillic and Hebrew
 % Linux Libertine fonts contain Cyrillic and Hebrew glyphs.
 \paper {
   #(define fonts
@@ -2953,19 +2999,21 @@ las voces y pentagramas, ahorrando más tiempo incluso.
 
 Los formatos de salida predeterminados para la partitura impresa
 son el formato de documento portátil (PDF) y PostScript (PS).
-Los formatos de salida Gráficos de vector escalables (SVG),
-PostScript encapsulado (EPS) y Gráficos de red portátiles (PNG)
+Los formatos de salida Gráficos de red portátiles (PNG),
+Gráficos de vector escalables (SVG) y PostScript encapsulado (EPS)
 también están disponibles a través de opciones de la línea de
-órdenes, véase @rprogram{Opciones básicas de la línea de órdenes
-para LilyPond}.
+órdenes, véase
+@rprogram{Opciones básicas de la línea de órdenes para LilyPond}.
 
 
 @node Sustituir la tipografía de la notación
 @subsection Sustituir la tipografía de la notación
 @translationof Replacing the notation font
 
-Gonville es una alternativa a la tipografía Feta que se utiliza
-en LilyPond y se puede descargar de:
+Gonville es un conjunto de glifos alternativo a la tipografía Feta
+(que es parte de la tipografía Emmentaler que se usa en LilyPond).
+Se puede descargar de:
+
 @example
 @uref{http://www.chiark.greenend.org.uk/~sgtatham/gonville/ ,http://www.chiark.greenend.org.uk/~sgtatham/gonville/}
 @end example
@@ -2977,7 +3025,7 @@ fuente Gonville:
 @c       for the font comparison.  -gp
 @sourceimage{Gonville_after,15cm,,}
 
-Aquí hay unos compases de muestra tipografiados en la fuente Feta
+Aquí hay unos compases de muestra tipografiados con los glifos Feta
 de LilyPond:
 
 @sourceimage{Gonville_before,15cm,,}
@@ -2989,11 +3037,14 @@ Descargue y extraiga el archivo zip. Copie la carpeta
 más información, consulte @rlearning{Otras fuentes de
 información}.  Renombre la carpeta @code{fonts} existente a
 @code{fonts_orig} y la carpeta @code{lilyfonts} a @code{fonts}.
-Para volver a la fuente Feta, invierta el proceso.
+Para volver a la fuente Emmentaler, invierta el proceso.
 
 @seealso
 Manual de aprendizaje:
 @rlearning{Otras fuentes de información}.
+
+Referencia de la notación:
+@ref{La tipografía Emmentaler}.
 
 @knownissues
 Gonville no se puede usar para tipografiar notación de @q{Música
@@ -3071,7 +3122,7 @@ producir la salida por el MIDI de los siguientes elementos
 adicionales de notación musical:
 
 @itemize
-@item Appogiaturas (apoyaturas).  Se les da la mitad de la duración de la nota siguiente (sin tener en cuenta los puntillos).  Por ejemplo:
+@item Appoggiaturas (apoyaturas).  Se les da la mitad de la duración de la nota siguiente (sin tener en cuenta los puntillos).  Por ejemplo:
 
 @example
 \appoggiatura c8 d2.
@@ -3130,7 +3181,7 @@ estar vacío, dentro del bloque @code{\score}:
 @}
 @end example
 
-@warning{ Un bloque @code{@bs{}score} que, además de la música,
+@warning{Un bloque @code{@bs{}score} que, además de la música,
 contiene solamente un bloque @code{@bs{}midi} (o sea, @emph{sin}
 el bloque @code{@bs{}layout}), solo produce archivos de salida
 MIDI; no se imprime ninguna notación musical.}
@@ -3153,7 +3204,8 @@ antes del comienzo de uno de los bloques @code{\book},
 
 @seealso
 Referencia de la notación:
-@ref{Estructura del archivo}.
+@ref{Estructura del archivo},
+@ref{Crear metadatos en los archivos de salida}.
 
 Archivos instalados:
 @file{scm/midi.scm}.
@@ -3821,10 +3873,12 @@ Archivos instalados:
 @warning{El script @file{articulate} puede acortar los acordes,
 lo que podría no ser adecuado para algunos tipos de instrumento,
 como el órgano.  Las notas que no tienen ninguna articulación
-también se pueden acortar; así, para moderar este efecto limite
+también se pueden acortar; así, para contener el alcance
+de este efecto limite
 el uso de de la función @code{\articulate} a segmentos de música
 más breves o modifique los valores de las variables definidas
-dentro del script @file{articulate}.}
+dentro del script @file{articulate}
+para compensar el efecto de acortamiento de las notas.}
 
 
 
@@ -3875,17 +3929,21 @@ lilypond archivo.ly >resultado.txt
 @end example
 
 @funindex \void
-Observe que Lilypond no se limita a mostrar la expresión musical,
+Observe que LilyPond no se limita a mostrar la expresión musical,
 sino que también la interpreta (porque @code{\displayLilyMusic}
-la devuelve además de mostrarla).  La conveniencia de esto es que
-podemos simplemente insertar @code{\displayLilyMusic} dentro de
-una música existente con el objeto de obtener información sobre
-ella.  Si no queremos que Lilypond, además de mostrar la música,
-la interprete, podemos hacer que la ignore usando @code{\void}:
+la devuelve además de mostrarla).  Simplemente inserte
+@code{\displayLilyMusic} dentro de
+la música existente con el objeto de obtener información sobre
+ella.
+
+Para interpretar y mostrar una sección de música en la consola,
+y al mismo tiempo suprimirla del archivo de salida,
+use la instrucción @code{\void}.
 
 @example
 @{
   \void \displayLilyMusic \transpose c a, @{ c4 e g a bes @}
+  c1
 @}
 @end example
 

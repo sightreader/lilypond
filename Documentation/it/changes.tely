@@ -1,6 +1,6 @@
 \input texinfo @c -*- coding: UTF-8; mode: texinfo; documentlanguage: it -*-
 @ignore
-    Translation of GIT committish: ed3e5abd8003297e02e3f90dc8755e33a6619135
+    Translation of GIT committish: 24dd6365d3d05f13b9259f547be9b2517851a5d1
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -50,6 +50,276 @@ Vedi il manuale utente, \NAME\
 @allowcodebreaks false
 
 @itemize
+
+@item
+È ora possibile spostare i sistemi rispetto alla loro posizione corrente
+tramite @code{extra-offset}, sottoproprietà di
+@code{NonMusicalPaperColumn.line-break-system-details}.  Sono consentite
+modifiche sia verticali che orizzontali.  Questa funzionalità è utile in
+particolare per fare piccoli aggiustamenti della posizione verticale
+predefinita dei singoli sistemi.  Maggiori informazioni in
+@ruser{Posizionamento esplicito di righi e sistemi}.
+
+@item
+È ora possibile aggiungere del testo alle parentesi per l'analisi musicale
+tramite l'oggetto @code{HorizontalBracketText}.
+@lilypond[quote,verbatim]
+\layout {
+  \context {
+    \Voice
+    \consists "Horizontal_bracket_engraver"
+  }
+}
+
+{
+  \once \override HorizontalBracketText.text = "a"
+  c''\startGroup d''\stopGroup
+  e''-\tweak HorizontalBracketText.text "a'" \startGroup d''\stopGroup
+}
+@end lilypond
+
+@item
+Le estremità delle forcelle possono ora essere aggiustate precisamente
+tramite la proprietà @code{shorten-pair}, che precedentemente agiva
+soltanto sugli estensori del testo, come @code{TupletBracket} e
+@code{OttavaBracket}.  Valori positivi spostano a destra, quelli negativi
+a sinistra.
+@lilypond[quote,verbatim]
+{ \once \override Hairpin.shorten-pair = #'(2 . 2)
+  c'1~\<
+  c'2~ c'\!
+  \once \override Hairpin.shorten-pair = #'(-2 . -2)
+  c'1~\<
+  c'2~ c'\! }
+@end lilypond
+
+@item
+Nei diagrammi dei tasti la distanza tra i tasti e quella tra le corde sono
+ora regolabili in modo indipendente.  Sono disponibili @code{fret-distance} e
+@code{string-distance} come sottoproprietà di @code{fret-diagram-details}.
+@lilypond[verbatim,quote]
+fretMrkp = \markup { \fret-diagram-terse #"x;x;o;2;3;2;" }
+
+\markuplist
+\override #'(padding . 2)
+\table #'(0 -1) {
+  "predefinito"
+
+  \fretMrkp
+
+  "fret-distance"
+
+  \override #'(fret-diagram-details . ((fret-distance . 2)))
+  \fretMrkp
+
+  "string-distance"
+
+  \override #'(fret-diagram-details . ((string-distance . 2)))
+  \fretMrkp
+}
+@end lilypond
+
+
+@item
+Le regole delle alterazioni possono essere definite nei contesti @code{ChoirStaff}.
+Sono disponibili due nuove regole, @code{choral} e @code{choral-cautionary}, che
+combinano le caratteristiche di @code{modern-voice} e @code{piano}
+o i loro equivalenti per le alterazioni di cortesia.
+
+@item
+La funzione musicale @code{\unfoldRepeats} può ora prendere una lista di
+argomenti (facoltativa) che specifica quali tipi di musica ripetuta debbano
+essere ricopiati.  Le opzioni possibili sono @code{percent}, @code{tremolo} e
+@code{volta}.
+Se la lista facoltativa non viene specificata, verrà usato @code{repeated-music},
+che ricopia tutto.
+
+@item
+Per l'output SVG viene ora utilizzata la nuova proprietà grob @code{output-attributes}
+al posto della proprietà @code{id}.  Permette di definire molteplici attributi
+come una lista associativa.  Per esempio, @code{#'((id . 123)
+(class . foo) (data-whatever . @qq{bar}))} produrrà il seguente elemento
+gruppo (g) in un file SVG: @code{<g id=@qq{123} class=@qq{foo}
+data-whatever=@qq{bar}> @dots{} </g>}.
+
+@item
+Le legature di portamento e di frase possono ora iniziare da note individuali
+di un accordo.  Varie legature di portamento simultanee per ogni voce devono
+essere distinte con l'impostazione @code{spanner-id}.
+
+@item
+La proprietà musicale e dei grob @code{spanner-id}, usata per distinguere
+legature di portamento simultanee e legature di frase, è stata modificata:
+non è più una stringa, bensì una @q{key}, ovvero un numero intero non negativo
+o un simbolo.
+
+@item
+È stato aggiunto il nuovo comando @code{\=} per specificare l'identificativo
+degli estensori, @code{spanner-id}, per le legature di portamento e di frase
+simultanee.
+@lilypond[verbatim,quote]
+\fixed c' {
+  <c~ f\=1( g\=2( >2 <c e\=1) a\=2) >
+}
+@end lilypond
+
+@item
+I blocchi introdotti con @code{\header} possono essere salvati in variabili
+e usati come argomenti di funzioni musicali e funzioni scheme e come parte
+dei costrutti @code{#@{@dots{}#@}}.  Sono rappresentati come un modulo Guile.
+
+Sebbene i blocchi @code{\book}, @code{\bookpart}, @code{\score}, @code{\with},
+@code{\layout}, @code{\midi}, @code{\paper} possano essere trasferiti in un
+modo simile, sono tuttavia rappresentati da tipi di dati diversi.
+
+@item
+Le liste di simboli separate da punti come @code{FretBoard.stencil} sono
+supportate già dalla versione@tie{}2.18.  Ora possono contenere anche numeri
+interi non negativi e possono essere separate anche con le virgole.
+Ciò permette di usare, per esempio:
+@lilypond[quote,verbatim]
+{ \time 2,2,1 5/8  g'8 8 8 8 8 }
+@end lilypond
+e
+@example
+\tagGroup violin,oboe,bassoon
+@end example
+
+@item
+Queste liste possono essere usate anche nelle espressioni di assegnamenti,
+impostazioni (@code{\set}) e riscritture (@code{override}).  Ciò permette di
+usare, per esempio:
+@lilypond[quote,verbatim]
+{ \unset Timing.beamExceptions
+  \set Timing.beatStructure = 1,2,1
+  g'8 8 8 8 8 8 8 8 }
+@end lilypond
+
+@item
+Agli elementi delle liste associative potevano già essere assegnati dei
+valori individualmente (per esempio, variabili @code{\paper} come
+@code{system-system-spacing.basic-distance}).  Ora possono anche essere
+citati nello stesso modo, come in questo esempio:
+@example
+\paper @{
+  \void \displayScheme \system-system-spacing.basic-distance
+@}
+@end example
+
+In combinazione con i cambiamenti precedentemente menzionati, ciò permette
+di impostare e citare pseudovariabili come @code{violin.1}.
+
+@item
+I file sorgente LilyPond ora possono essere incorporati nei file PDF generati.
+Questa funzionalità sperimentale è disabilitata per impostazione predefinita
+e può essere considerata non sicura, dato che documenti PDF con del contenuto
+nascosto tendono a costituire un rischio di sicurezza.
+Non tutti i lettori PDF sono capaci di gestire i documenti incorporati (in
+questo caso, l'output PDF apparirà normalmente e i file sorgente resteranno
+invisibili).  Questa funzionalità funziona solo col backend PDF.
+
+@item
+I nomi francesi delle note ora sono definite separatemente invece di essere
+riprese (come alias) dai nomi italiani: oltre alla sintassi generica derivata
+dall'italiano, l'altezza @var{d} può essere inserita come @code{ré}.  I diesis
+doppi possono essere inseriti anche col suffisso @code{-x}.
+
+@item
+Sono supportate ulteriori corde di basso (per l'intavolatura per liuto).
+@lilypond[quote,verbatim]
+m = { f'4 d' a f d a, g, fis, e, d, c,  \bar "|." }
+
+\score {
+  \new TabStaff \m
+  \layout {
+    \context {
+      \Score
+      tablatureFormat = #fret-letter-tablature-format
+    }
+    \context {
+      \TabStaff
+      stringTunings = \stringTuning <a, d f a d' f'>
+      additionalBassStrings = \stringTuning <c, d, e, fis, g,>
+      fretLabels = #'("a" "b" "r" "d" "e" "f" "g" "h" "i" "k")
+    }
+  }
+}
+@end lilypond
+
+@item
+È ora disponibile il comando di tipo markup-list @code{\table}.
+Ogni colonna può essere allineata in modo diverso.
+@lilypond[quote,verbatim]
+\markuplist {
+    \override #'(padding . 2)
+    \table
+      #'(0 1 0 -1)
+      {
+        \underline { center-aligned right-aligned center-aligned left-aligned }
+        one "1" thousandth "0.001"
+        eleven "11" hundredth "0.01"
+        twenty "20" tenth "0.1"
+        thousand "1000" one "1.0"
+      }
+}
+@end lilypond
+
+@item
+Un nuovo comando di tipo markup, @code{\with-dimensions-from}, semplifica
+l'uso di @code{\with-dimensions} prendendo le nuove dimensioni da un
+oggetto di markup, indicato come primo argomento.
+@lilypond[quote,verbatim]
+\markup {
+  \pattern #5 #Y #0 "x"
+  \pattern #5 #Y #0 \with-dimensions-from "x" "f"
+  \pattern #5 #Y #0 \with-dimensions-from "x" "g"
+  \override #'(baseline-skip . 2)
+  \column {
+    \pattern #5 #X #0 "n"
+    \pattern #5 #X #0 \with-dimensions-from "n" "m"
+    \pattern #5 #X #0 \with-dimensions-from "n" "!"
+  }
+}
+@end lilypond
+
+@item
+Ci sono due nuove funzioni di interruzione della pagina.
+@code{ly:one-page-breaking} modifica automaticamente l'altezza della
+pagina per far entrare la musica, in modo che stia tutta in una pagina.
+@code{ly:one-line-auto-height-breaking} è simile a @code{ly:one-line-breaking},
+perché posiziona la musica su una sola linea regolando la larghezza della
+pagina, tuttavia modifica automaticamente anche l'altezza della pagina per
+farci entrare la musica.
+
+@item
+È ora disponibile il comando markup @code{\draw-squiggle-line}.
+È possibile personalizzarlo modificando le proprietà @code{thickness}, @code{angularity},
+@code{height} e @code{orientation}
+@lilypond[quote,verbatim]
+\markup
+  \overlay {
+    \draw-squiggle-line #0.5 #'(3 . 3) ##t
+
+    \translate #'(3 . 3)
+    \override #'(thickness . 4)
+    \draw-squiggle-line #0.5 #'(3 . -3) ##t
+
+    \translate #'(6 . 0)
+    \override #'(angularity . -5)
+    \draw-squiggle-line #0.5 #'(-3 . -3) ##t
+
+    \translate #'(3 . -3)
+    \override #'(angularity . 2)
+    \override #'(height . 0.3)
+    \override #'(orientation . -1)
+    \draw-squiggle-line #0.2 #'(-3 . 3) ##t
+  }
+@end lilypond
+
+@item
+È disponibile un nuovo comando, @code{\RemoveAllEmptyStaves}, che si comporta
+proprio come @code{\RemoveEmptyStaves}, con la differenza che toglie anche
+i righi vuoti del primo sistema di una partitura.
 
 @item
 Oltre al comando markup generico @code{\tie}, sono ora disponibili i comandi
@@ -675,7 +945,7 @@ tessitura.
   \clef "varC" c c c c
   \clef "altovarC" c c c c
   \clef "tenorvarC" c c c c
-  \clef "baritonevarC" c c c
+  \clef "baritonevarC" c c c c
   \clef "varpercussion" c c c c
 @end lilypond
 

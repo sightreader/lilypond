@@ -41,7 +41,8 @@ protected:
   void grace_change (SCM);
 };
 
-Grace_engraver::Grace_engraver ()
+Grace_engraver::Grace_engraver (Context *c)
+  : Engraver (c)
 {
   grace_settings_ = SCM_EOL;
   last_moment_ = Moment (Rational (-1, 1));
@@ -155,6 +156,12 @@ Grace_engraver::derived_mark () const
 {
   scm_gc_mark (grace_settings_);
   Engraver::derived_mark ();
+}
+
+void
+Grace_engraver::boot ()
+{
+
 }
 
 ADD_TRANSLATOR (Grace_engraver,

@@ -92,16 +92,13 @@ Engraver_group::disconnect_from_context ()
 }
 
 void
-Engraver_group::announce_grob (Grob_info info)
+Engraver_group::announce_grob (Grob_info info, Direction dir,
+                               Context *reroute_context)
 {
-  announce_infos_.push_back (info);
+  announce_infos_.push_back (Announce_grob_info (info, dir));
 
-  Context *dad_con = context_->get_parent_context ();
-  if (info.rerouting_daddy_context_)
-    {
-      dad_con = info.rerouting_daddy_context_;
-      info.rerouting_daddy_context_ = 0;
-    }
+  Context *dad_con = reroute_context ? reroute_context
+    : context_->get_parent_context ();
 
   Engraver_group *dad_eng
     = dad_con
@@ -109,7 +106,7 @@ Engraver_group::announce_grob (Grob_info info)
       : 0;
 
   if (dad_eng)
-    dad_eng->announce_grob (info);
+    dad_eng->announce_grob (info, dir);
 }
 
 void
@@ -122,7 +119,7 @@ Engraver_group::acknowledge_grobs ()
 
   for (vsize j = 0; j < announce_infos_.size (); j++)
     {
-      Grob_info info = announce_infos_[j];
+      Announce_grob_info info = announce_infos_[j];
 
       SCM meta = info.grob ()->get_property ("meta");
       SCM nm = scm_assoc (name_sym, meta);
@@ -207,12 +204,13 @@ Engraver_group::do_announces ()
   while (pending_grobs ());
 }
 
+Preinit_Engraver_group::Preinit_Engraver_group ()
+{
+  acknowledge_hash_table_drul_.set (SCM_EOL, SCM_EOL);
+}
+
 Engraver_group::Engraver_group ()
 {
-  acknowledge_hash_table_drul_[LEFT]
-    = acknowledge_hash_table_drul_[RIGHT]
-      = SCM_EOL;
-
   acknowledge_hash_table_drul_[LEFT] = scm_c_make_hash_table (61);
   acknowledge_hash_table_drul_[RIGHT] = scm_c_make_hash_table (61);
 }

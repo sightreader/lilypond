@@ -54,7 +54,7 @@
 %     portato        ac:portatoFactor (default 3/4)
 %     tenuto         ac:tenutoFactor (default 1/1 - by default, notes marked
 %                                     tenuto are not shortened)
-% * Appogiaturas are made to take half the value of the note following,
+% * Appoggiaturas are made to take half the value of the note following,
 %   without taking dots into account (so in \appoggiatura c8 d2. the c
 %   will take the time of a crotchet).
 % * Trills and turns are expanded. The algorithm tries to choose notes
@@ -131,7 +131,9 @@
 %    how to do lookahead in scheme.
 %  * Also ignore explicit line breaks.
 %  * Add Mordents (reported by Patrick Karl)
-%
+%  * Thomas Morley: extend unfold-repeats to reflect the possibility to
+%    customize its effect to user-settable repeat-types. Here the most general
+%    setting is hard-coded, resulting in unchanged behaviour.
 
 \version "2.19.22"
 
@@ -285,10 +287,10 @@
 #(define (ac:up note)
   (let* ((pitch (ly:music-property note 'pitch))
          (notename (ly:pitch-notename pitch))
-         (new-notename (if (eq? notename 6) 0 (+ 1 notename)))
+         (new-notename (if (eqv? notename 6) 0 (+ 1 notename)))
          (alterations (ly:music-property ac:current-key 'pitch-alist))
          (new-alteration (cdr (assq new-notename alterations)))
-         (new-octave (if (eq? new-notename 0) (+ 1 (ly:pitch-octave pitch))
+         (new-octave (if (eqv? new-notename 0) (+ 1 (ly:pitch-octave pitch))
                       (ly:pitch-octave pitch)))
        )
    (set! (ly:music-property note 'pitch)(ly:make-pitch new-octave new-notename new-alteration))))
@@ -298,10 +300,10 @@
 #(define (ac:down note)
   (begin  (let* ((pitch (ly:music-property note 'pitch))
          (notename (ly:pitch-notename pitch))
-         (new-notename (if (eq? notename 0) 6 (- notename 1)))
+         (new-notename (if (eqv? notename 0) 6 (- notename 1)))
          (alterations (ly:music-property ac:current-key 'pitch-alist))
          (new-alteration (cdr (assq new-notename alterations)))
-         (new-octave (if (eq? new-notename 6) (- (ly:pitch-octave pitch) 1)
+         (new-octave (if (eqv? new-notename 6) (- (ly:pitch-octave pitch) 1)
                       (ly:pitch-octave pitch)))
        )
    (set! (ly:music-property note 'pitch)(ly:make-pitch new-octave new-notename new-alteration))))
@@ -425,7 +427,7 @@
    (map (lambda (y) (ac:setduration y hemisemidur))
     (ly:music-property music 'elements))
    (set! uppernote (ly:music-deep-copy music))
-   (map (lambda (y) (ac:up y))
+   (map ac:up
     (filter
      (lambda (z) (eq? 'NoteEvent (ly:music-property z 'name)))
      (ly:music-property uppernote 'elements)))
@@ -538,7 +540,7 @@
         (make-music 'BarCheck))))
      (else
       m)))
-   (unfold-repeats music)))
+   (unfold-repeats '() music)))
 
 % If there's an articulation, use it.
 % If in a slur, use (1 . 1) instead (unless the note is marked staccato,
@@ -645,20 +647,20 @@
 
        ((SlurEvent)
         (let ((direction (ly:music-property e 'span-direction)))
-         (set! ac:inSlur (eq? direction -1))
-         (set! at-end-of-slur (eq? direction 1))
+         (set! ac:inSlur (eqv? direction -1))
+         (set! at-end-of-slur (eqv? direction 1))
          (loop factor newelements tail actions)))
 
        ((TrillSpanEvent)
         (let ((direction (ly:music-property e 'span-direction)))
-         (set! ac:inTrill (eq? direction -1))
+         (set! ac:inTrill (eqv? direction -1))
          (if ac:inTrill
           (loop factor newelements tail (cons 'trill actions))
           (loop factor (cons e newelements) tail actions))))
 
        ((PhrasingSlurEvent)
         (let ((direction (ly:music-property e 'span-direction)))
-         (set! ac:inPhrasingSlur (eq? direction -1))
+         (set! ac:inPhrasingSlur (eqv? direction -1))
          (loop factor newelements tail actions)))
 
        (else (loop factor (cons e newelements) tail actions))))))))
@@ -690,7 +692,7 @@
           (len (ly:duration-log ac:currentDuration))
           (dots (ly:duration-dot-count ac:currentDuration)))
 
-         (if (not (eq? num denom))
+         (if (not (eqv? num denom))
           (make-sequential-music
            (list (ac:to128 music)
            (make-music 'EventChord 'elements
@@ -764,11 +766,11 @@
           (ly:music-property abovenote 'elements))
          (map (lambda (y) (ac:setduration y gracedur))
           (ly:music-property abovenoteTwo 'elements))
-         (map (lambda (y) (ac:up y))
+         (map ac:up
           (filter
            (lambda (z) (eq? 'NoteEvent (ly:music-property z 'name)))
            (ly:music-property abovenote 'elements)))
-         (map (lambda (y) (ac:up y))
+         (map ac:up
           (filter
            (lambda (z) (eq? 'NoteEvent (ly:music-property z 'name)))
            (ly:music-property abovenoteTwo 'elements)))
@@ -788,7 +790,7 @@
           (ly:music-property gracenote 'elements))
          (map (lambda (y) (ac:setduration y gracedur))
                (ly:music-property belownote 'elements))
-         (map (lambda (y) (ac:down y))
+         (map ac:down
           (filter
            (lambda (z) (eq? 'NoteEvent (ly:music-property z 'name)))
            (ly:music-property belownote 'elements)))
@@ -812,11 +814,11 @@
                  (below (ly:music-deep-copy music))
                  (newmusic (make-sequential-music (list above music below music))))
            (begin
-            (map (lambda (y) (ac:down y))
+            (map ac:down
              (filter
               (lambda (z) (eq? 'NoteEvent (ly:music-property z 'name)))
               (ly:music-property below 'elements)))
-            (map (lambda (y) (ac:up y))
+            (map ac:up
              (filter
               (lambda (z) (eq? 'NoteEvent (ly:music-property z 'name)))
               (ly:music-property above 'elements)))
@@ -1011,7 +1013,7 @@ articulate = #(define-music-function (music)
          (grace-orig-len (ly:music-length grace))
          (main-orig-len (ly:music-length main))
          (numerator (ly:moment-main-numerator maindur))
-         (factor (if (eq? (remainder numerator 3) 0)
+         (factor (if (eqv? (remainder numerator 3) 0)
                   (ly:make-moment 1/3) (ly:make-moment 1/2))))
    (ly:music-compress grace
     (ly:moment-mul factor (ly:moment-div main-orig-len grace-orig-len)))

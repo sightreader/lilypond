@@ -23,11 +23,26 @@
 #include "engraver.hh"
 #include "translator-group.hh"
 
-class Engraver_group : public Translator_group
+class Announce_grob_info : public Grob_info
+{
+  Direction start_end_;
+public:
+  Announce_grob_info (Grob_info gi, Direction start_end)
+    : Grob_info (gi), start_end_ (start_end)
+  { }
+  Direction start_end () const { return start_end_; }
+};
+
+struct Preinit_Engraver_group
+{
+  Drul_array<SCM> acknowledge_hash_table_drul_;
+  Preinit_Engraver_group ();
+};
+
+class Engraver_group : Preinit_Engraver_group, public Translator_group
 {
 protected:
-  vector<Grob_info> announce_infos_;
-  Drul_array<SCM> acknowledge_hash_table_drul_;
+  vector<Announce_grob_info> announce_infos_;
   void override (SCM);
   void revert (SCM);
 public:
@@ -37,7 +52,8 @@ public:
   void do_announces ();
   virtual void connect_to_context (Context *c);
   virtual void disconnect_from_context ();
-  virtual void announce_grob (Grob_info);
+  virtual void announce_grob (Grob_info, Direction start_end,
+                              Context *reroute_context = 0);
   bool pending_grobs () const;
 private:
   virtual void acknowledge_grobs ();

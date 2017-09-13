@@ -38,8 +38,9 @@
 class Beam_engraver : public Engraver
 {
 public:
-  DECLARE_ACKNOWLEDGER (stem);
-  DECLARE_ACKNOWLEDGER (rest);
+  void acknowledge_stem (Grob_info);
+  void acknowledge_rest (Grob_info);
+  void listen_beam (Stream_event *);
 
 protected:
   Stream_event *start_ev_;
@@ -77,7 +78,6 @@ protected:
   virtual bool valid_start_point ();
   virtual bool valid_end_point ();
 
-  DECLARE_TRANSLATOR_LISTENER (beam);
 public:
   TRANSLATOR_DECLARATIONS (Beam_engraver);
 };
@@ -100,7 +100,8 @@ Beam_engraver::valid_end_point ()
   return valid_start_point ();
 }
 
-Beam_engraver::Beam_engraver ()
+Beam_engraver::Beam_engraver (Context *c)
+  : Engraver (c)
 {
   beam_ = 0;
   finished_beam_ = 0;
@@ -112,7 +113,6 @@ Beam_engraver::Beam_engraver ()
   prev_start_ev_ = 0;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Beam_engraver, beam);
 void
 Beam_engraver::listen_beam (Stream_event *ev)
 {
@@ -314,8 +314,14 @@ Beam_engraver::acknowledge_stem (Grob_info info)
   Beam::add_stem (beam_, stem);
 }
 
-ADD_ACKNOWLEDGER (Beam_engraver, stem);
-ADD_ACKNOWLEDGER (Beam_engraver, rest);
+
+void
+Beam_engraver::boot ()
+{
+  ADD_LISTENER (Beam_engraver, beam);
+  ADD_ACKNOWLEDGER (Beam_engraver, stem);
+  ADD_ACKNOWLEDGER (Beam_engraver, rest);
+}
 
 ADD_TRANSLATOR (Beam_engraver,
                 /* doc */
@@ -339,15 +345,15 @@ class Grace_beam_engraver : public Beam_engraver
 {
 public:
   TRANSLATOR_DECLARATIONS (Grace_beam_engraver);
-
-  DECLARE_TRANSLATOR_LISTENER (beam);
+  TRANSLATOR_INHERIT (Beam_engraver);
 
 protected:
   virtual bool valid_start_point ();
   virtual bool valid_end_point ();
 };
 
-Grace_beam_engraver::Grace_beam_engraver ()
+Grace_beam_engraver::Grace_beam_engraver (Context *c)
+  : Beam_engraver (c)
 {
 }
 
@@ -365,23 +371,13 @@ Grace_beam_engraver::valid_end_point ()
   return beam_ && valid_start_point ();
 }
 
-/*
-  Ugh, C&P code.
- */
-IMPLEMENT_TRANSLATOR_LISTENER (Grace_beam_engraver, beam);
 void
-Grace_beam_engraver::listen_beam (Stream_event *ev)
+Grace_beam_engraver::boot ()
 {
-  Direction d = to_dir (ev->get_property ("span-direction"));
-
-  if (d == START && valid_start_point ())
-    start_ev_ = ev;
-  else if (d == STOP && valid_end_point ())
-    stop_ev_ = ev;
+  ADD_LISTENER (Grace_beam_engraver, beam);
+  ADD_ACKNOWLEDGER (Grace_beam_engraver, stem);
+  ADD_ACKNOWLEDGER (Grace_beam_engraver, rest);
 }
-
-ADD_ACKNOWLEDGER (Grace_beam_engraver, stem);
-ADD_ACKNOWLEDGER (Grace_beam_engraver, rest);
 
 ADD_TRANSLATOR (Grace_beam_engraver,
                 /* doc */

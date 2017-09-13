@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; -*-
 @ignore
-    Translation of GIT committish: 8052856914abafa960a0518ca8032b681c9d0588
+    Translation of GIT committish: 8bc025dac3f085731712be31ec36acd5d08c357d
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -103,7 +103,7 @@ For more information about how this manual fits with the other
 documentation, or to read this manual in other formats, see
 @rweb{Manuals}.
 
-如果你需要任何手册，完整的文档可以在 @w{@uref{http://@/www@/.lilypond@/.org/}} 找到。
+如果你需要任何手册，完整的文档可以在 @w{@uref{http://@/lilypond@/.org/}} 找到。
 @end cartouche
 @end macro
 
@@ -732,7 +732,7 @@ LilyPond 版本 @version{}
 
 @macro exampleImage{IMAGE-FILE}
 @html
-<div class="float-center">
+<div class="float-center example-image-wrapper">
   <a class="clickable" href="ly-examples/\IMAGE-FILE\.png">
     <img src="ly-examples/\IMAGE-FILE\-small.png" alt="\IMAGE-FILE\">
   </a>

@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; -*-
 @ignore
-    Translation of GIT committish: bcd127bc07fc7b53704f9db8a6cf3d53e9d4094a
+    Translation of GIT committish: 18d03fa6a724b0102ccc47d194209802cea02f2e
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -52,11 +52,8 @@ travature e le battute.
 @cindex note, lunghezza delle
 
 @funindex \longa
-@funindex longa
 @funindex \breve
-@funindex breve
 @funindex \maxima
-@funindex maxima
 
 Le durate, indicate con numeri e punti, sono indicate con i
 valori corrispondenti.  Per esempio, una nota di un quarto si indica con un
@@ -139,15 +136,12 @@ alla loro durata.  I dettagli relativi a questo argomento e alle impostazioni
 della notazione proporzionale si trovano in @ref{Proportional notation}.
 
 @funindex \dotsUp
-@funindex dotsUp
 @funindex \dotsDown
-@funindex dotsDown
 @funindex \dotsNeutral
-@funindex dotsNeutral
 
 Di norma i punti sono spostati in su per evitare le linee del rigo, fuorché all'interno
 di passaggi polifonici.  I punti possono essere orientati manualmente verso l'alto
-o verso il basso; si veda @ref{Direction and placement}.
+o verso il basso; si veda @ref{Direzione e posizionamento}.
 
 
 @predefined
@@ -176,7 +170,7 @@ Glossario musicale:
 @rglosnamed{Duration names notes and rests,Nomi di durata delle note e delle pause}.
 
 Guida alla notazione:
-@ref{Automatic beams},
+@ref{Travature automatiche},
 @ref{Ties},
 @ref{Stems},
 @ref{Writing rhythms},
@@ -207,7 +201,6 @@ centoventottesimo fino alla maxima (otto volte una semibreve).
 @cindex terzine
 
 @funindex \tuplet
-@funindex tuplet
 
 I gruppi irregolari sono costituiti da un'espressione musicale
 introdotta dal comando @code{\tuplet}, che moltiplica la velocità
@@ -247,11 +240,8 @@ della musica per far sì che i gruppi siano suddivisi automaticamente:
 @cindex gruppo irregolare, posizionamento della parentesi quadra
 
 @funindex \tupletUp
-@funindex tupletUp
 @funindex \tupletDown
-@funindex tupletDown
 @funindex \tupletNeutral
-@funindex tupletNeutral
 
 Le parentesi dei gruppi irregolari si possono posizionare manualmente sopra
 o sotto il rigo:
@@ -327,10 +317,10 @@ Manuale di apprendimento:
 @rlearning{Metodi di modifica}.
 
 Guida alla notazione:
-@ref{Direction and placement},
+@ref{Direzione e posizionamento},
 @ref{Time administration},
 @ref{Scaling durations},
-@ref{The tweak command},
+@ref{Il comando tweak},
 @ref{Polymetric notation}.
 
 Frammenti di codice:
@@ -384,7 +374,6 @@ esempio @code{s1*23}.
 @cindex espandere la musica
 
 @funindex \scaleDurations
-@funindex scaleDurations
 
 Frammenti musicali più lunghi possono essere compressi secondo la stessa proporzione, come
 moltiplicando ogni nota, accordo o pausa per una medesima frazione.
@@ -469,7 +458,7 @@ unire note dalle durate superiori all'unità di suddivisione della misura:
 
 @lilypond[verbatim,quote]
 \relative {
-  r8 c'~ 2 r4 |
+  r8 c'4.~ 4 r4 |
   r8^"non" c2~ 8 r4
 }
 @end lilypond
@@ -501,7 +490,6 @@ legati inserendo la legatura all'interno dell'accordo stesso.
 @cindex legature di valore e parentesi della volta
 
 @funindex \repeatTie
-@funindex repeatTie
 
 Quando la battuta della "seconda volta" di un ritornello inizia con una nota
 legata a quella precedente, occorre indicare la legatura nel modo seguente:
@@ -522,7 +510,6 @@ legata a quella precedente, occorre indicare la legatura nel modo seguente:
 @cindex legatura di valore, laissez vibrer
 
 @funindex \laissezVibrer
-@funindex laissezVibrer
 
 Le legature @notation{L.v.}@: (@notation{laissez vibrer}) indicano che
 le note non devono essere terminate nettamente.  Si usa nella notazione per
@@ -536,25 +523,19 @@ così:
 @cindex legature di valore, posizionamento
 
 @funindex \tieUp
-@funindex tieUp
 @funindex \tieDown
-@funindex tieDown
 @funindex \tieNeutral
-@funindex tieNeutral
 
 Le legature di valore possono essere impostate manualmente  per avere la
-curva in su o in giù, come è spiegato in @ref{Direction and placement}.
+curva in su o in giù, come è spiegato in @ref{Direzione e posizionamento}.
 
 @cindex legature di valore, aspetto
 @cindex legature di valore punteggiate
 @cindex legature di valore tratteggiate
 
 @funindex \tieDotted
-@funindex tieDotted
 @funindex \tieDashed
-@funindex tieDashed
 @funindex \tieSolid
-@funindex tieSolid
 
 Le legature di valore possono essere tratteggiate, punteggiate, oppure tracciate secondo una
 successione di tratti continui e tratti interrotti.
@@ -679,14 +660,10 @@ Le pause si inseriscono insieme alla musica contenuta nelle espressioni musicali
 @cindex pausa di breve
 
 @funindex \rest
-@funindex rest
 @funindex r
 @funindex \maxima
-@funindex maxima
 @funindex \longa
-@funindex longa
 @funindex \breve
-@funindex breve
 
 Le pause si inseriscono allo stesso modo delle note, ma con il carattere @code{r}.
 Le durate più lunghe di un intero usano i seguenti comandi predefiniti:
@@ -766,7 +743,6 @@ centoventottesimo fino alla maxima (otto volte una semibreve).
 
 @funindex s
 @funindex \skip
-@funindex skip
 
 Una pausa invisibile (chiamata anche @q{pausa spaziatrice}) si inserisce come
 come una nota col nome@tie{}@code{s}:
@@ -854,7 +830,6 @@ Guida al funzionamento interno:
 @cindex pause d'intero
 @cindex pausa intera per una misura intera
 
-@funindex compressMMRests
 @funindex \compressMMRests
 @funindex R
 
@@ -934,7 +909,6 @@ R2.*2 |
 @cindex pausa multipla con testo a margine
 
 @funindex \fermataMarkup
-@funindex fermataMarkup
 @funindex MultiMeasureRestText
 
 Si possono aggiungere delle annotazioni alle pause multiple.  Il comando
@@ -967,13 +941,9 @@ non apparire i relativi avvertimenti del controllo battuta.
 
 
 @funindex \textLengthOn
-@funindex textLengthOn
 @funindex \textLengthOff
-@funindex textLengthOff
 @funindex \fermataMarkup
-@funindex fermataMarkup
 @funindex \compressMMRests
-@funindex compressMMRests
 
 @predefined
 @code{\textLengthOn},
@@ -1005,9 +975,9 @@ Glossario musicale:
 @rglosnamed{multi-measure rest,pausa multipla}.
 
 Guida alla notazione:
-@ref{Durations},
+@ref{Durata},
 @ref{Text},
-@ref{Formatting text},
+@ref{Formattazione del testo},
 @ref{Text scripts}.
 
 Frammenti di codice:
@@ -1060,7 +1030,6 @@ Le pause multiple non considerano le collisioni di pausa.
 @cindex misura
 
 @funindex \time
-@funindex time
 
 L'indicazione di tempo si imposta così:
 
@@ -1095,9 +1064,7 @@ comportamento predefinito, come è spiegato in @ref{Visibility of objects}.
 @cindex tempo, stile
 
 @funindex \numericTimeSignature
-@funindex numericTimeSignature
 @funindex \defaultTimeSignature
-@funindex defaultTimeSignature
 
 Il simbolo di indicazione di tempo usato nei tempi 2/2 e 4/4 può essere
 sostituito da un numero:
@@ -1306,7 +1273,6 @@ Guida al funzionamento interno:
 @cindex indicazione metronomica con testo
 
 @funindex \tempo
-@funindex tempo
 
 Un'indicazione metronomica è semplice da scrivere:
 
@@ -1370,9 +1336,7 @@ includendo una stringa vuota nell'input:
 @end lilypond
 
 @funindex \markLengthOn
-@funindex markLengthOn
 @funindex \markLengthOff
-@funindex markLengthOff
 
 In una parte per uno strumento che ha lunghi periodi pieni di pause,
 le indicazioni di tempo sono talvolta molto ravvicinate.  Il comando
@@ -1408,7 +1372,7 @@ orizzontale.
 @lilypondfile[verbatim,quote,texidoc,doctitle]
 {creating-metronome-marks-in-markup-mode.ly}
 
-I dettagli si trovano in @ref{Formatting text}.
+I dettagli si trovano in @ref{Formattazione del testo}.
 
 @seealso
 Glossario musicale:
@@ -1417,8 +1381,8 @@ Glossario musicale:
 @rglosnamed{metronome mark,indicazione metronomica}.
 
 Guida alla notazione:
-@ref{Formatting text},
-@ref{Creating MIDI output}.
+@ref{Formattazione del testo},
+@ref{Creazione dell'output MIDI}.
 
 Frammenti di codice:
 @rlsr{Staff notation}.
@@ -1438,7 +1402,6 @@ Guida al funzionamento interno:
 
 @funindex measurePosition
 @funindex \partial
-@funindex partial
 
 Le misure parziali, come l'@emph{anacrusi} o la battuta
 in levare, si inseriscono col comando @code{\partial}:
@@ -1536,9 +1499,7 @@ Guida al funzionamento interno:
 @cindex travature, musica in tempo libero
 
 @funindex \cadenzaOn
-@funindex cadenzaOn
 @funindex \cadenzaOff
-@funindex cadenzaOff
 
 Nella musica in un tempo determinato l'inserimento delle stanghette e dei numeri di
 battuta è calcolato automaticamente. Nella musica in tempo libero (per esempio,
@@ -1578,7 +1539,7 @@ alterazione, che di solito si considera sempre attiva fino alla fine della
 misura, sarà ancora valida dopo la stanghetta stampata da @code{\bar}.  Se si
 desidera che le alterazioni successive appaiano, si dovranno inserire
 manualmente delle alterazioni forzate o di precauzione, come è spiegato
-in @ref{Accidentals}.
+in @ref{Alterazioni}.
 
 @lilypond[verbatim,quote]
 \relative c'' {
@@ -1627,7 +1588,7 @@ Guida alla notazione:
 @ref{Visibility of objects},
 @ref{Polymetric notation},
 @ref{Manual beams},
-@ref{Accidentals}.
+@ref{Alterazioni}.
 
 Frammenti di codice:
 @rlsr{Rhythms}.
@@ -1668,9 +1629,7 @@ di musica in tempo libero è necessario inserire manualmente delle stanghette
 
 @funindex timeSignatureFraction
 @funindex \scaleDurations
-@funindex scaleDurations
 @funindex \tuplet
-@funindex tuplet
 
 La notazione polimetrica è supportata esplicitamente o tramite la modifica
 manuale del simbolo d'indicazione di tempo (e la trasformazione della durata
@@ -1771,7 +1730,7 @@ Si può dare a ogni rigo la sua indicazione di tempo indipendente spostando
 Si creano con la funzione @code{\compoundMeter}.  La sintassi è:
 
 @example
-\compoundMeter #'@code{(lista di liste)}
+\compoundMeter #'(lista di liste)
 @end example
 
 La struttura più semplice è una singola lista, dove l'@emph{ultimo} numero
@@ -1808,7 +1767,7 @@ Glossario musicale:
 @rglosnamed{meter,tempo}.
 
 Guida alla notazione:
-@ref{Automatic beams},
+@ref{Travature automatiche},
 @ref{Manual beams},
 @ref{Time signature},
 @ref{Scaling durations}.
@@ -1965,9 +1924,7 @@ il rigo stesso ha una sola linea
 
 @funindex Pitch_squash_engraver
 @funindex \improvisationOn
-@funindex improvisationOn
 @funindex \improvisationOff
-@funindex improvisationOff
 
 I diagrammi degli accordi per chitarra di solito mostrano i ritmi di
 accompagnamento.  Si possono visualizzare usando l'incisore
@@ -1993,6 +1950,23 @@ accompagnamento.  Si possono visualizzare usando l'incisore
 >>
 @end lilypond
 
+La musica contenente accordi può essere usata anche come input per
+@code{RhythmicStaff} e per essere usata con l'incisore
+@code{Pitch_squash_engraver} se gli accordi vengono prima ridotti
+a note singole con la funzione musicale @code{\reduceChords}:
+
+@lilypond[quote,verbatim]
+\new RhythmicStaff {
+  \time 4/4
+  \reduceChords {
+    <c>2
+    <e>2
+    <c e g>2
+    <c e g>4
+    <c e g>4
+  }
+}
+@end lilypond
 
 @predefined
 @code{\improvisationOn},
@@ -2035,9 +2009,7 @@ Le travature sono inserite automaticamente:
 @cindex travature, personalizzazione delle regole
 
 @funindex \autoBeamOn
-@funindex autoBeamOn
 @funindex \autoBeamOff
-@funindex autoBeamOff
 
 @lilypond[quote,verbatim]
 \relative c'' {
@@ -2136,14 +2108,11 @@ non inizia la @emph{successiva}, nuova travatura.
 
 @funindex autoBeaming
 @funindex baseMoment
-@funindex beamExceptions
 @funindex \beamExceptions
 @funindex beatStructure
 @funindex measureLength
 @funindex \time
-@funindex time
 @funindex \set
-@funindex set
 
 Quando la disposizione automatica delle travature è abilitata, la disposizione
 delle travature è determinata da tre proprietà di contesto:
@@ -2552,7 +2521,6 @@ gli indicatori di direzione:
 @end lilypond
 
 @funindex \noBeam
-@funindex noBeam
 
 Le note individuali possono essere contrassegnate con @code{\noBeam} per impedire
 che vengano inserite in una travatura:
@@ -2614,7 +2582,7 @@ all'interno dell'intero raggruppamento.
 
 @seealso
 Guida alla notazione:
-@ref{Direction and placement},
+@ref{Direzione e posizionamento},
 @ref{Grace notes}.
 
 Frammenti di codice:
@@ -2636,7 +2604,6 @@ Guida al funzionamento interno:
 @cindex travature convergenti o divergenti
 
 @funindex \featherDurations
-@funindex featherDurations
 @funindex grow-direction
 
 Le travature a raggiera servono a indicare che un gruppo di note determinato
@@ -2718,7 +2685,6 @@ musica molto brevi e quando i numeri della frazione sono piccoli.
 @cindex battute dei ritornelli
 
 @funindex \bar
-@funindex bar
 
 Le stanghette delimitano le misure e sono usate anche per indicare
 i ritornelli.  Di norma, le stanghette semplici sono inserite
@@ -2831,7 +2797,7 @@ Tuttavia,dato che questi segni di spunta sono tipicamente usati nella notazione
 gregoriana, è preferibile usare @code{\divisioMinima}, come è descritto
 nella sezione @ref{Divisiones} della parte dedicata al canto gregoriano.
 
-Lilypond supporta la notazione gregoriana russa e fornisce una stanghetta speciale per
+LilyPond supporta la notazione gregoriana russa e fornisce una stanghetta speciale per
 questo tipo di notazione:
 @lilypond[quote,fragment,verbatim]
 f'1 \bar "k"
@@ -2921,7 +2887,6 @@ con segno in congiunzione con un'appropriata stanghetta di ripetizione se
 usata con un comando @code{\repeat volta}, vedi @ref{Normal repeats}..
 
 @funindex \defineBarLine
-@funindex defineBarLine
 @cindex stanghette, definire
 @cindex definire le stanghette
 
@@ -3039,7 +3004,6 @@ di un @code{StaffGroup}, @code{PianoStaff} o @code{GrandStaff}.
 @funindex whichBar
 @funindex defaultBarType
 @funindex \bar
-@funindex bar
 @funindex bartype
 
 Il comando @samp{\bar @var{tipo-stanghetta}} è una scorciatoia di
@@ -3244,7 +3208,6 @@ nell'input.
 @end lilypond
 
 @funindex \barNumberCheck
-@funindex barNumberCheck
 
 Quando si copiano brani di una certa ampiezza, può essere d'aiuto verificare che i
 numeri di battuta di LilyPond corrispondano all'originale a partire dal quale
@@ -3271,7 +3234,6 @@ Frammenti di codice:
 @cindex segni di chiamata
 
 @funindex \mark
-@funindex mark
 
 Per creare un segno di chiamata si usa il comando @code{\mark}.
 
@@ -3355,9 +3317,9 @@ numero racchiuso in un quadrato.
 @end lilypond
 
 Il file @file{scm/translation-functions.scm} contiene le
-definizioni di @code{format-mark-numbers} (il formato predefinito),
-@code{format-mark-box-numbers}, @code{format-mark-letters} e
-@code{format-mark-box-letters}.  Possono essere usate come fonte
+definizioni di @code{format-mark-letters} (il formato predefinito),
+@code{format-mark-box-letters}, @code{format-mark-numbers} e
+@code{format-mark-box-numbers}.  Possono essere usate come fonte
 di ispirazione per creare altre funzioni di formattazione.
 
 Si possono usare @code{format-mark-barnumbers},
@@ -3387,7 +3349,6 @@ stringa.
 @cindex glifi musicali
 
 @funindex \musicglyph
-@funindex musicglyph
 
 I glifi musicali (come il Segno) possono essere posti dentro il
 comando @code{\mark}
@@ -3403,12 +3364,12 @@ comando @code{\mark}
 
 @noindent
 L'elenco dei simboli che possono essere prodotti con @code{\musicglyph} si
-trova in @ref{The Feta font}.
+trova in @ref{Il font Emmentaler}.
 
 Per le più comuni modifiche relative al posizionamento dei segni di chiamata, si
-veda @ref{Formatting text}.  Per ottenere un controllo più preciso si consiglia
+veda @ref{Formattazione del testo}.  Per ottenere un controllo più preciso si consiglia
 di studiare il funzionamento della proprietà @code{break-alignable-interface}
-descritta in @ref{Aligning objects}.
+descritta in @ref{Allineamento degli oggetti}.
 
 Il file @file{scm/translation-functions.scm} contiene le
 definizioni di @code{format-mark-numbers} e
@@ -3417,9 +3378,9 @@ ispirazione per creare altre funzioni di formattazione.
 
 @seealso
 Guida alla notazione:
-@ref{The Feta font},
-@ref{Formatting text},
-@ref{Aligning objects}.
+@ref{Il font Emmentaler},
+@ref{Formattazione del testo},
+@ref{Allineamento degli oggetti}.
 
 File installati:
 @file{scm/translation-functions.scm}.
@@ -3501,7 +3462,6 @@ abbellimento da un ottavo
 @cindex abbellimenti al termine di una nota
 
 @funindex \afterGrace
-@funindex afterGrace
 
 Se si desidera risolvere una nota su un abbellimento, si usa il
 comando @code{\afterGrace}.  Considera due argomenti: la nota principale e
@@ -3511,11 +3471,22 @@ gli abbellimenti che la seguono.
 \relative { c''1 \afterGrace d1 { c16[ d] } c1 }
 @end lilypond
 
-In questo modo, gli abbellimenti sono collocati dopo uno spazio corrispondente a
-3/4 della durata della nota principale.  La frazione predefinita 3/4 può essere
-modificata attraverso @code{afterGraceFraction}.  L'esempio seguente mostra
-le diverse spaziature che si ottengono con la frazione predefinita, con 15/16
-e infine con 1/2 della nota principale.
+In questo modo, gli abbellimenti sono collocati @emph{dopo} l'inizio della nota
+principale.  Il momento temporale in cui sono posti gli abbellimenti è una
+certa frazione della durata della nota principale.  L'impostazione predefinita
+di
+
+@example
+afterGraceFraction = 3/4
+@end example
+
+@noindent
+può essere ridefinita nel livello superiore.  Ma è anche possibile specificare
+la frazione per ogni singolo comando @code{\afterGrace}.
+
+L'esempio seguente mostra le diverse spaziature che si ottengono con la frazione
+predefinita, impostandola a @code{15/16} e infine a @code{1/2} della nota
+principale.
 
 @lilypond[quote,verbatim]
 <<
@@ -3523,12 +3494,10 @@ e infine con 1/2 della nota principale.
     c''1 \afterGrace d1 { c16[ d] } c1
   }
   \new Staff \relative {
-    #(define afterGraceFraction (cons 15 16))
-    c''1 \afterGrace d1 { c16[ d] } c1
+    c''1 \afterGrace 15/16 d1 { c16[ d] } c1
   }
   \new Staff \relative {
-    #(define afterGraceFraction (cons 1 2))
-    c''1 \afterGrace d1 { c16[ d] } c1
+    c''1 \afterGrace 1/2 d1 { c16[ d] } c1
   }
 >>
 @end lilypond
@@ -3756,7 +3725,7 @@ del tempo in una partitura.
 @table @code
 @item currentBarNumber
 Il numero di battuta corrente.  Un esempio che mostra l'uso di
-questa proprietà si trova in @ref{Bar numbers}.
+questa proprietà si trova in @ref{Numeri di battuta}.
 
 @item measureLength
 La durata delle misure nel tempo corrente.  Per un tempo di
@@ -3797,14 +3766,14 @@ Quindi la stanghetta successiva si troverà a 9/8 invece che a 5/4.
 @end lilypond
 
 @noindent
-Come mostra l'esempio, @code{ly:make-moment n m} definisce una durata
-di n/m della nota intera.  Ad esempio, @code{ly:make-moment 1 8} corrisponde
-alla durata di un ottavo mentre @code{ly:make-moment 7 16} a quella di sette
+Come mostra l'esempio, @code{ly:make-moment n/m} definisce una durata
+di n/m della nota intera.  Ad esempio, @code{ly:make-moment 1/8} corrisponde
+alla durata di un ottavo mentre @code{ly:make-moment 7/16} a quella di sette
 sedicesimi.
 
 @seealso
 Guida alla notazione:
-@ref{Bar numbers},
+@ref{Numeri di battuta},
 @ref{Unmetered music}.
 
 Frammenti di codice:

@@ -61,38 +61,27 @@ way the transposition number is displayed."
                                           (number->string count))
                                   #f))
                              ((pair? count)
-                              (make-concat-markup
-                               (list
+                                ;; Thin Spaces U+2009 & En-dash U+2013
                                 (make-simple-markup
-                                        (number->string (car count)))
-                                (make-simple-markup " ")
-                                (make-simple-markup "–")
-                                (make-simple-markup " ")
-                                (make-simple-markup
-                                        (number->string (cdr count))))))
+                                  (ly:format "~a – ~a" (car count) (cdr count))))
                              (else #f)))
          (note-markup (if (and (not hide-note) count-markup)
-                          (make-concat-markup
                            (list
                             (make-general-align-markup Y DOWN note-mark)
-                            (make-simple-markup " ")
-                            (make-simple-markup "=")
-                            (make-simple-markup " ")
-                            count-markup))
+                            (make-simple-markup " = ")
+                            count-markup)
                           #f))
-         (text-markup (if (not (null? text))
-                          (make-bold-markup text)
-                          #f)))
+         (text-markup (if (not (null? text)) (make-bold-markup text) #f)))
     (if text-markup
         (if (and note-markup (not hide-note))
-            (make-line-markup (list text-markup
-                                    (make-concat-markup
-                                     (list (make-simple-markup "(")
-                                           note-markup
-                                           (make-simple-markup ")")))))
+            (make-line-markup (list (make-concat-markup
+                                     (append (list text-markup
+                                              (make-simple-markup " ("))
+                                             note-markup
+                                             (list (make-simple-markup ")"))))))
             (make-line-markup (list text-markup)))
         (if note-markup
-            (make-line-markup (list note-markup))
+            (make-line-markup (list (make-concat-markup note-markup)))
             (make-null-markup)))))
 
 (define-public (format-mark-alphabet mark context)
@@ -427,13 +416,21 @@ the current tuning?"
                          (ly:warning (_ "No open string for pitch ~a")
                                      pitch)))
                    ;; here we handle assigned strings
-                   (let ((this-fret
-                          (calc-fret pitch string tuning))
-                         (handle-negative
-                          (ly:context-property context
-                                               'handleNegativeFrets
-                                               'recalculate)))
-                     (cond ((or (and (>= this-fret 0) (integer? this-fret))
+                   (let* ((this-fret
+                           (calc-fret pitch string tuning))
+                          (possible-fret?
+                           (and (>= this-fret 0)
+                                (if (and
+                                      (ly:context-property
+                                        context 'supportNonIntegerFret #f)
+                                      (null? rest))
+                                    (integer? (truncate this-fret))
+                                    (integer? this-fret))))
+                          (handle-negative
+                           (ly:context-property context
+                                                'handleNegativeFrets
+                                                'recalculate)))
+                     (cond ((or possible-fret?
                                 (eq? handle-negative 'include))
                             (set-fret! pitch-entry string finger))
                            ((eq? handle-negative 'recalculate)

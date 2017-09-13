@@ -59,7 +59,6 @@ grouping staves.
 @cindex tablature
 
 @funindex \drummode
-@funindex drummode
 @funindex DrumStaff
 @funindex RhythmicStaff
 @funindex TabStaff
@@ -216,8 +215,8 @@ that it supports printing the instrument name directly.  For
 details, see @ref{Instrument names}.
 
 @lilypond[verbatim,quote]
-\new PianoStaff <<
-  \set PianoStaff.instrumentName = #"Piano"
+\new PianoStaff \with { instrumentName = #"Piano" }
+<<
   \new Staff \relative { c''1 c }
   \new Staff \relative { \clef bass c1 c }
 >>
@@ -409,9 +408,7 @@ sections are also described.
 @cindex ledger lines, modifying
 
 @funindex \startStaff
-@funindex startStaff
 @funindex \stopStaff
-@funindex stopStaff
 
 The @code{\stopStaff} and @code{\startStaff} commands can be used to
 stop or (re)start the staff lines respectively, from being printed at
@@ -582,9 +579,7 @@ Internals Reference:
 @cindex resizing of staves
 
 @funindex \startStaff
-@funindex startStaff
 @funindex \stopStaff
-@funindex stopStaff
 
 @notation{Ossia} staves can be set by creating a new simultaneous
 staff in the appropriate location:
@@ -741,7 +736,6 @@ Internals Reference:
 @funindex \RemoveAllEmptyStaves
 @funindex Staff_symbol_engraver
 @funindex \stopStaff
-@funindex stopStaff
 
 
 Staff lines can be hidden by removing the
@@ -967,20 +961,14 @@ printed and subsequent changes will be ignored:
 @lilypond[verbatim,quote,ragged-right]
 prepPiccolo = <>^\markup \italic { muta in Piccolo }
 
+prepFlute = <>^\markup \italic { muta in Flauto }
+
 setPiccolo = {
-  \set Staff.instrumentName = #"Piccolo"
-  \set Staff.shortInstrumentName = #"Picc."
-  \set Staff.midiInstrument = #"piccolo"
   <>^\markup \bold { Piccolo }
   \transposition c''
 }
 
-prepFlute = <>^\markup \italic { muta in Flauto }
-
 setFlute = {
-  \set Staff.instrumentName = #"Flute"
-  \set Staff.shortInstrumentName = #"Flt."
-  \set Staff.midiInstrument = #"flute"
   <>^\markup \bold { Flute }
   \transposition c'
 }
@@ -988,14 +976,17 @@ setFlute = {
 \new Staff \with {
   instrumentName = #"Flute"
   shortInstrumentName = #"Flt."
-  midiInstrument = #"flute"
 }
 \relative {
   g'1 g g g \break
   g1 g \prepPiccolo R R \break
+  \set Staff.instrumentName = #"Piccolo"
+  \set Staff.shortInstrumentName = #"Picc."
   \setPiccolo
   g1 g g g \break
   g1 g \prepFlute R R \break
+  \set Staff.instrumentName = #"Flute"
+  \set Staff.shortInstrumentName = #"Flt."
   \setFlute
   g1 g g g
 }
@@ -1025,11 +1016,8 @@ Internals Reference:
 @cindex cue notes
 
 @funindex \addQuote
-@funindex addQuote
 @funindex \quoteDuring
-@funindex quoteDuring
 @funindex \transposition
-@funindex transposition
 
 It is very common for one voice to use the same notes as those from
 another voice.  For example, first and second violins playing the same
@@ -1087,9 +1075,9 @@ oboeNotes = \relative {
 }
 @end lilypond
 
-If an @code{\unfoldRepeat} command in a music expression is required to
+If an @code{\unfoldRepeats} command in a music expression is required to
 be printed when using @code{\quoteDuring}, then it too must also contain
-its own @code{\unfoldRepeat} command;
+its own @code{\unfoldRepeats} command;
 
 @lilypond[verbatim,quote]
 fluteNotes = \relative {
@@ -1225,13 +1213,9 @@ triplets may result in poor notation.
 
 
 @funindex \cueDuring
-@funindex cueDuring
 @funindex \cueClef
-@funindex cueClef
 @funindex \cueDuringWithClef
-@funindex cueDuringWithClef
 @funindex \quoteDuring
-@funindex quoteDuring
 
 @cindex notes, smaller
 @cindex smaller notes
@@ -1339,7 +1323,7 @@ It is possible to adjust which aspects of the music are quoted with
 property.  Its default value is @code{'(note-event rest-event
 tie-event beam-event tuplet-span-event)}, which means that only
 notes, rests, ties, beams and tuplets are quoted, but not
-articulations, dynamic marks, markup etc.
+articulations, dynamic marks, markup, etc.
 
 @warning{When a @code{Voice} starts with @code{\cueDuring}, as in the
 following example, the @code{Voice} context must be explicitly declared,
@@ -1415,7 +1399,6 @@ bassoonNotes = \relative c {
 @end lilypond
 
 @funindex \transposedCueDuring
-@funindex transposedCueDuring
 
 Like @code{\quoteDuring}, @code{\cueDuring} takes instrument
 transpositions into account.  Cue notes are produced at the
@@ -1456,7 +1439,6 @@ bassClarinetNotes = \relative c' {
 @cindex cue notes, removing
 
 @funindex \killCues
-@funindex killCues
 
 The @code{\killCues} command removes cue notes from a music
 expression, so the same music expression can be used to produce

@@ -76,11 +76,11 @@ public:
 protected:
   virtual void finalize ();
 
-  DECLARE_ACKNOWLEDGER (piano_pedal_script);
-  DECLARE_ACKNOWLEDGER (piano_pedal_bracket);
-  DECLARE_ACKNOWLEDGER (note_column);
+  void acknowledge_piano_pedal_script (Grob_info);
+  void acknowledge_piano_pedal_bracket (Grob_info);
+  void acknowledge_note_column (Grob_info);
 
-  DECLARE_END_ACKNOWLEDGER (piano_pedal_bracket);
+  void acknowledge_end_piano_pedal_bracket (Grob_info);
 
   void stop_translation_timestep ();
   void start_translation_timestep ();
@@ -100,7 +100,8 @@ private:
   Spanner *make_line_spanner (Pedal_type t, SCM);
 };
 
-Piano_pedal_align_engraver::Piano_pedal_align_engraver ()
+Piano_pedal_align_engraver::Piano_pedal_align_engraver (Context *c)
+  : Engraver (c)
 {
 }
 
@@ -248,11 +249,16 @@ Piano_pedal_align_engraver::finalize ()
     }
 }
 
-ADD_ACKNOWLEDGER (Piano_pedal_align_engraver, note_column);
-ADD_ACKNOWLEDGER (Piano_pedal_align_engraver, piano_pedal_bracket);
-ADD_ACKNOWLEDGER (Piano_pedal_align_engraver, piano_pedal_script);
 
-ADD_END_ACKNOWLEDGER (Piano_pedal_align_engraver, piano_pedal_bracket);
+
+void
+Piano_pedal_align_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Piano_pedal_align_engraver, note_column);
+  ADD_ACKNOWLEDGER (Piano_pedal_align_engraver, piano_pedal_bracket);
+  ADD_ACKNOWLEDGER (Piano_pedal_align_engraver, piano_pedal_script);
+  ADD_END_ACKNOWLEDGER (Piano_pedal_align_engraver, piano_pedal_bracket);
+}
 
 ADD_TRANSLATOR (Piano_pedal_align_engraver,
                 /* doc */

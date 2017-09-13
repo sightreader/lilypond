@@ -35,7 +35,7 @@ class Font_metric : public Smob<Font_metric>
 public:
   int print_smob (SCM, scm_print_state *) const;
   SCM mark_smob () const;
-  static const char type_p_name_[];
+  static const char * const type_p_name_;
   virtual ~Font_metric ();
 private:
   DECLARE_CLASSNAME (Font_metric);
@@ -47,7 +47,9 @@ public:
   // Return stencil for given string. output_state may be modified to
   // record the font.
   virtual Stencil text_stencil (Output_def *output_state,
-                                const string &text, bool music) const;
+                                const string &text,
+                                bool music,
+                                const string &features_str) const;
 
   virtual string font_name () const;
   virtual size_t count () const;
@@ -72,6 +74,6 @@ protected:
 };
 
 
-char *pfb2pfa (Byte const *pfb, int length);
+vector<char> pfb2pfa (const vector<char> &pfb);
 
 #endif /* FONT_METRIC_HH */

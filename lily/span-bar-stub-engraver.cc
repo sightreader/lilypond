@@ -55,14 +55,15 @@ class Span_bar_stub_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Span_bar_stub_engraver);
 protected:
-  DECLARE_ACKNOWLEDGER (span_bar);
-  DECLARE_ACKNOWLEDGER (hara_kiri_group_spanner);
+  void acknowledge_span_bar (Grob_info);
+  void acknowledge_hara_kiri_group_spanner (Grob_info);
   void process_acknowledged ();
   void stop_translation_timestep ();
   virtual void derived_mark () const;
 };
 
-Span_bar_stub_engraver::Span_bar_stub_engraver ()
+Span_bar_stub_engraver::Span_bar_stub_engraver (Context *c)
+  : Engraver (c)
 {
   axis_groups_ = SCM_EOL;
 }
@@ -148,8 +149,7 @@ Span_bar_stub_engraver::process_acknowledged ()
           Item *it = new Item (Grob_property_info (affected_contexts[j], ly_symbol2scm ("SpanBarStub")).updated ());
           it->set_parent (spanbars_[i], X_AXIS);
           Grob_info gi = make_grob_info (it, spanbars_[i]->self_scm ());
-          gi.rerouting_daddy_context_ = affected_contexts[j];
-          announce_grob (gi);
+          announce_grob (gi, affected_contexts[j]);
           if (!keep_extent[j])
             it->suicide ();
         }
@@ -176,8 +176,13 @@ Span_bar_stub_engraver::stop_translation_timestep ()
   axis_groups_ = axis_groups;
 }
 
-ADD_ACKNOWLEDGER (Span_bar_stub_engraver, span_bar);
-ADD_ACKNOWLEDGER (Span_bar_stub_engraver, hara_kiri_group_spanner);
+void
+Span_bar_stub_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Span_bar_stub_engraver, span_bar);
+  ADD_ACKNOWLEDGER (Span_bar_stub_engraver, hara_kiri_group_spanner);
+}
+
 ADD_TRANSLATOR (Span_bar_stub_engraver,
                 /* doc */
                 "Make stubs for span bars in all contexts that the span bars cross.",

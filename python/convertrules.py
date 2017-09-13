@@ -3888,6 +3888,80 @@ def conv (str):
                   repl, str)
     return str
 
+@rule ((2, 19, 46), r"""\context ... \modification -> \context ... \with \modification
+\consists "Output_property_engraver" ->""")
+def conv (str):
+    word=r'(?:#?"[^"]*"|\b' + wordsyntax + r'\b)'
+    mods = string.join (re.findall ("\n(" + wordsyntax + r")\s*=\s*\\with(?:\s|\\|\{)", str)
+                        + ['RemoveEmptyStaves','RemoveAllEmptyStaves'], "|")
+    str = re.sub (r"(\\(?:drums|figures|chords|lyrics|addlyrics|"
+                  + r"(?:new|context)\s*" + word
+                  + r"(?:\s*=\s*" + word + r")?)\s*)(\\(?:" + mods + "))",
+                  r"\1\\with \2", str)
+
+    str = re.sub (r'\\(consists|remove)\s+"?Output_property_engraver"?\s*',
+                  '', str)
+    return str
+
+@rule ((2, 19, 49), r"""id -> output-attributes.id or output-attributes
+for \tweak, \override, \overrideProperty, and \revert""")
+def conv (str):
+    # path cannot start with '-' or '_' and matches zero or more path
+    # units that each end in a dot
+    path = r"(?:[a-zA-Z\200-\377](?:[-_]?[a-zA-Z\200-\377])*(?:\s*\.\s*))*"
+
+    # Manual editing is needed when id is set to #(...) or \xxx
+    manual_edits = r"(\\(?:tweak|override|overrideProperty)\s+" + path + r")id(\s*=?\s*(?:\\|#\s*\())"
+    automatic = r"(\\(?:tweak|override|overrideProperty|revert)\s+" + path + r")id"
+    if re.search (manual_edits, str):
+        stderr_write (NOT_SMART % "\"output-attributes\"")
+        stderr_write (_ ("Previously the \"id\" grob property (string) was used for SVG output.") + "\n")
+        stderr_write (_ ("Now \"output-attributes\" (association list) is used instead.") + "\n")
+        stderr_write (UPDATE_MANUALLY)
+
+    # First, for manual editing cases we convert 'id' to 'output-attributes'
+    # because Grob.output-attributes.id = #(lambda ... ) will not work.
+    # Then for the rest we convert 'id' to 'output-attributes.id'
+    str = re.sub (manual_edits, r"\1output-attributes\2", str)
+    str = re.sub (automatic, r"\1output-attributes.id", str)
+    return str
+
+matchscmarg = (r'(?:[a-zA-Z_][-a-zA-Z_0-9]*|"(?:[^\\"]|\\.)*"|[-+]?[0-9.]+|\('
+               + paren_matcher (10) + r"\))")
+
+@rule ((2, 21, 0), r"""\note #"4." -> \note {4.}""")
+def conv (str):
+    def repl1ly (m):
+        if m.group (2)[0] in "blm":
+            return m.group(1) + "{\\" + m.group(2) + "}"
+        return m.group (1) + "{" + m.group (2) + "}"
+    def repl1scm (m):
+        return ("%s(ly:make-duration %d %d)" %
+                (m.group (1),
+                 {"1": 0, "2": 1, "4": 2, "8": 3, "16": 4,
+                  "32": 5, "64": 6, "128": 7, "256": 8,
+                  "breve": -1, "longa": -2, "maxima": -4}[m.group (2)],
+                 m.end (3) - m.start (3)))
+    def replly (m):
+        return re.sub (r'(\\note\s*)#?"((?:1|2|4|8|16|32|64|128|256'
+                       r'|breve|longa|maxima)\s*\.*)"',
+                       repl1ly, m.group (0))
+    def replscm (m):
+        return re.sub (r'"()(1|2|4|8|16|32|64|128|256'
+                       r'|breve|longa|maxima)\s*(\.*)"',
+                       repl1scm, m.group (0))
+    def replmarkup (m):
+        return re.sub (r'(#:note\s+)"(1|2|4|8|16|32|64|128|256'
+                       r'|breve|longa|maxima)\s*(\.*)"',
+                       repl1scm, m.group (0))
+    str = re.sub (matchmarkup, replly, str)
+    str = re.sub (r"\(tuplet-number::(?:fraction-with-notes|non-default-fraction-with-notes|append-note-wrapper)\s" +
+                  paren_matcher (20) + r"\)", replscm, str)
+    str = re.sub (r'\(markup\s' + paren_matcher (20) + r'\)',
+                  replmarkup, str)
+    return str
+
+
 # Guidelines to write rules (please keep this at the end of this file)
 #
 # - keep at most one rule per version; if several conversions should be done,

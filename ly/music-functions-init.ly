@@ -56,27 +56,31 @@ addQuote =
    (add-quotable name music))
 
 %% keep these two together
-afterGraceFraction = #(cons 6 8)
+afterGraceFraction = 3/4
 afterGrace =
-#(define-music-function (main grace) (ly:music? ly:music?)
-   (_i "Create @var{grace} note(s) after a @var{main} music expression.")
-   (let ((main-length (ly:music-length main))
-         (fraction  (ly:parser-lookup 'afterGraceFraction)))
-     (make-simultaneous-music
-      (list
-       main
-       (make-sequential-music
-        (list
+#(define-music-function (fraction main grace) ((fraction?) ly:music? ly:music?)
+   (_i "Create @var{grace} note(s) after a @var{main} music expression.
 
-         (make-music 'SkipMusic
-                     'duration (ly:make-duration
-                                0 0
-                                (* (ly:moment-main-numerator main-length)
-                                   (car fraction))
-                                (* (ly:moment-main-denominator main-length)
-                                   (cdr fraction))))
-         (make-music 'GraceMusic
-                     'element grace)))))))
+The musical position of the grace expression is after a
+given fraction of the main note's duration has passed.  If
+@var{fraction} is not specified as first argument, it is taken from
+@code{afterGraceFraction} which has a default value of @code{3/4}.")
+   (let ((main-length (ly:music-length main))
+         (fraction (or fraction (ly:parser-lookup 'afterGraceFraction))))
+     (descend-to-context
+      (make-simultaneous-music
+       (list
+        main
+        (make-sequential-music
+         (list
+          (make-music 'SkipMusic
+                      'duration (ly:make-duration
+                                 0 0
+                                 (* (ly:moment-main main-length)
+                                    (/ (car fraction) (cdr fraction)))))
+          (make-music 'GraceMusic
+                      'element grace)))))
+      'Bottom)))
 
 
 %% music identifiers not allowed at top-level,
@@ -101,7 +105,8 @@ a starting spanner event, or a symbol list in the form
 form of a spanner event, @var{property} may also have the form
 @samp{Grob.property} for specifying a directed tweak.")
   (if (ly:music? item)
-      (if (eq? (ly:music-property item 'span-direction) START)
+      (if (or (eqv? (ly:music-property item 'span-direction) START)
+              (music-is-of-type? item 'tie-event))
           (tweak property (value-for-spanner-piece arg) item)
           (begin
             (ly:music-warning item (_ "not a spanner"))
@@ -825,20 +830,11 @@ transpose from @var{around} to @var{to}.")
    (music-invert around to music))
 
 mark =
-#(define-music-function
-   (label) ((number-or-markup?))
-  "Make the music for the \\mark command."
-  (let* ((set (and (integer? label)
-                   (context-spec-music (make-property-set 'rehearsalMark label)
-                                      'Score)))
-         (ev (make-music 'MarkEvent
-                         'origin (*location*))))
-
-    (if set
-        (make-sequential-music (list set ev))
-        (begin
-          (if label (set! (ly:music-property ev 'label) label))
-          ev))))
+#(define-music-function (label) ((number-or-markup?))
+   "Make the music for the \\mark command."
+   (if label
+       (make-music 'MarkEvent 'label label)
+       (make-music 'MarkEvent)))
 
 markupMap =
 #(define-music-function (path markupfun music)
@@ -1014,13 +1010,10 @@ creation.")
      (if p
          (make-music 'ApplyOutputEvent
                      'context-type (first p)
+                     'symbol (second p)
                      'procedure
                      (lambda (grob orig-context context)
-                       (if (equal?
-                            (cdr (assoc 'name (ly:grob-property grob 'meta)))
-                            (second p))
-                           (ly:grob-set-nested-property!
-                            grob (cddr p) value))))
+                       (ly:grob-set-nested-property! grob (cddr p) value)))
          (make-music 'Music))))
 
 
@@ -1506,6 +1499,12 @@ usually contains spacers or multi-measure rests.")
                'element main-music
                'quoted-music-name what))
 
+reduceChords =
+#(define-music-function (music) (ly:music?)
+   (_i "Reduce chords contained in @var{music} to single notes,
+intended mainly for reusing music in RhythmicStaff.  Does not
+reduce parallel music.")
+   (event-chord-reduce music))
 
 relative =
 #(define-music-function (pitch music)
@@ -1551,7 +1550,12 @@ retrograde =
 #(define-music-function (music)
     (ly:music?)
     (_i "Return @var{music} in reverse order.")
-    (retrograde-music music))
+    (retrograde-music
+     (expand-repeat-notes!
+      (expand-repeat-chords!
+       (cons 'rhythmic-event
+             (ly:parser-lookup '$chord-repeat-events))
+       music))))
 
 revertTimeSignatureSettings =
 #(define-music-function
@@ -1646,9 +1650,7 @@ appropriate tweak applied.")
        (define (offset-control-points offsets)
          (if (null? offsets)
              coords
-             (map
-               (lambda (x y) (coord-translate x y))
-               coords offsets)))
+             (map coord-translate coords offsets)))
 
        (define (helper sibs offs)
          (if (pair? offs)
@@ -1973,11 +1975,38 @@ unsets already in @var{music} cause a warning.  Non-property-related music is ig
         (else (make-sequential-music lst))))))
 
 unfoldRepeats =
-#(define-music-function (music) (ly:music?)
-   (_i "Force any @code{\\repeat volta}, @code{\\repeat tremolo} or
+#(define-music-function (types music)
+   ((symbol-list-or-symbol? '()) ly:music?)
+   (_i "Force @code{\\repeat volta}, @code{\\repeat tremolo} or
 @code{\\repeat percent} commands in @var{music} to be interpreted
-as @code{\\repeat unfold}.")
-   (unfold-repeats music))
+as @code{\\repeat unfold}, if specified in the optional symbol-list @var{types}.
+The default for @var{types} is an empty list, which will force any of those
+commands in @var{music} to be interpreted as @code{\\repeat unfold}.  Possible
+entries are @code{volta}, @code{tremolo} or @code{percent}.  Multiple entries
+are possible.")
+   (unfold-repeats types music))
+
+voices =
+#(define-music-function (ids music) (key-list? ly:music?)
+   (_i "Take the given key list of numbers (indicating the use of
+@samp{\\voiceOne}@dots{}) or symbols (indicating voice names,
+typically converted from strings by argument list processing)
+and assign the following @code{\\\\}-separated music to
+contexts according to that list.  Named rather than numbered
+contexts can be used for continuing one voice (for the sake of
+spanners and lyrics), usually requiring a @code{\\voiceOne}-style
+override at the beginning of the passage and a @code{\\oneVoice}
+override at its end.
+
+The default
+@example
+<< @dots{} \\\\ @dots{} \\\\ @dots{} >>
+@end example
+construct would correspond to
+@example
+\\voices 1,2,3 << @dots{} \\\\ @dots{} \\\\ @dots{} >>
+@end example")
+   (voicify-music music ids))
 
 void =
 #(define-void-function (arg) (scheme?)

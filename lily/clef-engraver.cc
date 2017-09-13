@@ -39,7 +39,7 @@ public:
 protected:
   void stop_translation_timestep ();
   void process_music ();
-  DECLARE_ACKNOWLEDGER (bar_line);
+  void acknowledge_bar_line (Grob_info);
 
   virtual void derived_mark () const;
 private:
@@ -62,7 +62,8 @@ Clef_engraver::derived_mark () const
   scm_gc_mark (prev_glyph_);
 }
 
-Clef_engraver::Clef_engraver ()
+Clef_engraver::Clef_engraver (Context *c)
+  : Engraver (c)
 {
   clef_ = 0;
   modifier_ = 0;
@@ -190,12 +191,13 @@ Clef_engraver::stop_translation_timestep ()
 {
   if (clef_)
     {
-      SCM vis = 0;
       if (to_boolean (clef_->get_property ("non-default")))
-        vis = get_property ("explicitClefVisibility");
+        {
+          SCM vis = get_property ("explicitClefVisibility");
 
-      if (vis)
-        clef_->set_property ("break-visibility", vis);
+          if (scm_is_vector (vis))
+            clef_->set_property ("break-visibility", vis);
+        }
 
       clef_ = 0;
 
@@ -203,7 +205,12 @@ Clef_engraver::stop_translation_timestep ()
     }
 }
 
-ADD_ACKNOWLEDGER (Clef_engraver, bar_line);
+void
+Clef_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Clef_engraver, bar_line);
+}
+
 ADD_TRANSLATOR (Clef_engraver,
                 /* doc */
                 "Determine and set reference point for pitches.",

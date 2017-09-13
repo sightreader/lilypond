@@ -26,6 +26,11 @@ using namespace std;
 #include "main.hh"
 #include "program-option.hh"
 
+Preinit_Modified_font_metric::Preinit_Modified_font_metric ()
+{
+  orig_ = 0;
+}
+
 Modified_font_metric::Modified_font_metric (Font_metric *fm,
                                             Real magnification)
 {
@@ -102,16 +107,20 @@ Modified_font_metric::index_to_charcode (vsize i) const
 void
 Modified_font_metric::derived_mark () const
 {
+  if (orig_)
+    scm_gc_mark (orig_->self_scm ());
 }
 
 Stencil
 Modified_font_metric::text_stencil (Output_def *state,
-                                    const string &text, bool feta) const
+                                    const string &text,
+                                    bool feta,
+                                    const string &features_str) const
 {
   Box b;
   if (Pango_font *pf = dynamic_cast<Pango_font *> (orig_))
     {
-      Stencil stc = pf->text_stencil (state, text, feta);
+      Stencil stc = pf->text_stencil (state, text, feta, features_str);
 
       Box b = stc.extent_box ();
 
@@ -120,7 +129,7 @@ Modified_font_metric::text_stencil (Output_def *state,
       return scaled;
     }
 
-  return Font_metric::text_stencil (state, text, feta);
+  return Font_metric::text_stencil (state, text, feta, features_str);
 }
 
 Font_metric *

@@ -82,31 +82,33 @@ First it recurses over the children, then the function is applied to
 (define-public (music-filter pred? music)
   "Filter out music expressions that do not satisfy @var{pred?}."
 
-  (define (inner-music-filter pred? music)
+  (define (inner-music-filter music)
     "Recursive function."
     (let* ((es (ly:music-property music 'elements))
            (e (ly:music-property music 'element))
            (as (ly:music-property music 'articulations))
-           (filtered-as (filter ly:music? (map (lambda (y) (inner-music-filter pred? y)) as)))
+           (filtered-as (filter ly:music? (map inner-music-filter as)))
            (filtered-e (if (ly:music? e)
-                           (inner-music-filter pred? e)
+                           (inner-music-filter e)
                            e))
-           (filtered-es (filter ly:music? (map (lambda (y) (inner-music-filter pred? y)) es))))
+           (filtered-es (filter ly:music? (map inner-music-filter es))))
       (if (not (null? e))
           (set! (ly:music-property music 'element) filtered-e))
       (if (not (null? es))
           (set! (ly:music-property music 'elements) filtered-es))
       (if (not (null? as))
           (set! (ly:music-property music 'articulations) filtered-as))
-      ;; if filtering emptied the expression, we remove it completely.
+      ;; if filtering invalidated 'element, we remove the music unless
+      ;; there are remaining 'elements in which case we just hope and
+      ;; pray.
       (if (or (not (pred? music))
-              (and (eq? filtered-es '()) (not (ly:music? e))
-                   (or (not (eq? es '()))
-                       (ly:music? e))))
+              (and (null? filtered-es)
+                   (not (ly:music? filtered-e))
+                   (ly:music? e)))
           (set! music '()))
       music))
 
-  (set! music (inner-music-filter pred? music))
+  (set! music (inner-music-filter music))
   (if (ly:music? music)
       music
       (make-music 'Music)))       ;must return music.
@@ -388,19 +390,36 @@ beats to be distinguished."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; repeats.
 
-(define-public (unfold-repeats music)
-  "Replace all repeats with unfolded repeats."
-  (let ((es (ly:music-property music 'elements))
-        (e (ly:music-property music 'element)))
-    (if (music-is-of-type? music 'repeated-music)
-        (set! music (make-music 'UnfoldedRepeatedMusic music)))
-    (if (pair? es)
-        (set! (ly:music-property music 'elements)
-              (map unfold-repeats es)))
-    (if (ly:music? e)
-        (set! (ly:music-property music 'element)
-              (unfold-repeats e)))
-    music))
+(define-public (unfold-repeats types music)
+  "Replace repeats of the types given by @var{types} with unfolded repeats.
+If @var{types} is an empty list, @code{repeated-music} is taken, unfolding all."
+  (let* ((types-list
+           (if (or (null? types) (not (list? types)))
+               (list types)
+               types))
+         (repeat-types-alist
+           '((volta . volta-repeated-music)
+             (percent . percent-repeated-music)
+             (tremolo . tremolo-repeated-music)
+             (() . repeated-music)))
+         (repeat-types-hash (alist->hash-table repeat-types-alist)))
+  (for-each
+    (lambda (type)
+      (let ((repeat-type (hashq-ref repeat-types-hash type)))
+        (if repeat-type
+            (let ((es (ly:music-property music 'elements))
+                  (e (ly:music-property music 'element)))
+              (if (music-is-of-type? music repeat-type)
+                  (set! music (make-music 'UnfoldedRepeatedMusic music)))
+              (if (pair? es)
+                  (set! (ly:music-property music 'elements)
+                        (map (lambda (x) (unfold-repeats types x)) es)))
+              (if (ly:music? e)
+                  (set! (ly:music-property music 'element)
+                        (unfold-repeats types e))))
+            (ly:warning "unknown repeat-type ~a, ignoring." type))))
+    types-list)
+  music))
 
 (define-public (unfold-repeats-fully music)
   "Unfolds repeats and expands the resulting @code{unfolded-repeated-music}."
@@ -409,7 +428,7 @@ beats to be distinguished."
      (and (music-is-of-type? m 'unfolded-repeated-music)
           (make-sequential-music
            (ly:music-deep-copy (make-unfolded-set m)))))
-   (unfold-repeats music)))
+   (unfold-repeats '() music)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; property setting music objs.
@@ -917,45 +936,77 @@ from the predecessor note/chord if available."
      music)))
 
 ;;; splitting chords into voices.
-(define (voicify-list lst number)
+(define (voicify-list locs lst id)
   "Make a list of Musics.
 
-voicify-list :: [ [Music ] ] -> number -> [Music]
+voicify-list :: [ [Music ] ] -> id -> [Music]
 LST is a list music-lists.
 
-NUMBER is 0-base, i.e., Voice=1 (upstems) has number 0.
-"
-  (if (null? lst)
-      '()
-      (cons (context-spec-music
-             (make-sequential-music
-              (list (make-voice-props-set number)
-                    (make-simultaneous-music (car lst))))
-             'Bottom  (number->string (1+ number)))
-            (voicify-list (cdr lst) (1+ number)))))
+id is 1-based, i.e., Voice=1 (upstems) has number 1.
 
-(define (voicify-chord ch)
+id may be a symbol or string giving a specific voice id: in this
+case, no \voiceXXX style is selected, merely the context given.
+
+locs is a list of music expressions suitable for giving
+error locations (enclosing expression for the first element,
+preceding \\\\ separator for the others)
+"
+  (define (voicify-sublist loc sublist id)
+    (cond ((string? id)
+           (context-spec-music
+            (make-simultaneous-music sublist)
+            'Bottom id))
+          ((symbol? id)
+           (voicify-sublist loc sublist (symbol->string id)))
+          ((and (integer? id) (exact? id) (positive? id))
+           (context-spec-music
+            (make-sequential-music
+             (list (make-voice-props-set (1- id))
+                   (make-simultaneous-music sublist)))
+            'Bottom (number->string id)))
+          (else
+           (ly:music-warning loc (_ "Bad voice id: ~a") id)
+           (context-spec-music (make-simultaneous-music sublist) 'Bottom))))
+
+  (cond ((null? lst) '())
+        ((number? id)
+         (cons (voicify-sublist (car locs) (car lst) id)
+               (voicify-list (cdr locs) (cdr lst) (1+ id))))
+        ((pair? id)
+         (cons (voicify-sublist (car locs) (car lst) (car id))
+               (voicify-list (cdr locs) (cdr lst) (cdr id))))
+        ((null? id)
+         (ly:music-warning (car locs) (_ "\\voices needs more ids"))
+         (voicify-list locs lst 1))))
+
+(define (voicify-chord ch id)
   "Split the parts of a chord into different Voices using separator"
   (let ((es (ly:music-property ch 'elements)))
     (set! (ly:music-property  ch 'elements)
-          (voicify-list (split-list-by-separator es music-separator?) 0))
+          (voicify-list (cons ch (filter music-separator? es))
+                        (split-list-by-separator es music-separator?)
+                        id))
     ch))
 
-(define-public (voicify-music m)
-  "Recursively split chords that are separated with @code{\\\\}."
-  (if (not (ly:music? m))
-      (ly:error (_ "music expected: ~S") m))
-  (let ((es (ly:music-property m 'elements))
-        (e (ly:music-property m 'element)))
+(define*-public (voicify-music m #:optional (id 1))
+  "Recursively split chords that are separated with @code{\\\\}.
+Optional @var{id} can be a list of context ids to use.  If numeric,
+they also indicate a voice type override.  If @var{id} is just a single
+number, that's where numbering starts."
+  (let loop ((m m))
+    (if (not (ly:music? m))
+        (ly:error (_ "music expected: ~S") m))
+    (let ((es (ly:music-property m 'elements))
+          (e (ly:music-property m 'element)))
 
-    (if (pair? es)
-        (set! (ly:music-property m 'elements) (map voicify-music es)))
-    (if (ly:music? e)
-        (set! (ly:music-property m 'element)  (voicify-music e)))
-    (if (and (equal? (ly:music-property m 'name) 'SimultaneousMusic)
-             (any music-separator? es))
-        (set! m (context-spec-music (voicify-chord m) 'Staff)))
-    m))
+      (if (pair? es)
+          (set! (ly:music-property m 'elements) (map loop es)))
+      (if (ly:music? e)
+          (set! (ly:music-property m 'element) (loop e)))
+      (if (and (equal? (ly:music-property m 'name) 'SimultaneousMusic)
+               (any music-separator? es))
+          (context-spec-music (voicify-chord m id) 'Staff)
+          m))))
 
 (define-public (empty-music)
   (make-music 'Music))
@@ -1823,6 +1874,31 @@ on the same staff line."
                               ,(make-accidental-rule 'same-octave 1))
                        GrandStaff)
 
+     ;; Accidentals on a choir staff for simultaneous reading of the
+     ;; own voice and the surrounding choir. Similar to piano, except
+     ;; that the first alteration within a voice is always printed.
+     (choral #f
+             (Voice ,(make-accidental-rule 'same-octave 0)
+                    Staff
+                    ,(make-accidental-rule 'same-octave 1)
+                    ,(make-accidental-rule 'any-octave 0)
+                    ,(make-accidental-rule 'same-octave 1)
+                    ChoirStaff
+                    ,(make-accidental-rule 'any-octave 0)
+                    ,(make-accidental-rule 'same-octave 1))
+             ()
+             ChoirStaff)
+     (choral-cautionary #f
+                        (Voice ,(make-accidental-rule 'same-octave 0)
+                               Staff
+                               ,(make-accidental-rule 'same-octave 0))
+                        (Staff ,(make-accidental-rule 'any-octave 0)
+                               ,(make-accidental-rule 'same-octave 1)
+                               ChoirStaff
+                               ,(make-accidental-rule 'any-octave 0)
+                               ,(make-accidental-rule 'same-octave 1))
+                        ChoirStaff)
+
      ;; same as modern, but cautionary accidentals are printed for all
      ;; non-natural tones specified by the key signature.
      (teaching #f
@@ -2311,9 +2387,7 @@ list or if there is a type-mismatch, @var{arg} will be returned."
               (number-pair? offsets)))
      (coord-translate arg offsets))
     ((and (number-pair-list? arg) (number-pair-list? offsets))
-     (map
-       (lambda (x y) (coord-translate x y))
-       arg offsets))
+     (map coord-translate arg offsets))
     (else arg)))
 
 (define-public (grob-transformer property func)
@@ -2321,7 +2395,7 @@ list or if there is a type-mismatch, @var{arg} will be returned."
 pure or unpure values.  @var{func} is called with the respective grob
 as first argument and the default value (after resolving all callbacks)
 as the second."
-  (define (worker self container-part grob . rest)
+  (define (worker self caller grob . rest)
     (let* ((immutable (ly:grob-basic-properties grob))
            ;; We need to search the basic-properties alist for our
            ;; property to obtain values to offset.  Our search is
@@ -2334,29 +2408,16 @@ as the second."
            (target (find-value-to-offset property self immutable))
            ;; if target is a procedure, we need to apply it to our
            ;; grob to calculate values to offset.
-           (vals (cond ((procedure? target) (target grob))
-                       ;; Argument lists for a pure procedure pulled
-                       ;; from an unpure-pure-container may be
-                       ;; different from a normal procedure, so we
-                       ;; need a different code path and calling
-                       ;; convention for procedures pulled from an
-                       ;; container as opposed to from the property
-                       ((ly:unpure-pure-container? target)
-                        (let ((part (container-part target)))
-                          (if (procedure? part)
-                              (apply part grob rest)
-                              part)))
-                       (else target))))
+           (vals (apply caller target grob rest)))
       (func grob vals)))
   ;; return the container named `self'.  The container self-reference
   ;; seems like chasing its own tail but gets dissolved by
   ;; define/lambda separating binding and referencing of "self".
   (define self (ly:make-unpure-pure-container
                 (lambda (grob)
-                  (worker self ly:unpure-pure-container-unpure-part grob))
+                  (worker self ly:unpure-call grob))
                 (lambda (grob . rest)
-                  (apply worker self ly:unpure-pure-container-pure-part
-                         grob rest))))
+                  (apply worker self ly:pure-call grob rest))))
   self)
 
 (define-public (offsetter property offsets)

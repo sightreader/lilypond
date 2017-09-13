@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: de -*-
 @ignore
-    Translation of GIT committish:  5b6ddab894b3065c35c72ef8048b8c6edbe684ac
+    Translation of GIT committish: 901f7ff2acbb996f1e726607f3f8e921c5e1ddd3
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -56,7 +56,7 @@ der Musik konzentrieren.
 @divEnd
 
 @divClass{column-right-top}
-@subheading Lilypond im Einsatz
+@subheading LilyPond im Einsatz
 @itemize
 
 @item
@@ -308,8 +308,9 @@ LilyPond auszuprobieren, lesen Sie zuerst über unsere
 
 @subheading Beautiful examples
 
-LilyPond ist ist ein sehr mächtiges und flexibles Werkzeug, dass Notensatz
-der unterschiedlichsten Art handhaben kann.  Sehen Sie sich unsere Beispiele an und lassen Sie sich inspirieren!
+LilyPond ist ein sehr mächtiges und flexibles Werkzeug, das Notensatz
+unterschiedlichster Art handhaben kann.  Sehen Sie sich unsere
+Beispiele an und lassen Sie sich inspirieren!
 
 @divEnd
 
@@ -382,7 +383,7 @@ die man für das fünflinige Notensystem notiert hat.
 @divEnd
 
 @divClass{column-center-middle-color2}
-@subheading Schenker Graphen
+@subheading Schenker-Graphen
 
 Das Standardnotenbild kann sehr stark verändert werden.  Hier eine eindrucksvolle Schenker-Analyse, von Kris Schaffer mit LilyPond erstellt
 für einen Artikel im @uref{http://www.linuxjournal.com/article/8364 , Linux Journal}.
@@ -395,7 +396,7 @@ Die Farben wurden zur Verdeutlichung hinzugefügt.
 @subheading Individuelle Ausgabe
 
 Ein kurzer Auszug aus Stockhausen's Klavierstück II zeigt die
-Fähigkeiten von Lilypond eine individuelle Ausgabe zu erzeugen.
+Fähigkeiten von LilyPond eine individuelle Ausgabe zu erzeugen.
 
 @exampleImage{Stockhausen_Klavierstueck2}
 @divEnd
@@ -438,7 +439,7 @@ angepasst werden, um fast jeder Situation gerecht zu werden.
 @divEnd
 
 @divClass{column-center-middle-color2}
-@subsubheading Große Projekte
+@subheading Große Projekte
 
 LilyPond eignet sich großartig für große Projekte wie Opern oder Werke für großes Symphonieorchester.  Zusätzlich ermöglicht die
 texbasierte Eingabe größere Barrierefreiheit -- das folgende
@@ -613,7 +614,7 @@ haben, LilyPond auszuprobieren, lesen zuerst über unsere
 @unnumberedsec Produktionen
 @translationof Productions
 
-@divClass{column-left-top}
+@divClass{column-center-top}
 
 @subheading Produktionen die LilyPond verwenden
 
@@ -755,7 +756,7 @@ Klaviatur, die anzeigt, welche Tasten gedrückt werden müssen, um
 Anfängern beim Notenlesen zu helfen.
 
 @item
-@uref{http://www.adoromusicpub.com/, Adoro Music Publishing},
+@uref{https://twitter.com/adoromusic, Adoro Music Publishing},
 qualitativ hochwertige Partituren von Kirchenmusik, sowohl zum
 direkten Download als auch auf Papier erhältlich.
 
@@ -806,7 +807,7 @@ April 2011
 
 @uref{http://www.linux-magazine.com,Linux Magazine} publiziert einen
 Atikel mit dem Titel
-@uref{http://www.linux-magazine.com/w3/issue/126/088-090_projects.pdf,
+@uref{http://www.linux-magazine.com/content/download/61706/482546/version/1/file/088-090_projects.pdf,
 Projects on the Move}. Es es eine Einleitung zu MuseScore,
 LilyPond and Chordii.  Die Authorin Carla Schroder schreibt @qq{LilyPond wird
 von der Kommandozeile aus gesteuert, aber lassen Sie sich nicht davon
@@ -878,7 +879,7 @@ Artikel unter dem Titel
 Schenker Graphs with GNU LilyPond}.  Es handelt sich um einen
 tiefgehenden, aber sehr praktischen Artikel mit gestochen
 scharfen LilyPond-Graphiken.  Der Autor Kris Shaffer merkt an:
-»GNU Lilypond erstellt schöne Graphik, die kommerzielle Alternativen
+»GNU LilyPond erstellt schöne Graphik, die kommerzielle Alternativen
 als zweite Wahl erscheinen lassen.«
 
 @item
@@ -1009,7 +1010,7 @@ Nummer CMS06.
 
 
 @divClass{testimonial-item}
-@subsubheading Chris Snyder, @uref{http://www.adoromusicpub.com/, Adoro Music Publishing}
+@subsubheading Chris Snyder, @uref{https://twitter.com/adoromusic, Adoro Music Publishing}
 
 @qq{Die Art, in der die Noten mit LilyPond eingegeben werden,
 lässt mich musikalischer denken -- es gab Zeiten, wenn ich vergeblich
@@ -1500,7 +1501,7 @@ Versionen sind noch auf
 verfügbar.
 
 @item
-@uref{http://noteedit.berlios.de,NoteEdit}, konnte
+@uref{https://sourceforge.net/projects/noteedit.berlios/,NoteEdit}, konnte
 @uref{http://www.makemusic.com/musicxml,MusicXML} importieren.
 Ableger existieren als
 @uref{http://vsr.informatik.tu-chemnitz.de/staff/jan/nted/nted.xhtml,NtEd}

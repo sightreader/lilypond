@@ -34,8 +34,8 @@ class Cluster_spanner_engraver : public Engraver
 
 protected:
   TRANSLATOR_DECLARATIONS (Cluster_spanner_engraver);
-  DECLARE_TRANSLATOR_LISTENER (cluster_note);
-  DECLARE_ACKNOWLEDGER (note_column);
+  void listen_cluster_note (Stream_event *);
+  void acknowledge_note_column (Grob_info);
   void stop_translation_timestep ();
   virtual void process_music ();
   virtual void finalize ();
@@ -48,7 +48,8 @@ private:
   Spanner *finished_spanner_;
 };
 
-Cluster_spanner_engraver::Cluster_spanner_engraver ()
+Cluster_spanner_engraver::Cluster_spanner_engraver (Context *c)
+  : Engraver (c)
 {
   spanner_ = 0;
   finished_spanner_ = 0;
@@ -81,7 +82,6 @@ Cluster_spanner_engraver::typeset_grobs ()
   beacon_ = 0;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Cluster_spanner_engraver, cluster_note);
 void
 Cluster_spanner_engraver::listen_cluster_note (Stream_event *ev)
 {
@@ -142,7 +142,13 @@ Cluster_spanner_engraver::acknowledge_note_column (Grob_info info)
     }
 }
 
-ADD_ACKNOWLEDGER (Cluster_spanner_engraver, note_column);
+void
+Cluster_spanner_engraver::boot ()
+{
+  ADD_LISTENER (Cluster_spanner_engraver, cluster_note);
+  ADD_ACKNOWLEDGER (Cluster_spanner_engraver, note_column);
+}
+
 ADD_TRANSLATOR (Cluster_spanner_engraver,
                 /* doc */
                 "Engrave a cluster using @code{Spanner} notation.",

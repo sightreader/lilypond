@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 @ignore
-   Translation of GIT committish: 3c0f38115857598db730782b1d2ff0a19fd833af
+   Translation of GIT committish: be622e24546dff283da6810c798bb4155c95242a
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -344,8 +344,8 @@ appliquer.  Ceci ne manque pas de faire apparaître un message
 warning: This voice needs a \voiceXx or \shiftXx setting
 
 @emph{en français :}
-Avertissement : Cette voix requiert un @code{voiceXx} ou un réglage
-@code{\shiftXx}
+Avertissement : Cette voix requiert un voiceXx ou un réglage
+\shiftXx
 @end example
 
 lors de la compilation.  Le déclenchement de cet avertissement peut être
@@ -369,7 +369,6 @@ rubrique @ref{Résolution des collisions}).
 @cindex cluster
 
 @funindex \makeClusters
-@funindex makeClusters
 
 Un cluster indique un agrégat de sons.  On peut le représenter par une
 plage limitée par un @emph{ambitus} (notes extrêmes).  On obtient une
@@ -422,6 +421,7 @@ portées.
 * Polyphonie sur une portée::
 * Styles de voix::
 * Résolution des collisions::
+* Fusion de silences::
 * Regroupement automatique de parties::
 * Saisie de musique en parallèle::
 @end menu
@@ -437,11 +437,9 @@ portées.
 @cindex paroles assignées à une voix
 
 @funindex \voiceOne
-@funindex voiceOne
 @funindex \voiceOne ... \voiceFour
 @funindex Voice
 @funindex \oneVoice
-@funindex oneVoice
 
 
 @subsubsubheading Instanciation explicite des voix
@@ -605,7 +603,27 @@ vont vers le haut, celles des voix paires vers le bas :
 >>
 @end lilypond
 
-@warning{Paroles et objets étendus (liaisons, soufflets etc.) ne peuvent
+@funindex \voices
+La commande @code{\voices} permet de gérer l'ordre de saisie des voix :
+
+@lilypond[quote,verbatim]
+\new Staff \voices 1,3,5,6,4,2 <<
+  \time 2/4
+  { f''2 }  % 1: highest
+  \\
+  { d''2 }  % 3: second-highest
+  \\
+  { b'2  }  % 5: third-highest
+  \\
+  { g'2  }  % 6: third-lowest
+  \\
+  { e'2  }  % 4: second-lowest
+  \\
+  { c'2  }  % 2: lowest
+>>
+@end lilypond
+
+@warning{Paroles et objets étendus (liaisons, soufflets, etc.) ne peuvent
 passer d'une voix à l'autre.}
 
 @subsubsubheading Identité rythmique
@@ -716,21 +734,13 @@ Morceaux choisis :
 @cindex silences, décalage automatique
 
 @funindex \shiftOn
-@funindex shiftOn
 @funindex \shiftOnn
-@funindex shiftOnn
 @funindex \shiftOnnn
-@funindex shiftOnnn
 @funindex \shiftOff
-@funindex shiftOff
 @funindex \mergeDifferentlyDottedOn
-@funindex mergeDifferentlyDottedOn
 @funindex \mergeDifferentlyDottedOff
-@funindex mergeDifferentlyDottedOff
 @funindex \mergeDifferentlyHeadedOn
-@funindex mergeDifferentlyHeadedOn
 @funindex \mergeDifferentlyHeadedOff
-@funindex mergeDifferentlyHeadedOff
 
 Les notes de hauteur identique appartenant à des voix différentes, même
 si leur hampe sont opposées, verront leur tête automatiquement
@@ -943,6 +953,43 @@ are at the same time differently dotted are not clear.
 @end ignore
 
 
+@node Fusion de silences
+@unnumberedsubsubsec Fusion de silences
+@translationof Merging rests
+
+Il est d'usage, lorsque plusieurs voix cohabitent, de fusionner les
+silences qui apparaissent simultanément dans différentes parties.  Ceci
+peut s'obtenir à l'aide du @code{Merge_rests_engraver}.
+
+@lilypond[quote,verbatim]
+voiceA = \relative { d''4 r d2 | R1 | }
+voiceB = \relative { fis'4 r g2 | R1 | }
+\score {
+  <<
+    \new Staff \with {
+      instrumentName = "unmerged"
+    }
+    <<
+      \new Voice { \voiceOne \voiceA }
+      \new Voice { \voiceTwo \voiceB }
+    >>
+    \new Staff \with {
+      instrumentName = "merged"
+      \consists #Merge_rests_engraver
+    }
+    <<
+      \new Voice { \voiceOne \voiceA }
+      \new Voice { \voiceTwo \voiceB }
+    >>
+  >>
+}
+@end lilypond
+
+La propriété de contexte @code{suspendRestMerging}, lorsque activée par
+un @code{##t}, permet de suspendre temporairement la fusion des
+silences.
+
+
 @node Regroupement automatique de parties
 @unnumberedsubsubsec Regroupement automatique de parties
 @translationof Automatic part combining
@@ -954,7 +1001,6 @@ are at the same time differently dotted are not clear.
 @cindex solo
 
 @funindex \partcombine
-@funindex partcombine
 
 Le regroupement automatique de parties vous permet de fusionner deux
 pupitres sur une seule portée, ceci dans le but de créer des
@@ -1059,17 +1105,11 @@ restera sans effet sur les hauteurs de
 @code{@var{expression_musicale_2}}.
 
 @funindex \partcombineChords
-@funindex partcombineChords
 @funindex \partcombineApart
-@funindex partcombineApart
 @funindex \partcombineUnisono
-@funindex partcombineUnisono
 @funindex \partcombineSoloI
-@funindex partcombineSoloI
 @funindex \partcombineSoloII
-@funindex partcombineSoloII
 @funindex \partcombineAutomatic
-@funindex partcombineAutomatic
 
 En matière d'édition professionnelle, les voix sont souvent maintenues
 séparément et sur une durée conséquente, bien que les notes des
@@ -1209,7 +1249,6 @@ Certaines considérations apparaissent aussi dans les chapitres
 @cindex musique entremêlée
 
 @funindex \parallelMusic
-@funindex parallelMusic
 
 On peut écrire plusieurs voix de façon entremêlée.  La fonction
 @code{\parallelMusic} prend en charge une liste des variables à créer,

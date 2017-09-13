@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: es -*-
 @ignore
-    Translation of GIT committish: 19d0e8e1a9cee3444ec4915b1d2d116e67f5b3f7
+    Translation of GIT committish: 041cb33a404a829a8cdeeaebce17e45f613f10d8
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -61,7 +61,6 @@ pentagramas y grupos de ellos.
 @cindex tablatura, pauta de
 
 @funindex \drummode
-@funindex drummode
 @funindex DrumStaff
 @funindex RhythmicStaff
 @funindex TabStaff
@@ -227,8 +226,8 @@ del nombre del instrumento.  Para ver más detalles, consulte
 @ref{Nombres de instrumentos}.
 
 @lilypond[verbatim,quote]
-\new PianoStaff <<
-  \set PianoStaff.instrumentName = #"Piano"
+\new PianoStaff \with { instrumentName = #"Piano" }
+<<
   \new Staff \relative { c''1 c }
   \new Staff \relative { \clef bass c1 c }
 >>
@@ -424,9 +423,7 @@ terminar los pentagramas, y establecer secciones de ossia.
 @cindex líneas adicionales
 
 @funindex \startStaff
-@funindex startStaff
 @funindex \stopStaff
-@funindex stopStaff
 
 Se pueden usar las instrucciones @code{\stopStaff} y
 @code{\startStaff} para detener y (re)iniciar, respectivamente, la
@@ -609,9 +606,7 @@ Referencia de funcionamiento interno:
 @cindex escalado de pentagramas
 
 @funindex \startStaff
-@funindex startStaff
 @funindex \stopStaff
-@funindex stopStaff
 
 Los pentagramas @notation{Ossia} se pueden preparar mediante la
 creación de un pentagrama simultáneo nuevo en la posición
@@ -769,7 +764,6 @@ Referencia de funcionamiento interno:
 @funindex \RemoveAllEmptyStaves
 @funindex Staff_symbol_engraver
 @funindex \stopStaff
-@funindex stopStaff
 
 Se pueden ocultar las líneas del pentagrama quitando el grabador
 @code{Staff_symbol_engraver} del contexto de @code{Staff}.  Como
@@ -1008,20 +1002,14 @@ ignoran:
 @lilypond[verbatim,quote,ragged-right]
 prepPiccolo = <>^\markup \italic { muta in Piccolo }
 
+prepFlute = <>^\markup \italic { muta in Flauto }
+
 setPiccolo = {
-  \set Staff.instrumentName = #"Piccolo"
-  \set Staff.shortInstrumentName = #"Picc."
-  \set Staff.midiInstrument = #"piccolo"
   <>^\markup \bold { Piccolo }
   \transposition c''
 }
 
-prepFlute = <>^\markup \italic { muta in Flauto }
-
 setFlute = {
-  \set Staff.instrumentName = #"Flute"
-  \set Staff.shortInstrumentName = #"Flt."
-  \set Staff.midiInstrument = #"flute"
   <>^\markup \bold { Flute }
   \transposition c'
 }
@@ -1029,14 +1017,17 @@ setFlute = {
 \new Staff \with {
   instrumentName = #"Flute"
   shortInstrumentName = #"Flt."
-  midiInstrument = #"flute"
 }
 \relative {
   g'1 g g g \break
   g1 g \prepPiccolo R R \break
+  \set Staff.instrumentName = #"Piccolo"
+  \set Staff.shortInstrumentName = #"Picc."
   \setPiccolo
   g1 g g g \break
   g1 g \prepFlute R R \break
+  \set Staff.instrumentName = #"Flute"
+  \set Staff.shortInstrumentName = #"Flt."
   \setFlute
   g1 g g g
 }
@@ -1067,11 +1058,8 @@ Referencia de funcionamiento interno:
 @cindex notas guía
 
 @funindex \addQuote
-@funindex addQuote
 @funindex \quoteDuring
-@funindex quoteDuring
 @funindex \transposition
-@funindex transposition
 
 Es muy frecuente que una voz use las mismas notas que otra voz.
 Por ejemplo, los violines primero y segundo tocando la misma frase
@@ -1131,9 +1119,9 @@ oboeNotes = \relative {
 }
 @end lilypond
 
-Si una instrucción @code{\unfoldRepeat} dentro de una expresión
+Si una instrucción @code{\unfoldRepeats} dentro de una expresión
 musical se necesita imprimir al usar @code{\quoteDuring}, entonces
-debe contener también su propia instrucción @code{\unfoldRepeat};
+debe contener también su propia instrucción @code{\unfoldRepeats};
 
 @lilypond[verbatim,quote]
 fluteNotes = \relative {
@@ -1275,13 +1263,9 @@ otros puede dar como resultado una notación de pobre calidad.
 
 
 @funindex \cueDuring
-@funindex cueDuring
 @funindex \cueClef
-@funindex cueClef
 @funindex \cueDuringWithClef
-@funindex cueDuringWithClef
 @funindex \quoteDuring
-@funindex quoteDuring
 
 @cindex notas pequeñas
 @cindex pequeñas, notas
@@ -1448,7 +1432,7 @@ bassoonNotes = \relative c {
 
 De forma alternativa, puede usarse la función
 @code{\cueDuringWithClef} en su lugar.  Esta instrucción admite un
-argumento adicional para especificar el cambio de clabe que se
+argumento adicional para especificar el cambio de clave que se
 necesita imprimir para las notas guía, pero después imprime
 automáticamente la clave original una vez que ha finalizado la
 serie de notas guía.
@@ -1474,7 +1458,6 @@ bassoonNotes = \relative c {
 @end lilypond
 
 @funindex \transposedCueDuring
-@funindex transposedCueDuring
 
 Como @code{\quoteDuring}, @code{\cueDuring} tiene en cuenta las
 transposiciones instrumentales.  Las notas guía se producen en las
@@ -1486,7 +1469,7 @@ Para transportar las notas guía de forma diferente, use
 @code{\transposedCueDuring}.  Esta instrucción acepta un argumento
 adicional para especificar (en modo absoluto) la altura impresa
 con que queremos representar el sonido de un Do central de
-concierto.  Esto es útil para toma citas de un instrumento que
+concierto.  Esto es útil para extraer citas de un instrumento que
 está en un registro completamente diferente.
 
 @lilypond[verbatim,quote]
@@ -1517,7 +1500,6 @@ bassClarinetNotes = \relative c' {
 @cindex cue notes, removing
 
 @funindex \killCues
-@funindex killCues
 
 La instrucción @code{\killCues} elimina las notas guía de una
 expresión musical, de forma que la misma expresión musical pueda

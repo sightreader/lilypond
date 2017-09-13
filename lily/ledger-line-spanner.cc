@@ -140,16 +140,35 @@ Ledger_line_spanner::set_spacing_rods (SCM smob)
   return SCM_UNSPECIFIED;
 }
 
+struct Head_data
+{
+  int position_;
+  vector<Real> ledger_positions_;
+  Interval head_extent_;
+  Interval ledger_extent_;
+  Interval accidental_extent_;
+  Head_data ()
+  {
+    head_extent_.set_empty ();
+    ledger_extent_.set_empty ();
+    accidental_extent_.set_empty ();
+  }
+};
+
 struct Ledger_request
 {
-  Interval ledger_extent_;
-  Interval head_extent_;
-  int position_;
+  Interval max_ledger_extent_;
+  Interval max_head_extent_;
+  int max_position_;
+  vector <Head_data> heads_;
+  // The map's keys are vertical ledger line positions. The values are
+  // vectors of the x-extents of ledger lines.
+  map <Real, vector <Interval> > ledger_extents_;
   Ledger_request ()
   {
-    ledger_extent_.set_empty ();
-    head_extent_.set_empty ();
-    position_ = 0;
+    max_ledger_extent_.set_empty ();
+    max_head_extent_.set_empty ();
+    max_position_ = 0;
   }
 };
 
@@ -165,12 +184,12 @@ Ledger_line_spanner::print (SCM smob)
 {
   Spanner *me = unsmob<Spanner> (smob);
 
+  // Generate ledger requests from note head properties, etc.
   extract_grob_set (me, "note-heads", heads);
 
   if (heads.empty ())
     return SCM_EOL;
 
-  // find size of note heads.
   Grob *staff = Staff_symbol_referencer::get_staff_symbol (me);
   if (!staff)
     return SCM_EOL;
@@ -183,42 +202,55 @@ Ledger_line_spanner::print (SCM smob)
   Real length_fraction
     = robust_scm2double (me->get_property ("length-fraction"), 0.25);
 
-  Stencil ledgers;
-
-  Grob *common[NO_AXES];
-
-  for (int i = X_AXIS; i < NO_AXES; i++)
+  Grob *common_x = common_refpoint_of_array (heads, me, X_AXIS);
+  for (vsize i = heads.size (); i--;)
     {
-      Axis a = Axis (i);
-      common[a] = common_refpoint_of_array (heads, me, a);
-      for (vsize i = heads.size (); i--;)
-        if (Grob *g = unsmob<Grob> (me->get_object ("accidental-grob")))
-          common[a] = common[a]->common_refpoint (g, a);
+      if (Grob *g = unsmob<Grob> (heads[i]->get_object ("accidental-grob")))
+        common_x = common_x->common_refpoint (g, X_AXIS);
     }
 
   Ledger_requests reqs;
   for (vsize i = heads.size (); i--;)
     {
       Item *h = dynamic_cast<Item *> (heads[i]);
-
       int pos = Staff_symbol_referencer::get_rounded_position (h);
-      if (pos && !staff_extent.contains (pos))
+      vector<Real> ledger_positions =
+        Staff_symbol::ledger_positions (staff, pos, h);
+
+      // We work with all notes that produce ledgers and any notes that
+      // fall outside the staff that do not produce ledgers, such as
+      // notes in the first space just beyond the staff.
+      if (ledger_positions.size () != 0 || !staff_extent.contains (pos))
         {
-          Interval head_extent = h->extent (common[X_AXIS], X_AXIS);
+          Interval head_extent = h->extent (common_x, X_AXIS);
           Interval ledger_extent = head_extent;
           ledger_extent.widen (length_fraction * head_extent.length ());
 
-          Direction vdir = Direction (sign (pos));
+          Direction vdir = Direction (sign (pos != 0 ? pos : 1));
           int rank = h->get_column ()->get_rank ();
 
-          reqs[rank][vdir].ledger_extent_.unite (ledger_extent);
-          reqs[rank][vdir].head_extent_.unite (head_extent);
-          reqs[rank][vdir].position_
-            = vdir * max (vdir * reqs[rank][vdir].position_, vdir * pos);
+          reqs[rank][vdir].max_ledger_extent_.unite (ledger_extent);
+          reqs[rank][vdir].max_head_extent_.unite (head_extent);
+          reqs[rank][vdir].max_position_
+            = vdir * max (vdir * reqs[rank][vdir].max_position_,
+                          vdir * pos);
+          Head_data hd;
+          hd.position_ = pos;
+          hd.ledger_positions_ = ledger_positions;
+          hd.ledger_extent_ = ledger_extent;
+          hd.head_extent_ = head_extent;
+          if (Grob *g = unsmob<Grob> (h->get_object ("accidental-grob")))
+            hd.accidental_extent_ = g->extent (common_x, X_AXIS);
+          reqs[rank][vdir].heads_.push_back(hd);
         }
     }
 
-  // determine maximum size for non-colliding ledger.
+  if (reqs.size () == 0)
+    return SCM_EOL;
+
+  // Iterate through ledger requests and when ledger lines will be
+  // too close together horizontally, shorten max_ledger_extent to
+  // produce more space between them.
   Real gap = robust_scm2double (me->get_property ("gap"), 0.1);
   Ledger_requests::iterator last (reqs.end ());
   for (Ledger_requests::iterator i (reqs.begin ());
@@ -229,96 +261,137 @@ Ledger_line_spanner::print (SCM smob)
 
       for (DOWN_and_UP (d))
         {
-          if (!staff_extent.contains (last->second[d].position_)
-              && !staff_extent.contains (i->second[d].position_))
+          // Some rank--> vdir--> reqs will be 'empty' because notes
+          // will not be above AND below the staff for a given rank.
+          if (!staff_extent.contains (last->second[d].max_position_)
+              && !staff_extent.contains (i->second[d].max_position_))
             {
+              // Midpoint between the furthest bounds of the two heads.
               Real center
-                = (last->second[d].head_extent_[RIGHT]
-                   + i->second[d].head_extent_[LEFT]) / 2;
+                = (last->second[d].max_head_extent_[RIGHT]
+                   + i->second[d].max_head_extent_[LEFT]) / 2;
+
+              // Do both reqs have notes further than the first space
+              // beyond the staff?
+              // (due tilt of quarter note-heads)
+              /* FIXME */
+              bool both
+                = (!staff_extent.contains (last->second[d].max_position_
+                                           - sign (last->second[d].max_position_))
+                   && !staff_extent.contains (i->second[d].max_position_
+                                              - sign (i->second[d].max_position_)));
 
               for (LEFT_and_RIGHT (which))
                 {
                   Ledger_request &lr = ((which == LEFT) ? * last : *i).second[d];
 
-                  // due tilt of quarter note-heads
-                  /* FIXME */
-                  bool both
-                    = (!staff_extent.contains (last->second[d].position_
-                                               - sign (last->second[d].position_))
-                       && !staff_extent.contains (i->second[d].position_
-                                                  - sign (i->second[d].position_)));
                   Real limit = (center + (both ? which * gap / 2 : 0));
-                  lr.ledger_extent_.at (-which)
-                    = which * max (which * lr.ledger_extent_[-which], which * limit);
+                  lr.max_ledger_extent_.at (-which)
+                    = which * max (which * lr.max_ledger_extent_[-which],
+                                   which * limit);
                 }
             }
         }
     }
 
-  // create ledgers for note heads
-  Real ledgerlinethickness
-    = Staff_symbol::get_ledger_line_thickness (staff);
-  for (vsize i = heads.size (); i--;)
+  // Iterate through ledger requests and the data they have about each
+  // note head to generate the final extents for all ledger lines.
+  // Note heads of different widths produce different ledger extents.
+  for (Ledger_requests::iterator i (reqs.begin ());
+       i != reqs.end (); i++)
     {
-      Item *h = dynamic_cast<Item *> (heads[i]);
-
-      int pos = Staff_symbol_referencer::get_rounded_position (h);
-      vector<Real> ledger_positions = Staff_symbol::ledger_positions (staff, pos);
-      if (!ledger_positions.empty ())
+      for (DOWN_and_UP (d))
         {
-          int ledger_count = ledger_positions.size ();
-          Interval head_size = h->extent (common[X_AXIS], X_AXIS);
-          Interval ledger_size = head_size;
-          ledger_size.widen (ledger_size.length () * length_fraction);
-
-          if (pos && !staff_extent.contains (pos))
+          Ledger_request &lr = i->second[d];
+          for (vsize h = 0; h < lr.heads_.size (); h++)
             {
-              Interval max_size = reqs[h->get_column ()->get_rank ()]
-                                  [Direction (sign (pos))].ledger_extent_;
+              vector<Real> &ledger_posns = lr.heads_[h].ledger_positions_;
+              Interval &ledger_size = lr.heads_[h].ledger_extent_;
+              Interval &head_size = lr.heads_[h].head_extent_;
+              Interval &acc_extent = lr.heads_[h].accidental_extent_;
 
-              if (!max_size.is_empty ())
-                ledger_size.intersect (max_size);
-            }
+              // Limit ledger extents to a maximum to preserve space
+              // between ledgers when note heads get close.
+              if (!lr.max_ledger_extent_.is_empty ())
+                ledger_size.intersect (lr.max_ledger_extent_);
 
-          for (int i = 0; i < ledger_count; i++)
-            {
-              Real lpos = ledger_positions[i];
-              Interval x_extent = ledger_size;
+              // Iterate through the ledgers for a given note head.
+              for (vsize l = 0; l < ledger_posns.size (); l++)
+                {
+                  Real lpos = ledger_posns[l];
+                  Interval x_extent = ledger_size;
 
-              if (i == 0)
-                if (Grob *g = unsmob<Grob> (h->get_object ("accidental-grob")))
-                  {
-                    Interval accidental_size = g->extent (common[X_AXIS], X_AXIS);
-                    Real d
-                      = linear_combination (Drul_array<Real> (accidental_size[RIGHT],
-                                                              head_size[LEFT]),
-                                            0.0);
+                  // Notes with accidental signs get shorter ledgers.
+                  // (Only happens for the furthest note in the column.)
+                  if (l == 0 && !acc_extent.is_empty ())
+                    {
+                      Real dist
+                        = linear_combination (Drul_array<Real> (acc_extent[RIGHT],
+                                                                head_size[LEFT]),
+                                              0.0);
 
-                    Real left_shorten = max (-ledger_size[LEFT] + d, 0.0);
+                      Real left_shorten = max (-ledger_size[LEFT] + dist, 0.0);
+                      x_extent[LEFT] += left_shorten;
+                      /*
+                        TODO: shorten 2 ledger lines for the case
+                        natural + downstem.
+                      */
+                    }
+                  // When the extents of two ledgers at the same
+                  // vertical position overlap horizontally, we merge
+                  // them together to produce a single stencil.  In rare
+                  // cases they do not overlap and we do not merge them.
 
-                    x_extent[LEFT] += left_shorten;
-                    /*
-                      TODO: shorten 2 ledger lines for the case natural +
-                      downstem.
-                    */
-                  }
-
-              Real blotdiameter = ledgerlinethickness;
-              Interval y_extent
-                = Interval (-0.5 * (ledgerlinethickness),
-                            +0.5 * (ledgerlinethickness));
-              Stencil ledger_line
-                = Lookup::round_filled_box (Box (x_extent, y_extent), blotdiameter);
-
-              ledger_line.translate_axis ( lpos * halfspace, Y_AXIS);
-              ledgers.add_stencil (ledger_line);
+                  if (lr.ledger_extents_.find (lpos) == lr.ledger_extents_.end ())
+                    // Found nothing for this lpos.
+                    lr.ledger_extents_[lpos].push_back(x_extent);
+                  else
+                    {
+                      vector<Interval> &extents = lr.ledger_extents_.find (lpos)->second;
+                      for (vsize e = 0; e < extents.size (); e++)
+                        {
+                          if (intersection (extents[e], x_extent).is_empty ())
+                            extents.push_back (x_extent);
+                          else
+                            extents[e].unite (x_extent);
+                        }
+                    }
+                }
             }
         }
     }
 
-  ledgers.translate_axis (-me->relative_coordinate (common[X_AXIS], X_AXIS),
-                          X_AXIS);
+  // Create the stencil for the ledger line spanner by iterating
+  // through the ledger requests and their data on ledger extents.
+  Stencil ledgers;
+  Real thickness = Staff_symbol::get_ledger_line_thickness (staff);
+  Real half_thickness = thickness * 0.5;
+  Interval y_extent = Interval (-half_thickness, half_thickness);
 
+  for (Ledger_requests::iterator i (reqs.begin ()); i != reqs.end (); i++)
+    {
+      for (DOWN_and_UP (d))
+        {
+          map<Real, vector<Interval> > &lex = i->second[d].ledger_extents_;
+          for (map<Real, vector<Interval> >::iterator k = lex.begin ();
+               k != lex.end (); k++)
+            {
+              Real lpos = k->first;
+              vector<Interval> &x_extents = k->second;
+
+              for (vsize n = 0; n < x_extents.size (); n++)
+                {
+                  // thickness (ledger line thickness) is the blot diameter
+                  Stencil line = Lookup::round_filled_box (Box (x_extents[n], y_extent),
+                                                           thickness);
+
+                  line.translate_axis (lpos * halfspace, Y_AXIS);
+                  ledgers.add_stencil (line);
+                }
+            }
+        }
+    }
+  ledgers.translate_axis (-me->relative_coordinate (common_x, X_AXIS), X_AXIS);
   return ledgers.smobbed_copy ();
 }
 

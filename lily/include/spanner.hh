@@ -39,9 +39,16 @@
     is absolutely necessary for beams, since they have to adjust the
     length of stems of notes they encompass.
 */
-class Spanner : public Grob
+
+struct Preinit_Spanner
 {
   Drul_array<Item *> spanned_drul_;
+  SCM pure_property_cache_;
+  Preinit_Spanner ();
+};
+
+class Spanner : Preinit_Spanner, public Grob
+{
   vsize break_index_;
 
   DECLARE_CLASSNAME (Spanner);
@@ -82,8 +89,6 @@ public:
   void cache_pure_property (SCM sym, int start, int end, SCM value);
 
 protected:
-  SCM pure_property_cache_;
-
   void set_my_columns ();
   virtual Grob *clone () const;
   virtual void do_break_processing ();

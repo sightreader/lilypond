@@ -44,7 +44,8 @@ Instrument_switch_engraver::derived_mark () const
   scm_gc_mark (cue_name_);
 }
 
-Instrument_switch_engraver::Instrument_switch_engraver ()
+Instrument_switch_engraver::Instrument_switch_engraver (Context *c)
+  : Engraver (c)
 {
   cue_name_ = SCM_EOL;
   text_ = 0;
@@ -73,6 +74,12 @@ void
 Instrument_switch_engraver::stop_translation_time_step ()
 {
   text_ = 0;
+}
+
+void
+Instrument_switch_engraver::boot ()
+{
+
 }
 
 ADD_TRANSLATOR (Instrument_switch_engraver,

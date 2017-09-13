@@ -38,17 +38,17 @@ protected:
   // moment (global time) where percent started
   Moment start_mom_;
 
-  DECLARE_TRANSLATOR_LISTENER (double_percent);
+  void listen_double_percent (Stream_event *);
 
   void process_music ();
 };
 
-Double_percent_repeat_engraver::Double_percent_repeat_engraver ()
+Double_percent_repeat_engraver::Double_percent_repeat_engraver (Context *c)
+  : Engraver (c)
 {
   percent_event_ = 0;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Double_percent_repeat_engraver, double_percent);
 void
 Double_percent_repeat_engraver::listen_double_percent (Stream_event *ev)
 {
@@ -93,6 +93,12 @@ Double_percent_repeat_engraver::process_music ()
                                                       SCM_BOOL_T);
       percent_event_ = 0;
     }
+}
+
+void
+Double_percent_repeat_engraver::boot ()
+{
+  ADD_LISTENER (Double_percent_repeat_engraver, double_percent);
 }
 
 ADD_TRANSLATOR (Double_percent_repeat_engraver,

@@ -238,10 +238,7 @@ the more angular the shape of the parenthesis."
 
 (define-public (make-transparent-box-stencil xext yext)
   "Make a transparent box."
-  (ly:make-stencil
-   (list 'transparent-stencil
-         (ly:stencil-expr (make-filled-box-stencil xext yext)))
-   xext yext))
+  (ly:stencil-outline empty-stencil (make-filled-box-stencil xext yext)))
 
 (define-public (make-filled-box-stencil xext yext)
   "Make a filled box."
@@ -730,10 +727,12 @@ box, remains the same."
     replaced-stil))
 
 (define-public (stencil-with-color stencil color)
-  (ly:make-stencil
-   (list 'color color (ly:stencil-expr stencil))
-   (ly:stencil-extent stencil X)
-   (ly:stencil-extent stencil Y)))
+  (if (color? color)
+      (ly:make-stencil
+       (list 'color color (ly:stencil-expr stencil))
+       (ly:stencil-extent stencil X)
+       (ly:stencil-extent stencil Y))
+      stencil))
 
 (define*-public (stencil-whiteout-outline
                  stil #:optional (thickness 0.3) (color white)
@@ -751,21 +750,18 @@ of the white stencil we make between 0 and 2*pi."
       (begin
        (ly:warning "Both angle-increments and radial-increments must be positive numbers.")
        stil)
-      (let* ((2pi 6.283185307)
-             (angle-inc (/ 2pi angle-increments))
+      (let* ((angle-inc (/ 360 angle-increments))
              (radial-inc (/ thickness radial-increments)))
 
         (define (circle-plot ang dec radius original-stil new-stil)
-          ;; ang (angle) and dec (decrement) are in radians, not degrees
+          ;; ang (angle) and dec (decrement) are in degrees, not radians
           (if (<= ang 0)
               new-stil
               (circle-plot (- ang dec) dec radius original-stil
                 (ly:stencil-add
                  new-stil
                  (ly:stencil-translate original-stil
-                   (cons
-                    (* radius (cos ang))
-                    (* radius (sin ang))))))))
+                   (ly:directed ang radius))))))
 
         (define (radial-plot radius original-stil new-stil)
           (if (<= radius 0)
@@ -774,7 +770,7 @@ of the white stencil we make between 0 and 2*pi."
                 (radial-plot
                  (- radius radial-inc)
                  original-stil
-                 (circle-plot 2pi angle-inc
+                 (circle-plot 360 angle-inc
                    radius original-stil empty-stencil)))))
 
         (let ((whiteout-expr
@@ -820,6 +816,7 @@ based on @var{style}."
                       ((eq? style 'rounded-box) 3)
                       (else 0))))))
     (cond
+     ((eq? style 'special) stil)
      ((eq? style 'outline) (stencil-whiteout-outline stil thick))
      ((eq? style 'rounded-box) (stencil-whiteout-box stil thick (* 2 thick)))
      (else (stencil-whiteout-box stil thick)))))
@@ -1132,8 +1129,11 @@ grestore
          ((eq? head 'color) (interpret (caddr expr)))
          ((eq? head 'rotate-stencil) (interpret (caddr expr)))
          ((eq? head 'translate-stencil) (interpret (caddr expr)))
+         ;; for signatures, we indeed want the _outline_ rather than
+         ;; the expression interpreted.  Right?
+         ((eq? head 'with-outline) (interpret (cadr expr)))
          ((eq? head 'combine-stencil)
-          (for-each (lambda (e) (interpret e))  (cdr expr)))
+          (for-each interpret  (cdr expr)))
          (else
           (collect (fold-false-pairs (strip-floats expr))))
 

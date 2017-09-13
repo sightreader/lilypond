@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: 2034ca4fcbed9253b5a85e9360e47d3fe3ff1d09
+   Translation of GIT committish: 8e2eaf4959bec63a1128a444591a540f4f1e2937
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -124,7 +124,7 @@ Un bloc @code{\paper} ne doit donc en aucun cas prendre place au sein
 d'un bloc @code{\score}.
 
 Les valeurs des différents champs seront filtrées en respectant cette
-hiérarchie ; les valeuers définies le plus haut persisteront à moins
+hiérarchie ; les valeurs définies le plus haut persisteront à moins
 d'être remplacées à un niveau hiérarchique inférieur.
 
 Plusieurs blocs @code{\paper} peuvent cohabiter à un même niveau,
@@ -971,8 +971,9 @@ Les valeurs par défaut sont définies dans le fichier
 
 L'algorithme de calcul des sauts de page à utiliser.  Vous avez le choix
 entre @code{ly:minimal-breaking}, @code{ly:page-turn-breaking},
-@code{ly:one-line-breaking}, @code{ly:one-line-auto-height-breaking} et
-@code{ly:optimal-breaking} (activé par défaut).
+@code{ly:one-page-breaking}, @code{ly:one-line-breaking},
+@code{ly:one-line-auto-height-breaking}, et @code{ly:optimal-breaking}
+(activé par défaut).
 
 @item page-breaking-system-system-spacing
 @funindex page-breaking-system-system-spacing
@@ -1053,6 +1054,8 @@ Manuel de notation :
 @ref{Minimisation des sauts de page},
 @ref{Optimisation des sauts de page},
 @ref{Optimisation des tournes},
+@ref{Présentation en ligne continue},
+@ref{Présentation en page continue},
 @ref{Présentation en rouleau},
 @ref{Sauts de page}.
 
@@ -1464,12 +1467,12 @@ traditionnelle.
 @subheading Relation automatique entre fonte et taille
 @c VO Automatic font weight at different sizes
 
-La fonte Feta fournit les symboles musicaux dans huit tailles
-différentes.  Chaque fonte correspond à une hauteur particulière de
-portée ; les petites tailles comportent des symboles plus épais
-pour être cohérent avec l'épaisseur relativement plus importante des
-lignes de la portée.  Le tableau suivant répertorie les différentes
-tailles de police.
+La fonte Ementaler fournit le jeu de symboles musicaux @emph{Feta} dans
+huit tailles différentes.  Chaque fonte correspond à une hauteur
+particulière de portée ; les petites tailles comportent des symboles
+plus épais pour être cohérent avec l'épaisseur relativement plus
+importante des lignes de la portée.  Le tableau suivant répertorie les
+différentes tailles de police.
 
 @multitable @columnfractions .15 .2 .22 .2
 
@@ -1487,7 +1490,8 @@ tailles de police.
 
 @seealso
 Manuel de notation :
-@ref{Indication de la taille de fonte musicale}.
+@ref{Indication de la taille de fonte musicale},
+@ref{La fonte Emmentaler}.
 
 Morceaux choisis :
 @rlsrnamed{Spacing,Espacements}.
@@ -1688,6 +1692,7 @@ page, ainsi que les moyens de les modifier.
 * Saut de page manuel::
 * Optimisation des sauts de page::
 * Minimisation des sauts de page::
+* Présentation en page continue::
 * Présentation en ligne continue::
 * Présentation en rouleau::
 * Optimisation des tournes::
@@ -1846,6 +1851,29 @@ Morceaux choisis :
 @rlsrnamed{Spacing,Espacements}.
 
 
+@node Présentation en page continue
+@unnumberedsubsubsec Présentation en page continue
+@translationof One-page page breaking
+
+@funindex ly:one-page-breaking
+
+La fonction @code{ly:one-page-breaking} constitue un algorithme de
+calcul des sauts de page particulier en ceci que la hauteur de page sera
+automatiquement ajustée à la longueur de la partition, de telle sorte
+que toute la musique tienne sur une seule page.  La variable
+@code{paper-height} du bloc @code{\paper} est ignorée, mais les autres
+réglages restent disponibles.  En particulier, l'espacement entre le
+dernier système (ou un @emph{markup} de premier niveau) et le pied de
+page est réglable à l'aide de la variable @code{last-bottom-spacing}
+du bloc @code{\paper}.  La largeur de page n'est, par défaut, pas
+modifiée ; ceci peut s'ajuster à l'aide de la variable
+@code{paper-width} du bloc @code{\paper}.
+
+@knownissues
+@code{ly:one-page-breaking} est à ce jour incompatible avec
+l'utilisation de @code{\bookpart}.
+
+
 @node Présentation en ligne continue
 @unnumberedsubsubsec Présentation en ligne continue
 @translationof One-line page breaking
@@ -1853,7 +1881,7 @@ Morceaux choisis :
 @funindex ly:one-line-breaking
 
 La fonction @code{ly:one-line-breaking} constitue un algorithme de
-calcul des sauts de pages particulier en ceci que chaque partition fait
+calcul des sauts de page particulier en ceci que chaque partition fait
 l'objet d'une page unique, d'une seule ligne.  Cette fonctionnalité
 s'affranchit de l'impression des titres et marges ; seule la partition
 est affichée.
@@ -2575,11 +2603,12 @@ Une autre approche de l'espacement vertical est le recours à
 positionnement vertical absolu sur la page.
 
 @code{NonMusicalPaperColumn.line-break-system-details} prend en charge
-une liste associative de trois mises au point :
+une liste associative de quatre mises au point :
 
 @itemize
 @item @code{X-offset}
 @item @code{Y-offset}
+@item @code{extra-offset}
 @item @code{alignment-distances}
 @end itemize
 
@@ -2695,6 +2724,41 @@ comporter un certain nombre.  Vous aurez aussi noté que la propriété
 @code{Y-offset} détermine ici le point de départ de chacun des systèmes
 de la page.
 
+Contrairement au positionnement absolu accessible par @code{Y-offset} et
+@code{X-offset}, il est possible d'opter pour un positionnement relatif
+à l'aide de la propriété @code{extra-offset} des
+@code{line-break-system-details}. Le placement sera relatif à la mise en
+forme par défaut ou au positionnement absolu géré par @code{X-offset} et
+@code{Y-offset}. La propriété @code{extra-offset} prend en argument une
+@code{paire} constituée des déplacements sur les axes horizontal et
+vertical.
+
+@lilypond[verbatim,quote,staffsize=16]
+\header { tagline = ##f }
+\paper { left-margin = 0\mm }
+\book {
+  \score {
+    <<
+      \new Staff <<
+        \new Voice {
+          s1*5 \break
+          \overrideProperty Score.NonMusicalPaperColumn.line-break-system-details
+            #'((extra-offset . (0 . 10)))
+          s1*5 \break
+          \overrideProperty Score.NonMusicalPaperColumn.line-break-system-details
+            #'((extra-offset . (0 . 10)))
+          s1*5 \break
+        }
+        \new Voice { \repeat unfold 15 { c'4 c' c' c' } }
+      >>
+      \new Staff {
+        \repeat unfold 15 { d'4 d' d' d' }
+      }
+    >>
+  }
+}
+@end lilypond
+
 Maintenant que chaque système est explicitement positionné, nous pouvons
 jouer sur la distance séparant les portées de chacun des systèmes, grâce
 à la sous-propriété @code{alignment-distances} de
@@ -2781,10 +2845,11 @@ Lorsque vous utilisez @code{alignment-distances}, les paroles et
 autres lignes de non-portée ne comptent pas pour une portée.
 
 @item
-Les nombres fournis à @code{X-offset}, @code{Y-offset} et
-@code{alignment-distances} sont considérés comme des multiples de la
-distance entre des portées adjacentes.  Des valeurs positives remontent
-les portées et paroles, des valeurs négatives les descendent.
+Les nombres fournis à @code{X-offset}, @code{Y-offset},
+@code{extra-offset} et @code{alignment-distances} sont considérés comme
+des multiples de la distance entre des portées adjacentes. Des valeurs
+positives remontent les portées et paroles, des valeurs négatives les
+descendent.
 
 @item
 Dans la mesure où @code{NonMusicalPaperColumn.line-break-system-details}

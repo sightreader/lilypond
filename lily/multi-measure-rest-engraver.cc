@@ -40,8 +40,8 @@ public:
 protected:
   void process_music ();
   void start_translation_timestep ();
-  DECLARE_TRANSLATOR_LISTENER (multi_measure_rest);
-  DECLARE_TRANSLATOR_LISTENER (multi_measure_text);
+  void listen_multi_measure_rest (Stream_event *);
+  void listen_multi_measure_text (Stream_event *);
 
 private:
   void add_bound_item_to_grobs (Item *);
@@ -65,8 +65,9 @@ private:
   bool first_time_;
 };
 
-Multi_measure_rest_engraver::Multi_measure_rest_engraver ()
-  : rest_ev_ (0),
+Multi_measure_rest_engraver::Multi_measure_rest_engraver (Context *c)
+  : Engraver (c),
+    rest_ev_ (0),
     mmrest_ (0),
     start_measure_ (0),
     last_command_item_ (0),
@@ -74,7 +75,6 @@ Multi_measure_rest_engraver::Multi_measure_rest_engraver ()
 {
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Multi_measure_rest_engraver, multi_measure_rest);
 void
 Multi_measure_rest_engraver::listen_multi_measure_rest (Stream_event *ev)
 {
@@ -91,7 +91,6 @@ Multi_measure_rest_engraver::listen_multi_measure_rest (Stream_event *ev)
   clear_lapsed_events (now);
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Multi_measure_rest_engraver, multi_measure_text);
 void
 Multi_measure_rest_engraver::listen_multi_measure_text (Stream_event *ev)
 {
@@ -121,7 +120,7 @@ Multi_measure_rest_engraver::initialize_grobs ()
 {
   mmrest_ = make_spanner ("MultiMeasureRest", rest_ev_->self_scm ());
   text_.push_back (make_spanner ("MultiMeasureRestNumber",
-                                 rest_ev_->self_scm ()));
+                                 mmrest_->self_scm ()));
 
   if (text_events_.size ())
     {
@@ -147,7 +146,7 @@ Multi_measure_rest_engraver::initialize_grobs ()
           Grob *last = 0;
           for (vsize i = 0; i < text_.size (); i++)
             {
-              if (scm_is_eq (dir, text_[i]->get_property ("direction")))
+              if (ly_is_equal (dir, text_[i]->get_property ("direction")))
                 {
                   if (last)
                     Side_position_interface::add_support (text_[i], last);
@@ -243,6 +242,13 @@ void
 Multi_measure_rest_engraver::start_translation_timestep ()
 {
   clear_lapsed_events (now_mom ());
+}
+
+void
+Multi_measure_rest_engraver::boot ()
+{
+  ADD_LISTENER (Multi_measure_rest_engraver, multi_measure_rest);
+  ADD_LISTENER (Multi_measure_rest_engraver, multi_measure_text);
 }
 
 ADD_TRANSLATOR (Multi_measure_rest_engraver,

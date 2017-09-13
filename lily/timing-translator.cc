@@ -145,7 +145,8 @@ Timing_translator::measure_length () const
     return Rational (1);
 }
 
-Timing_translator::Timing_translator ()
+Timing_translator::Timing_translator (Context *c)
+  : Translator (c)
 {
 }
 
@@ -222,6 +223,12 @@ Timing_translator::start_translation_timestep ()
 }
 
 #include "translator.icc"
+
+void
+Timing_translator::boot ()
+{
+
+}
 
 ADD_TRANSLATOR (Timing_translator,
                 /* doc */

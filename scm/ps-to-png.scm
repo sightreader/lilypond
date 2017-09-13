@@ -69,6 +69,8 @@
            (search-pnmtopng)
            tmp2-name)))
 
+    (close-port port-tmp1)
+    (close-port port-tmp2)
     (ly:debug (_ "Copying `~a' to `~a'...") file tmp1-name)
     (copy-binary-file file tmp1-name)
     (ly:system-with-shell cmd)
@@ -143,6 +145,7 @@
                     "-dNOPAUSE"
                     "-dBATCH"
                     (ly:format "-sDEVICE=~a" pixmap-format)
+                    "-dAutoRotatePages=/None"
                     (string-append "-sOutputFile=" output-file)
                     (ly:format "-r~a" (* anti-alias-factor resolution))
                     (string-append "-f" tmp-name))))

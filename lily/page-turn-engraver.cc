@@ -97,8 +97,8 @@ class Page_turn_engraver : public Engraver
   Grob *breakable_column (Page_turn_event const &);
 
 protected:
-  DECLARE_TRANSLATOR_LISTENER (break);
-  DECLARE_ACKNOWLEDGER (note_head);
+  void listen_break (Stream_event *);
+  void acknowledge_note_head (Grob_info);
 
 public:
   TRANSLATOR_DECLARATIONS (Page_turn_engraver);
@@ -107,7 +107,8 @@ public:
   void finalize ();
 };
 
-Page_turn_engraver::Page_turn_engraver ()
+Page_turn_engraver::Page_turn_engraver (Context *c)
+  : Engraver (c)
 {
   repeat_begin_ = Moment (-1);
   repeat_begin_rest_length_ = 0;
@@ -168,7 +169,6 @@ Page_turn_engraver::acknowledge_note_head (Grob_info gi)
   note_end_ = now_mom () + dur_ptr->get_length ();
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Page_turn_engraver, break);
 void
 Page_turn_engraver::listen_break (Stream_event *ev)
 {
@@ -342,7 +342,13 @@ Page_turn_engraver::finalize ()
     }
 }
 
-ADD_ACKNOWLEDGER (Page_turn_engraver, note_head);
+
+void
+Page_turn_engraver::boot ()
+{
+  ADD_LISTENER (Page_turn_engraver, break);
+  ADD_ACKNOWLEDGER (Page_turn_engraver, note_head);
+}
 
 ADD_TRANSLATOR (Page_turn_engraver,
                 /* doc */

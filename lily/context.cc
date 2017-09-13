@@ -49,10 +49,14 @@ Context::check_removal ()
       ctx->check_removal ();
       if (ctx->is_removable ())
         {
-          recurse_over_translators (ctx, &Translator::finalize,
-                                    &Translator_group::finalize,
-                                    UP);
-          send_stream_event (ctx, "RemoveContext", 0, 0);
+          recurse_over_translators
+            (ctx,
+             Callback0_wrapper::make_smob
+             <Translator, &Translator::finalize> (),
+             Callback0_wrapper::make_smob
+             <Translator_group, &Translator_group::finalize> (),
+             UP);
+          send_stream_event (ctx, "RemoveContext", 0);
         }
     }
 }
@@ -522,18 +526,62 @@ Context::internal_get_property (SCM sym) const
 }
 
 /*
-Called by the send_stream_event macro. props is a 0-terminated array of
-properties and corresponding values, interleaved. This method should not
-be called from any other place than the send_stream_event macro.
+These methods should not be called from any other place than the
+send_stream_event macro.
 */
+
 void
-Context::internal_send_stream_event (SCM type, Input *origin, SCM props[])
+Context::internal_send_stream_event (SCM type, Input *origin)
 {
   Stream_event *e = new Stream_event (Lily::ly_make_event_class (type), origin);
-  for (int i = 0; props[i]; i += 2)
-    {
-      e->set_property (props[i], props[i + 1]);
-    }
+  event_source_->broadcast (e);
+  e->unprotect ();
+}
+
+void
+Context::internal_send_stream_event (SCM type, Input *origin,
+                                     SCM prop, SCM val)
+{
+  Stream_event *e = new Stream_event (Lily::ly_make_event_class (type), origin);
+  e->set_property (prop, val);
+  event_source_->broadcast (e);
+  e->unprotect ();
+}
+
+void
+Context::internal_send_stream_event (SCM type, Input *origin,
+                                     SCM prop, SCM val, SCM prop2, SCM val2)
+{
+  Stream_event *e = new Stream_event (Lily::ly_make_event_class (type), origin);
+  e->set_property (prop, val);
+  e->set_property (prop2, val2);
+  event_source_->broadcast (e);
+  e->unprotect ();
+}
+
+void
+Context::internal_send_stream_event (SCM type, Input *origin,
+                                     SCM prop, SCM val, SCM prop2, SCM val2,
+                                     SCM prop3, SCM val3)
+{
+  Stream_event *e = new Stream_event (Lily::ly_make_event_class (type), origin);
+  e->set_property (prop, val);
+  e->set_property (prop2, val2);
+  e->set_property (prop3, val3);
+  event_source_->broadcast (e);
+  e->unprotect ();
+}
+
+void
+Context::internal_send_stream_event (SCM type, Input *origin,
+                                     SCM prop, SCM val, SCM prop2, SCM val2,
+                                     SCM prop3, SCM val3, SCM prop4, SCM val4)
+{
+  Stream_event *e = new Stream_event (Lily::ly_make_event_class (type), origin);
+  e->set_property (prop, val);
+  e->set_property (prop2, val2);
+  e->set_property (prop3, val3);
+  e->set_property (prop4, val4);
   event_source_->broadcast (e);
   e->unprotect ();
 }
@@ -626,11 +674,12 @@ find_context_above (Context *where, SCM type)
 Context *
 find_context_above_by_parent_type (Context *where, SCM parent_type)
 {
-  for (Context *child = 0; where;
-       child = where, where = where->get_parent_context ())
-    if (where->is_alias (parent_type))
-      return child;
-
+  while (Context *parent = where->get_parent_context ())
+    {
+      if (parent->is_alias (parent_type))
+        return where;
+      where = parent;
+    }
   return 0;
 }
 
@@ -752,6 +801,11 @@ Context::print_smob (SCM port, scm_print_state *) const
   return 1;
 }
 
+void
+Context::derived_mark () const
+{
+}
+
 SCM
 Context::mark_smob () const
 {
@@ -772,10 +826,12 @@ Context::mark_smob () const
   if (events_below_)
     scm_gc_mark (events_below_->self_scm ());
 
+  derived_mark ();
+
   return properties_scm_;
 }
 
-const char Context::type_p_name_[] = "ly:context?";
+const char * const Context::type_p_name_ = "ly:context?";
 
 Global_context *
 Context::get_global_context () const

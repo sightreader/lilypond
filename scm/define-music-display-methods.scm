@@ -89,8 +89,7 @@ expression."
   (define (pitch= pitch1 pitch2)
     (and (= (ly:pitch-notename pitch1) (ly:pitch-notename pitch2))
          (= (ly:pitch-alteration pitch1) (ly:pitch-alteration pitch2))))
-  (let* ((pitches (ly:parser-lookup 'pitchnames))
-         (result (rassoc ly-pitch pitches pitch=)))
+  (let* ((result (rassoc ly-pitch pitchnames pitch=)))
     (and result (car result))))
 
 (define-public (octave->lily-string pitch)
@@ -386,20 +385,6 @@ expression."
                                         (music->lily-string music))
                                       (ly:music-property sim 'elements)))))
 
-(define-extra-display-method SimultaneousMusic (expr)
-  "If `sim' is an \afterGrace expression, return \"\\afterGrace ...\".
-Otherwise, return #f."
-  ;; TODO: do something with afterGraceFraction?
-  (with-music-match (expr (music 'SimultaneousMusic
-                                 elements (?before-grace
-                                           (music 'SequentialMusic
-                                                  elements ((music 'SkipMusic)
-                                                            (music 'GraceMusic
-                                                                   element ?grace))))))
-                    (format #f "\\afterGrace ~a ~a"
-                            (music->lily-string ?before-grace)
-                            (music->lily-string ?grace))))
-
 ;;;
 ;;; Chords
 ;;;
@@ -552,10 +537,9 @@ Otherwise, return #f."
   (music->lily-string (ly:music-property chord 'element)))
 
 (define-display-method MarkEvent (mark)
-  (let ((label (ly:music-property mark 'label)))
-    (if (null? label)
-        "\\mark \\default"
-        (format #f "\\mark ~a" (markup->lily-string label)))))
+  (let ((label (ly:music-property mark 'label #f)))
+    (string-append "\\mark "
+                   (if label (value->lily-string label) "\\default"))))
 
 (define-display-method KeyChangeEvent (key)
   (let ((pitch-alist (ly:music-property key 'pitch-alist))
@@ -629,7 +613,7 @@ Otherwise, return #f."
                       (format #f "~s" string)
                       string))
                 (markup->lily-string text)))
-          (map-in-order (lambda (m) (music->lily-string m))
+          (map-in-order music->lily-string
                         (ly:music-property lyric 'articulations))))
 
 (define-display-method BreathingEvent (event)
@@ -740,6 +724,26 @@ Otherwise, return #f."
             (parameterize ((*current-context* ctype))
                           (music->lily-string music)))))
 
+;; \afterGrace
+(define-extra-display-method ContextSpeccedMusic (expr)
+  "If `sim' is an \afterGrace expression, return \"\\afterGrace ...\".
+Otherwise, return #f."
+  ;; TODO: do something with afterGraceFraction?
+  (with-music-match
+   (expr (music 'ContextSpeccedMusic
+                context-type 'Bottom
+                element
+                (music 'SimultaneousMusic
+                       elements (?before-grace
+                                 (music 'SequentialMusic
+                                        elements ((music 'SkipMusic)
+                                                  (music 'GraceMusic
+                                                         element ?grace)))))))
+   (format #f "\\afterGrace ~a ~a"
+           (music->lily-string ?before-grace)
+            (music->lily-string ?grace))))
+
+
 ;; special cases: \figures \lyrics \drums
 (define-extra-display-method ContextSpeccedMusic (expr)
   (with-music-match (expr (music 'ContextSpeccedMusic
@@ -780,8 +784,6 @@ Otherwise, return #f."
 (define-public (value->lily-string arg)
   (cond ((ly:music? arg)
          (music->lily-string arg))
-        ((string? arg)
-         (format #f "#~s" arg))
         ((markup? arg)
          (markup->lily-string arg))
         ((ly:duration? arg)
@@ -801,9 +803,9 @@ Otherwise, return #f."
             (if (and (not (null? once)))
                 "\\once "
                 "")
-            (if (eqv? (*current-context*) 'Bottom)
+            (if (eq? (*current-context*) 'Bottom)
                 ""
-                (format #f "~a . " (*current-context*)))
+                (format #f "~a." (*current-context*)))
             property
             (value->lily-string value)
             (new-line->lily-string))))
@@ -811,9 +813,9 @@ Otherwise, return #f."
 (define-display-method PropertyUnset (expr)
   (format #f "~a\\unset ~a~a~a"
           (if (ly:music-property expr 'once #f) "\\once " "")
-          (if (eqv? (*current-context*) 'Bottom)
+          (if (eq? (*current-context*) 'Bottom)
               ""
-              (format #f "~a . " (*current-context*)))
+              (format #f "~a." (*current-context*)))
           (ly:music-property expr 'symbol)
           (new-line->lily-string)))
 
@@ -860,7 +862,11 @@ Otherwise, return #f."
                 num den
                 (new-line->lily-string))
         (format #f
-                "\\time #'~a ~a/~a~a"
+                ;; This is silly but the latter will also work for #f
+                ;; and other
+                (if (key-list? structure)
+                    "\\time ~{~a~^,~} ~a/~a~a"
+                    "\\time #'~a ~a/~a~a")
                 structure num den
                 (new-line->lily-string)))))
 
@@ -1044,7 +1050,8 @@ Otherwise, return #f."
                                          (music 'ContextSpeccedMusic
                                                 context-id "null"
                                                 context-type 'NullVoice)
-                                         ?pc-music))))
+                                         ?pc-music
+                                         ?pc-marks))))
    (with-music-match
     (?pc-music (music 'PartCombineMusic))
     (format #f "~a" (music->lily-string ?pc-music)))))

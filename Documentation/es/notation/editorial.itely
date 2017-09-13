@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: es -*-
 @c This file is included from notation.itely
 @ignore
-    Translation of GIT committish: a22f2ad68fccb81e52f805ba69cb8c0e6bf8cd82
+    Translation of GIT committish: dbc2dd143e50e000a39883fc8217b4ec60e08657
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -349,7 +349,6 @@ instrucciones @code{\newSpacingSection}, y/o las instrucciones
 @cindex cambio de dedo
 
 @funindex \finger
-@funindex finger
 
 Las instrucciones de digitación se pueden introducir usando
 @samp{@var{nota}-@var{dígito}}:
@@ -370,7 +369,6 @@ texto o de cadenas de caracteres.
 @cindex thumb-script
 
 @funindex \thumb
-@funindex thumb
 
 Puede usar la articulación de pulgar para indicar que una nota se
 debe tocar con el pulgar (p.ej. en música de violoncello).
@@ -433,9 +431,7 @@ Referencia de funcionamiento interno:
 @cindex notas transparentes
 
 @funindex \hideNotes
-@funindex hideNotes
 @funindex \unHideNotes
-@funindex unHideNotes
 
 Las notas ocultas (o invisibles, o transparentes) pueden ser de
 utilidad en la preparación de ejercicios de teoría o de
@@ -509,7 +505,6 @@ Referencia de funcionamiento interno:
 
 @funindex color
 @funindex \with-color
-@funindex with-color
 @funindex x11-color
 
 Se pueden asignar colores a los objetos individuales.  Los nombres
@@ -538,12 +533,13 @@ Si @code{x11-color} no entiende el parámetro, el color
 predeterminado que se devuelve es el negro.
 
 @lilypond[verbatim,quote]
-\relative c'' {
-  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
   }
-
+  \relative c'' {
+  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
   gis8 a
   \override Beam.color = #(x11-color "medium turquoise")
   gis a
@@ -567,12 +563,13 @@ Se pueden especificar colores RGB exactos utilizando la función de
 Scheme @code{rgb-color}.
 
 @lilypond[verbatim,quote]
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
+  }
 \relative c'' {
   \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
-  }
-
   \override Stem.color = #(rgb-color 0 0 0)
   gis8 a
   \override Stem.color = #(rgb-color 1 1 1)
@@ -625,7 +622,6 @@ Consulte @ref{La instrucción tweak} para ver más detalles.
 @cindex corchetes
 
 @funindex \parenthesize
-@funindex parenthesize
 
 Los objetos se pueden encerrar entre paréntesis anteponiendo
 @code{\parenthesize} al evento musical.  Si se aplica a un acorde,
@@ -679,11 +675,8 @@ grande rodeando al acorde completo.
 @cindex plica neutral
 
 @funindex \stemUp
-@funindex stemUp
 @funindex \stemDown
-@funindex stemDown
 @funindex \stemNeutral
-@funindex stemNeutral
 
 Cuando se encuentra con una nota, se crea automáticamente un
 objeto @code{Stem} (plica).  Para las redondas y los silencios,
@@ -748,9 +741,7 @@ del pentagrama, desde fuera del pentagrama.
 @funindex balloonGrobText
 @funindex balloonText
 @funindex \balloonLengthOn
-@funindex balloonLengthOn
 @funindex \balloonLengthOff
-@funindex balloonLengthOff
 
 Los elementos de notación se pueden marcar y nombrar con la ayuda
 de un cartel o globo de ayuda rectangular.  El propósito principal
@@ -892,9 +883,7 @@ Referencia de funcionamiento interno:
 
 @funindex Horizontal_bracket_engraver
 @funindex \startGroup
-@funindex startGroup
 @funindex \stopGroup
-@funindex stopGroup
 
 Los corchetes se usan en análisis musical para indicar la
 estructura de las piezas musicales.  Están contemplados los
@@ -930,12 +919,19 @@ Los corchetes de análisis se pueden anidar.
 }
 @end lilypond
 
-@seealso
-Fragmentos de código:
-@rlsr{Editorial annotations}.
+@snippets
 
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-above-the-staff.ly}
+
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-with-labels.ly}
+
+@seealso
 Referencia de funcionamiento interno:
 @rinternals{Horizontal_bracket_engraver},
 @rinternals{HorizontalBracket},
 @rinternals{horizontal-bracket-interface},
+@rinternals{HorizontalBracketText},
+@rinternals{horizontal-bracket-text-interface},
 @rinternals{Staff}.

@@ -6,6 +6,10 @@
     version that you are working on.  See TRANSLATION for details.
 @end ignore
 
+@c Translators: Walter Garcia-Fontes
+@c Translation checkers:
+
+
 @include included/generating-output.itexi
 
 @macro warningTextBased
@@ -102,7 +106,7 @@ el nostre ample de banda.
 @sourceimage{VTlogo_ITF,,,}
 @sourceimage{lao_banner_06_on_white_demo,,,}
 
-@subheading Legalismos
+@subheading Legalismes
 
 @divClass{legal}
 Es reconeix el copyright i la marca registrada de tots els

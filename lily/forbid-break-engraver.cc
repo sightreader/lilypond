@@ -33,7 +33,8 @@ public:
   void start_translation_timestep ();
 };
 
-Forbid_line_break_engraver::Forbid_line_break_engraver ()
+Forbid_line_break_engraver::Forbid_line_break_engraver (Context *c)
+  : Engraver (c)
 {
 }
 
@@ -56,6 +57,12 @@ Forbid_line_break_engraver::start_translation_timestep ()
         context ()->get_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
       busy = scm_cdr (busy);
     }
+}
+
+void
+Forbid_line_break_engraver::boot ()
+{
+
 }
 
 ADD_TRANSLATOR (Forbid_line_break_engraver,

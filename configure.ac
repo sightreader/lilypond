@@ -38,6 +38,12 @@ AC_ARG_WITH(texgyre-dir,
     [TEXGYRE_DIR=$withval],
     [TEXGYRE_DIR=""])
 
+AC_ARG_WITH(urwotf-dir,
+    [AS_HELP_STRING([--with-urwotf-dir=DIR],
+		    [location of URW++ OTF fonts.])],
+    [URWOTF_DIR=$withval],
+    [URWOTF_DIR=""])
+
 reloc_b=no
 AC_ARG_ENABLE(relocation,
     [AS_HELP_STRING([--enable-relocation],
@@ -103,6 +109,54 @@ if test "$TEXGYRE_DIR" = "" -o "$MISSING_TEXGYRE_FILES" != ""; then
 else
   AC_MSG_RESULT(yes)
 fi
+AC_MSG_CHECKING([for URW++ OTF files])
+AC_SUBST(URWOTF_DIR)
+AC_SUBST(URWOTF_FILES)
+if test "$URWOTF_DIR" = ""; then
+  if test "$FCLIST" != ""; then
+    URWOTF_FILE=`$FCLIST "C059:fontformat=CFF" file | head -n 1`
+    if test "$URWOTF_FILE" != ""; then
+      URWOTF_FILE=`echo $URWOTF_FILE | sed 's/\(:.*\)$//g'`
+      URWOTF_FILE=`$PYTHON "$srcdir/scripts/auxiliar/readlink.py" $URWOTF_FILE`
+      URWOTF_DIR=`AS_DIRNAME($URWOTF_FILE)`
+    fi
+  fi
+fi
+if test "$URWOTF_DIR" != "" ;  then
+  for f in C059-BdIta.otf C059-Bold.otf \
+           C059-Italic.otf C059-Roman.otf \
+           NimbusMonoPS-Bold.otf NimbusMonoPS-BoldItalic.otf \
+           NimbusMonoPS-Italic.otf NimbusMonoPS-Regular.otf \
+           NimbusSans-Bold.otf NimbusSans-BoldItalic.otf \
+           NimbusSans-Italic.otf NimbusSans-Regular.otf; do
+    if test ! -f "$URWOTF_DIR/$f"; then
+      MISSING_URWOTF_FILES="$MISSING_URWOTF_FILES $f"
+    else
+      URWOTF_FILES="$URWOTF_FILES $f"
+    fi
+  done
+fi
+if test "$MISSING_URWOTF_FILES"="NimbusSans-BoldItalic.otf NimbusSans-Italic.otf" && \
+   test -f "$URWOTF_DIR/NimbusSans-BoldOblique.otf" && \
+   test -f "$URWOTF_DIR/NimbusSans-Oblique.otf"; then
+  MISSING_URWOTF_FILES=""
+  URWOTF_FILES="$URWOTF_FILES NimbusSans-BoldOblique.otf NimbusSans-Oblique.otf"
+fi
+if test "$URWOTF_DIR" = "" -o "$MISSING_URWOTF_FILES" != ""; then
+  AC_MSG_RESULT(no)
+  STEPMAKE_ADD_ENTRY(OPTIONAL,URW++ OTF fonts)
+  if test "$URWOTF_DIR" = ""; then
+    if test "$FCLIST" = ""; then
+      STEPMAKE_ADD_ENTRY(OPTIONAL,'(install the fc-list utility from FontConfig, or use --with-urwotf-dir)')
+    else
+      STEPMAKE_ADD_ENTRY(OPTIONAL,"(download OTF files from 'http://git.ghostscript.com/?p=urw-core35-fonts.git;a=tree;hb=91edd6ece36e84a1c6d63a1cf63a1a6d84bd443a' and put them under '~/.local/share/fonts' etc., or use --with-urwotf-dir)")
+    fi
+  else
+    STEPMAKE_ADD_ENTRY(OPTIONAL,'(these files are missing: $MISSING_URWOTF_FILES)')
+  fi
+else
+  AC_MSG_RESULT(yes)
+fi
 
 AC_LANG([C++])
 
@@ -133,7 +187,7 @@ STEPMAKE_TEXMF(REQUIRED)
 STEPMAKE_TEXMF_DIRS(REQUIRED)
 if test "$GUILEv2" = "yes"
 then
-    STEPMAKE_GUILE_DEVEL(REQUIRED, 2.0.7, 2.2.0)
+    STEPMAKE_GUILE_DEVEL(REQUIRED, 2.0.7, 2.3.0)
 else
     STEPMAKE_GUILE_DEVEL(REQUIRED, 1.8.2, 1.9.0)
 fi
@@ -212,14 +266,22 @@ AC_MSG_RESULT($rpath_b)
 HOST_ARCH=`$CC -dumpmachine`
 AC_SUBST(HOST_ARCH)
 
-STEPMAKE_PANGO_FT2(pangoft2, REQUIRED, 1.6.0)
+STEPMAKE_PANGO_FT2_WITH_OTF_FEATURE(pangoft2, OPTIONAL, 1.38.0)
+if test "$have_pangoft2_with_otf_feature" != yes ; then
+    STEPMAKE_PANGO_FT2(pangoft2, REQUIRED, 1.6.0)
+fi
 STEPMAKE_FONTCONFIG(fontconfig, REQUIRED, 2.4.0)
 STEPMAKE_FREETYPE2(freetype2, REQUIRED, 2.1.10)
 
 STEPMAKE_WINDOWS
 
 # guile executable for some scripts
-STEPMAKE_GUILE(OPTIONAL, 1.8.2, 1.9.0)
+if test "$GUILEv2" = "yes"
+then
+    STEPMAKE_GUILE(OPTIONAL, 2.0.7, 2.3.0)
+else
+    STEPMAKE_GUILE(OPTIONAL, 1.8.2, 1.9.0)
+fi
 
 # perl for help2man and for mf2pt1.pl
 STEPMAKE_PERL(REQUIRED)
@@ -233,6 +295,30 @@ fi
 
 STEPMAKE_PATH_PROG(GHOSTSCRIPT, gs, $DOCUMENTATION_REQUIRED, 8.60)
 
+AC_SUBST(GS920)
+AC_SUBST(EXTRACTPDFMARK)
+AC_SUBST(USE_EXTRACTPDFMARK)
+STEPMAKE_PROGS(GS920, gs, OPTIONAL, 9.20)
+STEPMAKE_PROGS(EXTRACTPDFMARK, extractpdfmark, OPTIONAL)
+req=`STEPMAKE_NUMERIC_VERSION(9.20)`
+USE_EXTRACTPDFMARK=yes
+if test "$GS920_VERSION" -lt "$req"; then
+    GS920=
+    USE_EXTRACTPDFMARK=no
+fi
+if test "$EXTRACTPDFMARK" != "extractpdfmark"; then
+    EXTRACTPDFMARK=
+    USE_EXTRACTPDFMARK=no
+fi
+if test "$USE_EXTRACTPDFMARK" != "yes"; then
+    STEPMAKE_ADD_ENTRY(OPTIONAL,
+        ["(Optionally using Ghostscript >= 9.20 together with"])
+    STEPMAKE_ADD_ENTRY(OPTIONAL,
+        [" Extract PDFmark can significantly reduce the disk space required"])
+    STEPMAKE_ADD_ENTRY(OPTIONAL,
+        [" for building the documentation and the final PDF files.)"])
+fi
+
 STEPMAKE_PROGS(MAKEINFO, makeinfo, REQUIRED, 4.11)
 STEPMAKE_PROGS(TEXI2HTML, texi2html, $DOCUMENTATION_REQUIRED, 1.82)
 STEPMAKE_PROGS(DBLATEX, dblatex, $DOCUMENTATION_REQUIRED, 0.1.4)
@@ -240,6 +326,11 @@ STEPMAKE_PROGS(BIBTEX, bibtex, $DOCUMENTATION_REQUIRED)
 STEPMAKE_PROGS(PDFLATEX, xelatex pdflatex, $DOCUMENTATION_REQUIRED)
 if test "$PDFLATEX" = "xelatex"; then
     STEPMAKE_PROGS(PDFTEX, xetex, $DOCUMENTATION_REQUIRED)
+    if test "$PDFTEX" = "xetex"; then
+        # For avoiding PDF destination name replacement.
+        PDFTEX=$ugh_ugh_autoconf250_builddir/scripts/build/out$CONFIGSUFFIX/xetex-with-options
+        PDFLATEX=$ugh_ugh_autoconf250_builddir/scripts/build/out$CONFIGSUFFIX/xelatex-with-options
+    fi
 else
     STEPMAKE_PROGS(PDFTEX, pdfetex pdftex etex, $DOCUMENTATION_REQUIRED)
 fi

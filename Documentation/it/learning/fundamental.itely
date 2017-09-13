@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 
 @ignore
-    Translation of GIT committish: 8451fc41680f500fff56f826017b53dc3dcbf65d
+    Translation of GIT committish: 4244c3a9fbf1f3ff2e20e665f92516d35b61de53
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -71,9 +71,7 @@ Ci sono molte varianti a questo modello di base, ma questo esempio
 serve da utile punto di partenza.
 
 @funindex \book
-@funindex book
 @funindex \score
-@funindex score
 @cindex book (libro)
 @cindex score (partitura)
 @cindex libro
@@ -122,7 +120,7 @@ semplici questo metodo funziona bene, ma per quelli più complessi, soprattutto
 quando vengono usati ulteriori comandi, la creazione implicita dei contesti
 può dare risultati inattesi, ad esempio creando dei righi non voluti.
 Il modo per creare i contesti esplicitamente è spiegato in
-@ref{Contexts and engravers}.
+@ref{Contesti e incisori}.
 
 @warning{Quando si inseriscono più di poche linee di musica, si consiglia
 di creare sempre esplicitamente i righi e le voci.}
@@ -159,11 +157,8 @@ elementi, come ad esempio
 @end example
 
 @funindex \header
-@funindex header
 @funindex \layout
-@funindex layout
 @funindex \midi
-@funindex midi
 @cindex header
 @cindex layout
 @cindex midi
@@ -189,7 +184,6 @@ Guida alla notazione, in @ruser{Formattazione della partitura}, e
 @cindex libro, blocco implicito
 @cindex implicito, blocco del libro
 @funindex \book
-@funindex book
 
 Puoi scrivere molteplici blocchi @code{\score}.  Ciascuno verrà
 trattato come una partitura separata, ma saranno tutti combinati in
@@ -222,7 +216,7 @@ Per maggiori dettagli si veda @ruser{Molteplici partiture in un libro}.
 @cindex variabili
 
 Un'altra grande scorciatoia è la possibilità di definire variabili, come è
-spiegato in @ref{Organizing pieces with variables}).  Tutti
+spiegato in @ref{Organizzare i brani con le variabili}).  Tutti
 i modelli usano questa forma
 
 @example
@@ -255,7 +249,6 @@ Per una definizione completa del formato di input, si veda
 @translationof Score is a (single) compound musical expression
 
 @funindex \score
-@funindex score
 @cindex partitura
 @cindex score
 @cindex contenuto di un blocco score
@@ -264,7 +257,7 @@ Per una definizione completa del formato di input, si veda
 @cindex composta, espressione musicale
 
 Abbiamo visto l'organizzazione generale dei file di input di LilyPond nella
-sezione precedente, @ref{Introduction to the LilyPond file structure}.
+sezione precedente, @ref{Introduzione alla struttura di un file di LilyPond}.
 Ma sembra che abbiamo saltato la parte più importante: cosa dobbiamo
 scrivere dopo @code{\score}?
 
@@ -277,7 +270,7 @@ semplicemente, che @emph{non c'è} alcun mistero.  La seguente frase spiega tutt
 
 @noindent
 Per capire cosa si intende per espressione musicale, potrebbe esserti utile
-ripassare il tutorial, @ref{Music expressions explained}.  In quella sezione, abbiamo
+ripassare il tutorial, @ref{Espressioni musicali}.  In quella sezione, abbiamo
 visto come costruire grandi espressioni musicali a partire da piccoli brani --
 abbiamo iniziato con le note, poi gli accordi, etc.  Adesso inizieremo da una
 grande espressione musicale e proseguiremo poi a spiegarne i dettagli. Per
@@ -313,7 +306,7 @@ simultanee, ad esempio due voci simultanee, o una voce con del testo.  Vogliamo
 avere una voce con del testo, dunque ci servono le parentesi ad angolo.  Aggiungeremo
 la musica vera e propria in seguito; per adesso mettiamo soltanto delle semplici
 note e del testo.  Se hai dimenticato come aggiungere del testo, potresti voler
-ripassare @code{\addlyrics} in @ref{Setting simple songs}.
+ripassare @code{\addlyrics} in @ref{Impostare canzoni semplici}.
 
 @lilypond[verbatim,quote,ragged-right]
 \score {
@@ -356,7 +349,7 @@ interpretati come testo, li facciamo precedere da @code{\lyricmode}.  Come in
 @code{\addlyrics}, questo comando trasforma la modalità di input in modalità
 testo.  Senza di esso, LilyPond cercherebbe di interpretare i contenuti come
 se fossero note, e questo produrrebbe degli errori.  (Sono disponibili molte
-altre modalità di input, si veda @ruser{Input modes}.)
+altre modalità di input, si veda @ruser{Modalità di inserimento}.)
 
 Dunque se aggiungiamo un po' di note e una chiave di basso per la mano
 sinistra, otteniamo un brano musicale vero e proprio:
@@ -463,7 +456,7 @@ predefinita, che è in basso.
 @seealso
 Gli ossia vengono spesso scritti senza armatura di chiave e senza
 tempo, e solitamente hanno un font più piccolo.  Richiedono ulteriori
-comandi che non sono stati ancora presentati.  Si veda @ref{Size of objects},
+comandi che non sono stati ancora presentati.  Si veda @ref{Dimensione degli oggetti},
 e @ruser{Righi ossia}.
 
 
@@ -696,6 +689,24 @@ legature di valore, dinamica, etc., è impostata correttamente.
 }
 @end lilypond
 
+@funindex \voices
+Se preferisci inserire le voci in un ordine diverso, per esempio dall'alto
+verso il basso, puoi specificare i rispettivi numeri di voce prima di
+un costrutto @code{<< @dots{} >>} tramite il comando @code{\voices}:
+
+@lilypond[quote,verbatim]
+\new Staff \relative {
+  % Main voice
+  c'16 d e f
+  %  Voice = "1"   Voice = "2"
+  << { g4 f e } \\ { r8 e4 d c8~ } >> |
+  \voices 1,3,2
+  %  Voice = "1"   Voice = "3"    Voice = "2"
+  << { d2 e }   \\ { s4 b c2 } \\ { c8 b16 a b8 g~ 2 } >> |
+}
+@end lilypond
+
+
 Tutte queste voci sono separate dalla voce principale che contiene le
 note e che si trova fuori dal costrutto @code{<< @dots{} >>}, che chiameremo
 il @emph{costrutto simultaneo}.  Legature di portamento e di valore
@@ -755,8 +766,8 @@ la voce tre su cerchi barrati verdi, e la voce quattro (non impiegata
 nell'esempio) su croci magenta;  @code{\voiceNeutralStyle} (anch'esso
 non usato qui) riporta lo stile all'impostazione predefinita.
 Vedremo in seguito come l'utente possa creare comandi simili.
-Si veda @ref{Visibility and color of objects} e
-@ref{Using variables for layout adjustments}.
+Si veda @ref{Visibilità e colore degli oggetti} e
+@ref{Uso delle variabili per modificare la formattazione}.
 
 @cindex polifonia e modo relativo
 @cindex modo relativo e polifonia
@@ -803,6 +814,7 @@ più complesse saranno spiegate tutte in sezioni successive.
 @lilypond[quote,ragged-right]
 \new Staff \relative {
   \key aes \major
+  \voices 1,2,4    % Nessuna terza voce
   <<  % Prima voce
     { c''2 aes4. bes8 }
   \\  % Voce due
@@ -813,7 +825,6 @@ più complesse saranno spiegate tutte in sezioni successive.
       \once \override NoteColumn.force-hshift = #0.5
       des2
     }
-  \\  % Nessuna terza voce
   \\  % Quarta voce
     {
       \override NoteColumn.force-hshift = #0
@@ -848,6 +859,7 @@ ignora quel che non capisci.
 @lilypond[quote,ragged-right]
 \new Staff \relative {
   \key aes \major
+  \voices 1,2,4  % Nessuna terza voce (vogliamo i gambi in giù)
   <<
     {  % Prima voce
       \voiceOneStyle
@@ -861,7 +873,6 @@ ignora quel che non capisci.
       \once \override NoteColumn.force-hshift = #0.5
       des2
     }
-  \\  % Nessuna terza voce (vogliamo i gambi in giù)
   \\  % Quarta voce
     { \voiceThreeStyle
       \override NoteColumn.force-hshift = #0
@@ -896,18 +907,19 @@ La direzione dei gambi è assegnata automaticamente: le voci dispari avranno i
 gambi in su e le voci pari i gambi in giù.  I gambi per le voci 1 e 2 sono
 giusti, ma in questo brano i gambi della voce 3 dovrebbero essere in
 giù.  Possiamo correggere semplicemente omettendo la voce tre e ponendo la
-musica nella voce quattro.  Si può fare aggiungendo semplicemente un altro
-paio di @code{\\}:
+musica nella voce quattro.  Si potrebbe fare aggiungendo semplicemente un
+altro paio di @code{\\}, ma preferiamo usare il comando @code{\voices} (che
+ci permette anche di inserire le voci in un ordine diverso, se lo vogliamo):
 
 @lilypond[quote,verbatim,ragged-right]
 \new Staff \relative {
   \key aes \major
-  <<  % Voice one
+  \voices 1,2,4   % Omette la terza voce
+  <<  % Voce uno
     { c''2 aes4. bes8 }
-  \\  % Voice two
+  \\  % Voce due
     { <ees, c>2 des }
-  \\  % Omit Voice three
-  \\  % Voice four
+  \\  % Voce quattro
     { aes'2 f4 fes }
   >> |
   <c ees aes c>1 |
@@ -924,7 +936,7 @@ a evitare le collisioni.  LilyPond fornisce molti modi per aggiustare la colloca
 orizzontale delle note.  Per ora, non siamo ancora pronti a cercare di
 correggere questo problema, dunque dovremo aspettare fino a una
 prossima sezione -- si veda la proprietà @code{force-hshift} in
-@ref{Fixing overlapping notation}.
+@ref{Correggere la sovrapposizione di elementi della notazione}.
 
 @warning{Il testo e gli @emph{spanner} (come le legature di portamento e di valore, le
 forcelle, etc.) non possono essere create @q{attraverso} le voci.}
@@ -938,15 +950,10 @@ Guida alla notazione: @ruser{Più voci}.
 @translationof Explicitly instantiating voices
 
 @funindex \voiceOne
-@funindex voiceOne
 @funindex \voiceTwo
-@funindex voiceTwo
 @funindex \voiceThree
-@funindex voiceThree
 @funindex \voiceFour
-@funindex voiceFour
 @funindex \oneVoice
-@funindex oneVoice
 @funindex \new Voice
 @cindex contesti della voce, creazione dei
 
@@ -1029,7 +1036,7 @@ markup, legature di valore, legature di portamento, e dinamica:
 }
 @end lilypond
 
-Vediamo adesso, usando l'esempio della sezione precedente, tre modi
+Vediamo adesso, usando l'esempio della sezione precedente, quattro modi
 diversi di scrivere uno stesso passo di musica polifonica, e i
 rispettivi vantaggi, a seconda delle circostanze.
 
@@ -1063,6 +1070,36 @@ sì che sia possibile disegnare una legatura di frase sopra di esse.
       s2. | s4 b c2 |
     }
   >>
+}
+@end lilypond
+
+@cindex voci, continuate
+@funindex \voices
+
+Il comando @code{\voices} può essere usato anche per continuare una voce
+principale nel costrutto simultaneo:
+
+@lilypond[quote,ragged-right,verbatim]
+\new Staff \relative {
+  \new Voice = "principale" {
+    \voiceOneStyle
+    % Questa sezione è omofona
+    c'16^( d e f
+    % Inizia la sezione simultanea con tre voci
+    \voices "principale",2,3
+    <<
+      % Continua la voce principale in parallelo
+      { g4 f e | d2 e) | }
+      % Inizializza la seconda voce
+    \\
+      % Imposta i gambi, etc., in giù
+      { r8 e4 d c8~ | 8 b16 a b8 g~ 2 | }
+    \\
+      % Inizializza la terza voce
+      % Imposta i gambi, etc, in su
+      { s2. | s4 b c2 | }
+    >>
+  }
 }
 @end lilypond
 
@@ -1133,13 +1170,9 @@ come nel seguente esempio:
 @cindex note, collisioni di
 @cindex comandi di spostamento
 @funindex \shiftOff
-@funindex shiftOff
 @funindex \shiftOn
-@funindex shiftOn
 @funindex \shiftOnn
-@funindex shiftOnn
 @funindex \shiftOnnn
-@funindex shiftOnnn
 
 Le note maggiormente ravvicinate all'interno di un accordo o quelle che
 compaiono nello stesso momento in voci diverse sono disposte in due, e
@@ -1162,7 +1195,7 @@ le voci una e tre vengono spostate a destra e le voci due e quattro a sinistra.
 
 @code{\shiftOnn} e @code{\shiftOnnn} definiscono ulteriori livelli di
 scarto che possono essere temporaneamente specificati per risolvere
-le collisioni in situazioni complesse -- si veda @ref{Real music example}.
+le collisioni in situazioni complesse -- si veda @ref{Esempio musicale}.
 
 Una colonna di note può contenere soltanto una nota (o accordo) di una
 voce con gambi in su e una nota (o accordo) di una voce con gambi in
@@ -1175,7 +1208,7 @@ produrrà il messaggio di errore
 
 @seealso
 Manuale di apprendimento:
-@ref{Moving objects}.
+@ref{Spostare gli oggetti}.
 
 Guida alla notazione: @ruser{Più voci}.
 
@@ -1189,7 +1222,6 @@ espressioni -- note e testo.
 
 @funindex \new Lyrics
 @funindex \lyricsto
-@funindex lyricsto
 @funindex Lyrics
 @cindex Lyrics, creazione di un contesto
 @cindex testo, creazione di un contesto
@@ -1224,7 +1256,6 @@ necessario creare esplicitamente contesti @code{Staff} e @code{Voice}.
 @cindex testo e travatura
 @cindex travatura e testo
 @funindex \autoBeamOff
-@funindex autoBeamOff
 
 La disposizione automatica delle travature predefinita di LilyPond funziona
 bene per la musica strumentale, ma non altrettanto per la musica con testi,
@@ -1235,7 +1266,6 @@ di melismi nel testo.  Nell'esempio precedente usiamo il comando
 @funindex \new ChoirStaff
 @funindex ChoirStaff
 @funindex \lyricmode
-@funindex lyricmode
 @cindex struttura di una partitura vocale
 @cindex rigo per un coro
 
@@ -1435,7 +1465,7 @@ maiuscola: ad esempio, @code{GregorianTranscriptionStaff}.
 
 
 @seealso
-Guida alla notazione: @ruser{Contexts  explained}.
+Guida alla notazione: @ruser{Tutto sui contesti}.
 
 
 @node Creare i contesti
@@ -1443,14 +1473,14 @@ Guida alla notazione: @ruser{Contexts  explained}.
 @translationof Creating contexts
 
 @funindex \new
-@funindex new
 @cindex nuovi contesti
 @cindex creazione di contesti
 @cindex contesti, creazione di
 
-In un file di input un blocco della partitura, introdotto dal comando @code{\score},
-contiene un'espressione musicale singola e una definizione di output
-associata (o un blocco @code{\layout} o un blocco @code{\midi}).
+In un file di input, un blocco della partitura (introdotto dal comando
+@code{\score}) contiene un'espressione musicale singola; ma può contenere
+anche definizioni di output associate (un blocco @code{\layout}, un blocco
+@code{\midi} o entrambi).
 Di solito si lascia che il contesto @code{Score} sia creato automaticamente
 quando inizia l'interpretazione di quell'espressione musicale.
 
@@ -1478,14 +1508,14 @@ esplicitamente con @code{\new Score} è di inserire un blocco
 di contesto, predefiniti per tutto lo spartito..  Le informazioni su come
 usare i blocchi @code{\with} si trovano sotto il titolo
 @qq{Setting context properties with @code{\\with} } in
-@ref{Modifying context properties}.)
+@ref{Modificare le proprietà di contesto}.)
 
 @warning{@bs{}@code{new Score} non dovrebbe essere usato perché il fondamentale
 contesto di livello superiore @code{Score} viene creato automaticamente quando
 l'espressione musicale all'interno del blocco @bs{}@code{score} viene
 interpretata.  I valori predefiniti delle proprietà di contesto validi per tutta
 la partitura possono essere modificati nel blocco @bs{}@code{layout}.  Vedi
-@ref{Modifying context properties}}
+@ref{Modificare le proprietà di contesto}}
 
 Nelle sezioni precedenti hai già visto molti esempi pratici della creazione
 di nuovi contesti @code{Staff} e @code{Voice}, ma per ricordarti
@@ -1559,11 +1589,11 @@ anche numeri e spazi, ma in questo caso deve essere compreso tra virgolette,
 ovvero @code{\new Staff = "MioPentagramma 1" @var{espressione-musicale}}.
 Il nome identificativo viene utilizzato per riportare a quel
 particolare esempio di un contesto.  Abbiamo visto questo utilizzo
-nella sezione sul testo, si veda @ref{Voices and vocals}.
+nella sezione sul testo, si veda @ref{Voci e musica vocale}.
 
 
 @seealso
-Guida alla notazione: @ruser{Creating and referencing contexts}.
+Guida alla notazione: @ruser{Creazione e citazione di un contesto}.
 
 
 @node Gli incisori
@@ -1643,7 +1673,7 @@ partire dal nome, o viceversa.
 
 @smallspace
 
-Vedremo in seguito come cambiare l'output di Lilypond
+Vedremo in seguito come cambiare l'output di LilyPond
 modificando il comportamento degli incisori.
 
 
@@ -1659,9 +1689,7 @@ Guida al funzionamento interno: @rinternals{Engravers and Performers}.
 @cindex contesto, proprietà del, modificare
 @cindex modificare le proprietà del contesto
 @funindex \set
-@funindex set
 @funindex \unset
-@funindex unset
 
 I contesti si occupano di tenere i valori di un certo numero di
 @emph{proprietà} del contesto.  Molte di queste possono essere cambiate
@@ -1733,27 +1761,29 @@ in quale contesto esse operino.  Talvolta questo è ovvio,
 ma talvolta può risultare complicato.  Se viene specificato il
 contesto sbagliato, non viene generato alcun messaggio di errore, ma l'azione
 desiderata non avrà luogo.  Ad esempio, la proprietà
-@code{instrumentName} risiede ovviamente nel contesto @code{Staff}, poiché
-è il pentagramma a dover essere nominato.
-Nell'esempio seguente viene etichettato il primo pentagramma, ma non il secondo,
-perché abbiamo omesso il nome del contesto.
+@code{clefGlyph} risiede ovviamente nel contesto @code{Staff}, poiché
+è il glifo della chiave a dover essere cambiato.
+Nell'esempio seguente viene stampata correttamente la prima chiave del
+pentagramma, ma non la seconda (che appare come la chiave predefinita di
+violino, invece della chiave di basso o Fa che ci aspetteremmo) perché
+abbiamo omesso il nome del contesto.
 
 @lilypond[quote,verbatim,ragged-right]
 <<
   \new Staff \relative {
-    \set Staff.instrumentName = #"Soprano"
+    \set Staff.clefGlyph = #"clefs.C"
     c''2 c
  }
   \new Staff \relative {
-    \set instrumentName = #"Alto"  % Wrong!
+    \set clefGlyph = #"clefs.F"  % Sbagliato!
     d'2 d
  }
 >>
 @end lilypond
 
 Ricorda che il nome di contesto predefinito è @code{Voice}, dunque il
-secondo comando @code{\set} imposta la proprietà @code{instrumentName} nel
-contesto @code{Voice} col valore @qq{Alto}, ma dato che LilyPond non trova
+secondo comando @code{\set} imposta la proprietà @code{clefGlyph} nel
+contesto @code{Voice} col valore @qq{clefs.F}, ma dato che LilyPond non trova
 tale proprietà nel contesto @code{Voice}, non ha avuto luogo
 alcuna altra azione.  Questo non è un errore, e nessun messaggio di
 errore viene riportato nel file di log.
@@ -1771,7 +1801,7 @@ Se non usi un editor con queste funzionalità, è consigliabile controllare il n
 delle proprietà nella Guida al funzionamento interno: si veda
 @rinternals{Tunable context properties}, o @rinternals{Contexts}.
 
-La proprietà @code{instrumentName} funzionerà soltanto se inserita nel contesto
+La proprietà @code{clefGlyph} funzionerà soltanto se inserita nel contesto
 @code{Staff}, ma alcune proprietà possono essere collocate in più di un contesto.
 Ad esempio, la proprietà @code{extraNatural} è impostata di default sul
 valore ##t (vero) su tutti i righi.  Se viene impostata su ##f (falso) in uno
@@ -1853,7 +1883,6 @@ modo molto più generale usando il potente comando @code{\markup}.
 @subsubheading Impostare le proprietà di contesto con @code{\with}
 
 @funindex \with
-@funindex with
 @cindex contesto, proprietà del, impostare con \with
 
 Il valore predefinito delle proprietà di contesto possono essere impostate
@@ -1902,7 +1931,6 @@ questo nuovo valore predefinito può essere recuperato col comando
 
 @cindex contesto, proprietà del, impostare con \context
 @funindex \context
-@funindex context
 
 I valori delle proprietà di un contesto possono essere impostate in @emph{tutti}
 i contesti di un particolare tipo, così come in tutti i contesti @code{Staff}, con un
@@ -1964,8 +1992,8 @@ comandi @code{\set} incorporati nelle asserzioni musicali.
 
 @seealso
 Guida alla notazione:
-@ruser{Changing context default settings},
-@ruser{The set command}.
+@ruser{Modifica delle impostazioni predefinite di un contesto},
+@ruser{Il comando set}.
 
 Guida al funzionamento interno:
 @rinternals{Contexts},
@@ -1982,9 +2010,7 @@ Guida al funzionamento interno:
 @cindex rimuovere gli incisori
 
 @funindex \consists
-@funindex consists
 @funindex \remove
-@funindex remove
 
 Abbiamo visto che ciascuno dei contesti contiene vari incisori, ognuno
 dei quali ha il compito di produrre una parte specifica dell'output,
@@ -2079,7 +2105,6 @@ l'intervallo di tutte le note in tutte le voci di quel pentagramma:
 @subsubheading Modificare tutti i contesti dello stesso tipo
 
 @funindex \layout
-@funindex layout
 
 Gli esempi precedenti mostrano come rimuovere o aggiungere degli incisori
 a contesti individuali.  È anche possibile rimuovere o aggiungere gli
@@ -2129,8 +2154,8 @@ per tutti i contesti di un particolare tipo includendo il comando
 @code{\set} in un blocco @code{\context} nello stesso modo.
 
 @seealso
-Guida alla notazione: @ruser{Modifying context plug-ins},
-@ruser{Changing context default settings}.
+Guida alla notazione: @ruser{Modifica dei componenti aggiuntivi di un contesto},
+@ruser{Modifica delle impostazioni predefinite di un contesto}.
 
 @knownissues
 Gli incisori @code{Stem_engraver} e @code{Beam_engraver} fissano i propri
@@ -2146,7 +2171,7 @@ nemmeno i gambi né le travature.
 Hai letto il tutorial, sai come scrivere la musica, comprendi
 i concetti fondamentali.  Ma come puoi ottenere i
 pentagrammi che desideri?  Puoi trovare molti
-modelli (vedi @ref{Templates}) da cui partire.
+modelli (vedi @ref{Modelli}) da cui partire.
 Ma se ti serve qualcosa che non è presente lì?  Continua a leggere.
 
 @menu
@@ -2346,7 +2371,7 @@ musicaVioloncello = \relative {
 
 @seealso
 I modelli da cui partire si trovano nell'appendice @q{Modelli},
-si veda @ref{Single staff templates}.
+si veda @ref{Modelli per rigo singolo}.
 
 
 @node Partitura vocale a quattro parti SATB
@@ -2410,10 +2435,11 @@ lower = \relative {
 }
 
 \score {
-  <<  % combine ChoirStaff and PianoStaff in parallel
+  <<  % unisci in parallelo ChoirStaff e PianoStaff
     \new ChoirStaff <<
-      \new Staff = "sopranos" <<
-        \set Staff.instrumentName = #"Soprano"
+      \new Staff = "sopranos"
+      \with { instrumentName = #"Soprano" }
+      <<
         \new Voice = "sopranos" {
           \global
           \sopranoMusic
@@ -2422,24 +2448,27 @@ lower = \relative {
       \new Lyrics \lyricsto "sopranos" {
         \sopranoWords
       }
-      \new Staff = "altos" <<
-        \set Staff.instrumentName = #"Alto"
+      \new Staff = "altos"
+      \with { instrumentName = #"Alto" }
+      <<
         \new Voice = "altos" {
           \global
           \altoMusic
         }
       >>
       \new Lyrics \lyricsto "altos" { \altoWords }
-      \new Staff = "tenors" <<
-        \set Staff.instrumentName = #"Tenor"
+      \new Staff = "tenors"
+      \with { instrumentName = #"Tenor" }
+      <<
         \new Voice = "tenors" {
           \global
           \tenorMusic
         }
       >>
       \new Lyrics \lyricsto "tenors" { \tenorWords }
-      \new Staff = "basses" <<
-        \set Staff.instrumentName = #"Bass"
+      \new Staff = "basses"
+      \with { instrumentName = #"Bass" }
+      <<
         \new Voice = "basses" {
           \global
           \bassMusic
@@ -2449,8 +2478,9 @@ lower = \relative {
         \bassWords
       }
     >>  % end ChoirStaff
-    \new PianoStaff <<
-      \set PianoStaff.instrumentName = #"Piano"
+    \new PianoStaff
+    \with { instrumentName = #"Piano" }
+    <<
       \new Staff = "upper" \upper
       \new Staff = "lower" \lower
     >>
@@ -2459,7 +2489,7 @@ lower = \relative {
 @end lilypond
 
 @warning{Questa struttura può essere ottenuta facilmente usando il modello
-integrato @code{satb.ly}, descritto in @ref{Built-in templates}.  Ma per
+integrato @code{satb.ly}, descritto in @ref{Modelli integrati}.  Ma per
 facilità d'uso tale modello nasconde deliberatamente la necessaria struttura
 dei contesti, dato che la fornisce automaticamente.  Dunque a scopo di
 apprendimento vediamo come costruire questa struttura da zero.  Potresti
@@ -2467,7 +2497,7 @@ aver bisogno di far ciò se il modello integrato non soddisfa le tue
 necessità.}
 
 Il modello @qq{copia e modifica} più simile a questa struttura
-è @ref{SATB vocal score and automatic piano reduction}, ma
+è @ref{Partitura vocale SATB e automatica riduzione per pianoforte}, ma
 abbiamo bisogno di modificare l'assetto e aggiungere
 un accompagnamento per pianoforte che non sia derivato automaticamente dalle
 parti vocali.  Le variabili che si riferiscono alla musica e alle parole per
@@ -2489,8 +2519,9 @@ In questo modo il nostro ChoirStaff avrà questo aspetto:
 
 @example
 \new ChoirStaff <<
-  \new Staff = "sopranos" <<
-    \set Staff.instrumentName = #"Soprano"
+  \new Staff = "sopranos"
+  \with @{ instrumentName = #"Soprano" @}
+  <<
     \new Voice = "sopranos" @{
       \global
       \sopranoMusic
@@ -2499,8 +2530,9 @@ In questo modo il nostro ChoirStaff avrà questo aspetto:
   \new Lyrics \lyricsto "sopranos" @{
     \sopranoWords
   @}
-  \new Staff = "altos" <<
-    \set Staff.instrumentName = #"Alto"
+  \new Staff = "altos"
+  \with @{ instrumentName = #"Alto" @}
+  <<
     \new Voice = "altos" @{
       \global
       \altoMusic
@@ -2509,8 +2541,9 @@ In questo modo il nostro ChoirStaff avrà questo aspetto:
   \new Lyrics \lyricsto "altos" @{
     \altoWords
   @}
-  \new Staff = "tenors" <<
-    \set Staff.instrumentName = #"Tenor"
+  \new Staff = "tenors"
+  \with @{ instrumentName = #"Tenor" @}
+  <<
     \new Voice = "tenors" @{
       \global
       \tenorMusic
@@ -2519,8 +2552,9 @@ In questo modo il nostro ChoirStaff avrà questo aspetto:
   \new Lyrics \lyricsto "tenors" @{
     \tenorWords
   @}
-  \new Staff = "basses" <<
-    \set Staff.instrumentName = #"Bass"
+  \new Staff = "basses"
+  \with @{ instrumentName = #"Bass" @}
+  <<
     \new Voice = "basses" @{
       \global
       \bassMusic
@@ -2529,7 +2563,7 @@ In questo modo il nostro ChoirStaff avrà questo aspetto:
   \new Lyrics \lyricsto "basses" @{
     \bassWords
   @}
->>  % end ChoirStaff
+>>  % fine di ChoirStaff
 @end example
 
 Poi dobbiamo lavorare sulla parte per pianoforte.  Questo
@@ -2537,8 +2571,9 @@ Poi dobbiamo lavorare sulla parte per pianoforte.  Questo
 modello @q{Pianoforte solista}:
 
 @example
-\new PianoStaff <<
-  \set PianoStaff.instrumentName = #"Piano  "
+\new PianoStaff
+\with @{ instrumentName = #"Piano  " @}
+<<
   \new Staff = "upper" \upper
   \new Staff = "lower" \lower
 >>
@@ -2593,8 +2628,9 @@ perché vogliamo che siano impilati uno sopra l'altro:
     @}
   >>  % end ChoirStaff
 
-  \new PianoStaff <<
-    \set PianoStaff.instrumentName = #"Piano"
+  \new PianoStaff
+  \with @{ instrumentName = #"Piano" @}
+  <<
     \new Staff = "upper" \upper
     \new Staff = "lower" \lower
   >>
@@ -2644,10 +2680,11 @@ lower = \relative {
 }
 
 \score {
-  <<  % combine ChoirStaff and PianoStaff in parallel
+  <<  % combina ChoirStaff e PianoStaff in parallelo
     \new ChoirStaff <<
-      \new Staff = "sopranos" <<
-        \set Staff.instrumentName = #"Soprano"
+      \new Staff = "sopranos"
+      \with { instrumentName = #"Soprano" }
+      <<
         \new Voice = "sopranos" {
           \global
           \sopranoMusic
@@ -2656,8 +2693,9 @@ lower = \relative {
       \new Lyrics \lyricsto "sopranos" {
         \sopranoWords
       }
-      \new Staff = "altos" <<
-        \set Staff.instrumentName = #"Alto"
+      \new Staff = "altos"
+      \with { instrumentName = #"Alto" }
+      <<
         \new Voice = "altos" {
           \global
           \altoMusic
@@ -2666,8 +2704,9 @@ lower = \relative {
       \new Lyrics \lyricsto "altos" {
         \altoWords
       }
-      \new Staff = "tenors" <<
-        \set Staff.instrumentName = #"Tenor"
+      \new Staff = "tenors"
+      \with { instrumentName = #"Tenor" }
+      <<
         \new Voice = "tenors" {
           \global
           \tenorMusic
@@ -2676,8 +2715,9 @@ lower = \relative {
       \new Lyrics \lyricsto "tenors" {
         \tenorWords
       }
-      \new Staff = "basses" <<
-        \set Staff.instrumentName = #"Bass"
+      \new Staff = "basses"
+      \with { instrumentName = #"Bass" }
+      <<
         \new Voice = "basses" {
           \global
           \bassMusic
@@ -2688,8 +2728,9 @@ lower = \relative {
       }
     >>  % end ChoirStaff
 
-    \new PianoStaff <<
-      \set PianoStaff.instrumentName = #"Piano  "
+    \new PianoStaff
+    \with { instrumentName = #"Piano  " }
+    <<
       \new Staff = "upper" \upper
       \new Staff = "lower" \lower
     >>
@@ -2878,7 +2919,7 @@ L'allungabilità dei righi può essere controllata con la proprietà
 (gli oggetti grafici vengono comunemente chiamati @q{grob} nella documentazione
 di lilypond)    -- non preoccuparti dei dettagli in questo momento; in seguito
 verrà fornita una spiegazione approfondita.  I curiosi possono dare
-un'occhiata a @ruser{Overview of modifying properties}.
+un'occhiata a @ruser{Panoramica sulla modifica delle proprietà}.
 In questo caso, vogliamo modificare soltanto la sottoproprietà
 @code{allungabilità}.  Di nuovo, chi è curioso può trovare i valori predefiniti
 per la proprietà staff-staff-spacing nel file @file{scm/define-grobs.scm}
@@ -3105,7 +3146,7 @@ L'uso di variabili è anche un buon modo per ridurre il lavoro quando
 la sintassi di input di LilyPond cambia (vedi
 @rprogram{Aggiornare i file con convert-ly}).  Se si ha un'unica
 definizione (come @code{\dolce}) per tutti i file di input
-(vedi @ref{Style sheets}), allora se la sintassi cambia bisogna
+(vedi @ref{Fogli di stile}), allora se la sintassi cambia bisogna
 aggiornare soltanto la singola definizione @code{\dolce},
 invece di dover modificare tutti i file @file{.ly}.
 
@@ -3235,11 +3276,10 @@ ovvero
 
 @seealso
 Manuale di apprendimento:
-@ref{Organizing pieces with variables}.
+@ref{Organizzare i brani con le variabili}.
 
 Guida alla notazione:
 @ruser{Trasposizione},
 @ruser{Scrittura delle parti},
 @ruser{Pause d'intero},
 @ruser{Inclusione di file LilyPond}.
-

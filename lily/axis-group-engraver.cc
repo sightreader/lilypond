@@ -43,7 +43,7 @@ protected:
   void process_music ();
   virtual void initialize ();
   virtual void finalize ();
-  DECLARE_ACKNOWLEDGER (grob);
+  void acknowledge_grob (Grob_info);
   void process_acknowledged ();
   virtual Spanner *get_spanner ();
   virtual void add_element (Grob *);
@@ -55,7 +55,8 @@ public:
 };
 
 
-Axis_group_engraver::Axis_group_engraver ()
+Axis_group_engraver::Axis_group_engraver (Context *c)
+  : Engraver (c)
 {
   staffline_ = 0;
   interesting_ = SCM_EOL;
@@ -116,15 +117,20 @@ Axis_group_engraver::finalize ()
 void
 Axis_group_engraver::acknowledge_grob (Grob_info i)
 {
-  if (staffline_)
-    elts_.push_back (i.grob ());
+  if (!staffline_)
+    return;
 
-  if (staffline_ && to_boolean(staffline_->get_property("remove-empty")))
+  elts_.push_back (i.grob ());
+
+  if (to_boolean (staffline_->get_property ("remove-empty")))
     {
       for (SCM s = interesting_; scm_is_pair (s); s = scm_cdr (s))
         {
           if (i.grob ()->internal_has_interface (scm_car (s)))
-            Hara_kiri_group_spanner::add_interesting_item (staffline_, i.grob ());
+            {
+              Hara_kiri_group_spanner::add_interesting_item (staffline_, i.grob ());
+              break;
+            }
         }
     }
 }
@@ -165,7 +171,12 @@ Axis_group_engraver::add_element (Grob *e)
   Axis_group_interface::add_element (staffline_, e);
 }
 
-ADD_ACKNOWLEDGER (Axis_group_engraver, grob);
+
+void
+Axis_group_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Axis_group_engraver, grob);
+}
 
 ADD_TRANSLATOR (Axis_group_engraver,
                 /* doc */

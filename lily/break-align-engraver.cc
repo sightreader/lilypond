@@ -40,8 +40,8 @@ protected:
   virtual void derived_mark () const;
 public:
   TRANSLATOR_DECLARATIONS (Break_align_engraver);
-  DECLARE_ACKNOWLEDGER (break_aligned);
-  DECLARE_ACKNOWLEDGER (break_alignable);
+  void acknowledge_break_aligned (Grob_info);
+  void acknowledge_break_alignable (Grob_info);
 };
 
 void
@@ -53,7 +53,8 @@ Break_align_engraver::stop_translation_timestep ()
   left_edge_ = 0;
 }
 
-Break_align_engraver::Break_align_engraver ()
+Break_align_engraver::Break_align_engraver (Context *c)
+  : Engraver (c)
 {
   column_alist_ = SCM_EOL;
   left_edge_ = 0;
@@ -155,8 +156,13 @@ Break_align_engraver::add_to_group (SCM align_name, Item *item)
   Axis_group_interface::add_element (group, item);
 }
 
-ADD_ACKNOWLEDGER (Break_align_engraver, break_aligned);
-ADD_ACKNOWLEDGER (Break_align_engraver, break_alignable);
+void
+Break_align_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Break_align_engraver, break_aligned);
+  ADD_ACKNOWLEDGER (Break_align_engraver, break_alignable);
+}
+
 ADD_TRANSLATOR (Break_align_engraver,
                 /* doc */
                 "Align grobs with corresponding @code{break-align-symbols}"

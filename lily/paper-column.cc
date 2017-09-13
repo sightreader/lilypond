@@ -209,7 +209,8 @@ Paper_column::break_align_width (Grob *me, SCM align_syms)
           extract_grob_set (me, "elements", elts);
           for (vsize i = 0; i < elts.size (); i++)
             {
-              if (elts[i]->get_property ("break-align-symbol") == align_sym
+              if (scm_is_eq (align_sym, elts[i]->get_property ("break-align-symbol"))
+                  // TODO SCM: there must be a simpler way to put this.
                   && !elts[i]->extent (elts[i], X_AXIS).is_empty ())
                 {
                   align = elts[i];
@@ -223,6 +224,22 @@ Paper_column::break_align_width (Grob *me, SCM align_syms)
     return Interval (0, 0) + me->relative_coordinate (p, X_AXIS);
 
   return align->extent (p, X_AXIS);
+}
+
+LY_DEFINE (ly_paper_column__break_align_width, "ly:paper-column::break-align-width",
+           2, 0, 0, (SCM col, SCM align_syms),
+           "Determine the extent along the X-axis of a grob used for"
+           " break-alignment organized by column @var{col}. The grob is"
+           " specified by @var{align-syms}, which contains either a"
+           " single @code{break-align-symbol} or a list of such"
+           " symbols.")
+{
+  LY_ASSERT_SMOB (Grob, col, 1);
+  SCM_ASSERT_TYPE (scm_is_symbol (align_syms) || ly_is_list (align_syms),
+                   align_syms, SCM_ARG2, __FUNCTION__, "symbol or list");
+
+  Interval ext = Paper_column::break_align_width (unsmob<Grob> (col), align_syms);
+  return ly_interval2scm (ext);
 }
 
 /*

@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: 2034ca4fcbed9253b5a85e9360e47d3fe3ff1d09
+   Translation of GIT committish: 64c8064154e24ff2a07e553ecdbda409f1726487
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -94,7 +94,6 @@ chaque @code{,} baisse la note d'une octave.
 }
 @end lilypond
 
-@funindex fixed
 @funindex \fixed
 
 Les indications d'octave communes peuvent ne se mentionner qu'une fois,
@@ -139,7 +138,6 @@ Morceaux choisis :
 @cindex octave relative, indication
 
 @funindex \relative
-@funindex relative
 
 Le mode d'écriture en octave absolue requiert d'indiquer l'octave de
 chaque note.  Pour le mode d'écriture en octave relative, par contre,
@@ -310,6 +308,24 @@ et la quinte diminuée de seulement six demi-tons.
   b2 feses
 }
 @end lilypond
+
+Dans certaines situation complexes, il peut être souhaitable de revenir
+à une hauteur déterminée sans tenir compte de ce qui se passait
+auparavant, à l'aide d'un @code{\resetRelativeOctave} :
+
+@lilypond[verbatim,quote]
+\relative {
+  <<
+    { c''2 d }
+    \\
+    { e,,2 f }
+  >>
+  \resetRelativeOctave c''
+  c2
+}
+@end lilypond
+
+@funindex \resetRelativeOctave
 
 @seealso
 Glossaire musicologique :
@@ -522,7 +538,7 @@ sont les suivants :
 et les suffixes d'altération correspondants :
 
 @quotation
-@multitable {@code{nederlands}} {-@code{s}/-@code{-sharp}} {-@code{ess}/-@code{es}} {-@code{ss}/-@code{x}/-@code{-sharpsharp}} {-@code{essess}/-@code{eses}}
+@multitable {@code{nederlands}} {-@code{s}/-@code{-sharp}} {-@code{f}/-@code{flat}} {-@code{ss}/-@code{x}/-@code{-sharpsharp}} {-@code{essess}/-@code{eses}}
 @headitem Langue
   @tab dièse @tab bémol @tab double dièse @tab double bémol
 @item @code{nederlands}
@@ -647,7 +663,6 @@ Cette partie traite de la manière de modifier les hauteurs de note.
 
 @funindex =
 @funindex \octaveCheck
-@funindex octaveCheck
 @funindex controlpitch
 
 Les tests d'octave rendent la correction d'erreurs d'octave plus facile
@@ -720,7 +735,6 @@ Référence des propriétés internes :
 @cindex transposition des hauteurs
 
 @funindex \transpose
-@funindex transpose
 
 Une expression musicale peut être transposée avec @code{\transpose}.
 En voici la syntaxe :
@@ -834,11 +848,8 @@ Référence des propriété internes :
 @rinternals{TransposedMusic}.
 
 @funindex \transpose
-@funindex transpose
 @funindex \chordmode
-@funindex chordmode
 @funindex \relative
-@funindex relative
 
 @knownissues
 Si vous voulez utiliser en même temps @code{\transpose} et
@@ -898,7 +909,6 @@ Manuel de notation :
 @cindex transformation rétrograde
 
 @funindex \retrograde
-@funindex retrograde
 
 Une expression musicale peut se renverser et se présenter sous forme
 rétrograde :
@@ -913,10 +923,15 @@ music = \relative { c'8. ees16( fis8. a16 b8.) gis16 f8. d16 }
 @end lilypond
 
 @knownissues
-Une liaison de prolongation à l'intérieur d'un bloc @code{\retrograde}
-sera de fait rompue, ce qui générera un message d'avertissement.
-Des liaisons de prolongation seront toutefois générées automatiquement
-dès lors qu'est activé le @ref{Découpage automatique des notes}.
+La fonction @code{\retrograde} est un outil plutôt simpliste.  Dans la
+mesure où de nombreux événements se reflètent au lieu d'être échangés,
+les ajustements et indicateurs de positionnement à l'entame d'un objet
+étendu devront être répétés à leur terminaison : @code{^(} devra se
+terminer par @code{^)}, tout @code{\<} ou @code{\cresc} devra se
+terminer par un @code{\!} ou un @code{\endecresc} et tout @code{\>} ou
+@code{\decr} devra se terminer par un @code{\enddecr}.  Les dérogations
+ou commandes modifiant les propriétés sur la durée peuvent avoir des
+effets surprenants.
 
 @seealso
 Manuel de notation :
@@ -947,7 +962,6 @@ sera pas transformée.}
 @cindex modale, transposition
 
 @funindex \modalTranspose
-@funindex modalTranspose
 
 Un motif peut se transposer selon une gamme donnée :
 
@@ -1005,7 +1019,6 @@ motif = \relative { c'8 d e f g a b c }
 @cindex modale, inversion
 
 @funindex \modalInversion
-@funindex modalInversion
 
 Un motif peut s'inverser selon une certaine gamme et à partir d'un pivot
 déterminé, puis transposé, le tout en une seule opération :
@@ -1098,7 +1111,6 @@ hauteurs.
 @cindex anciennes, clefs
 
 @funindex \clef
-@funindex clef
 
 La clef indique quelles lignes de la portée correspondent à quelles
 hauteurs.  En l'absence de commande explicite, LilyPond utilise
@@ -1212,6 +1224,14 @@ la commande @code{\set Staff.forceClef = ##t}.
   c'1
 @end lilypond
 
+@noindent
+Pour être plus précis, la commande @code{\clef} n'a pas pour fonction
+d'imprimer une clef ; elle détermine ou modifie une propriété attachée
+au graveur de clefs (le @code{Clef_engraver}), qui décide de son propre
+chef quand doit être affichée une clef dans la portée en cours.  La
+propriété @code{forceClef} ne vient que forcer la décision de réimprimer
+une fois la clef en un point donné.
+
 Le symbole imprimé lors d'un changement de clef est plus petit que la
 clef initiale.  La taille peut toutefois être ajustée.
 
@@ -1282,7 +1302,6 @@ l'objet @code{Clef} devra être manuellement répercuté sur l'objet
 @cindex armure
 
 @funindex \key
-@funindex key
 
 @c duplicated in Key signature and in Accidentals
 @warning{Les nouveaux utilisateurs sont parfois déroutés par la gestion
@@ -1305,23 +1324,14 @@ On définit ou modifie l'armure avec la commande @code{\key} :
 @end example
 
 @funindex \major
-@funindex major
 @funindex \minor
-@funindex minor
 @funindex \ionian
-@funindex ionian
 @funindex \locrian
-@funindex locrian
 @funindex \aeolian
-@funindex aeolian
 @funindex \mixolydian
-@funindex mixolydian
 @funindex \lydian
-@funindex lydian
 @funindex \phrygian
-@funindex phrygian
 @funindex \dorian
-@funindex dorian
 
 @cindex modes anciens
 @cindex modes
@@ -1423,7 +1433,6 @@ Référence des propriétés internes :
 
 @funindex set-octavation
 @funindex \ottava
-@funindex ottava
 
 Les marques d'octaviation, @emph{Ottava}, permettent d'introduire une
 transposition spécifique d'une octave pour la portée en cours.  C'est
@@ -1478,7 +1487,6 @@ Référence des propriétés internes :
 @cindex transposition, instrument
 
 @funindex \transposition
-@funindex transposition
 
 Lorsque l'on saisit une partition d'ensemble incluant des instruments
 transpositeurs, certaines parties peuvent être dans une autre tonalité
@@ -1508,26 +1516,24 @@ conducteur.  Les deux instruments sont à l'unisson.
 
 @lilypond[verbatim,quote]
 \new GrandStaff <<
-  \new Staff = "violin" {
-    \relative c'' {
-      \set Staff.instrumentName = #"Vln"
-      \set Staff.midiInstrument = #"violin"
-      % not strictly necessary, but a good reminder
-      \transposition c'
-
-      \key c \major
-      g4( c8) r c r c4
-    }
+  \new Staff = "violin" \with {
+    instrumentName = #"Vln"
+    midiInstrument = #"violin"
+   }
+  \relative c'' {
+    % not strictly necessary, but a good reminder
+    \transposition c'
+    \key c \major
+    g4( c8) r c r c4
   }
-  \new Staff = "clarinet" {
-    \relative c'' {
-      \set Staff.instrumentName = \markup { Cl (B\flat) }
-      \set Staff.midiInstrument = #"clarinet"
-      \transposition bes
-
-      \key d \major
-      a4( d8) r d r d4
-    }
+  \new Staff = "clarinet" \with {
+    instrumentName = \markup { Cl (B\flat) }
+    midiInstrument = #"clarinet"
+  }
+  \relative c'' {
+    \transposition bes
+    \key d \major
+    a4( d8) r d r d4
   }
 >>
 @end lilypond
@@ -2180,6 +2186,125 @@ musicB = {
   <<
     \context Staff = "up" {
       \accidentalStyle piano-cautionary
+      \musicA
+    }
+    \context Staff = "down" {
+      \musicB
+    }
+  >>
+}
+@end lilypond
+
+@item choral
+
+@cindex altérations style @emph{choral}
+@cindex @emph{choral}, style d'altérations
+@cindex chorale et altérations
+
+@funindex choral
+
+Cette règle est une combinaison des styles @code{modern-voice} et
+@code{piano}.  Les altérations accidentelles sont indiquées aussi bien
+pour un chanteur qui suit seulement sa voix, que pour un lecteur suivant
+toutes les voix d'un @code{ChoirStaff}.
+
+Ce style d'altération s'applique, par défaut, au @code{ChoirStaff} en
+cours.
+
+@lilypond[quote]
+musicA = {
+  <<
+    \relative {
+      cis''8 fis, bes4 <a cis>8 f bis4 |
+      cis2. <c, g'>4 |
+    }
+    \\
+    \relative {
+      ais'2 cis, |
+      fis8 b a4 cis2 |
+    }
+  >>
+}
+
+musicB = {
+  \clef bass
+  \new Voice {
+    \voiceTwo \relative {
+      <fis a cis>8[ <fis a cis>
+      \change Staff = up
+      cis' cis
+      \change Staff = down
+      <fis, a> <fis a>]
+      \showStaffSwitch
+      \change Staff = up
+      dis'4 |
+      \change Staff = down
+      <fis, a cis>4 gis <f a d>2 |
+    }
+  }
+}
+
+\new ChoirStaff {
+  <<
+    \context Staff = "up" {
+      \accidentalStyle choral
+      \musicA
+    }
+    \context Staff = "down" {
+      \musicB
+    }
+  >>
+}
+@end lilypond
+
+@item choral-cautionary
+
+@cindex @emph{choral cautionary}, style d'altérations
+@cindex altérations style @emph{choral cautionary}
+@cindex chorale et altérations
+
+@funindex choral-cautionary
+
+Identique au style @code{choral}, mais les altérations de précaution sont
+imprimées différemment.
+
+@lilypond[quote]
+musicA = {
+  <<
+    \relative {
+      cis''8 fis, bes4 <a cis>8 f bis4 |
+      cis2. <c, g'>4 |
+    }
+    \\
+    \relative {
+      ais'2 cis, |
+      fis8 b a4 cis2 |
+    }
+  >>
+}
+
+musicB = {
+  \clef bass
+  \new Voice {
+    \voiceTwo \relative {
+      <fis a cis>8[ <fis a cis>
+      \change Staff = up
+      cis' cis
+      \change Staff = down
+      <fis, a> <fis a>]
+      \showStaffSwitch
+      \change Staff = up
+      dis'4 |
+      \change Staff = down
+      <fis, a cis>4 gis <f a d>2 |
+    }
+  }
+}
+
+\new ChoirStaff {
+  <<
+    \context Staff = "up" {
+      \accidentalStyle choral-cautionary
       \musicA
     }
     \context Staff = "down" {
@@ -3043,9 +3168,7 @@ Référence des propriétés internes :
 @cindex @emph{easy play}, têtes de note
 
 @funindex \easyHeadsOn
-@funindex easyHeadsOn
 @funindex \easyHeadsOff
-@funindex easyHeadsOff
 
 Les notes « easy play » comportent le nom de la note à l'intérieur de
 la tête.  On l'utilise dans des partitions pour débutants.  L'impression
@@ -3106,27 +3229,16 @@ Référence des propriétés internes :
 @cindex tête de note, Walker
 
 @funindex \key
-@funindex key
 @funindex \aikenHeads
-@funindex aikenHeads
 @funindex \aikenHeadsMinor
-@funindex aikenHeadsMinor
 @funindex \sacredHarpHeads
-@funindex sacredHarpHeads
 @funindex \sacredHarpHeadsMinor
-@funindex sacredHarpHeadsMinor
 @funindex \southernHarmonyHeads
-@funindex southernHarmonyHeads
 @funindex \southernHarmonyHeadsMinor
-@funindex southernHarmonyHeadsMinor
 @funindex \funkHeads
-@funindex funkHeads
 @funindex \walkerHeads
-@funindex walkerHeads
 @funindex \funkHeadsMinor
-@funindex funkHeadsMinor
 @funindex \walkerHeadsMinor
-@funindex walkerHeadsMinor
 
 En notation profilée, le profil d'une tête de note correspond à la
 fonction harmonique de cette note dans la gamme.  Ce style de notation
@@ -3212,9 +3324,7 @@ Référence des propriétés internes :
 @cindex tête de note allongée
 
 @funindex \improvisationOn
-@funindex improvisationOn
 @funindex \improvisationOff
-@funindex improvisationOff
 
 L'improvisation peut quelquefois s'indiquer à l'aide de notes de forme
 allongée (@emph{slash}).  L'interprète jouera alors les notes qu'il

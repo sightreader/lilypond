@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: caa4700b4acbc870158d70ee257efaa723c550f0
+   Translation of GIT committish: a1267e20afa61258ce3031f07d916e0e66ac6582
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -174,11 +174,8 @@ Voici quelques informations spécifiques à la cornemuse.
 @cindex Scottish highland bagpipe
 @cindex petites notes
 @funindex \taor
-@funindex taor
 @funindex \hideKeySignature
-@funindex hideKeySignature
 @funindex \showKeySignature
-@funindex showKeySignature
 
 LilyPond inclut des définitions spécifiques destinées à la notation pour
 cornemuse écossaise ; pour les utiliser, il suffit d'ajouter

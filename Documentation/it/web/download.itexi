@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: it -*-
 @ignore
-    Translation of GIT committish: 43c2555cc5bef3b10f0f9d5c5431697fe7b4cb3c
+    Translation of GIT committish: e6207bad4b2148e2c99ff66c2593ab5cf0b21f4e
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -150,7 +150,7 @@ pacchetti sono spesso @emph{molto} più vecchi della versione
 stabile corrente.  Anche se questi pacchetti più vecchi sono più facili
 da installare, consigliamo @emph{caldamente} di usare i nostri pacchetti
 generici.  In questo caso, controlla che il tuo editor LilyPond stia usando
-la versione corretta.  Vedi @ref{Easier editing}.
+la versione corretta.  Vedi @ref{Editing facilitato}.
 
 @divEnd
 

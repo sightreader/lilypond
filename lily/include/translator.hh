@@ -23,25 +23,79 @@
 #include "global-ctor.hh"
 #include "lily-proto.hh"
 #include "virtual-methods.hh"
+#include "callback.hh"
 #include "input.hh"             // for error reporting
 #include "smobs.hh"
+#include "stream-event.hh"
 #include "std-vector.hh"
 #include "protected-scm.hh"
 
+// The Translator_creator class is only for translators defined in C.
+// Its elements are callable entities taking a context argument and
+// returning a corresponding translator.
+//
+// Other translator-creating entities may be alists and functions returning
+// such alists.  Information for those, such as created grobs/properties
+// is attached via object properties.
+
+// Smob rather than Simple_smob since we want an entity for
+// property lookup.
+
+class Translator_creator : public Smob<Translator_creator>
+{
+  Translator_creator (Translator_creator const &); // don't define
+  Translator * (*allocate_)(Context *);
+  template <class T>
+  static Translator *allocate (Context *ctx);
+
+  Translator_creator (Translator * (*allocate)(Context *))
+    : allocate_(allocate)
+  {
+    smobify_self ();
+  }
+public:
+  // This is stupid, but constructors cannot have explicit template
+  // argument lists.
+  template <class T>
+  static Translator_creator *alloc()
+  {
+    return new Translator_creator(&allocate<T>);
+  }
+  SCM call (SCM ctx);
+  LY_DECLARE_SMOB_PROC (&Translator_creator::call, 1, 0, 0);
+};
+
+template <class T> Translator *
+Translator_creator::allocate (Context *ctx)
+{
+  return new T(ctx);
+}
+
 #define TRANSLATOR_FAMILY_DECLARATIONS(NAME)                            \
   public:                                                               \
-  VIRTUAL_COPY_CONSTRUCTOR (Translator, NAME);                          \
-  static Drul_array<vector<Acknowledge_information> > acknowledge_static_array_drul_; \
-  virtual void fetch_precomputable_methods (Callback methods[]);        \
-  static Grob_info_callback static_get_acknowledger (SCM sym);          \
-  static Grob_info_callback static_get_end_acknowledger(SCM);           \
-  virtual Grob_info_callback get_acknowledger (SCM sym)                 \
+  DECLARE_CLASSNAME (NAME);                                             \
+  virtual void fetch_precomputable_methods (SCM methods[]);             \
+  DECLARE_TRANSLATOR_CALLBACKS (NAME);                                  \
+  TRANSLATOR_INHERIT (Translator);                                      \
+  /* end #define */
+
+#define TRANSLATOR_INHERIT(BASE)                                        \
+  using BASE::method_finder
+
+#define DECLARE_TRANSLATOR_CALLBACKS(NAME)                              \
+  template <void (NAME::*mf)()>                                         \
+  static SCM method_finder ()                                           \
   {                                                                     \
-    return static_get_acknowledger (sym);                               \
+    return Callback0_wrapper::make_smob<NAME, mf> ();                   \
   }                                                                     \
-  virtual Grob_info_callback get_end_acknowledger (SCM sym)             \
+  template <void (NAME::*mf)(Stream_event *)>                           \
+  static SCM method_finder ()                                           \
   {                                                                     \
-    return static_get_end_acknowledger (sym);                           \
+    return Callback_wrapper::make_smob<trampoline<NAME, mf> > ();       \
+  }                                                                     \
+  template <void (NAME::*mf)(Grob_info)>                                \
+  static SCM method_finder () {                                         \
+    return Callback2_wrapper::make_smob<trampoline <NAME, mf> > ();     \
   }                                                                     \
   /* end #define */
 
@@ -53,27 +107,24 @@
 */
 
 #define TRANSLATOR_DECLARATIONS(NAME)                                   \
-  TRANSLATOR_FAMILY_DECLARATIONS(NAME)                                  \
-  static SCM static_description_;                                       \
+  public:                                                               \
+  TRANSLATOR_FAMILY_DECLARATIONS (NAME);                                \
+  static Drul_array<Protected_scm> acknowledge_static_array_drul_;      \
   static Protected_scm listener_list_;                                  \
+  static SCM static_get_acknowledger (SCM sym, Direction start_end);    \
+  virtual SCM get_acknowledger (SCM sym, Direction start_end)           \
+  {                                                                     \
+    return static_get_acknowledger (sym, start_end);                    \
+  }                                                                     \
 public:                                                                 \
-  NAME ();                                                              \
-  virtual SCM static_translator_description () const;                   \
-  virtual SCM translator_description () const;                          \
+  NAME (Context *);                                                     \
+  static void boot ();                                                  \
+  static SCM static_translator_description ();                          \
   virtual SCM get_listener_list () const                                \
   {                                                                     \
     return listener_list_;                                              \
   }                                                                     \
   /* end #define */
-
-#define DECLARE_TRANSLATOR_LISTENER(m)                  \
-public:                                                 \
-inline void listen_ ## m (Stream_event *);              \
-/* Should be private */                                 \
-static void _internal_declare_ ## m ();
-
-#define DECLARE_ACKNOWLEDGER(x) public : void acknowledge_ ## x (Grob_info); protected:
-#define DECLARE_END_ACKNOWLEDGER(x) public : void acknowledge_end_ ## x (Grob_info); protected:
 
 enum Translator_precompute_index
 {
@@ -90,22 +141,18 @@ enum Translator_precompute_index
 class Translator : public Smob<Translator>
 {
 public:
-  // We don't make Grob_info_callback specific to Engraver since we
-  // otherwise get into a circular mess with regard to the definitions
-  // as the timing of Engraver is exercised from within Translator
-  typedef void (Translator::*Grob_info_callback) (Grob_info);
-  typedef void (Translator::*Callback) (void);
   int print_smob (SCM, scm_print_state *) const;
   SCM mark_smob () const;
-  static const char type_p_name_[];
+  static const char * const type_p_name_;
   virtual ~Translator ();
-private:
-  void init ();
 
-public:
   Context *context () const { return daddy_context_; }
 
-  Translator (Translator const &);
+protected:
+  Translator (Context *);
+private:
+  Translator (Translator const &); // not copyable
+public:
 
   SCM internal_get_property (SCM symbol) const;
 
@@ -128,39 +175,52 @@ public:
   Context *get_score_context () const;
   Global_context *get_global_context () const;
 
-  TRANSLATOR_DECLARATIONS (Translator);
+  DECLARE_CLASSNAME (Translator);
+
+  virtual void fetch_precomputable_methods (SCM methods[]) = 0;
+  virtual SCM get_listener_list () const = 0;
+  virtual SCM get_acknowledger (SCM sym, Direction start_end) = 0;
 
 protected:                      // should be private.
   Context *daddy_context_;
   void protect_event (SCM ev);
-  friend class Callback_wrapper;
+
+  template <class T, void (T::*callback)(Stream_event *)>
+  static SCM trampoline (SCM target, SCM event)
+  {
+    T *t = unsmob<T> (target);
+    LY_ASSERT_SMOB (T, target, 1);
+    LY_ASSERT_SMOB (Stream_event, event, 2);
+
+    t->protect_event (event);
+    (t->*callback) (unsmob<Stream_event> (event));
+    return SCM_UNSPECIFIED;
+  }
+
+  // Fallback for non-overriden callbacks for which &T::x degrades to
+  // &Translator::x
+  template <void (Translator::*)()>
+  static SCM
+  method_finder () { return SCM_UNDEFINED; }
+
   virtual void derived_mark () const;
   static SCM event_class_symbol (const char *ev_class);
-  SCM static_translator_description (const char *grobs,
-                                     const char *desc,
-                                     SCM listener_list,
-                                     const char *read,
-                                     const char *write) const;
+  static SCM
+  static_translator_description (const char *grobs,
+                                 const char *desc,
+                                 SCM listener_list,
+                                 const char *read,
+                                 const char *write);
 
   friend class Translator_group;
 };
 
-struct Acknowledge_information
-{
-  SCM symbol_;
-  Translator::Grob_info_callback function_;
+SCM
+generic_get_acknowledger (SCM sym, SCM ack_hash);
 
-  Acknowledge_information ()
-  {
-    symbol_ = SCM_EOL;
-    function_ = 0;
-  }
-};
+void add_translator_creator (SCM creator, SCM name, SCM description);
 
-
-void add_translator (Translator *trans);
-
-Translator *get_translator (SCM s);
+SCM get_translator_creator (SCM s);
 Moment get_event_length (Stream_event *s, Moment now);
 Moment get_event_length (Stream_event *s);
 

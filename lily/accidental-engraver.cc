@@ -103,7 +103,8 @@ public:
   in grobs should always store ly_deep_copy ()s of those.
 */
 
-Accidental_engraver::Accidental_engraver ()
+Accidental_engraver::Accidental_engraver (Context *c)
+  : Engraver (c)
 {
   accidental_placement_ = 0;
   last_keysig_ = SCM_EOL;
@@ -314,7 +315,7 @@ Accidental_engraver::make_standard_accidental (Stream_event * /* note */,
   */
   for (vsize i = 0; i < left_objects_.size (); i++)
     {
-      if (scm_is_eq (left_objects_[i]->get_property ("side-axis"), scm_from_int (X_AXIS)))
+      if (ly_is_equal (left_objects_[i]->get_property ("side-axis"), scm_from_int (X_AXIS)))
         Side_position_interface::add_support (left_objects_[i], a);
     }
 
@@ -507,15 +508,20 @@ void
 Accidental_engraver::process_music ()
 {
   SCM sig = get_property ("keyAlterations");
-  if (last_keysig_ != sig)
+  if (!scm_is_eq (last_keysig_, sig))
     update_local_key_signature (sig);
 }
 
-ADD_ACKNOWLEDGER (Accidental_engraver, arpeggio);
-ADD_ACKNOWLEDGER (Accidental_engraver, finger);
-ADD_ACKNOWLEDGER (Accidental_engraver, rhythmic_head);
-ADD_END_ACKNOWLEDGER (Accidental_engraver, tie);
-ADD_ACKNOWLEDGER (Accidental_engraver, note_column);
+
+void
+Accidental_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Accidental_engraver, arpeggio);
+  ADD_ACKNOWLEDGER (Accidental_engraver, finger);
+  ADD_ACKNOWLEDGER (Accidental_engraver, rhythmic_head);
+  ADD_END_ACKNOWLEDGER (Accidental_engraver, tie);
+  ADD_ACKNOWLEDGER (Accidental_engraver, note_column);
+}
 
 ADD_TRANSLATOR (Accidental_engraver,
                 /* doc */

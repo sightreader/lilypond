@@ -42,7 +42,7 @@ public:
   TRANSLATOR_DECLARATIONS (Grob_pq_engraver);
 protected:
   virtual void initialize ();
-  DECLARE_ACKNOWLEDGER (grob);
+  void acknowledge_grob (Grob_info);
   void start_translation_timestep ();
   void stop_translation_timestep ();
   void process_acknowledged ();
@@ -50,7 +50,8 @@ protected:
   vector<Grob_pq_entry> started_now_;
 };
 
-Grob_pq_engraver::Grob_pq_engraver ()
+Grob_pq_engraver::Grob_pq_engraver (Context *c)
+  : Engraver (c)
 {
 }
 
@@ -144,11 +145,16 @@ Grob_pq_engraver::start_translation_timestep ()
       busy = scm_cdr (busy);
     }
 
-  if (start_busy != busy)
+  if (!scm_is_eq (start_busy, busy))
     context ()->set_property ("busyGrobs", busy);
 }
 
-ADD_ACKNOWLEDGER (Grob_pq_engraver, grob);
+void
+Grob_pq_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Grob_pq_engraver, grob);
+}
+
 ADD_TRANSLATOR (Grob_pq_engraver,
                 /* doc */
                 "Administrate when certain grobs (e.g., note heads) stop"

@@ -47,7 +47,8 @@ Tempo_performer::derived_mark () const
   scm_gc_mark (last_tempo_);
 }
 
-Tempo_performer::Tempo_performer ()
+Tempo_performer::Tempo_performer (Context *c)
+  : Performer (c)
 {
   last_tempo_ = SCM_EOL;
   audio_ = 0;
@@ -83,6 +84,12 @@ Tempo_performer::stop_translation_timestep ()
     {
       audio_ = 0;
     }
+}
+
+void
+Tempo_performer::boot ()
+{
+
 }
 
 ADD_TRANSLATOR (Tempo_performer,

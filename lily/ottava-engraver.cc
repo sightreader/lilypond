@@ -32,7 +32,7 @@ public:
 protected:
   virtual void finalize ();
 
-  DECLARE_ACKNOWLEDGER (note_column);
+  void acknowledge_note_column (Grob_info);
 
   void process_music ();
   void stop_translation_timestep ();
@@ -52,7 +52,8 @@ Ottava_spanner_engraver::derived_mark () const
   scm_gc_mark (last_ottavation_);
 }
 
-Ottava_spanner_engraver::Ottava_spanner_engraver ()
+Ottava_spanner_engraver::Ottava_spanner_engraver (Context *c)
+  : Engraver (c)
 {
   finished_ = 0;
   span_ = 0;
@@ -63,7 +64,7 @@ void
 Ottava_spanner_engraver::process_music ()
 {
   SCM ott = get_property ("ottavation");
-  if (ott != last_ottavation_)
+  if (!scm_is_eq (ott, last_ottavation_))
     {
       finished_ = span_;
       span_ = 0;
@@ -136,7 +137,12 @@ Ottava_spanner_engraver::finalize ()
 
 #include "translator.icc"
 
-ADD_ACKNOWLEDGER (Ottava_spanner_engraver, note_column);
+
+void
+Ottava_spanner_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Ottava_spanner_engraver, note_column);
+}
 
 ADD_TRANSLATOR (Ottava_spanner_engraver,
                 /* doc */

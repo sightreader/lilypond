@@ -270,7 +270,7 @@ The following shorthand commands are also available:
 Font size changes are achieved by scaling the design size that is
 closest to the desired size.  The standard font size (for
 @w{@code{font-size = 0}}) depends on the standard staff height.
-For a 20pt staff, a 11pt font is selected.
+For a 20pt staff, an 11pt font is selected.
 
 
 @predefined
@@ -330,7 +330,6 @@ and @code{\revert} commands:
 @cindex finger change
 
 @funindex \finger
-@funindex finger
 
 Fingering instructions can be entered using
 @samp{@var{note}-@var{digit}}:
@@ -350,9 +349,8 @@ Markup texts or strings may be used for finger changes.
 @cindex thumb-script
 
 @funindex \thumb
-@funindex thumb
 
-A thumb-script can be added (e.g. cello music) to indicate
+A thumb-script can be added (e.g., cello music) to indicate
 that a note should be played with the thumb.
 
 @lilypond[verbatim,quote]
@@ -412,9 +410,7 @@ Internals Reference:
 @cindex notes, transparent
 
 @funindex \hideNotes
-@funindex hideNotes
 @funindex \unHideNotes
-@funindex unHideNotes
 
 Hidden (or invisible or transparent) notes can be useful in
 preparing theory or composition exercises.
@@ -484,7 +480,6 @@ Internals Reference:
 
 @funindex color
 @funindex \with-color
-@funindex with-color
 @funindex x11-color
 
 Individual objects may be assigned colors.  Valid color names
@@ -512,12 +507,13 @@ If @code{x11-color} cannot make sense of the parameter then the
 color returned defaults to black.
 
 @lilypond[verbatim,quote]
-\relative c'' {
-  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
   }
-
+  \relative c'' {
+  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
   gis8 a
   \override Beam.color = #(x11-color "medium turquoise")
   gis a
@@ -541,12 +537,13 @@ Exact RGB colors can be specified using the Scheme function
 @code{rgb-color}.
 
 @lilypond[verbatim,quote]
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
+  }
 \relative c'' {
   \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
-  }
-
   \override Stem.color = #(rgb-color 0 0 0)
   gis8 a
   \override Stem.color = #(rgb-color 1 1 1)
@@ -596,7 +593,6 @@ Notes in a chord cannot be separately colored with
 @cindex brackets
 
 @funindex \parenthesize
-@funindex parenthesize
 
 Objects may be parenthesized by prefixing @code{\parenthesize} to
 the music event.  When prefixed to a chord, it parenthesizes every
@@ -643,11 +639,8 @@ chord.
 @cindex invisible stem
 
 @funindex \stemUp
-@funindex stemUp
 @funindex \stemDown
-@funindex stemDown
 @funindex \stemNeutral
-@funindex stemNeutral
 @cindex stem, direction
 @cindex stem, up
 @cindex stem, down
@@ -715,9 +708,7 @@ from outside of the staff.
 @funindex balloonGrobText
 @funindex balloonText
 @funindex \balloonLengthOn
-@funindex balloonLengthOn
 @funindex \balloonLengthOff
-@funindex balloonLengthOff
 
 Elements of notation can be marked and named with the help of a
 square balloon.  The primary purpose of this feature is to explain
@@ -853,9 +844,7 @@ Internals Reference:
 
 @funindex Horizontal_bracket_engraver
 @funindex \startGroup
-@funindex startGroup
 @funindex \stopGroup
-@funindex stopGroup
 
 Brackets are used in musical analysis to indicate structure in musical
 pieces.  Simple horizontal brackets are supported.
@@ -890,12 +879,19 @@ Analysis brackets may be nested.
 }
 @end lilypond
 
-@seealso
-Snippets:
-@rlsr{Editorial annotations}.
+@snippets
 
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-above-the-staff.ly}
+
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-with-labels.ly}
+
+@seealso
 Internals Reference:
 @rinternals{Horizontal_bracket_engraver},
 @rinternals{HorizontalBracket},
 @rinternals{horizontal-bracket-interface},
+@rinternals{HorizontalBracketText},
+@rinternals{horizontal-bracket-text-interface},
 @rinternals{Staff}.

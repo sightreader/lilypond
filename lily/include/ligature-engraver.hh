@@ -26,13 +26,13 @@
 class Ligature_engraver : public Engraver
 {
 protected:
-  Ligature_engraver ();
+  Ligature_engraver (Context *c);
   void stop_translation_timestep ();
   virtual void finalize ();
 
-  DECLARE_ACKNOWLEDGER (rest);
-  DECLARE_ACKNOWLEDGER (ligature_head);
-  virtual void listen_ligature (Stream_event *ev);
+  void acknowledge_rest (Grob_info);
+  void acknowledge_ligature_head (Grob_info);
+  void listen_ligature (Stream_event *ev);
   void process_music ();
   virtual Spanner *create_ligature_spanner () = 0;
   virtual void typeset_ligature (Spanner *ligature,
@@ -43,6 +43,7 @@ protected:
 public:
   // no TRANSLATOR_DECLARATIONS (Ligature_engraver) needed since this
   // class is abstract
+  DECLARE_TRANSLATOR_CALLBACKS (Ligature_engraver);
 
 private:
   Drul_array<Stream_event *> events_drul_;

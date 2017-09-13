@@ -76,7 +76,7 @@ protected:
   void start_translation_timestep ();
   void process_music ();
   void stop_translation_timestep ();
-  DECLARE_TRANSLATOR_LISTENER (rest);
+  void listen_rest (Stream_event *);
 };
 
 void
@@ -85,7 +85,6 @@ Completion_rest_engraver::initialize ()
   is_first_ = false;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Completion_rest_engraver, rest);
 void
 Completion_rest_engraver::listen_rest (Stream_event *ev)
 {
@@ -254,8 +253,15 @@ Completion_rest_engraver::start_translation_timestep ()
                             ly_bool2scm (rest_events_.size ()));
 }
 
-Completion_rest_engraver::Completion_rest_engraver ()
+Completion_rest_engraver::Completion_rest_engraver (Context *c)
+  : Engraver (c)
 {
+}
+
+void
+Completion_rest_engraver::boot ()
+{
+  ADD_LISTENER (Completion_rest_engraver, rest);
 }
 
 ADD_TRANSLATOR (Completion_rest_engraver,

@@ -570,20 +570,20 @@ the distance between two (title or top-level) markups.
 @funindex last-bottom-spacing
 
 the distance from the last system or top-level markup on a page to
-the bottom of the printable area (i.e. the top of the bottom
+the bottom of the printable area (i.e., the top of the bottom
 margin).
 
 @item top-system-spacing
 @funindex top-system-spacing
 
-the distance from the top of the printable area (i.e. the bottom
+the distance from the top of the printable area (i.e., the bottom
 of the top margin) to the first system on a page, when there is no
 (title or top-level) markup between the two.
 
 @item top-markup-spacing
 @funindex top-markup-spacing
 
-the distance from the top of the printable area (i.e. the bottom
+the distance from the top of the printable area (i.e., the bottom
 of the top margin) to the first (title or top-level) markup on a
 page, when there is no system between the two.
 @end table
@@ -892,8 +892,9 @@ Default values not listed here are defined in
 
 The page-breaking algorithm to use.  Choices are
 @code{ly:minimal-breaking}, @code{ly:page-turn-breaking},
-@code{ly:one-line-breaking}, @code{ly:one-line-auto-height-breaking},
-and @code{ly:optimal-breaking} (the default).
+@code{ly:one-page-breaking}, @code{ly:one-line-breaking},
+@code{ly:one-line-auto-height-breaking}, and @code{ly:optimal-breaking}
+(the default).
 
 @item page-breaking-system-system-spacing
 @funindex page-breaking-system-system-spacing
@@ -927,7 +928,7 @@ scores (if there are two or more scores), or by ending a score on an
 even-numbered page.  The values of the following three variables may
 be increased to make these actions less likely.
 
-The values are penalties, i.e. the higher the value the less likely
+The values are penalties, i.e., the higher the value the less likely
 will be the associated action relative to other choices.
 
 @table @code
@@ -968,7 +969,9 @@ Notation Reference:
 @ref{Optimal page breaking},
 @ref{Optimal page turning},
 @ref{Minimal page breaking},
-@ref{One-line page breaking}.
+@ref{One-page page breaking},
+@ref{One-line page breaking},
+@ref{One-line-auto-height page breaking}.
 
 Installed Files:
 @file{ly/paper-defaults-init.ly}.
@@ -1350,10 +1353,11 @@ reducing the thickness of the staff lines.
 
 @subheading Automatic font weight at different sizes
 
-The Feta font provides musical symbols at eight different
-sizes.  Each font is tuned for a different staff size: at a smaller size
-the font becomes heavier, to match the relatively heavier staff lines.
-The recommended font sizes are listed in the following table:
+The Emmentaler font provides the set of @emph{Feta} musical glyphs in
+eight different sizes; each one tuned for a different staff size.  The
+smaller the glyph size, the @qq{heavier} it becomes, so as to match the
+relatively thicker staff lines.  Recommended glyphs sizes are listed in
+the following table:
 
 @multitable @columnfractions .15 .2 .22 .2
 @item @b{font name} @tab @b{staff height (pt)} @tab @b{staff height (mm)} @tab @b{use}
@@ -1369,7 +1373,8 @@ The recommended font sizes are listed in the following table:
 
 @seealso
 Notation Reference:
-@ref{Selecting notation font size}.
+@ref{Selecting notation font size},
+@ref{The Emmentaler font}.
 
 Snippets:
 @rlsr{Spacing}.
@@ -1431,7 +1436,7 @@ issue:
 @end lilypond
 
 A @code{\break} command that occurrs at a bar line will also ignored if
-the previous measure ends in the middle of a note (e.g. when a tuplet
+the previous measure ends in the middle of a note (e.g., when a tuplet
 begins in one measure and ends in another).  In this case remove the
 @code{Forbid_line_break_engraver} from the @code{Voice} context and,
 use a simultaneous music construction inserting the @code{\break} at the
@@ -1560,6 +1565,7 @@ how to modify them.
 * Manual page breaking::
 * Optimal page breaking::
 * Minimal page breaking::
+* One-page page breaking::
 * One-line page breaking::
 * One-line-auto-height page breaking::
 * Optimal page turning::
@@ -1704,6 +1710,26 @@ a lot of texts.  It is enabled using:
 @seealso
 Snippets:
 @rlsr{Spacing}.
+
+
+@node One-page page breaking
+@unnumberedsubsubsec One-page page breaking
+
+@funindex ly:one-page-breaking
+
+The @code{ly:one-page-breaking} function is a special-purpose
+page breaking algorithm that automatically adjusts the page height to
+fit the music, so that everything fits on a single page.  The
+@code{paper-height} variable in the paper block is ignored, but other
+settings work as usual.  In particular, the spacing between the last
+system (or top level markup) and the footer can be customized with
+@code{last-bottom-spacing} in the paper block.  The width of the page
+is left unmodified by default but can be set with @code{paper-width}
+in the paper block.
+
+@knownissues
+@code{ly:one-page-breaking} is not currently compatible with
+@code{\bookpart}.
 
 
 @node One-line page breaking
@@ -1943,7 +1969,7 @@ non-staff line if @code{staff-affinity} is @code{UP}.
 
 Each distance is measured between the @emph{reference points} of
 the two items.  The reference point for a staff is the vertical
-center of its @code{StaffSymbol} (i.e. the middle line if
+center of its @code{StaffSymbol} (i.e., the middle line if
 @code{line-count} is odd; the middle space if @code{line-count} is
 even).  The reference points for individual non-staff lines are
 given in the following table:
@@ -2107,7 +2133,7 @@ non-staff line.  Choices are @code{UP}, @code{DOWN}, and
 placed equidistant between the two nearest staves on either side,
 unless collisions or other spacing constraints prevent this.
 Adjacent non-staff lines should have non-increasing
-@code{staff-affinity} from top to bottom, e.g. a non-staff line
+@code{staff-affinity} from top to bottom, e.g., a non-staff line
 set to @code{UP} should not immediately follow one that is set to
 @code{DOWN}.  Non-staff lines at the top of a system should use
 @code{DOWN}; those at the bottom should use @code{UP}.  Setting
@@ -2333,7 +2359,7 @@ Internals Reference:
 
 @emph{Non-staff lines} (such as @code{Lyrics}, @code{ChordNames},
 etc.) are contexts whose layout objects are engraved like staves
-(i.e. in horizontal lines within systems).  Specifically,
+(i.e., in horizontal lines within systems).  Specifically,
 non-staff lines are non-staff contexts that contain the
 @rinternals{Axis_group_engraver}.
 
@@ -2414,11 +2440,12 @@ padding, @code{NonMusicalPaperColumn.line-break-system-details}
 can specify exact vertical positions on the page.
 
 @code{NonMusicalPaperColumn.line-break-system-details} accepts
-an associative list of three different settings:
+an associative list of four different settings:
 
 @itemize
 @item @code{X-offset}
 @item @code{Y-offset}
+@item @code{extra-offset}
 @item @code{alignment-distances}
 @end itemize
 
@@ -2531,6 +2558,41 @@ potentially many values, but that we set only one value here.  Note,
 too, that the @code{Y-offset} property here determines the exact vertical
 position on the page at which each new system will render.
 
+In contrast to the absolute positioning available through
+@code{Y-offset} and @code{X-offset}, relative positioning is possible
+with the @code{extra-offset} property of
+@code{line-break-system-details}.  Placement is relative to the
+default layout or to the absolute positioning created by setting
+@code{X-offset} and @code{Y-offset}.  The property @code{extra-offset}
+accepts a @code{pair} consisting of displacements along the X-axis and
+Y-axis.
+
+@lilypond[verbatim,quote,staffsize=16]
+\header { tagline = ##f }
+\paper { left-margin = 0\mm }
+\book {
+  \score {
+    <<
+      \new Staff <<
+        \new Voice {
+          s1*5 \break
+          \overrideProperty Score.NonMusicalPaperColumn.line-break-system-details
+            #'((extra-offset . (0 . 10)))
+          s1*5 \break
+          \overrideProperty Score.NonMusicalPaperColumn.line-break-system-details
+            #'((extra-offset . (0 . 10)))
+          s1*5 \break
+        }
+        \new Voice { \repeat unfold 15 { c'4 c' c' c' } }
+      >>
+      \new Staff {
+        \repeat unfold 15 { d'4 d' d' d' }
+      }
+    >>
+  }
+}
+@end lilypond
+
 Now that we have set the vertical startpoint of each system
 explicitly, we can also set the vertical distances between staves
 within each system manually.  We do this using the @code{alignment-distances}
@@ -2616,9 +2678,10 @@ Some points to consider:
 do not count as a staff.
 
 @item The units of the numbers passed to @code{X-offset},
-@code{Y-offset} and @code{alignment-distances} are interpreted as multiples
-of the distance between adjacent staff lines.  Positive values move staves
-and lyrics up, negative values move staves and lyrics down.
+@code{Y-offset}, @code{extra-offset} and @code{alignment-distances} are
+interpreted as multiples of the distance between adjacent staff lines.
+Positive values move staves and lyrics up, negative values move staves
+and lyrics down.
 
 @item Because the @code{NonMusicalPaperColumn.line-break-system-details}
 settings given here allow the positioning of staves and systems anywhere

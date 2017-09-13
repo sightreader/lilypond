@@ -1,10 +1,11 @@
 \input texinfo @c -*- coding: utf-8; mode: texinfo; documentlanguage: ca -*-
 @c This file is part of web.texi
 @ignore
-    Translation of GIT committish: feeca25b207bd510705974896d640ea292cd7fc4
+    Translation of GIT committish: 472ecfdd548d8f700d71ec1a403b7a5bdce7d5ba
 
     When revising a translation, copy the HEAD committish of the
-    version that you are working on.  See TRANSLATION for details.
+    version that you are working on.  For details, see the Contributors'
+    Guide, node Updating translation committishes..
 @end ignore
 
 @setfilename web.info
@@ -32,6 +33,8 @@
 @end ignore
 
 @c Translators: Walter Garcia-Fontes
+@c Translation checkers:
+
 
 @copying
 Copyright @copyright{} 2009--2015 pels autors
@@ -56,16 +59,16 @@ Free Documentation License''.
 @c expected to be found in lilypond/ subdirectory.
 @dircategory GNU LilyPond: el gravador de música
 @direntry
-* Manual d'aprenentatge del Lilypond:(lilypond-learning). Comenceu per aquí.
+* Manual d'aprenentatge del LilyPond:(lilypond-learning). Comenceu per aquí.
 * Glosari musical: (music-glossary).                 Per a usuaris de parla no anglesa
-* LilyPond: (lilypond-notation).                      Referència de la notació amb el Lilypond.
+* LilyPond: (lilypond-notation).                      Referència de la notació amb el LilyPond.
 * Fragments de codi del LilyPond: (lilypond-snippets). Consells, trucs i exemples curts.
 * Referència de funcionament intern: (lilypond-internals). Definicions pera a la construcció de trucs.
 * Utilització del prrograma: (lilypond-usage). Instal·lació i execució de les aplicacions
 * Pàgina web: (lilypond-web).    Vista prèvia de la nova pàgina.
-* lilypond: (lilypond-usage)Executar el Lilypond.   Invocar el programa LilyPond.
+* lilypond: (lilypond-usage)Executar el LilyPond.   Invocar el programa LilyPond.
 * abc2ly: (lilypond-usage)Invocació d'abc2ly.      Importació d'ABC.
-* convert-ly: (lilypond-usage)Actualització de fitxers mitjançant convert-ly. Versions antigues del Lilypond.
+* convert-ly: (lilypond-usage)Actualització de fitxers mitjançant convert-ly. Versions antigues del LilyPond.
 * etf2ly: (lilypond-usage)Invocar etf2ly.      Importació del Finale.
 * lilypond-book: (lilypond-usage)LilyPond-book. Intergrar text i música.
 * midi2ly: (lilypond-usage)Invocar midi2ly.    Importació de MIDI.
@@ -117,51 +120,115 @@ Per al LilyPond versió @version{}
 @c @im ageId{cmws,web-snippet-alpha.png,Catchy Musical Web Snippet}
 
 @divId{quickSummary}
-@subheading ¿Què és el LilyPond?
-
-El Lilypond és un programa de gravat musical
+El LilyPond és un programa de gravat musical
 (tipografia musical o edició de partitures),
 consagrat a la producció de partitures de la
 qualitat més alta possible. Introdueix l'estètica
 de la música gravada de la forma tradicional
-a les partitures impreses mijtançant l'ordinador.
-Lilypond és programari lliure i forma part del
-@uref{http://gnu.org,Projecte GNU}.
+a les partitures impreses mitjançant l'ordinador.
+LilyPond és programari lliure i forma part del
+@uref{http://www.gnu.org/home.ca.html,Projecte GNU}.
 
 
 @divClass{align-right}
-¡Podeu llegir la nostra @ref{Introducció}!
+Podeu llegir més a la nostra @ref{Introducció}.
 
 @divEnd
 @divEnd
 
-@divClass{separator}
+@divId{homepage-main}
+
+@divClass{column-center-top}
+
+@subheading La bellesa de les partitures
+
+@c This example image is the image from the website version of the essay
+@c manual, downloaded to the pictures directory for use on the home page.
+@c Large version is generated manually from ly file in pictures directory.
+@divId{homepage-example-image-wrapper}
+@imageClickable{bwv861-lilypond,png,,bwv861-lilypond-large,png,center}
 @divEnd
 
+@ifclear web_version
+  @c no anchor links, just text
 
-@divId{news}
+El LilyPond és una eina poderosa i flexible per a
+l'edició de tota classe de partitures, ja siguin
+clàssiques (com l'exemple que de J.S. Bach que apareix
+a dalt) o de notació complexa, música antiga, música
+moderna, tabulatures, música vocal, fulls guia d'acords
+(lead sheets), materials didàctics, grans projectes
+orquestrals, sortida personalitzada o fins i tot
+gràfics de Schenker.
+
+@end ifclear
+@ifset web_version
+  @c anchor links, link to individual examples by their <a> tag
+  @c Translators should use the localized anchor name
+  @c (e.g. examples.html#Musica-Antica)
+  @c to be found in out-www/web/examples.LL.html
+
+El LilyPond és una eina poderosa i flexible per a
+l'edició de tota classe de partitures, ja siguin
+@uref{examples.html#Musica-Classica, clàssiques}
+(com l'exemple de J.S. Bach que apareix a dalt),
+@uref{examples.html#Notacio-complexa, notació complexa},
+@uref{examples.html#Musica-antiga, música antiga},
+@uref{examples.html#Musica-moderna, música moderna},
+@uref{examples.html#Tabulatura, tabulatures},
+@uref{examples.html#Musica-vocal, música vocal},
+@uref{examples.html#Musica-pop, fulls-guia d'acords (lead sheets)},
+@uref{examples.html#Aplicacions-per-a-leducacio, materials didàctics},
+@uref{examples.html#Projectes-grans, grans projectes orquestrals},
+@uref{examples.html#Sortida-personalitzada, sortida personalitzada},
+e incluso
+@uref{examples.html#Schenker-Graphs, gràfics de Schenker}.
+
+@end ifset
+
+Admireu la nostra galeria de @ref{Examples} i inspireu-vos''
+
+@divEnd
+
+@divClass{column-center-middle-color2}
+@subheading Notícies
 
 @c TODO: generate this automatically, including RSS feed.
-@include web/news-front.itexi
+@include web/news-headlines.itexi
 
-@divClass{float-right}
-(@ref{Notícies antigues})
 @divEnd
 
 @divEnd
+
 
 @ifclear web_version
   @c do nothing
 @end ifclear
 @ifset web_version
-  @c make the box:
-@divId{wildCardBox}
+  @c make the side bar:
+@divId{homepage-sidebar}
+@subheading Versió estable
+
+@c TODO: javascript to detect OS and suggest download?
+
+@ref{Descàrrega, Descàrrega de @versionStable}
+
+@ref{Manuals, Manuals de @versionStable}
+
+@subheading Versió de desenvolupament
+
+@ref{Desenvolupament, Descàrrega de @versionDevel}
+
+@ref{Desenvolupament, Manuals de @versionDevel}
+
 @subheading Novetats
-@divId{wildCardText}
+@divId{pondingsText}
 
 @divEnd
+
 @divEnd
 @end ifset
+
 
 @html
 
@@ -186,40 +253,19 @@ Lilypond és programari lliure i forma part del
   var index = Math.floor(Math.random() * tweets.length);
   var tweet = tweets[index];
   var text = tweet.childNodes[0];
-  document.getElementById("wildCardText").innerHTML = text.nodeValue;
+  document.getElementById("pondingsText").innerHTML = text.nodeValue;
 </script>
 
 @end html
 
-@ifset web_version
-  @c make the box:
-@divId{latestVersion}
-@subheading Enllaços ràpids
-
-@c TODO: javascript to detect OS and suggest download?
-
-@subsubheading Estable
-
-@ref{Descàrrega, Descàrrega de @versionStable}
-
-@ref{Manuals, Manuals de @versionStable}
-
-@subsubheading Desenvolupament
-
-@ref{Desenvolupament, Descàrrega de @versionDevel}
-
-@ref{Desenvolupament, Manuals de @versionDevel}
-
-@divEnd
-@end ifset
 
 @ifnottex
 
 @divClass{hide}
 @menu
 * Introducció::      Comenceu aquí a crear partitures musicals.
-* Descàrrega::       Obtenir el LilyPond.
-* Manuals::          Llegiu els coi de manuals (RTFM).
+* Descàrrega::       Obtenir el LilyPond
+* Manuals::          Llegiu els benaurats manuals (RTFM)
 * Comunitat::        Poseu-vos en contacte amb altres usuaris.
 @end menu
 @divEnd
@@ -251,22 +297,21 @@ Distributions will want to install lilypond.info in postinstall, doing:
 @macro docLinks{name,base,refLink,split,big,bigsize,pdf,pdfsize}
 @subheading Léalo
 
-
 @docLinksBare{\name\,\base\,\refLink\,\split\,\big\,\bigsize\,\pdf\,\pdfsize\}
 
 @end macro
 
 
 @macro docLinkSplit{name,base,webLink}
-  @docLink{\name\ (HTML seccionado),\base\/index.html,\webLink\}
+  @docLink{\name\ (HTML seccionat),\base\/index.html,\webLink\}
 @end macro
 
 @macro docLinkBig{name,base,webLink}
-  @docLink{\name\ (HTML monolítico),\base\-big-page.html,\webLink\}
+  @docLink{\name\ (HTML monolític),\base\-big-page.html,\webLink\}
 @end macro
 
 @macro docLinkPdf{name,base,webLink}
-  @docLink{\base\.es.pdf,\base\.es.pdf,\webLink\}
+  @docLink{\base\.ca.pdf,\base\.ca.pdf,\webLink\}
 @end macro
 
 
@@ -277,7 +322,7 @@ Distributions will want to install lilypond.info in postinstall, doing:
 
 @item @docLinkSplit{\name\,\base\,\split\} @minus{}
   el manual està dividit en moltes pàgines HTML.
-  @*@ @ @emph{(una descàrrega petita per a cada pàgina)}
+  @*@ @ @emph{(una descàrrega petita per cada pàgina)}
 
 @item @docLinkBig{\name\,\base\,\big\} @minus{}
   llegiu aquest manual com una sola pàgina HTML enorme.
@@ -308,15 +353,16 @@ Distributions will want to install lilypond.info in postinstall, doing:
 @ifhtml
 @macro contactUsAbout{topic}
 
-@divClass{heading-center} @divClass{contactBox} Si teniu
-coneixement de qualssevol altres \topic\ que mereixin aparèixer
-relacionats aquí, us preguem quen ens ho faci saber escrivint un
-missatge a la llista de correu bug-lilypond. Tot i que esteu subscrit
-a la llista, ho podeu fer a la
-@uref{https://lists.gnu.org/mailman/listinfo/bug-lilypond,pàgina informativa}
-de la llista o escrivint directament mitjançant de la
-@uref{http://post.gmane.org/post.php?group=gmane.comp.gnu.lilypond.bugs,interfície web de lilypond.bugs a gmane}.
+@divClass{heading-center}
+@divClass{contactBox}
 
+Si coneixeu qualssevol altres \topic\ que mereixin aparèixer
+relacionats aquí, us preguem que ens ho feu saber escrivint un
+missatge a la llista de correu bug-lilypond.  Si no esteu subscrit
+a la llista, encara ho podeu fer a la
+@uref{https://lists.gnu.org/mailman/listinfo/bug-lilypond,página informativa}
+de la llista o escrivint directament a través de la
+@uref{http://post.gmane.org/post.php?group=gmane.comp.gnu.lilypond.bugs,interfície web de lilypond.bugs al gname}.
 
 @divEnd
 @divEnd
@@ -327,9 +373,10 @@ de la llista o escrivint directament mitjançant de la
 @ifnothtml
 @macro contactUsAbout{topic}
 @cartouche
-Si teniu coneixement de qualsevol altre \topic\ que podria
-aparèixer aquí, si us plau feu-no-ho saber seguint les instruccions a
-@ref{Bug reports}.
+Si coneixeu qualssevol altres \topic\ que mereixin aparèixer
+relacionats aquí, us preguem que ens ho faci saber segons
+s'explica a les instruccions que apareixen a la secció a les
+instruccions que apareixin a la secció @ref{Bug reports}.
 
 @end cartouche
 

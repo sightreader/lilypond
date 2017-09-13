@@ -21,7 +21,8 @@ protected:
   virtual void acknowledge_audio_element (Audio_element_info info);
 };
 
-Control_track_performer::Control_track_performer ()
+Control_track_performer::Control_track_performer (Context *c)
+  : Performer (c)
 {
   control_track_ = 0;
 }
@@ -64,6 +65,12 @@ Control_track_performer::initialize ()
   add_text (Audio_text::TRACK_NAME, "control track");
   add_text (Audio_text::TEXT, "creator: ");
   add_text (Audio_text::TEXT, id_string);
+}
+
+void
+Control_track_performer::boot ()
+{
+
 }
 
 ADD_TRANSLATOR (Control_track_performer,

@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: 88a5dbc589b0d0434f8e640467b5ab57d14dc461
+   Translation of GIT committish: 8e2eaf4959bec63a1128a444591a540f4f1e2937
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -202,11 +202,8 @@ autres langues disponibles, consultez
 @cindex mineur
 
 @funindex \key
-@funindex key
 @funindex \major
-@funindex major
 @funindex \minor
-@funindex minor
 
 Glossaire musicologique :
 @rglosnamed{key signature,armure}, @rglosnamed{major,majeur},
@@ -502,11 +499,8 @@ l'articulation.
 @funindex \mf
 @funindex \pp
 @funindex \<
-@funindex <
 @funindex \>
-@funindex >
 @funindex \!
-@funindex !
 
 Glossaire musicologique :
 @rglosnamed{dynamics,nuances},
@@ -552,7 +546,6 @@ Manuel de notation :
 @cindex étiquette
 
 @funindex \markup
-@funindex markup
 
 On peut ajouter du texte à une partition :
 
@@ -588,9 +581,7 @@ Manuel de notation :
 @funindex [
 @funindex ]
 @funindex \autoBeamOff
-@funindex autoBeamOff
 @funindex \autoBeamOn
-@funindex autoBeamOn
 
 Glossaire musicologique :
 @rglosnamed{beam,ligature}.
@@ -650,7 +641,6 @@ Manuel de notation :
 @cindex mesure incomplète
 
 @funindex \partial
-@funindex partial
 
 Glossaire musicologique : @rglosnamed{anacrusis,anacrouse}.
 
@@ -674,7 +664,6 @@ noire et @code{\partial 8} d'une croche.
 @cindex triolets
 
 @funindex \tuplet
-@funindex tuplet
 
 Glossaire musicologique : @rglosnamed{note value,valeur d'une note},
 @rglosnamed{triplet,triolet}.
@@ -706,16 +695,14 @@ que deux ; un @notation{triolet} portera donc une fraction de 3/2.
 @cindex acciaccature
 
 @funindex \grace
-@funindex grace
 @funindex \acciaccatura
-@funindex acciaccatura
 @funindex \appoggiatura
 @funindex acciaccatura
 
 Glossaire musicologique :
 @rglosnamed{grace notes,ornements},
 @rglosnamed{acciaccatura,acciaccature},
-@rglosnamed{appoggiatura,appogiature}.
+@rglosnamed{appoggiatura,appoggiature}.
 
 Des @notation{notes d'ornement} s'obtiennent en appliquant la commande
 @code{\grace}, @code{\appoggiatura} ou @code{\acciaccatura} à une
@@ -906,10 +893,8 @@ produite sur une unique portée.
 @cindex notation, contexte
 
 @funindex \new Staff
-@funindex new Staff
 @funindex Staff
 @funindex \new
-@funindex new
 @funindex Score
 @funindex Voice
 @funindex Lyrics
@@ -1119,7 +1104,6 @@ Cette section présente l'écriture vocale et les partitions de variété.
 @cindex chansons
 
 @funindex \addlyrics
-@funindex addlyrics
 
 Glossaire musicologique : @rglos{lyrics}.
 
@@ -1465,9 +1449,9 @@ barA = { \tripletA \tripletA \tripletA \tripletA }
 Il est possible d'utiliser des variables de types variés.  Par exemple,
 
 @example
-largeur = 4.5\cm
-nom = "Wendy"
-aFivePaper = \paper @{ paperheight = 21.0 \cm @}
+maLargeur = 60   % un nombre transmis à une variable \paper (unité = millimètre)
+monNom = "Wendy" % une chaîne transmise à un markup
+aCinqPapier = \paper @{ #(set-paper-size "a5") @}
 @end example
 
 En fonction de son contenu, un identificateur peut être utilisé à
@@ -1477,11 +1461,11 @@ ci-dessus.
 @example
 \paper @{
   \aFivePaper
-  line-width = \largeur
+  line-width = \maLargeur
 @}
 
 @{
-  c4^\nom
+  c4^\monNom
 @}
 @end example
 
@@ -1495,7 +1479,6 @@ ci-dessus.
 @cindex bloc d'en-tête
 
 @funindex \header
-@funindex header
 
 On indique les informations bibliographiques -- nom du morceau, du
 compositeur, numéro d'opus@dots{} -- dans un bloc à part, le bloc

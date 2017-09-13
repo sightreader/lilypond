@@ -19,6 +19,4 @@
 
 #include "listener.hh"
 
-const char * const Callback_wrapper::type_p_name_ = 0;
-
-const char Listener::type_p_name_[] = "ly:listener?";
+const char * const Listener::type_p_name_ = "ly:listener?";

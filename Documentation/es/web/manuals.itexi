@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: es -*-
 @ignore
-    Translation of GIT committish: 0ea80a5e850c6114d1ba7dc4cfd81d5a45d9604a
+    Translation of GIT committish: e47e01d5b2ed58ed0843751e3ab6a2aa84888afa
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -136,10 +136,10 @@ estado del proceso de traducción para los lectores no anglófonos.
 ejemplos, consejos y trucos creados por los usuarios.
 
 @item
-@uref{http://benlemon.me/blog/music/lilypond/operation-lilypond/,Video
-Tutorials}: Ben Lemon, usuario de LilyPond, ha creado y publicado
-cierto número de tutoriales de vídeo en su blog que están
-indicados para nuevos usuarios.
+@uref{http://bit.ly/LilyPondBeginners,Tutoriales de vídeo}:
+Ben Lemon, usuario de LilyPond, ha creado y publicado cierto
+número de tutoriales de vídeo en su blog que están indicados para
+nuevos usuarios.
 
 @item
 @ref{Desarrollo}:
@@ -439,7 +439,7 @@ informar de los fallos, y desarrollo.
   @ref{Arriba,Web},
   @manualDevelWebSplit-es,
   @manualDevelWebBig-es, 2.5 MB,
-  @manualDevelWebPdf, 3.5 MB}
+  @manualDevelWebPdf-es, 3.5 MB}
 
 @divEnd
 

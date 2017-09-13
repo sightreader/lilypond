@@ -44,7 +44,7 @@ Stencil::mark_smob () const
   return expr_;
 }
 
-const char Stencil::type_p_name_[] = "ly:stencil?";
+const char * const Stencil::type_p_name_ = "ly:stencil?";
 
 Interval
 Stencil::extent (Axis a) const
@@ -80,7 +80,7 @@ Stencil::extent_box () const
 void
 Stencil::rotate (Real a, Offset off)
 {
-  rotate_degrees (a * 180 / M_PI, off);
+  rotate_degrees (a, off);
 }
 
 /*
@@ -121,7 +121,7 @@ Stencil::rotate_degrees_absolute (Real a, Offset absolute_off)
   pts.push_back (Offset (shifted_box.x ().at (RIGHT), shifted_box.y ().at (UP)));
   pts.push_back (Offset (shifted_box.x ().at (LEFT), shifted_box.y ().at (UP)));
 
-  const Offset rot = complex_exp (Offset (0, a * M_PI / 180.0));
+  const Offset rot (offset_directed (a));
   dim_.set_empty ();
   for (vsize i = 0; i < pts.size (); i++)
     dim_.add_point (pts[i] * rot + absolute_off);
@@ -414,4 +414,14 @@ Stencil::translated (Offset z) const
   Stencil s (*this);
   s.translate (z);
   return s;
+}
+
+Stencil
+Stencil::with_outline (Stencil const &ol) const
+{
+  Stencil new_stencil (ol.extent_box (),
+                       scm_list_3 (ly_symbol2scm ("with-outline"),
+                                   ol.expr (),
+                                   expr ()));
+  return new_stencil;
 }

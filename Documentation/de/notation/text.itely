@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes.
 @end ignore
 
-@c \version "2.19.21"
+@c \version "2.21.0"
 
 @c Translators: Till Paala
 
@@ -249,9 +249,7 @@ Referenz der Interna:
 @cindex Symbole auf der Taktstrich
 
 @funindex \mark
-@funindex mark
 @funindex \markup
-@funindex markup
 
 Verschiedene Textelemente können der Partitur hinzugefügt werden,
 indem man die Syntax für Zeichen einsetzen, wie beschrieben in
@@ -325,7 +323,7 @@ Notationsreferenz:
 @ref{Übungszeichen},
 @ref{Text formatieren},
 @ref{Musikalische Notation innerhalb einer Textbeschriftung},
-@ref{Die Feta-Schriftart}.
+@ref{Die Emmentaler-Schriftart}.
 
 Schnipsel:
 @rlsr{Text}.
@@ -353,7 +351,6 @@ ausgegeben.
 @cindex oberste Ebene, Text
 
 @funindex \markup
-@funindex markup
 
 Eine @code{\markup}-Umgebung kann auch für sich alleine existieren,
 außerhalb einer @code{\score}-Umgebung, als ein Ausdruck auf der
@@ -447,7 +444,6 @@ Formatierung von Text, wobei der Textbeschriftungsmodus
 @cindex Beschriftung, Text
 @cindex Setzen von Text
 
-@funindex markup
 @funindex \markup
 
 Eine @code{\markup}-Umgebung wird benutzt, um Text mit einer
@@ -648,11 +644,8 @@ der globalen Notensystemgröße:
 @cindex tiefergestellt
 
 @funindex \super
-@funindex super
 @funindex \sub
-@funindex sub
 @funindex \normal-size-super
-@funindex normal-size-super
 
 Text kann auch hoch- bzw. tiefgestellt gesetzt werden.  Die so markierten
 Buchstaben werden automatisch in einer kleineren Schriftgröße gesetzt,
@@ -819,7 +812,6 @@ an der linken Ecke ausgerichtet.
 @end lilypond
 
 @funindex \halign
-@funindex halign
 
 Die horizontale Ausrichtung kann mit einer Zahl auf einen exakten
 Wert festgelegt werden:
@@ -949,7 +941,6 @@ eigenen Zeile gesetzt, entweder linksbündig oder zentriert:
 @cindex Beschriftung, Zentrieren auf der Seite
 
 @funindex \fill-line
-@funindex fill-line
 
 Eine Anzahl an Ausdrücken innerhalb von @code{\markup} kann auch
 gestreckt werden, so dass die gesamte Seitenbreite benutzt wird.  Wenn
@@ -1245,7 +1236,7 @@ Noten und Versetzungszeichen lassen sich mit @code{\markup} einfügen:
 
 @lilypond[quote,verbatim,fragment]
 a'2 a'^\markup {
-  \note #"4" #1
+  \note {4} #1
   =
   \note-by-number #1 #1 #1.5
 }
@@ -1284,7 +1275,7 @@ d-\markup {
 Allgemeiner gesagt kann jedes verfügbare Notationssymbol unabhängig
 von der Notation als ein Textbeschriftungsobjekt eingefügt werden, wie
 unten gezeigt.  Eine vollständige Liste der verfügbaren Symbole findet
-sich in @ref{Die Feta-Schriftart}.
+sich in @ref{Die Emmentaler-Schriftart}.
 
 @lilypond[quote,verbatim]
 \relative {
@@ -1357,7 +1348,7 @@ Eine vollständige Liste der Musiksymbol-Befehle findet sich in @ref{Music}.
 @seealso
 Notationsreferenz:
 @ref{Music},
-@ref{Die Feta-Schriftart},
+@ref{Die Emmentaler-Schriftart},
 @ref{Was sind Schriftarten}.
 
 Installierte Dateien:
@@ -1383,11 +1374,8 @@ Referenz der Interna:
 @cindex mehrseitiger Text
 
 @funindex \markuplist
-@funindex markuplist
 @funindex \justified-lines
-@funindex justified-lines
 @funindex \wordwrap-lines
-@funindex wordwrap-lines
 
 Normale Textbeschriftungsobjekte können nicht getrennt werden, aber mit
 einer spezifischen Umgebung ist es möglich, Text auch über mehrere Seiten
@@ -1438,7 +1426,6 @@ Referenz der Interna:
 @rinternals{TextScript}.
 
 @funindex \markuplist
-@funindex markuplist
 
 @predefined
 @code{\markuplist}.
@@ -1478,7 +1465,7 @@ Notationsschriftarten können als eine Ansammlung von besonderen Zeichen
 erklärt werden, wobei die Sonderzeichen in verschiedene Familien
 klassifiziert werden.  Die Syntax des folgenden Beispiels ermöglicht es,
 direkt auf verschiedene nicht textuelle Sonderzeichen der
-@code{feta}-Schriftart zuzugreifen.  Das ist die Standardschriftart
+@code{feta}-Glyphe zuzugreifen.  Das ist die Standardschriftart
 für Notationselemente in LilyPond.
 
 @lilypond[quote,verbatim,fragment]
@@ -1572,7 +1559,7 @@ in folgenden Abschnitten: @ref{Schriftarten für einen Eintrag} und
 
 @seealso
 Notationsreferenz:
-@ref{Die Feta-Schriftart},
+@ref{Die Emmentaler-Schriftart},
 @ref{Drehen von Objekten},
 @ref{Musikalische Notation innerhalb einer Textbeschriftung},
 @ref{Überblick über die wichtigsten Textbeschriftungsbefehle},

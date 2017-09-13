@@ -16,6 +16,10 @@
 
 RewriteEngine On
 
+# Permanent redirect from www.lilypond.org to lilypond.org
+RewriteCond "%{HTTP_HOST}" "^www\.(.+)$" [NC]
+RewriteRule "^/?(.*)$"     "http://%1/$1" [R=301,L,NE]
+
 # Deny following of symlinks by robots.
 # HTTrack is a known offender.
 # better yet, to redirect this to page that tells adminstrator
@@ -39,15 +43,16 @@ RedirectMatch ^/bugs	/bug-reports
 #RedirectMatch ^/bugs	http://code.google.com/p/lilypond/issues/list
 # the new website already has an /authors
 #RedirectMatch ^/authors /doc/Documentation/topdocs/AUTHORS
-# the new website has news on the main page
-RedirectMatch ^/news    /
 RedirectMatch ^/stable    /doc/stable
 # the new website has a dedicated page for development.
 #RedirectMatch ^/development    /doc/development
 
-#old# default doc dir
-RedirectMatch ^/doc/*$ /doc/v2.18
-# make attempt at `latest' symlink avoid ^v catch-all doc fix rule below
+# Main doc URL redirects
+RedirectMatch ^/doc/?$ /manuals
+RedirectMatch ^/doc/stable/?$ /manuals
+RedirectMatch ^/doc/development/?$ /development
+
+# Allow to use deep links to latest stable or development docs
 RedirectMatch ^/doc//*latest/*(.*)$ /doc/v2.19/$1
 RedirectMatch ^/doc//*development/*(.*)$ /doc/v2.19/$1
 RedirectMatch ^/doc//*stable/*(.*)$ /doc/v2.18/$1
@@ -123,9 +128,18 @@ AddCharset utf-8 .fr
 AddCharset utf-8 .nl
 AddCharset utf-8 .txt
 
-# fix broken auto language selection for Hungarian
+# Add extensions for language negotiation
+# See: https://www.w3.org/International/questions/qa-apache-lang-neg
+AddLanguage ca .ca
+AddLanguage cs .cs
+AddLanguage de .de
+AddLanguage es .es
+AddLanguage fr .fr
 AddLanguage hu .hu
-
+AddLanguage it .it
+AddLanguage ja .ja
+AddLanguage nl .nl
+AddLanguage zh .zh
 
 
 # FIXME: separate this from the main "root" .htaccess material

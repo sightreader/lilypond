@@ -45,14 +45,13 @@ protected:
 
 protected:
   void stop_translation_timestep ();
-  DECLARE_TRANSLATOR_LISTENER (alternative);
-  DECLARE_ACKNOWLEDGER (break_alignment);
+  void listen_alternative (Stream_event *);
+  void acknowledge_break_alignment (Grob_info);
   void process_music ();
   void create_items ();
   TRANSLATOR_DECLARATIONS (Bar_number_engraver);
 };
 
-IMPLEMENT_TRANSLATOR_LISTENER (Bar_number_engraver, alternative);
 void
 Bar_number_engraver::listen_alternative (Stream_event *ev)
 {
@@ -136,7 +135,8 @@ Bar_number_engraver::process_music ()
     }
 }
 
-Bar_number_engraver::Bar_number_engraver ()
+Bar_number_engraver::Bar_number_engraver (Context *c)
+  : Engraver (c)
 {
   text_ = 0;
   alternative_starting_bar_number_ = 0;
@@ -177,7 +177,13 @@ Bar_number_engraver::create_items ()
   text_ = make_item ("BarNumber", SCM_EOL);
 }
 
-ADD_ACKNOWLEDGER (Bar_number_engraver, break_alignment);
+
+void
+Bar_number_engraver::boot ()
+{
+  ADD_LISTENER (Bar_number_engraver, alternative);
+  ADD_ACKNOWLEDGER (Bar_number_engraver, break_alignment);
+}
 
 ADD_TRANSLATOR (Bar_number_engraver,
                 /* doc */

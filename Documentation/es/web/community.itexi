@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: es -*-
 @ignore
-    Translation of GIT committish: 99ce5fc4bd1169e8fa33855b3a13bc68f08fbe0b
+    Translation of GIT committish: 3f5d679ade0f797d5f907569656223d09b09d5db
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -9,6 +9,7 @@
 
 @include included/acknowledge.itexi
 @include included/authors.itexi
+@include included/gsoc.itexi
 @include included/helpus.itexi
 
 @node Comunidad
@@ -74,11 +75,11 @@ LilyPond
 nosotros.
 
 @item
-@ref{Noticias antiguas}: el archivo.
+@ref{Noticias}: noticias procedentes del proyecto LilyPond.
 
 @item
 @ref{Desván}: anuncios y registros de cambios en versiones
-antiguas.
+anteriores, noticias antiguas, etc.
 
 @end itemize
 @divEnd
@@ -97,7 +98,7 @@ antiguas.
 * Autores::
 * Reconocimientos::
 * Publicaciones::
-* Noticias antiguas::
+* Noticias::
 * Desván::
 @end menu
 @divEnd
@@ -118,17 +119,17 @@ ayuda.
 
 @quotation
 @uref{http://lists.gnu.org/mailman/listinfo/lilypond-user,
-suscripción e información sobre lilypond-user}
+Suscripción e información sobre lilypond-user}
 
 @uref{http://lists.gnu.org/archive/html/lilypond-user/,
-archivo 1 de la lista de usuarios}
+Archivo 1 de la lista de usuarios}
 @uref{http://www.mail-archive.com/lilypond-user@@gnu.org/,
-archivo 2}
+Archivo 2}
 @uref{http://dir.gmane.org/gmane.comp.gnu.lilypond.general,
-archivo 3}
+Archivo 3}
 
 @uref{http://post.gmane.org/post.php?group=gmane.comp.gnu.lilypond.general,
-escribir a la lista lilypond-user a través de gmane}
+Escribir a la lista lilypond-user a través de gmane}
 @end quotation
 
 @warning{Al formular preguntas, por favor, ¡utilice
@@ -164,7 +165,7 @@ preferentemente enviarse a una de las listas de correo.
 <form action="http://webchat.freenode.net"
       method="get"
       name="f_lily_irc"
-  <label>nombre de IRC:
+  <label>Nombre de IRC:
     <input name="nick" type="text" size="15" value="">
   </label>
   <input name="channels" type="hidden" value="lilypond">
@@ -187,16 +188,16 @@ preferentemente enviarse a una de las listas de correo.
 
 @quotation
 @uref{http://lists.gnu.org/mailman/listinfo/lilypond-es,
-lista de correo en español}
+Lista de correo en español}
 
 @uref{http://www.lilypondforum.de/,
-foro alemán}
+Foro alemán}
 
 @uref{http://groups.google.com/group/lilypond-brasil,
-grupo de portugués}
+Grupo de portugués}
 
 @uref{http://lists.gnu.org/mailman/listinfo/lilypond-user-fr,
-lista de correo en francés}
+Lista de correo en francés}
 @end quotation
 @divEnd
 
@@ -217,14 +218,14 @@ bajo tráfico, que envía notificaciones de los últimos lanzamientos.
 
 @quotation
 @uref{http://lists.gnu.org/mailman/listinfo/info-lilypond,
-suscripción e información sobre info-lilypond}
+Suscripción e información sobre info-lilypond}
 
 @uref{http://lists.gnu.org/archive/html/info-lilypond/,
-archivo 1 de la lista info}
+Archivo 1 de la lista info}
 @uref{http://www.mail-archive.com/info-lilypond@@gnu.org/,
-archivo 2}
+Archivo 2}
 @uref{http://dir.gmane.org/gmane.comp.gnu.lilypond.announce,
-archivo 3}
+Archivo 3}
 
 @c don't include gmane posting here.  -gp
 @end quotation
@@ -243,17 +244,17 @@ parches se pueden también enviar aquí.
 
 @quotation
 @uref{http://lists.gnu.org/mailman/listinfo/lilypond-devel,
-subscripción e información sobre lilypond-devel}
+Suscripción e información sobre lilypond-devel}
 
 @uref{http://lists.gnu.org/archive/html/lilypond-devel/,
-archivo 1 de la lista devel}
+Archivo 1 de la lista devel}
 @uref{http://www.mail-archive.com/lilypond-devel@@gnu.org/,
-archivo 2}
+Archivo 2}
 @uref{http://dir.gmane.org/gmane.comp.gnu.lilypond.devel,
-archivo 3}
+Archivo 3}
 
 @uref{http://post.gmane.org/post.php?group=gmane.comp.gnu.lilypond.devel,
-escribir a la lista lilypond-devel a través de gmane}
+Escribir a la lista lilypond-devel a través de gmane}
 @end quotation
 
 
@@ -264,14 +265,14 @@ aquí.  No envíe parches a esta lista.
 
 @quotation
 @uref{http://lists.gnu.org/mailman/listinfo/bug-lilypond,
-subscripción e información sobre bug-lilypond}
+Suscripción e información sobre bug-lilypond}
 
 @uref{http://lists.gnu.org/archive/html/bug-lilypond/,
-archivo 1 de la lista bug}
+Archivo 1 de la lista bug}
 @uref{http://www.mail-archive.com/bug-lilypond@@gnu.org/,
-archivo 2}
+Archivo 2}
 @uref{http://dir.gmane.org/gmane.comp.gnu.lilypond.bugs,
-archivo 3}
+Archivo 3}
 
 @c don't include gmane posting here.  -gp
 @end quotation
@@ -379,7 +380,7 @@ El código que sigue ¿es un ejemplo mínimo?
 
 @example
 \version "2.14.1"
-\include "espanol.ly"
+\include "español.ly"
 
 \score @{
   \new Staff @{
@@ -510,11 +511,12 @@ información.  Se le avisará cuando el informe se añada al sistema
 de seguimiento de fallos.  Déles un tiempo de unos 4 días, pues
 disponemos de un número limitado de voluntarios para esta tarea.
 
-Una vez que el fallo se ha añadido al sistema de seguimiento,
-puede comentarlo para añadirle más información.  Puede marcar el
-bug con una estrella de forma que reciba mensajes automáticamente
-cuando se produce cualquier actividad sobre él.  Ello requiere que
-usted disponga de una cuenta en Google.
+Cuando el fallo se ha añadido al sistema de seguimiento, puede
+comentarlo para añadirle más información.  In order to be
+automatically notified about any activity on the tracker issue,
+you may subscribe by clicking the envelope symbol next to the
+issue title.  Commenting and subscribing require being logged in
+with a sourceforge account.
 @divEnd
 
 @divClass{column-center-bottom}
@@ -619,11 +621,10 @@ la versión @versionDevel{}:
 
 Desarrolladores interesados:
 @table @asis
-@item @email{dak@@gnu.org, David Kastrup}
-Se necesitan donaciones para que yo pueda continuar mi actual
-trabajo a tiempo completo sobre LilyPond.  Me concentro en diseño
-de interfaces de usuario y del programador, coherencia,
-implementación, simplificación, documentación y depuración.
+@item @email{lilypond-devel@@gnu.org, Lista de desarrolladores de LilyPond}
+Puesto que no hay ningún desarrollador en la lista de interesados para el
+desarrollo comercial, lo mejor que puede hacer es preguntar en la lista
+de desarrolladores.
 
 @c Format
 @c @item @email{name@@adress.domain, Name}
@@ -718,9 +719,9 @@ colaboradores.
 
 @docLinksBare{Guía del colaborador, contributor,
   @rcontribnamed{Top,Guía del colaborador},
-  @manualDevelContributorSplit,
-  @manualDevelContributorBig, 500 kB,
-  @manualDevelContributorPdf, 2.8 MB}
+  @manualDevelContributorSplit-es,
+  @manualDevelContributorBig-es, 500 kB,
+  @manualDevelContributorPdf-es, 2.8 MB}
 
 @divEnd
 
@@ -764,21 +765,21 @@ Las pruebas de lilypond-book de esta versión.
 
 @item @regtestDevelXml-es (@regtestDevelXmlPdf-es{})
 
-@item @regtestDevelAbc (@regtestDevelAbcPdf{})
+@item @regtestDevelAbc-es (@regtestDevelAbcPdf-es{})
 
-@item @regtestDevelLilypondBook (@regtestDevelLilypondBookPdf{})
+@item @regtestDevelLilypondBook-es (@regtestDevelLilypondBookPdf-es{})
 @end itemize
 
 @subsubheading Versión estable
 
 @itemize
-@item @regtestStable (@regtestStablePdf{})
+@item @regtestStable-es (@regtestStablePdf-es{})
 
-@item @regtestStableXml (@regtestStableXmlPdf{})
+@item @regtestStableXml-es (@regtestStableXmlPdf-es{})
 
-@item @regtestStableAbc (@regtestStableAbcPdf{})
+@item @regtestStableAbc-es (@regtestStableAbcPdf-es{})
 
-@item @regtestStableLilypondBook (@regtestStableLilypondBookPdf{})
+@item @regtestStableLilypondBook-es (@regtestStableLilypondBookPdf-es{})
 @end itemize
 @end ifset
 
@@ -788,7 +789,7 @@ Las pruebas de lilypond-book de esta versión.
 @itemize
 @item @uref{http://lilypond.org/test, Comparaciones entre pruebas de regresión}
 
-@item @uref{http://lilypond.org/download/binaries/test-output/,
+@item @uref{http://lilypond.org/downloads/binaries/test-output/,
 Archivo de todas las pruebas de regresión}
 
 @end itemize
@@ -865,12 +866,12 @@ más recientes están en @url{http://lilypond.org}}
 @tab
 @docLinkBig{Web,web,@manualDevelWebBig-es}
 @tab
-@docLinkPdf{Web,web,@manualDevelWebPdf}
+@docLinkPdf{Web,web,@manualDevelWebPdf-es}
 
 @item
-@docLinkSplit{Cambios,changes,@manualDevelChangesSplit}
+@docLinkSplit{Cambios,changes,@manualDevelChangesSplit-es}
 @tab
-@docLinkBig{Cambios,changes,@manualDevelChangesBig}
+@docLinkBig{Cambios,changes,@manualDevelChangesBig-es}
 @tab
 @docLinkPdf{Cambios,changes,@manualDevelChangesPdf-es}
 
@@ -903,219 +904,13 @@ más recientes están en @url{http://lilypond.org}}
 @divEnd
 
 
+
+
 @node Google Summer of Code
 @unnumberedsec Google Summer of Code
 @translationof Google Summer of Code
 
-@divClass{column-center-top}
-@subheading ¿Qué es el Google Summer of Code (Verano del Código de Google)?
-
-@uref{https://developers.google.com/open-source/gsoc/, GSoC} es un
-programa global que ofrece a estudiantes una ayuda para que
-trabajen en proyectos de software de fuentes abiertas durante las
-vacaciones de verano.  Es una excelente oportunidad para que los
-estudiantes obtengan experiencia en el desarrollo de software en
-el mundo real y hagan contribuciones que beneficie a todos.  Atrae
-a colaboradores nuevos y anima a los estudiantes que ya participan
-en el desarrollo de LilyPond a que se impliquen aún más.  LilyPond
-participa en el GSoC como parte del @uref{http://www.gnu.org/,
-proyecto GNU}.
-
-Hemos tenido participantes en el GSoC en 2012 y 2015 y animamos a
-los estudiantes a que envíen la solicitud para las futuras
-ediciones.
-
-Si tiene alguna pregunta o le gustaría solicitar la participación,
-envíenos un correo a la lista de desarrolladores (véase
-@ref{Contacto}).
-
-@divEnd
-
-@divClass{column-center-bottom}
-@subheading Lista de ideas del proyecto
-
-Más abajo aparece una lista de los proyectos que fue inicialmente
-sugerida para el GSoC 2012.  Se mantiene aquí como inspiración
-para futuros proyectos del GSoC y para cualquier persona
-interesada en el desarrollo de LilyPond.
-
-Observe que no es una lista exhaustiva.  También son posibles
-otros proyectos de GSoC.  Existen varias áreas en las que LilyPond
-puede mejorar y el equipo de desarrollo de LilyPond está siempre
-dispuesto a servir de ayuda a aquellos que deseen implicarse en un
-proyecto como los que aparecen relacionados más abajo.
-
-Hay una lista completa de todas las incidencias abiertas
-@uref{http://code.google.com/p/lilypond/issues/list, aquí}.
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading ScholarLY
-
-ScholarLY es una biblioteca dentro de
-@uref{https://github.com/openlilylib/snippets, openLilyLib} que
-provee funcionalidades para la anotación de partituras, haciendo
-posible gestionar flujos de trabajo académicos completamente en el
-contexto del documento de la partitura.  Hasta ahora es posible
-introducir anotaciones de distintos tipos, producir mensajes que
-se comportan como enlaces sobre la salida de consola y exportar a
-texto y a archivos de LaTeX.
-
-Hay muchas solicitudes de funcionalidad para la conversión de esta
-biblioteca en una herramienta mmás potente y completa aún, por
-ejemplo: inserción de ejemplos musicales, producción de notas al
-pie de página, aplicación automárica de estilos al elemento
-anotado (p. ej. trazar una ligadura en línea discontinua, poner
-una alteración entre paréntesis), creando informes con elementos
-sobre los que se puede apuntar y pulsar.  Para ver una descripción
-completa de esta sugerencia de proyecto, visite
-@uref{https://github.com/openlilylib/scholarly/wiki/GSoC}.
-
-@strong{Dificultad:} media
-@strong{Requisitos:} Scheme, posiblemente LaTeX, (opcionalmente
-Python)
-@strong{Conocimientos recomendados:} Experiencia con, o interés
-en, la edición académica y flujos de trabajo colaborativos.
-@strong{Mentor potencial:} Urs Liska
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Notas de adorno
-
-Arreglar problemas con la sincronización de las notas de adorno.
-Las notas de adorno pueden interferir con la cuenta del tiempo de
-LilyPond y causar efectos extraños, especialmente cuando se usan
-varios pentagramas en los que algunos tienen notas de adorno y
-otros no.
-
-@strong{Dificultad:} media
-@strong{Requisitos:} C++, MIDI
-@strong{Conocimientos recomendados:} familiaridad con el
-funcionamiento interno de LilyPond
-@strong{Mentores potenciales:} Mike Solomon, Carl Sorensen
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading MusicXML
-
-Mejora de las funciones de importación y exportación de MusicXML:
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-Manejo de la exportación del contenido musical básico como la
-exportación MIDI (es decir, uso de clases exportadoras dedicadas,
-derivadas de la clase translator).
-
-@item
-Construir el árbol XML del contenido musical básico, y una
-conexión desde el evento musical a la etiqueta XML.
-
-@item
-Hacer que todos los grabadores de LilyPond hagan su trabajo.
-
-@item
-Enlazar cada objeto de presentación (es decir, cada sello o grupo
-de sellos) a la causa musical (así como a la etiqueta XML dentro
-del árbol XML).
-
-@item
-Añadir un @q{back-end} de salida XML, que puede después añadir
-información de disposición para cada uno de los objetos de salida
-a las etiquetas del XML.
-
-@end itemize
-@divEnd
-
-@strong{Dificultad:} media
-@strong{Requisitos:} MusicXML, Python, conocimiento básico de LilyPond
-@strong{Mentores potenciales:} Reinhold Kainhofer, Mike Solomon
-
-Sería un buen tanto a su favor la familiaridad con otros editores
-de partituras para poder hacer pruebas cruzadas.
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Mejora de las ligaduras de unión y de expresión
-
-Con frecuencia, las curvas de las ligaduras de unión y de
-expresión no son satisfactorias.  No se manejan bien las ligaduras
-@q{interrumpidas} por cambios de clave o de pentagrama.  El
-proyecto podría incluir y organizar ejemplos de mala salida,
-decidir sobre la salida perseguida y escibir código para
-mejorarla.
-
-@strong{Dificultad:} alta
-@strong{Requisitos:} C++, experiencia con heurística de la escritura
-@strong{Conocimientos recomendados:} LilyPond, sentido estético
-@strong{Mentor potencial:} Mike Solomon
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Añadir una variante especial de los glifos de fuente tipográfica
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-Añadir variantes @q{sobre} y @q{entre} líneas del pentagrama.
-
-@item
-Variantes más bajas y estrechas de ciertos glifos, como
-alteraciones alccidentales.  Otro ejemplo más específico sería una
-cabeza de nota breve de la notación antigua en dos variantes, una
-con un hueco pequeño dentro, y otra con un hueco grande.
-
-@end itemize
-@divEnd
-
-@strong{Dificultad:} fácil
-@strong{Requisitos:} MetaFont, C++, buen ojo para los detalles
-@strong{Conocimientos recomendados:} conocimientos básicos de LilyPond
-@strong{Mentor potencial:} Werner Lemberg
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Mejora del posicionamiento de las barras de corchea (y figuras menores)
-
-Para barras de corchea normales, de pentagrama cruzado,
-interrumpidas y en ángulo.  El barrado debería depender del
-contexto y de las notas vecinas (véase la
-@uref{http://icking-music-archive.org/lists/sottisier/sottieng.pdf,
-sección 2.2}).  Si es posible, reducir el tiempo de cálculo del
-barrado.
-
-@strong{Dificultad:} media
-@strong{Requisitos:} C++, experiencia con heurística de la escritura
-@strong{Conocimientos recomendados:} sentido estético
-@strong{Mentores potenciales:} Mike Solomon, Carl Sorensen
-
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Ayudar a mejorar el comportamiento de la compilación
-
-Las herramientas de análisis automático del código, como la
-detección de filtraciones de memoria de Valgrind o el perfilador
-de código Callgrind, proveen una información valiosa acerca de los
-posibles problemas de nuestro código de C++.  La limpieza de estas
-advertencias nos permitiría rechazar automáticamente cualquier
-parche que introdujese más advertencias de las que hay
-actualmente.
-
-@strong{Dificultad:} media
-@strong{Requisitos:} C++
-@strong{Mentores potenciales:} Joe Neeman, Reinhold Kainhofer
-
-@divEnd
+@gsocCurrent
 
 
 @node Autores
@@ -1155,7 +950,7 @@ actualmente.
 
 @docCurrent
 
-@subsubheading Bug squad
+@subsubheading Escuadrón de fallos (Bug squad)
 
 @bugsquadCurrent
 
@@ -1242,19 +1037,17 @@ actualmente.
 @contactUsAbout{artículos académicos}
 
 
-@node Noticias antiguas
-@unnumberedsec Noticias antiguas
-@translationof Old news
+@node Noticias
+@unnumberedsec Noticias
+@translationof News
 
-@divClass{heading-center}
-@warning{Hay muchos anuncios y registros de cambio antiguos en el
-@ref{Desván}}
+@include web/news-new.itexi
+
+@divClass{column-center-bottom}
+@subheading Noticias antiguas
+Las noticias anteriores están en el @ref{Desván} junto a muchos
+anuncios y registros de cambio antiguos.
 @divEnd
-
-@include web/news-front.itexi
-
-@include web/news.itexi
-
 
 @node Desván
 @unnumberedsec Desván
@@ -1294,8 +1087,8 @@ Lista descriptiva de los cambios por versión:
 
 @divEnd
 
-@divClass{column-center-bottom}
-@subheading Thanks
+@divClass{column-center-middle-color3}
+@subheading Agradecimientos
 
 Gracias a los desarrolladores, colaboradores, cazadores de fallos
 y aportadores de sugerencias por
@@ -1312,7 +1105,7 @@ y aportadores de sugerencias por
 
 @divEnd
 
-@divClass{column-center-bottom}
+@divClass{column-center-middle-color3}
 @subheading Registros de cambios
 
 Registros de cambios de los desarrolladores, por versión:
@@ -1330,3 +1123,16 @@ Registros de cambios de los desarrolladores, por versión:
 @miscLink{CHANGES-0.0,v0.0}
 
 @divEnd
+
+@divClass{column-center-middle-color2 bigger-subsubheadings}
+@gsocInactive
+@divEnd
+
+@divClass{column-center-middle-color2}
+@subheading Noticias antiguas
+
+Las noticias más antiguas datan de julio de 2003.  Las noticias
+más actuales están en la página de @ref{Noticias}.
+@divEnd
+
+@include web/news-old.itexi

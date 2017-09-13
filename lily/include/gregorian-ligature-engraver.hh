@@ -29,10 +29,12 @@ public:
   // no TRANSLATOR_DECLARATIONS (Gregorian_ligature_engraver) needed
   // since this class is abstract
 
+  TRANSLATOR_INHERIT(Coherent_ligature_engraver);
+  DECLARE_TRANSLATOR_CALLBACKS (Gregorian_ligature_engraver);
 protected:
-  Gregorian_ligature_engraver ();
+  Gregorian_ligature_engraver (Context *);
 
-  virtual void listen_pes_or_flexa (Stream_event *ev);
+  void listen_pes_or_flexa (Stream_event *ev);
   virtual void build_ligature (Spanner *ligature,
                                vector<Grob_info> const &primitives);
   virtual void transform_heads (Spanner *ligature,

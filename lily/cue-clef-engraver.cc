@@ -41,7 +41,7 @@ public:
 protected:
   void stop_translation_timestep ();
   void process_music ();
-  DECLARE_ACKNOWLEDGER (bar_line);
+  void acknowledge_bar_line (Grob_info);
 
   virtual void derived_mark () const;
 private:
@@ -66,7 +66,8 @@ Cue_clef_engraver::derived_mark () const
   scm_gc_mark (prev_glyph_);
 }
 
-Cue_clef_engraver::Cue_clef_engraver ()
+Cue_clef_engraver::Cue_clef_engraver (Context *c)
+  : Engraver (c)
 {
   clef_ = 0;
   modifier_ = 0;
@@ -197,19 +198,25 @@ Cue_clef_engraver::stop_translation_timestep ()
 {
   if (clef_)
     {
-      SCM vis = 0;
       if (to_boolean (clef_->get_property ("non-default")))
-        vis = get_property ("explicitCueClefVisibility");
+        {
+          SCM vis = get_property ("explicitCueClefVisibility");
 
-      if (vis)
-        clef_->set_property ("break-visibility", vis);
+          if (scm_is_vector (vis))
+            clef_->set_property ("break-visibility", vis);
+        }
 
       clef_ = 0;
       modifier_ = 0;
     }
 }
 
-ADD_ACKNOWLEDGER (Cue_clef_engraver, bar_line);
+void
+Cue_clef_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Cue_clef_engraver, bar_line);
+}
+
 ADD_TRANSLATOR (Cue_clef_engraver,
                 /* doc */
                 "Determine and set reference point for pitches in cued voices.",

@@ -36,8 +36,9 @@ class Lily_lexer : public Smob<Lily_lexer>, public Includable_lexer
 public:
   int print_smob (SCM, scm_print_state *) const;
   SCM mark_smob () const;
-  static const char type_p_name_[];
+  static const char * const type_p_name_;
   virtual ~Lily_lexer ();
+  int scan_word (SCM & output, SCM sym);
 private:
   int lookup_keyword (const string&);
   int scan_bare_word (const string&);
@@ -45,6 +46,7 @@ private:
   int scan_shorthand (const string&);
   int scan_scm_id (SCM);
   int identifier_type (SCM);
+  void push_markup_predicates (SCM sig);
   char escaped_char (char) const;
   const char *YYText_utf8 ();
 

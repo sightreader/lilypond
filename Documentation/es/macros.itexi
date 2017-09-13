@@ -1,6 +1,6 @@
 @c -*- coding: utf-8; mode: texinfo; -*-
 @ignore
-    Translation of GIT committish: 0dab09bcbd2046e1dc38fb264ae8f7d2097d3d71
+    Translation of GIT committish: 9dbf6c2c5c8b2847cdfeb6d3c2d11d6f33d3a506
 
     When revising a translation, copy the HEAD committish of the
     version that you are working on.  For details, see the Contributors'
@@ -104,7 +104,7 @@ con el resto de la documentación, o para leer este manual en otros
 formatos, consulte @rweb{Manuales}.
 
 Si le falta algún manual, encontrará toda la documentación en
-@w{@uref{http://@/www@/.lilypond@/.org/}}.
+@w{@uref{http://@/lilypond@/.org/}}.
 @end cartouche
 @end macro
 
@@ -203,16 +203,20 @@ Para la versión de LilyPond @version{}
 @c it doesn't matter, but a future implementation will probably
 @c add some code which needs this restriction.
 
+@c @raggedright can be enabled as soon as texinfo 5.x or larger
+@c is in use for Gub and LilyDev 3.
+
 @macro predefined
 @noindent
 @subsubheading Instrucciones predefinidas
+@c @raggedright
 @end macro
 
 @c Due to a bug in texi2html (texi2html.pl CVS versions <= 1.245)
 @c the next macro must not be empty.
 
 @macro endpredefined
-@c
+@c @end raggedright
 @end macro
 
 
@@ -739,14 +743,13 @@ Para la versión de LilyPond @version{}
 
 @end iftex
 
-
 @c  ***** Macros specific to the web site *****
 
 @ifset web
 
 @macro exampleImage{IMAGE-FILE}
 @html
-<div class="float-center">
+<div class="float-center example-image-wrapper">
   <a class="clickable" href="ly-examples/\IMAGE-FILE\.png">
     <img src="ly-examples/\IMAGE-FILE\-small.png" alt="\IMAGE-FILE\">
   </a>
@@ -772,6 +775,7 @@ Para la versión de LilyPond @version{}
 </div>
 @end html
 @end macro
+
 
 @c LEGALESE
 

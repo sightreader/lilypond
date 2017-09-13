@@ -45,12 +45,12 @@ protected:
   virtual void finalize ();
   virtual void derived_mark () const;
 
-  DECLARE_ACKNOWLEDGER (rest);
-  DECLARE_ACKNOWLEDGER (beam);
-  DECLARE_ACKNOWLEDGER (bar_line);
-  DECLARE_ACKNOWLEDGER (breathing_sign);
-  DECLARE_ACKNOWLEDGER (stem);
-  DECLARE_TRANSLATOR_LISTENER (beam_forbid);
+  void acknowledge_rest (Grob_info);
+  void acknowledge_beam (Grob_info);
+  void acknowledge_bar_line (Grob_info);
+  void acknowledge_breathing_sign (Grob_info);
+  void acknowledge_stem (Grob_info);
+  void listen_beam_forbid (Stream_event *);
 
 private:
   virtual bool test_moment (Direction, Moment, Moment);
@@ -147,7 +147,8 @@ Auto_beam_engraver::process_music ()
     }
 }
 
-Auto_beam_engraver::Auto_beam_engraver ()
+Auto_beam_engraver::Auto_beam_engraver (Context *c)
+  : Engraver (c)
 {
   forbid_ = 0;
   process_acknowledged_count_ = 0;
@@ -160,7 +161,6 @@ Auto_beam_engraver::Auto_beam_engraver ()
   beam_settings_ = SCM_EOL;
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Auto_beam_engraver, beam_forbid);
 void
 Auto_beam_engraver::listen_beam_forbid (Stream_event *ev)
 {
@@ -223,8 +223,7 @@ Auto_beam_engraver::create_beam ()
     Beam::add_stem (beam, (*stems_)[i]);
 
   Grob_info i = make_grob_info (beam, (*stems_)[0]->self_scm ());
-  i.rerouting_daddy_context_ = beam_start_context_.get_context ();
-  announce_grob (i);
+  announce_grob (i, beam_start_context_.get_context ());
 
   return beam;
 }
@@ -283,9 +282,8 @@ Auto_beam_engraver::end_beam ()
       if (finished_beam_)
         {
           Grob_info i = make_grob_info (finished_beam_, SCM_EOL);
-          i.rerouting_daddy_context_ = beam_start_context_.get_context ();
 
-          announce_end_grob (i);
+          announce_end_grob (i, beam_start_context_.get_context ());
           finished_grouping_ = grouping_;
           finished_beaming_options_ = beaming_options_;
         }
@@ -542,11 +540,17 @@ Auto_beam_engraver::process_acknowledged ()
   process_acknowledged_count_++;
 }
 
-ADD_ACKNOWLEDGER (Auto_beam_engraver, stem);
-ADD_ACKNOWLEDGER (Auto_beam_engraver, bar_line);
-ADD_ACKNOWLEDGER (Auto_beam_engraver, beam);
-ADD_ACKNOWLEDGER (Auto_beam_engraver, breathing_sign);
-ADD_ACKNOWLEDGER (Auto_beam_engraver, rest);
+void
+Auto_beam_engraver::boot ()
+{
+  ADD_LISTENER (Auto_beam_engraver, beam_forbid);
+  ADD_ACKNOWLEDGER (Auto_beam_engraver, stem);
+  ADD_ACKNOWLEDGER (Auto_beam_engraver, bar_line);
+  ADD_ACKNOWLEDGER (Auto_beam_engraver, beam);
+  ADD_ACKNOWLEDGER (Auto_beam_engraver, breathing_sign);
+  ADD_ACKNOWLEDGER (Auto_beam_engraver, rest);
+}
+
 ADD_TRANSLATOR (Auto_beam_engraver,
                 /* doc */
                 "Generate beams based on measure characteristics and observed"
@@ -575,7 +579,7 @@ ADD_TRANSLATOR (Auto_beam_engraver,
 class Grace_auto_beam_engraver : public Auto_beam_engraver
 {
   TRANSLATOR_DECLARATIONS (Grace_auto_beam_engraver);
-  DECLARE_TRANSLATOR_LISTENER (beam_forbid);
+  TRANSLATOR_INHERIT (Auto_beam_engraver);
 
 private:
   Moment last_grace_start_; // Full starting time of last grace group
@@ -585,18 +589,12 @@ private:
   virtual bool test_moment (Direction, Moment, Moment);
 };
 
-Grace_auto_beam_engraver::Grace_auto_beam_engraver ()
+Grace_auto_beam_engraver::Grace_auto_beam_engraver (Context *c)
+  : Auto_beam_engraver (c)
 {
   last_grace_start_.main_part_.set_infinite (-1);
   // grace_part_ is zero -> test_moment is false, last_grace_position_
   // not considered.
-}
-
-IMPLEMENT_TRANSLATOR_LISTENER (Grace_auto_beam_engraver, beam_forbid);
-void
-Grace_auto_beam_engraver::listen_beam_forbid (Stream_event *ev)
-{
-  Auto_beam_engraver::listen_beam_forbid (ev);
 }
 
 bool
@@ -638,11 +636,17 @@ Grace_auto_beam_engraver::test_moment (Direction dir, Moment test_mom, Moment)
   return !test_mom.grace_part_;
 }
 
-ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, stem);
-ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, bar_line);
-ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, beam);
-ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, breathing_sign);
-ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, rest);
+void
+Grace_auto_beam_engraver::boot ()
+{
+  ADD_LISTENER (Grace_auto_beam_engraver, beam_forbid);
+  ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, stem);
+  ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, bar_line);
+  ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, beam);
+  ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, breathing_sign);
+  ADD_ACKNOWLEDGER (Grace_auto_beam_engraver, rest);
+}
+
 ADD_TRANSLATOR (Grace_auto_beam_engraver,
                 /* doc */
                 "Generates one autobeam group across an entire grace phrase. "

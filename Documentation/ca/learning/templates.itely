@@ -10,6 +10,10 @@
 
 @c \version "2.16.0"
 
+@c Translators: Walter Garcia-Fontes
+@c Translation checkers:
+
+
 @node Plantilles
 @appendix Plantilles
 @translationof Templates
@@ -146,8 +150,8 @@ LilyPond i gaudir d'unes belles partitures impreses!
 @lilypondfile[verbatim,quote,ragged-right,texidoc]
 {vocal-ensemble-template.ly}
 
-@node Partitura vocal SATB i reducció per a  piano automàtica
-@appendixsubsec Partitura vocal SATB i reducció per a  piano automàtica
+@node Partitura vocal SATB i reducció per a piano automàtica
+@appendixsubsec Partitura vocal SATB i reducció per a piano automàtica
 @translationof SATB vocal score and automatic piano reduction
 
 @lilypondfile[verbatim,quote,ragged-right,texidoc]

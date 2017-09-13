@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage : fr -*-
 @c This file is part of web.texi
 @ignore
-   Translation of GIT committish: 2034ca4fcbed9253b5a85e9360e47d3fe3ff1d09
+   Translation of GIT committish: 93be41a1622bc33a01719d1d75af3dca40d75354
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -14,6 +14,7 @@
 
 @include included/acknowledge.itexi
 @include included/authors.itexi
+@include included/gsoc.itexi
 @include included/helpus.itexi
 
 @node Communauté
@@ -81,11 +82,11 @@ aujourd'hui.
 nous.
 
 @item
-@ref{Archives} : archives des dépêches.
+@ref{Actualités} : archives des dépêches.
 
 @item
 @ref{Grenier} : annonces et recensement des modifications intervenues
-aux cours des versions précédentes.
+aux cours des versions précédentes, actualités passée, etc.
 
 @end itemize
 @divEnd
@@ -104,7 +105,7 @@ aux cours des versions précédentes.
 * Auteurs::
 * Remerciements::
 * Publications::
-* Archives::
+* Actualités::
 * Grenier::
 @end menu
 @divEnd
@@ -118,6 +119,7 @@ aux cours des versions précédentes.
 @divClass{column-left-bottom}
 @subheading Discuter entre utilisateurs et demander de l'aide
 @c VO User Discussions and Help
+
 @subsubheading Liste de diffusion des utilisateurs : @code{lilypond-user@@gnu.org}
 
 Cette liste de diffusion @strong{anglophone} est le lieu privilégié des
@@ -192,6 +194,7 @@ intéresser d'autres utilisateurs.
   document.forms["f_lily_irc"].nick.value = username;
 </script>
 @end html
+
 
 @subsubheading Autres langues
 
@@ -316,13 +319,15 @@ Translation mailing list archive}
 
 @divClass{column-center-top}
 @subheading Exemple minimaliste@dots{} mais qu'est-ce donc que cela ?
+@c VO What are @qq{Tiny examples}?
 
 Un exemple minimaliste est un bout de code duquel @strong{plus rien} ne
 peut être retiré.
 @divEnd
 
 @divClass{column-left-bottom}
-@subheading Pourquoi être minimaliste ?
+@subheading Pourquoi être minimaliste@tie{}?
+@c VO Why create them?
 
 @divClass{keep-bullets}
 @itemize
@@ -353,6 +358,7 @@ réellement d'un « bogue ».
 
 @divClass{column-right-bottom}
 @subheading Comment être minimaliste@tie{}?
+@c VO How to create them?
 
 @divClass{keep-bullets}
 @itemize
@@ -392,6 +398,7 @@ Le cas échéant, joignez une image de ce à quoi vous voulez arriver.
 
 @divClass{column-center-bottom}
 @subheading Jusqu'où pousser le minimalisme@tie{}?
+@c VO How tiny should they be?
 
 En voici un exemple :
 
@@ -485,6 +492,7 @@ Voici ce à quoi devrait ressembler tout signalement de bogue :
 
 @divEnd
 
+
 @divClass{column-right-bottom}
 @subheading Étape 3 : Transmission d'un signalement de bogue
 
@@ -526,9 +534,10 @@ liste francophone} ; nous nous chargerons de transmettre un rapport
 à la liste anglophone et assurerons le suivi.
 
 @end itemize
+@divEnd
 
 @divEnd
-@divEnd
+
 
 @divClass{column-center-bottom}
 @subheading Étape 4: Notification de prise en compte
@@ -540,10 +549,13 @@ l'équipe est réduite, merci de leur laisser quelques jours avant
 qu'ils ne vous transmettent le numéro de référence de votre signalement
 une fois qu'il aura été ajouté à la base.
 
-Vous pourrez alors, après l'avoir « marqué », y apporter vos
-commentaires et être automatiquement notifié du traitement apporté à ce
-bogue, dès lors que vous avez un identifiant reconnu par google.
+Vous pourrez alors, après l'avoir indiqué en cliquant le symbole
+« enveloppe » apparaissant en regard du titre du rapport, être
+automatiquement notifié du traitement apporté à ce bogue.  L'ajout de
+commentaire et la souscription requièrent d'avoir un identifiant reconnu
+par sourceforge.
 @divEnd
+
 
 @divClass{column-center-bottom}
 @subheading Information complémentaire : indication du comportement escompté
@@ -621,6 +633,7 @@ ou ambiguïté à ce sujet, avant même que les travaux soient entamés.
 
 @divEnd
 
+
 @divClass{column-center-bottom}
 @subheading Développeurs intéressés
 @c VO Interested developers
@@ -643,11 +656,9 @@ statistiques s'arrêtent à la version @versionDevel{}.
 
 Développeurs intéressés :
 @table @asis
-@item @email{dak@@gnu.org, David Kastrup (le contacter en anglais)}
-Vos contributions me permettront de continuer mon activité à temps plein
-sur LilyPond.  Je me concentre sur la modélisation des interfaces entre
-l'utilisateur et le programme -- cohérence, implémentation,
-simplification, documentation et débogage.
+@item @email{lilypond-devel@@gnu.org, Liste des développeurs de LilyPond}
+Dans la mesure où aucun développeur ne s'est actuellement déclaré,
+veuillez vous adresser directement à la liste de diffusion des développeurs.
 
 @c Format
 @c @item @email{name@@adress.domain, Name}
@@ -681,6 +692,7 @@ LilyPond, nous vous enjoignons à utiliser le
 lecture des @ref{Manuels, manuels pour la version stable}.}
 
 @divEnd
+
 
 @divClass{column-center-top}
 @subheading Numérotation des versions
@@ -824,7 +836,7 @@ Test de lilypond-book} relatifs à ce niveau de mise à jour
 @item @uref{http://lilypond.org/test,
 Comparaison entre différentes versions}
 
-@item @uref{http://lilypond.org/download/binaries/test-output/,
+@item @uref{http://lilypond.org/downloads/binaries/test-output/,
 Archive de tous les tests de régression}
 
 @end itemize
@@ -904,11 +916,11 @@ dernière mouture est consultable sur @url{http://lilypond.org}}
 @docLinkPdf{Web,web,@manualDevelWebPdf-fr}
 
 @item
-@docLinkSplit{Nouveautés,changes,@manualDevelChangesSplit}
+@docLinkSplit{Nouveautés,changes,@manualDevelChangesSplit-fr}
 @tab
-@docLinkBig{Nouveautés,changes,@manualDevelChangesBig}
+@docLinkBig{Nouveautés,changes,@manualDevelChangesBig-fr}
 @tab
-@docLinkPdf{Nouveautés,changes,@manualDevelChangesPdf}
+@docLinkPdf{Nouveautés,changes,@manualDevelChangesPdf-fr}
 
 @item
 @docLinkSplit{Extension,extending,@manualDevelExtendingSplit-fr}
@@ -943,280 +955,12 @@ dernière mouture est consultable sur @url{http://lilypond.org}}
 @unnumberedsec Google Summer of Code
 @translationof Google Summer of Code
 
-
-@divClass{column-center-top}
-@subheading Le Google Summer of Code
-@c VO What is Google Summer of Code?
-
-Le @uref{https://developers.google.com/open-source/gsoc/, GSoC} est un
-programme global, mis en place par Google, qui rémunère des étudiants
-durant la période estivale pour travailler au profit de projets
-@emph{open source}.  Il s'agit là d'une excellente opportunité pour des
-étudiants de vivre une expérience réelle dans le développement de
-logiciels et contribuer ainsi au bien de tous.  Ceci permet aussi de
-recruter de nouveaux contributeurs à LilyPond et motiver des étudiants
-qui y participent déjà d'y être encore plus impliqués.  LilyPond
-participe à ce programme sous l'égide du
-@uref{http://www.gnu.org/, projet GNU}.
-
-Nous avons eu des participants aux sessions de 2012 et 2015, et
-encourageons les étudiants à candidater pour les sessions à venir.
-
-Si vous avez des questions à ce sujet ou avez envie d'y participer,
-contactez-nous sur la liste des développeurs (voir @ref{Contact}).
-@divEnd
-
-
-@divClass{column-center-middle-color2}
-@subheading Recensement de nos idées
-@c VO Project Ideas List
-
-Voici une liste de projets que nous avons proposés aux étudiants du GSoC
-et à quiconque aurait envie d'améliorer LilyPond.@*
-Dernière mise à jour : février 2016.
-
-La disponibilité de tuteurs diffère selon les projets et les années.
-Contactez-nous sur la liste des développeurs -- voir @ref{Contact} -- et
-nous vous aiderons à trouver un mentor pour le projet qui correspond à
-vos envies et aptitudes.
-
-Si vous avez d'autres idées de projet dans le cadre du GSoC, n'hésitez
-pas à nous en faire part.  Il y a bien d'autres choses à améliorer dans
-LilyPond et les membres de l'équipe de développement aideront volontiers
-ceux qui aimeraient s'y atteler.
-
-Une liste exhaustive des problèmes est disponible
-@uref{http://sourceforge.net/p/lilypond/issues/list, ici}.
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Amélioration de la structure interne des accords
-@c VO Improve internal chord structure
-
-La structure interne des accords dans LilyPond n'est pas suffisamment
-puissante pour tenir compte de la nomneclature des accords de jazz.
-Pour l'instant, un accord comporte une fondamentale, une basse et un
-renversement.  Il serait souhaitable d'arriver à gérer les amalgames ou
-polyaccords, qu'ils soient majeur ou mineur, etc.  Seule le
-développement d'une représentation interne capable de capturer l'essence
-d'accords complexes permettra d'y parvenir.  Cette représentation
-interne une fois développée permettra par ailleurs d'améliorer le rendu
-des accords nommés.
-
-@strong{Difficulté :} moyennement facile
-@strong{Préalables :} Scheme (Guile), mais le niveau nécessaire peut
-s'acquérir aisément.
-@strong{Connaissances appréciées :} Théorie des accords et de leur nommage
-@strong{Mentor :} Carl Sorensen
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading ScholarLY
-
-ScholarLY est une bibliothèque hébergée sur
-@uref{https://openlilylib.org, openLilyLib} et qui fournit des
-fonctionnalités permettant, grâce à des annotations, de gérer
-directement dans le contexte de la partition le flux de travail d'une
-« édition savante ».  Il est à ce jour possible de saisir différents
-types d'annotations, produire des messages cliquables en console et
-exporter du texte dans des fichiers @LaTeX{}.
-
-Un certain nombre de demandes d'extension permettraient de transformer
-cette bibliothèque en un outil encore plus puissant et complet, par
-exemple par l'insertion d'exemples musicaux, la production de notes de
-bas de page ou l'application de styles particuliers -- mise en pointillé
-d'une liaison, mise entre parenthèses d'un altération, etc. -- ou la
-création de rapports avec des liens inter-documents.  Pour une
-description complète des suggestions autour de ce projet, visitez
-@uref{https://github.com/openlilylib/scholarly/wiki/GSoC, ce Wiki}.
-
-@strong{Difficulté :} moyenne
-@strong{Préalables :} Scheme, peut-être @LaTeX{}, (Python optionnel)
-@strong{Connaissances appréciées :} Expérience ou intérêt dans l'édition
-critique et les flux collaboratifs.
-@strong{Mentor :} Urs Liska
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Ajout de variantes pour certains glyphes
-@c VO Adding variants of font glyphs
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-Ajout de variantes positionnables « sur une ligne » et « dans un
-interligne ».
-
-@item
-Ajout de variantes plus courtes ou plus étroites pour certains glyphes
-comme les altérations. Autre exemple, dans le domaine de la notation
-ancienne, avec deux variantes de la brève, l'une avec un évidement plus
-important que l'autre.
-@end itemize
-@divEnd
-
-@strong{Difficulté :} facile
-@strong{Préalables :} MetaFont, C++, une bonne vue pour les détails
-@strong{Connaissances appréciées :} les bases de LilyPond
-@strong{Mentor potentiel :} Werner Lemberg
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Notes d'ornement @emph{(grace notes)}
-
-Résolution des problèmes de synchronisation des notes d'ornement.  Les
-notes d'ornement peuvent venir perturber LilyPond dans sa gestion du
-temps et entraîner des effets indésirables tout particulièrement
-lorsqu'elles interviennent dans une portée seulement.
-Il s'agit @uref{https://sourceforge.net/p/testlilyissues/issues/34/, là}
-de l'un des bogues les plus vieux et embarrassants pour LilyPond.
-
-@strong{Difficulté :} moyenne
-@strong{Préalables :} C++, MIDI
-@strong{Connaissances appréciées :} familiarité avec les arcanes de
-LilyPond
-@strong{Mentors potentiels :} Mike Solomon (indisponible pour le GSoc
-2016), Carl Sorensen
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Amélioration du positionnement par défaut des ligatures
-@c VO Improve default beam positioning
-
-Une ligature, qu'elle soit rectiligne, passe d'une portée à l'autre,
-discontinue ou coudée, devrait dépendre du contexte et des notes
-adjacentes (voir
-@uref{http://imslp.org/wiki/Repository_of_Music-Notation_Mistakes_%28Coulon,_Jean-Pierre%29,
-la section 2.2 de cet article}).  Dans la mesure du possible, raccourcir
-le temps de calcul nécessaire à la génération des ligatures.
-
-@strong{Difficulté :} moyenne
-@strong{Préalables :} C++, expérience dans l'écriture d'heuristiques
-@strong{Connaissance appréciée :} sens de l'esthétique
-@strong{Mentors potentiels :} Mike Solomon (indisponible pour le GSoc
-2016), Carl Sorensen
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Permettre aux bandeaux ou extensions de naviguer entre les voix
-@c VO Allow spanners to cross voices
-
-Jusqu'à présent, les différents bandeaux ou extenseurs, qu'il s'agisse de
-liaison de tenue ou non, de nuances, de prolongateurs de texte, de
-trilles, etc. doivent se terminer dans le contexte même où ils ont été
-entamés.  Ceci néanmoins ne reflète pas la réalité de la notation dans
-la plupart des situations polyphoniques.  La seule échappatoire, pour
-l'instant, consiste à recourir à des voix masquées.
-
-De nouveaux moyens de faire face à cette situation pourraient être
-envisagés, comme
-
-@divClass{keep-bullets}
-@itemize
-
-@item la spécification du « contexte cible » où la terminaison de
-l'extension est attendue,
-
-@item l'affectation d'un ID à l'objet où intervient la terminaison.
-
-@end itemize
-@divEnd
-
-Cette fonctionnalité permettrait de résoudre nombre de problèmes
-courants en matière de partition pianistique ou lors de combinaisons de
-parties.
-
-@strong{Difficulté :} moyenne (?)
-@strong{Préalables :} C++, Scheme
-@strong{Mentor potentiel :} Urs Liska
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Aide à l'amélioration du comportement lors de la compilation
-@c VO Help improve compilation behavior
-
-Les outils d'analyse comme @emph{valgrind} pour la détection de fuites
-de mémoire ou @emph{callgrind} pour le profilage du code, fournissent
-des informations précieuses quant à d'éventuelles faiblesses du
-code C++.  Faire le ménage dans tous ces messages nous permettrait de
-rejeter tout patch qui introduirait des messages superflus.
-
-@strong{Difficulté :} moyenne
-@strong{Préalable :} C++
-@strong{Mentors potentiels :} Joe Neeman, Reinhold Kainhofer
-(indisponible pour le GSoc 2016)
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading MusicXML
-
-Amélioration des fonctionnalités d'import et d'export :
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-L'exportation d'un minimum d'informations musicales tel que cela se
-pratique déjà au niveau du MIDI, autrement dit à l'aide de classes
-d'exportateurs dérivées de la classe @emph{translator} ;
-
-@item
-Construction de l'arborescence XML d'après le contenu musical de base, et
-connexion des éléments musicaux à des balises XML ;
-
-@item
-Faire en sorte que tous les graveurs LilyPond restent pleinement
-opérationnels ;
-
-@item
-Ajout d'une capacité de lier tout objet de rendu -- autrement dit chaque
-stencil ou groupe de stencils -- à l'élément musical qui en est la
-cause et, par voie de conséquence, à la balise correspondante dans
-l'arborescence XML ;
-
-@item
-Ajout d'un moteur de rendu XML qui pourrait alors inclure l'information
-de mise en forme pour tout objet de rendu dans les  balises XML.
-
-@end itemize
-@divEnd
-
-@strong{Difficulté :} moyenne
-@strong{Préalables :} MusicXML, Python, Scheme, les bases de LilyPond
-@strong{Mentors potentiels :} Reinhold Kainhofer, Mike Solomon (tous
-deux indisponibles pour le GSoc 2016)
-
-La connaissance d'autres éditeurs de partition, dans un but de tests
-comparatifs, constituerait une aide.
-
-@divEnd
-
-
-@divClass{column-center-middle-color3}
-@subheading Amélioration des liaisons
-
-Le galbe par défaut des liaisons n'est souvent pas pleinement
-satisfaisant.  La « coupure » d'une liaison par un changement de clef ou
-de ligne n'est pas totalement fonctionnelle.  Ce projet comporte entre
-autres un recensement d'exemples de résultats défectueux, l'appréciation
-du résultat optimal et l'écriture du code approprié.
-
-@strong{Difficulté :} difficile
-@strong{Préalables :} C++, expérience dans l'écriture d'heuristiques
-@strong{Connaissances appréciées :} LilyPond, sens de l'esthétique
-@strong{Mentor potentiel :} Mike Solomon, Janek Warchoł (tous deux
-indisponibles pour le GSoc 2016)
-@divEnd
-
+@warning{Dans la mesure où les développeurs de LilyPond sont disséminés
+sur la planète et que la participation au programme estival de Google
+requiert l'utilisation de l'anglais, il n’est pas prévu de traduire les
+paragraphes qui suivent.}
+
+@gsocCurrent
 
 
 @node Auteurs
@@ -1305,7 +1049,6 @@ indisponibles pour le GSoc 2016)
 @divEnd
 
 
-
 @node Remerciements
 @unnumberedsec Remerciements
 
@@ -1346,18 +1089,19 @@ indisponibles pour le GSoc 2016)
 @contactUsAbout{publications universitaires}
 
 
-@node Archives
-@unnumberedsec Archives
-@translationof Old news
+@node Actualités
+@unnumberedsec Actualités
+@translationof News
 
-@divClass{heading-center}
-@warning{Les vieilles annonces et informations de version sont rangées au
-@rwebnamed{Grenier,grenier}.}
+@include web/news-new.itexi
+
+@divClass{column-center-bottom}
+@subheading Actualités passées
+
+Les vieilles annonces et informations de version sont rangées au
+@rwebnamed{Grenier,grenier}.
+
 @divEnd
-
-@include web/news-front.itexi
-
-@include web/news.itexi
 
 
 @node Grenier
@@ -1398,7 +1142,7 @@ Liste descriptive des évolutions, par version :
 
 @divEnd
 
-@divClass{column-center-bottom}
+@divClass{column-center-middle-color3}
 @subheading Remerciements
 
 Tous nos remerciements aux développeurs, contributeurs, chasseurs
@@ -1416,7 +1160,7 @@ de bogue et à ceux qui nous ont fait part de leurs suggestions pour
 
 @divEnd
 
-@divClass{column-center-bottom}
+@divClass{column-center-middle-color3}
 @subheading Journal des modifications
 
 Notes des développeurs, par version :
@@ -1434,3 +1178,23 @@ Notes des développeurs, par version :
 @miscLink{CHANGES-0.0,v0.0}
 
 @divEnd
+
+
+@divClass{column-center-middle-color2 bigger-subsubheadings}
+@subheading Suggestions en suspend pour le Google Summer of Code
+@c VO Inactive Google Summer of Code project suggestions
+
+@gsocInactive
+@divEnd
+
+
+@divClass{column-center-middle-color2}
+@subheading Actualités passées
+@c VO Old News
+
+Actualités jusqu'à juillet 2003. Les actualités plus récentes se
+trouvent à la page @ref{Actualités}.
+
+@divEnd
+
+@include web/news-old.itexi

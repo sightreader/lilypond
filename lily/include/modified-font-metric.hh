@@ -22,11 +22,18 @@
 
 #include "font-metric.hh"
 
+struct Preinit_Modified_font_metric
+{
+  Font_metric *orig_;
+  Preinit_Modified_font_metric ();
+};
+
 /* Perhaps junk this, and move this to layout_def as interface? */
-struct Modified_font_metric : public Font_metric
+class Modified_font_metric : Preinit_Modified_font_metric,
+                              public Font_metric
 {
 public:
-  Stencil text_stencil (Output_def *output_state, const string&, bool) const;
+  Stencil text_stencil (Output_def *output_state, const string&, bool, const string&) const;
   Real get_magnification () const;
 
   static SCM make_scaled_font_metric (Font_metric *fm, Real magnification);
@@ -38,7 +45,6 @@ public:
   Font_metric *original_font () const;
 
 protected:
-  Font_metric *orig_;
   Real magnification_;
 
   Modified_font_metric (Font_metric *fm, Real magnification);

@@ -1,11 +1,11 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-    Translation of GIT committish: cb97338e1bf265d10cfdf82a63e76ea4bf0b19bf
+  Translation of GIT committish: 1e5c6b0f54079eb3285dcc4c7e53f17d8bb03933
 
-    When revising a translation, copy the HEAD committish of the
-    version that you are working on.  For details, see the Contributors'
-    Guide, node Updating translation committishes..
+  When revising a translation, copy the HEAD committish of the
+  version that you are working on.  For details, see the Contributors'
+  Guide, node Updating translation committishes..
 @end ignore
 
 @c \version "2.19.28"
@@ -24,7 +24,7 @@
 * Formats de papier prédéfinis::
 * Instruments MIDI::
 * Liste des couleurs::
-* La fonte Feta::
+* La fonte Emmentaler::
 * Styles de tête de note::
 * Styles de clef::
 * Commandes pour markup::
@@ -962,19 +962,39 @@ greyN
 où @var{N} est compris entre 0 et 100.
 
 
-@node La fonte Feta
-@appendixsec La fonte Feta
-@translationof The Feta font
+@node La fonte Emmentaler
+@appendixsec La fonte Emmentaler
+@translationof The Emmentaler font
 
-@cindex Feta, fonte
-@cindex fonte Feta
+@cindex Emmentaler fonte
+@cindex Fonte, Emmentaler
+@cindex Feta, glyphes
+@cindex Glyphes Feta
+@cindex Parmesan, glyphes
+@cindex Glyphes Parmesan
 
-Voici, regroupés par type, les différents symboles de la fonte
-Emmentaler qui peuvent s'inclure directement dans un objet
-@emph{markup}.  Pour ce faire, il suffit d'employer le nom du glyphe,
-comme dans @code{g^\markup @{\musicglyph #"scripts.segno" @}} ou
-@code{\markup @{\musicglyph #"five"@}}.  Pour de plus amples
-informations, reportez-vous au chapitre @ref{Mise en forme du texte}.
+La fonte Emmentaler est constituée de deux @emph{jeux} de glyphes :
+« Feta » est utilisé pour la notation classique, et « Parmesan » pour la
+notation ancienne.
+
+
+Les différents symboles -- ou glyphes -- de la fonte Emmentaler peuvent
+s'inclure directement dans un objet @emph{markup}.  Pour ce faire, il
+suffit d'employer le nom du glyphe (voir les tables ci-après) comme ceci :
+
+@example
+g^\markup @{ \musicglyph #"scripts.segno" @}
+@end example
+
+@noindent
+ou
+
+@example
+\markup @{ \musicglyph #"five" @}
+@end example
+
+Pour de plus amples informations, reportez-vous au chapitre
+@ref{Mise en forme du texte}.
 
 @menu
 * Glyphes de clef::
@@ -1569,8 +1589,8 @@ décoller de l'encadrement.
 @appendixsec Liste des signes d'articulation
 @translationof List of articulations
 
-Les listes qui suivent recensent les symboles prédéfinis dans la
-fonte Feta que vous pouvez attacher à une note (par ex. @code{f\accent}
+Les listes qui suivent recensent les symboles prédéfinis dans le
+glyphe Feta que vous pouvez attacher à une note (par ex. @code{f\accent}
 ou @code{f->}).  Chaque exemple illustre les trois positionnements : en
 surplomb (@emph{up}), en dessous (@emph{down}) et à l'appréciation de
 LilyPond (@emph{neutral}).

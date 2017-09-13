@@ -172,6 +172,7 @@
      . (
         (cross-staff . ,ly:arpeggio::calc-cross-staff)
         (direction . ,LEFT)
+        (line-thickness . 1)
         (padding . 0.5)
         (positions . ,ly:arpeggio::calc-positions)
         (protrusion . 0.4)
@@ -179,6 +180,7 @@
         (side-axis . ,X)
         (staff-position . 0.0)
         (stencil . ,ly:arpeggio::print)
+        (thickness . 1)
         (X-extent . ,ly:arpeggio::width)
         (Y-extent . ,(grob::unpure-Y-extent-from-stencil ly:arpeggio::pure-height))
         (X-offset . ,ly:side-position-interface::x-aligned-side)
@@ -1164,6 +1166,24 @@
                                 side-position-interface
                                 spanner-interface))))))
 
+    (HorizontalBracketText
+     . (
+        (direction . ,ly:horizontal-bracket-text::calc-direction)
+        (font-size . -1)
+        (padding . 0.5)
+        (parent-alignment-X . ,CENTER)
+        (self-alignment-X . ,CENTER)
+        (side-axis . ,Y)
+        (stencil . ,ly:horizontal-bracket-text::print)
+        (X-offset . ,ly:self-alignment-interface::aligned-on-x-parent)
+        (Y-offset . ,side-position-interface::y-aligned-side)
+        (meta . ((class . Spanner)
+                 (interfaces . (font-interface
+                                horizontal-bracket-text-interface
+                                outside-staff-interface
+                                self-alignment-interface
+                                side-position-interface
+                                text-interface))))))
 
     (InstrumentName
      . (
@@ -1435,8 +1455,10 @@
         (outside-staff-priority . 750)
         (self-alignment-X . ,CENTER)
         (side-axis . ,Y)
+        (spacing-pair . (break-alignment . break-alignment))
         (staff-padding . 0.5)
         (stencil . ,measure-counter-stencil)
+        (Y-offset . ,side-position-interface::y-aligned-side)
         (meta . ((class . Spanner)
                  (interfaces . (font-interface
                                 measure-counter-interface
@@ -1509,6 +1531,7 @@
         (hair-thickness . 2.0)
         (round-up-exceptions . ())
         (bound-padding . 0.5)
+        (max-symbol-separation . 8.0)
         (space-increment . 2.0)
         (spacing-pair . (break-alignment . break-alignment))
         (springs-and-rods . ,ly:multi-measure-rest::set-spacing-rods)
@@ -1787,7 +1810,6 @@
         (height-limit . 2.0)
         (minimum-length . 1.5)
         (ratio . 0.333)
-        (spanner-id . "")
         (springs-and-rods . ,ly:spanner::set-spacing-rods)
         (stencil . ,ly:slur::print)
         (thickness . 1.1)
@@ -1957,7 +1979,6 @@
         (line-thickness . 0.8)
         (minimum-length . 1.5)
         (ratio . 0.25)
-        (spanner-id . "")
         (springs-and-rods . ,ly:spanner::set-spacing-rods)
         (stencil . ,ly:slur::print)
         (thickness . 1.2)
@@ -2328,6 +2349,7 @@
 
     (SystemStartSquare
      . (
+        (collapse-height . 5.0)
         (direction . ,LEFT)
         (stencil . ,ly:system-start-delimiter::print)
         (style . line-bracket)

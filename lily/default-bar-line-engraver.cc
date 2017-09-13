@@ -37,6 +37,12 @@ public:
 
 #include "translator.icc"
 
+void
+Default_bar_line_engraver::boot ()
+{
+
+}
+
 ADD_TRANSLATOR (Default_bar_line_engraver,
                 /* doc */
                 "This engraver determines what kind of automatic bar lines"
@@ -59,7 +65,8 @@ ADD_TRANSLATOR (Default_bar_line_engraver,
                 ""
                );
 
-Default_bar_line_engraver::Default_bar_line_engraver ()
+Default_bar_line_engraver::Default_bar_line_engraver (Context *c)
+  : Engraver (c)
 {
   last_moment_.main_part_ = Rational (-1);
 }

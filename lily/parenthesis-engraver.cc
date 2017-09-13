@@ -32,10 +32,11 @@ class Parenthesis_engraver : public Engraver
   TRANSLATOR_DECLARATIONS (Parenthesis_engraver);
 
 protected:
-  DECLARE_ACKNOWLEDGER (grob);
+  void acknowledge_grob (Grob_info);
 };
 
-Parenthesis_engraver::Parenthesis_engraver ()
+Parenthesis_engraver::Parenthesis_engraver (Context *c)
+  : Engraver (c)
 {
 }
 
@@ -72,7 +73,12 @@ Parenthesis_engraver::acknowledge_grob (Grob_info info)
     }
 }
 
-ADD_ACKNOWLEDGER (Parenthesis_engraver, grob);
+void
+Parenthesis_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Parenthesis_engraver, grob);
+}
+
 ADD_TRANSLATOR (Parenthesis_engraver,
                 /* doc */
                 "Parenthesize objects whose music cause has the"

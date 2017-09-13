@@ -95,7 +95,7 @@ positioniert, oder um dieses Handbuch in einem anderen Format
 zu lesen, besuchen Sie bitte @rweb{Manuals}.
 
 Wenn Ihnen Handbücher fehlen, finden Sie die gesamte Dokumentation
-unter @w{@uref{http://@/www@/.lilypond@/.org/}}.
+unter @w{@uref{http://@/lilypond@/.org/}}.
 @end cartouche
 @end macro
 
@@ -740,7 +740,7 @@ Für LilyPond Version @version{}
 
 @macro exampleImage{IMAGE-FILE}
 @html
-<div class="float-center">
+<div class="float-center example-image-wrapper">
   <a class="clickable" href="ly-examples/\IMAGE-FILE\.png">
     <img src="ly-examples/\IMAGE-FILE\-small.png" alt="\IMAGE-FILE\">
   </a>

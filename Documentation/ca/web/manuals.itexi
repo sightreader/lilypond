@@ -7,6 +7,9 @@
     version that you are working on.  See TRANSLATION for details.
 @end ignore
 
+@c Translators: Walter Garcia-Fontes
+@c Translation checkers:
+
 
 @node Manuals
 @unnumbered Manuals
@@ -20,7 +23,7 @@
 
 @divClass{heading-center}
 @ifclear web_version
-@heading Manuals de LilyPond @version
+@heading Manuals del LilyPond @version
 @end ifclear
 @ifset web_version
   @heading Manuals del LilyPond @versionStable
@@ -41,7 +44,7 @@ El LilyPond és un sistema de gravat musical @strong{basat en text}.
 Llegiu això primer!
 
 @item
-@ifWebLinks{@manualStableLearningSplitNoName-es,@rlearningnamed{Top,Aprenentatge}}
+@ifWebLinks{@manualStableLearningSplitNoName-ca,@rlearningnamed{Top,Aprenentatge}}
 una introducció al LilyPond amable i @qq{imprescindible}.
 @details{Aprenentatge}
 
@@ -66,12 +69,12 @@ una introducció al LilyPond amable i @qq{imprescindible}.
 @itemize
 
 @item
-@ifWebLinks{@manualStableNotationSplitNoName-es,@rusernamed{Top,Notació}}
+@ifWebLinks{@manualStableNotationSplitNoName-ca,@rusernamed{Top,Notació}}
 referència de la sintaxi.
 @details{Notació}
 
 @item
-@ifWebLinks{@manualStableUsageSplitNoName-es,@rprogramnamed{Top,Utilizació}}
+@ifWebLinks{@manualStableUsageSplitNoName-ca,@rprogramnamed{Top,Utilizació}}
 com executar els programes.
 @details{Utilització}
 
@@ -100,12 +103,12 @@ aquest document.
 @details{Web}
 
 @item
-@ifWebLinks{@manualStableChangesSplitNoName-es,@rchangesnamed{Top,Canvis}}
+@ifWebLinks{@manualStableChangesSplitNoName-ca,@rchangesnamed{Top,Canvis}}
 que hi ha de nou?
 @details{Canvis}
 
 @item
-@ifWebLinks{@manualStableExtendingSplitNoName-es,@rextendnamed{Top,Extensió}}
+@ifWebLinks{@manualStableExtendingSplitNoName-ca,@rextendnamed{Top,Extensió}}
 trucs interessants.
 @details{Extensió}
 
@@ -133,14 +136,14 @@ Versions estables anteriors i versió actual com un fitxer comprimit.
 estat del procés de traducció per a lectors no anglòfons.
 
 @item
-@uref{http://lsr@/.dsi@/.unimi@/.it,LilyPond Snippet Repository (el magatzem de fragments de codi del Lilypond)}:
+@uref{http://lsr@/.dsi@/.unimi@/.it,LilyPond Snippet Repository (el magatzem de fragments de codi del LilyPond)}:
 exemples, consells, i trucs creats pels usuaris.
 
 @item
 @uref{http://benlemon.me/blog/music/lilypond/operation-lilypond/,Video
 Tutorials}: Ben Lemon, usuari del LilyPond, ha creat i publicat un
 cert nombre de tutorials de vídeo al seu blog que són adequats per
-a usuaris nous
+a usuaris nous.
 
 @item
 @ref{Desenvolupament}:
@@ -291,7 +294,7 @@ Aquest llibre explica totes les instruccions del LilyPond que
 produeixen notació musical.
 
 @warning{La Referència de la Notació suposa que el lector coneix
-el material bàsica que apareix al Manual d'Aprenentatge i té
+el material bàsic que apareix al Manual d'Aprenentatge i té
 familiaritat amb els termes musicals anglesos que es presenten al
 Glossari Musical.}
 
@@ -340,7 +343,7 @@ seva lectura abans d'afrontar projectes grans.
 @divClass{column-left-top}
 @subheading Fragments
 
-Aquest manual presenta un conjunt seleccionat de fragmentes de
+Aquest manual presenta un conjunt seleccionat de fragments de
 codi del LilyPond extrets del
 @uref{http://lsr@/.dsi@/.unimi@/.it,Repositori de fragments de
 codi del LilyPond} (LSR).  Tots els fragments es troben al domini

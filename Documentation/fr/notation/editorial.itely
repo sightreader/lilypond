@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: 16d46fb0995cc6d078617ada1e8fea7879dffe07
+   Translation of GIT committish: b7fff49e6e45ba9d3e3b48df76fe36d60dab518c
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -349,7 +349,6 @@ et @code{\revert} :
 @cindex substitution de doigt
 
 @funindex \finger
-@funindex finger
 
 Les doigtés peuvent être indiqués comme suit :
 @var{note}-@var{chiffre_du_doigt}
@@ -370,7 +369,6 @@ textuelle (commande @code{\markup}) de doigté (commande @code{\finger}).
 @cindex pouce, doigté
 
 @funindex \thumb
-@funindex thumb
 
 La commande @code{\thumb} peut être utilisée pour indiquer, par exemple
 dans une partition de violoncelle, si une note doit être jouée avec le
@@ -432,9 +430,7 @@ Référence des propriétés internes :
 @cindex note masquée
 
 @funindex \hideNotes
-@funindex hideNotes
 @funindex \unHideNotes
-@funindex unHideNotes
 
 Les notes masquées -- ou invisibles ou encore transparentes -- sont
 utiles dans le cadre d'exercices de théorie ou de composition.
@@ -504,7 +500,6 @@ Référence des propriétés internes :
 
 @funindex color
 @funindex \with-color
-@funindex with-color
 @funindex x11-color
 
 Des objets peuvent être colorisés individuellement.  Une listes des
@@ -533,12 +528,14 @@ elle revient à la couleur par défaut, le noir.  Le problème ressort de
 façon évidente au vu de la partition finale.
 
 @lilypond[verbatim,quote]
-\relative c'' {
-  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
   }
 
+  \relative c'' {
+  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
   gis8 a
   \override Beam.color = #(x11-color "medium turquoise")
   gis a
@@ -566,12 +563,12 @@ les composantes de la couleur exacte au format rouge-vert-bleu
 l'exemple suivant correspond à 128).
 
 @lilypond[verbatim,quote]
-\relative c'' {
-  \override Staff.StaffSymbol.color = #(x11-color 'SlateBlue2)
-  \set Staff.instrumentName = \markup {
-    \with-color #(x11-color 'navy) "Clarinet"
+\new Staff \with {
+  instrumentName = \markup {
+    \with-color #(x11-color 'red) "Clarinet"
+    }
   }
-
+  \relative c'' {
   \override Stem.color = #(rgb-color 0 0 0)
   gis8 a
   \override Stem.color = #(rgb-color 1 1 1)
@@ -621,7 +618,6 @@ Pour plus de détails, consultez @ref{La commande d'affinage (tweak)}.
 @cindex crochets, notes entre
 
 @funindex \parenthesize
-@funindex parenthesize
 
 Des objets peuvent être mis entre parenthèses en saisissant
 @code{\parenthesize} juste avant l'événement musical.  Si l'instruction
@@ -677,11 +673,8 @@ attendrait une seule paire de parenthèses encadrant tout l'accord.
 @cindex hampe neutre
 
 @funindex \stemUp
-@funindex stemUp
 @funindex \stemDown
-@funindex stemDown
 @funindex \stemNeutral
-@funindex stemNeutral
 
 Dès qu'une note est rencontrée, un objet @code{Stem} se crée
 automatiquement.  Pour les rondes et les silences, ils sont aussi
@@ -745,9 +738,7 @@ la portée par des éléments qui lui seront externes.
 @funindex balloonGrobText
 @funindex balloonText
 @funindex \balloonLengthOn
-@funindex balloonLengthOn
 @funindex \balloonLengthOff
-@funindex balloonLengthOff
 
 Vous pouvez marquer et nommer des éléments de notation à l'aide de
 bulles.  L'objectif premier de cette fonctionnalité est d'expliquer la
@@ -888,9 +879,7 @@ Référence des propriétés internes :
 
 @funindex Horizontal_bracket_engraver
 @funindex \startGroup
-@funindex startGroup
 @funindex \stopGroup
-@funindex stopGroup
 
 On utilise des crochets en analyse musicale, pour indiquer la
 structure d'une pièce.
@@ -925,12 +914,20 @@ Les crochets d'analyses sont susceptibles d'être imbriqués :
 }
 @end lilypond
 
-@seealso
-Morceaux choisis :
-@rlsrnamed{Editorial annotations,Annotations éditoriales}.
+@snippets
 
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-above-the-staff.ly}
+
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{analysis-brackets-with-labels.ly}
+
+
+@seealso
 Référence des propriétés internes :
 @rinternals{Horizontal_bracket_engraver},
 @rinternals{HorizontalBracket},
 @rinternals{horizontal-bracket-interface},
+@rinternals{HorizontalBracketText},
+@rinternals{horizontal-bracket-text-interface},
 @rinternals{Staff}.

@@ -36,10 +36,10 @@
 #include "warn.hh"
 
 void
-translator_each (SCM list, Translator_method method)
+translator_each (SCM list, SCM method)
 {
   for (SCM p = list; scm_is_pair (p); p = scm_cdr (p))
-    (unsmob<Translator> (scm_car (p))->*method) ();
+    scm_call_1 (method, scm_car (p));
 }
 
 void
@@ -162,48 +162,32 @@ Translator_group::create_child_translator (SCM sev)
 
   for (SCM s = trans_names; scm_is_pair (s); s = scm_cdr (s))
     {
-      SCM definition = scm_car (s);
-      bool is_scheme = false;
+      SCM trans = scm_car (s);
 
-      Translator *type = 0;
-      if (ly_is_symbol (definition))
-        type = get_translator (definition);
-      else if (ly_is_pair (definition))
+      if (ly_is_symbol (trans))
+        trans = get_translator_creator (trans);
+      if (ly_is_procedure (trans))
+        trans = scm_call_1 (trans, cs);
+      if (ly_cheap_is_list (trans))
+        trans = (new Scheme_engraver (trans, new_context))->unprotect ();
+      Translator *instance = unsmob<Translator> (trans);
+      if (!instance)
         {
-          is_scheme = true;
-        }
-      else if (ly_is_procedure (definition))
-        {
-          // `definition' is a procedure, which takes the context as
-          // an argument and evaluates to an a-list scheme engraver
-          // definition.
-          definition = scm_call_1 (definition, cs);
-          is_scheme = true;
+          warning (_f ("cannot find: `%s'", ly_scm_write_string (trans).c_str ()));
+          continue;
         }
 
-      if (!is_scheme && !type)
-        warning (_f ("cannot find: `%s'", ly_symbol2string (scm_car (s)).c_str ()));
-      else
+      if (instance->must_be_last ())
         {
-          Translator *instance = is_scheme ? new Scheme_engraver (definition)
-            : type->clone ();
-
-          SCM str = instance->self_scm ();
-
-          if (instance->must_be_last ())
-            {
-              SCM cons = scm_cons (str, SCM_EOL);
-              if (scm_is_pair (trans_list))
-                scm_set_cdr_x (scm_last_pair (trans_list), cons);
-              else
-                trans_list = cons;
-            }
+          SCM cons = scm_cons (trans, SCM_EOL);
+          if (scm_is_pair (trans_list))
+            scm_set_cdr_x (scm_last_pair (trans_list), cons);
           else
-            trans_list = scm_cons (str, trans_list);
-
-          instance->daddy_context_ = new_context;
-          instance->unprotect ();
+            trans_list = cons;
         }
+      else
+        trans_list = scm_cons (trans, trans_list);
+
     }
 
   /* Filter unwanted translator types. Required to make
@@ -219,10 +203,11 @@ Translator_group::create_child_translator (SCM sev)
   g->connect_to_context (new_context);
   g->unprotect ();
 
-  recurse_over_translators (new_context,
-                            &Translator::initialize,
-                            &Translator_group::initialize,
-                            DOWN);
+  recurse_over_translators
+    (new_context,
+     Callback0_wrapper::make_smob<Translator, &Translator::initialize> (),
+     Callback0_wrapper::make_smob<Translator_group, &Translator_group::initialize> (),
+     DOWN);
 }
 
 SCM
@@ -240,7 +225,6 @@ precomputed_recurse_over_translators (Context *c, Translator_precompute_index id
   if (tg && dir == DOWN)
     {
       tg->precomputed_translator_foreach (idx);
-      tg->call_precomputed_self_method (idx);
     }
 
   for (SCM s = c->children_contexts (); scm_is_pair (s);
@@ -250,20 +234,19 @@ precomputed_recurse_over_translators (Context *c, Translator_precompute_index id
   if (tg && dir == UP)
     {
       tg->precomputed_translator_foreach (idx);
-      tg->call_precomputed_self_method (idx);
     }
 }
 
 void
-recurse_over_translators (Context *c, Translator_method ptr,
-                          Translator_group_method tg_ptr, Direction dir)
+recurse_over_translators (Context *c, SCM ptr,
+                          SCM tg_ptr, Direction dir)
 {
-  Translator_group *tg
-    = dynamic_cast<Translator_group *> (c->implementation ());
+  Translator_group *tg = c->implementation ();
+  SCM tg_scm = tg ? tg->self_scm () : SCM_UNDEFINED;
 
   if (tg && dir == DOWN)
     {
-      (tg->*tg_ptr) ();
+      scm_call_1 (tg_ptr, tg_scm);
       translator_each (tg->get_simple_trans_list (), ptr);
     }
 
@@ -276,7 +259,7 @@ recurse_over_translators (Context *c, Translator_method ptr,
       translator_each (tg->get_simple_trans_list (),
                        ptr);
 
-      (tg->*tg_ptr) ();
+      scm_call_1 (tg_ptr, tg_scm);
     }
 }
 
@@ -299,40 +282,25 @@ Translator_group::precompute_method_bindings ()
   for (SCM s = simple_trans_list_; scm_is_pair (s); s = scm_cdr (s))
     {
       Translator *tr = unsmob<Translator> (scm_car (s));
-      Translator::Callback ptrs[TRANSLATOR_METHOD_PRECOMPUTE_COUNT];
+      SCM ptrs[TRANSLATOR_METHOD_PRECOMPUTE_COUNT];
       tr->fetch_precomputable_methods (ptrs);
 
       assert (tr);
       for (int i = 0; i < TRANSLATOR_METHOD_PRECOMPUTE_COUNT; i++)
         {
-          if (ptrs[i])
-            precomputed_method_bindings_[i].push_back (Translator_method_binding (tr, ptrs[i]));
+          if (!SCM_UNBNDP (ptrs[i]))
+            precomputed_method_bindings_[i].push_back (Method_instance (ptrs[i], tr));
         }
     }
 
-  fetch_precomputable_methods (precomputed_self_method_bindings_);
 }
 
 void
 Translator_group::precomputed_translator_foreach (Translator_precompute_index idx)
 {
-  vector<Translator_method_binding> &bindings (precomputed_method_bindings_[idx]);
+  vector<Method_instance> &bindings (precomputed_method_bindings_[idx]);
   for (vsize i = 0; i < bindings.size (); i++)
-    bindings[i].invoke ();
-}
-
-void
-Translator_group::fetch_precomputable_methods (Translator_group_void_method ptrs[])
-{
-  for (int i = 0; i < TRANSLATOR_METHOD_PRECOMPUTE_COUNT; i++)
-    ptrs[i] = 0;
-}
-
-void
-Translator_group::call_precomputed_self_method (Translator_precompute_index idx)
-{
-  if (precomputed_self_method_bindings_[idx])
-    (*precomputed_self_method_bindings_[idx]) (this);
+    bindings[i]();
 }
 
 Translator_group::~Translator_group ()
@@ -340,7 +308,7 @@ Translator_group::~Translator_group ()
 }
 
 
-const char Translator_group::type_p_name_[] = "ly:translator-group?";
+const char * const Translator_group::type_p_name_ = "ly:translator-group?";
 
 int
 Translator_group::print_smob (SCM port, scm_print_state *) const

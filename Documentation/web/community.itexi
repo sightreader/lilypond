@@ -9,6 +9,7 @@
 
 @include included/acknowledge.itexi
 @include included/authors.itexi
+@include included/gsoc.itexi
 @include included/helpus.itexi
 
 @node Community
@@ -69,10 +70,11 @@ discussing LilyPond.
 @ref{Publications}: what we wrote, and have had written about us.
 
 @item
-@ref{Old news}: an archive.
+@ref{News}: news from the LilyPond project.
 
 @item
-@ref{Attic}: announcements and changelogs from past versions.
+@ref{Attic}: announcements and changelogs from past versions,
+old news, etc.
 
 @end itemize
 @divEnd
@@ -91,7 +93,7 @@ discussing LilyPond.
 * Authors::
 * Acknowledgements::
 * Publications::
-* Old news::
+* News::
 * Attic::
 @end menu
 @divEnd
@@ -494,9 +496,10 @@ days, as we have a limited number of volunteers for this task.
 
 Once a bug has been added to the tracker, you can comment it to add
 more information about it.
-You may also mark the bug so that you automatically receive emails when
-any activity on the bug occurs.  This requires you have a google account
-login.
+In order to be automatically notified about any activity on the
+tracker issue, you may subscribe by clicking the envelope
+symbol next to the issue title.
+Commenting and subscribing require being logged in with a sourceforge account.
 @divEnd
 
 @divClass{column-center-bottom}
@@ -597,10 +600,9 @@ active and experienced developers are.  Statistics up to version
 
 Interested developers:
 @table @asis
-@item @email{dak@@gnu.org, David Kastrup}
-Donations are required to let me continue my current fulltime work on
-LilyPond.  I focus on user and programmer interface design, coherence,
-implementation, simplification, documentation, and debugging.
+@item @email{lilypond-devel@@gnu.org, LilyPond developer list}
+Since no developer currently is listed for commercial development,
+your best bet is asking on the developer list.
 
 @c Format
 @c @item @email{name@@adress.domain, Name}
@@ -761,7 +763,7 @@ This release's lilypond-book tests.
 @itemize
 @item @uref{http://lilypond.org/test, Comparisons between regression tests}
 
-@item @uref{http://lilypond.org/download/binaries/test-output/,
+@item @uref{http://lilypond.org/downloads/binaries/test-output/,
 Archive of all regression tests}
 
 @end itemize
@@ -881,254 +883,7 @@ manuals can be found at @url{http://lilypond.org}}
 @node Google Summer of Code
 @unnumberedsec Google Summer of Code
 
-@divClass{column-center-top}
-@subheading What is Google Summer of Code?
-
-@uref{https://developers.google.com/open-source/gsoc/, GSoC} is a global
-program that offers students stipends to write code for free software
-and open source projects during the summer.  It is an excellent
-opportunity for students to gain experience with real-world software
-development and make a contribution that benefits everyone.  It brings
-new contributors to LilyPond and enables students who are already
-involved to become more involved.  LilyPond participates in GSoC as part
-of the @uref{http://www.gnu.org/, GNU project}.
-
-We have had GSoC participants in 2012 and 2015 and encourage students to
-apply for future summers.
-
-If you have questions or would like to apply, send us an email on our
-developer mailing list (see @ref{Contact}).
-
-@divEnd
-
-@divClass{column-center-middle-color2}
-@subheading Project Ideas List
-
-Below is a list of suggested projects for GSoC or for anyone who is
-interested in helping to improve LilyPond. (Last updated: February 2016)
-
-Mentor availability varies from project to project and from year to year.
-Send us an email on our developer mailing list (see @ref{Contact}), and
-we will help you find a mentor for a project that fits your interests
-and skills.
-
-If you have ideas for a GSoC project that is not listed below you can
-send us an email as well.  There are a number of areas where LilyPond
-could be improved, and our development team is always willing to help
-those who would like to tackle a project like those listed below.
-
-A full list of all the current open issues can be found
-@uref{http://sourceforge.net/p/testlilyissues/issues/, here}.
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Improve internal chord structure
-
-The internal representation of LilyPond chords is not powerful enough
-to capture the nomenclature of jazz chords.  Currently the chord has
-a root, a bass and an inversion.  It would be nice to be able to handle
-stacked or polychords, minor/major, etc.  In order to do this, an
-internal representation with the ability to capture the essence of
-complex chords must be developed.  As a bonus, once the internal
-representation is developed, the output formatting of chord names can
-be improved.
-
-@strong{Difficulty:} Easy/medium
-@strong{Requirements:} Scheme (Guile), but the level necessary can be
-easily learned
-@strong{Recommended:} Chord theory and naming
-@strong{Mentor:} Carl Sorensen
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading ScholarLY
-
-ScholarLY is a library in
-@uref{https://openlilylib.org, openLilyLib} that provides functionality
-for annotating scores, making it possible to manage scholarly workflows
-completely in the context of the score document.  So far it is possible
-to enter annotations of different types, produce clickable messages in
-the console output and export to text and LaTeX files.
-
-There are numerous feature requests to turn this library into an
-even more powerful and comprehensive tool.  Some examples: Inserting
-music examples, producing footnotes, automatically applying styles
-to the annotated item (e.g. dash a slur, parenthesize an accidental),
-creating reports with point-and-click entries.  For a full description
-of this project suggestion please visit
-@uref{https://github.com/openlilylib/scholarly/wiki/GSoC, this Wiki page}.
-
-@strong{Difficulty:} medium
-@strong{Requirements:} Scheme, possibly LaTeX, (optionally Python)
-@strong{Recommended:} Experience with or interest in scholarly
-edition and collaborative workflows.
-@strong{Mentor:} Urs Liska
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Adding variants of font glyphs
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-Adding @q{on} and @q{between} staff-line variants.
-
-@item
-Shorter and narrower variants of some glyphs for example, accidentals.
-Another, more specific example could be an ancient notation breve
-notehead coming in two variants one with a small or big @q{hole} within
-it.
-
-@end itemize
-@divEnd
-
-@strong{Difficulty:} easy
-@strong{Requirements:} MetaFont, C++, good eye for details
-@strong{Recommended knowledge:} basic LilyPond knowledge
-@strong{Mentor:} Werner Lemberg
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Grace notes
-
-Fix problems with synchronization of grace notes.  Grace notes can
-interfere with LilyPond's timing and cause odd effects, especially when
-multiple staffs are used where some have grace notes and others don't.
-This is one of the longest-standing and one of the more embarrassing
-@uref{https://sourceforge.net/p/testlilyissues/issues/34/,bugs} in
-LilyPond.
-
-@strong{Difficulty:} medium
-@strong{Requirements:} C++, MIDI
-@strong{Recommended:} familiarity with LilyPond internals
-@strong{Potential Mentors:} Mike Solomon (not available for GSoC 2016),
-Carl Sorensen
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Improve default beam positioning
-
-For regular, cross-staff, broken and kneed beams.  Beaming should depend
-on context and neighbor notes (see section 2.2 of
-@uref{http://imslp.org/wiki/Repository_of_Music-Notation_Mistakes_%28Coulon,_Jean-Pierre%29,
-this book}).  If possible also reduce beaming-computation time.
-
-@strong{Difficulty:} medium
-@strong{Requirements:} C++, experience with writing heuristics
-@strong{Recommended knowledge:} aesthetic sense
-@strong{Potential Mentors:} Mike Solomon (not available for GSoC 2016),
-Carl Sorensen
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Allow spanners to cross voices
-
-Currently all sorts of spanners (ties, slurs, dynamics, text spanners,
-trills etc.) have to be ended in the context they were started.  However,
-this doesn't reflect the reality of notation in most polyphonic settings.
-Awkward workarounds with hidden voices are currently necessary to achieve
-cross-voice spanners.
-
-New ways of addressing this issue should be explored, for example by
-
-@divClass{keep-bullets}
-@itemize
-
-@item specifying a “target context” where the end of the spanner is
-expected
-
-@item explicitly specifying the ending object with an ID
-
-@end itemize
-@divEnd
-
-This feature would solve many problems that are commonly faced with
-piano music and combined parts. 
-
-@strong{Difficulty:} medium (?)
-@strong{Requirements:} C++, Scheme
-@strong{Potential Mentor:} Urs Liska
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Help improve compilation behavior
-
-Automatic code analysis tools, like valgrind memory leak detection or
-callgrind code profilers, provide valuable information about possible
-flaws in our C++ code.  Cleaning up warnings would allow us to automate
-the rejection of any patch which introduced extra warnings.
-
-@strong{Difficulty:} medium
-@strong{Requirements:} C++
-@strong{Potential Mentors:} Reinhold Kainhofer (not available for GSoC
-2016), Joe Neeman
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading MusicXML
-
-Improving MusicXML import and export functions:
-
-@divClass{keep-bullets}
-@itemize
-
-@item
-Handle basic musical content export like the MIDI export (i.e. using
-dedicated exporter classes, derived from the translator class).
-
-@item
-Build the XML tree of the basic musical content, add a connection from
-music event to XML tag.
-
-@item
-Let all LilyPond engravers do their job.
-
-@item
-Link each output object (i.e. each stencil or group of stencils) to the
-music cause (and thus to the XML tag in the XML tree).
-
-@item
-Add an XML output backend, which can then add layout information for
-each output object to the XML tags.
-
-@end itemize
-@divEnd
-
-There are several possibilities for this project, including building upon
-the MusicXML export project from GSoC 2015.
-
-@strong{Difficulty:} medium
-@strong{Requirements:} MusicXML, Python, Scheme, basic LilyPond knowledge
-@strong{Potential Mentors:} Reinhold Kainhofer, Mike Solomon (both not
-available for GSoC 2016)
-
-Familiarity with other scorewriters (for cross-testing) would also help.
-
-@divEnd
-
-@divClass{column-center-middle-color3}
-@subheading Improve slurs and ties
-
-The engraving quality of slurs and ties is often unsatisfactory. Ties
-@q{broken} by clef or staff changes are not handled well.  The project
-could include collecting and sorting examples of bad output, deciding on
-the intended output and writing code to improve them.
-
-@strong{Difficulty:} hard
-@strong{Requirements:} C++, experience with writing heuristics
-@strong{Recommended knowledge:} LilyPond knowledge, aesthetic sense
-@strong{Potential Mentors:} Mike Solomon, Janek Warchoł (both not available for
-GSoC 2016)
-
-@divEnd
+@gsocCurrent
 
 
 @node Authors
@@ -1253,18 +1008,16 @@ GSoC 2016)
 @contactUsAbout{academic papers}
 
 
-@node Old news
-@unnumberedsec Old news
+@node News
+@unnumberedsec News
 
-@divClass{heading-center}
-@warning{Many old announcements and changelogs can be found in
-the @ref{Attic}}
+@include web/news-new.itexi
+
+@divClass{column-center-bottom}
+@subheading Old News
+Older news can be found in the @ref{Attic}, along with older
+announcements and changelogs
 @divEnd
-
-@include web/news-front.itexi
-
-@include web/news.itexi
-
 
 @node Attic
 @unnumberedsec Attic
@@ -1303,7 +1056,7 @@ Descriptive list of changes by version:
 
 @divEnd
 
-@divClass{column-center-bottom}
+@divClass{column-center-middle-color3}
 @subheading Thanks
 
 Thanks to developers, contributors, bug hunters and suggestions for
@@ -1320,7 +1073,7 @@ Thanks to developers, contributors, bug hunters and suggestions for
 
 @divEnd
 
-@divClass{column-center-bottom}
+@divClass{column-center-middle-color3}
 @subheading Changelogs
 
 Developers' changelogs by version:
@@ -1338,3 +1091,16 @@ Developers' changelogs by version:
 @miscLink{CHANGES-0.0,v0.0}
 
 @divEnd
+
+@divClass{column-center-middle-color2 bigger-subsubheadings}
+@gsocInactive
+@divEnd
+
+@divClass{column-center-middle-color2}
+@subheading Old News
+
+Older news items dating back to July 2003.  Newer news can be found on
+the @ref{News} page.
+@divEnd
+
+@include web/news-old.itexi

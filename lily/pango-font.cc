@@ -41,18 +41,20 @@
 #include "warn.hh"
 #include "all-font-metrics.hh"
 #include "program-option.hh"
+#include "open-type-font.hh"
 
 #if HAVE_PANGO_FT2
 #include "stencil.hh"
+
+Preinit_Pango_font::Preinit_Pango_font ()
+{
+  physical_font_tab_ = SCM_EOL;
+}
 
 Pango_font::Pango_font (PangoFT2FontMap *fontmap,
                         PangoFontDescription const *description,
                         Real output_scale)
 {
-  // This line looks stupid, but if we don't initialize physical_font_tab_ before
-  // we allocate memory in scm_c_make_hash_table, then that could trigger a garbage
-  // collection.
-  physical_font_tab_ = SCM_EOL;
   physical_font_tab_ = scm_c_make_hash_table (11);
   PangoDirection pango_dir = PANGO_DIRECTION_LTR;
   context_ = pango_context_new ();
@@ -200,7 +202,7 @@ Pango_font::pango_item_string_stencil (PangoGlyphItem const *glyph_item) const
 
   b.scale (scale_);
 
-  char const *ps_name_str0 = FT_Get_Postscript_Name (ftface);
+  const string ps_name_str0 = get_postscript_name (ftface);
   FcPattern *fcpat = fcfont->font_pattern;
 
   FcChar8 *file_name_as_ptr = 0;
@@ -320,11 +322,11 @@ Pango_font::pango_item_string_stencil (PangoGlyphItem const *glyph_item) const
   Real size = pango_font_description_get_size (descr)
               / (Real (PANGO_SCALE));
 
-  if (!ps_name_str0)
+  if (ps_name_str0.empty ())
     warning (_f ("no PostScript font name for font `%s'", file_name));
 
   string ps_name;
-  if (!ps_name_str0
+  if (ps_name_str0.empty ()
       && file_name != ""
       && (file_name.find (".otf") != NPOS
           || file_name.find (".cff") != NPOS))
@@ -351,7 +353,7 @@ Pango_font::pango_item_string_stencil (PangoGlyphItem const *glyph_item) const
       name = String_convert::to_lower (name);
       ps_name = initial + name;
     }
-  else if (ps_name_str0)
+  else if (!ps_name_str0.empty ())
     ps_name = ps_name_str0;
 
   if (ps_name.length ())
@@ -385,7 +387,9 @@ extern bool music_strings_to_paths;
 
 Stencil
 Pango_font::text_stencil (Output_def * /* state */,
-                          const string &str, bool music_string) const
+                          const string &str,
+                          bool music_string,
+                          const string &features_str) const
 {
   /*
     The text assigned to a PangoLayout is automatically divided
@@ -393,6 +397,22 @@ Pango_font::text_stencil (Output_def * /* state */,
     Bidirectional Algorithm, if necessary.
   */
   PangoLayout *layout = pango_layout_new (context_);
+
+  if (!features_str.empty())
+    {
+#if HAVE_PANGO_FT2_WITH_OTF_FEATURE
+      PangoAttrList *list = pango_attr_list_new();
+      PangoAttribute *features_attr = pango_attr_font_features_new(features_str.c_str());
+      pango_attr_list_insert(list, features_attr);
+      pango_layout_set_attributes(layout, list);
+      pango_attr_list_unref(list);
+#else
+      warning (_f ("OpenType font feature `%s' cannot be used"
+                   " since this binary is configured without feature support.",
+                   features_str.c_str ()));
+#endif
+    }
+
   pango_layout_set_text (layout, str.c_str (), -1);
   GSList *lines = pango_layout_get_lines (layout);
 

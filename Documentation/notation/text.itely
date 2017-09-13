@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.21"
+@c \version "2.21.0"
 
 @node Text
 @section Text
@@ -92,9 +92,7 @@ For more information about the relative ordering of text scripts and
 articulations, see @rlearning{Placement of objects}.
 
 @funindex \textLengthOn
-@funindex textLengthOn
 @funindex \textLengthOff
-@funindex textLengthOff
 
 @predefined
 @code{\textLengthOn},
@@ -123,7 +121,7 @@ Internals Reference:
 
 @knownissues
 Checking to make sure that text scripts and lyrics are within the
-margins requires additonal calculations. In cases where slightly faster
+margins requires additional calculations. In cases where slightly faster
 performance is desired, use
 
 @example
@@ -172,11 +170,8 @@ The line style, as well as the text string, can be defined as an
 object property.  This syntax is described in @ref{Line styles}.
 
 @funindex \textSpannerUp
-@funindex textSpannerUp
 @funindex \textSpannerDown
-@funindex textSpannerDown
 @funindex \textSpannerNeutral
-@funindex textSpannerNeutral
 
 
 @predefined
@@ -223,9 +218,7 @@ Internals Reference:
 @cindex bar lines, symbols on
 
 @funindex \mark
-@funindex mark
 @funindex \markup
-@funindex markup
 
 Various text elements may be added to a score using the syntax described
 in @ref{Rehearsal marks}:
@@ -287,9 +280,7 @@ the next line.
 @end lilypond
 
 @funindex \markLengthOn
-@funindex markLengthOn
 @funindex \markLengthOff
-@funindex markLengthOff
 
 @predefined
 @code{\markLengthOn},
@@ -309,7 +300,7 @@ Notation Reference:
 @ref{Rehearsal marks},
 @ref{Formatting text},
 @ref{Music notation inside markup},
-@ref{The Feta font}.
+@ref{The Emmentaler font}.
 
 Snippets:
 @rlsr{Text}.
@@ -331,7 +322,6 @@ Internals Reference:
 @cindex text, standalone
 
 @funindex \markup
-@funindex markup
 
 A @code{\markup} block can exist by itself, outside of any
 @code{\score} block, as a @qq{top-level expression}.  This syntax
@@ -367,9 +357,7 @@ requires, are described in @ref{Multi-page markup}.
 
 
 @funindex \markup
-@funindex markup
 @funindex \markuplist
-@funindex markuplist
 
 @predefined
 @code{\markup},
@@ -420,7 +408,6 @@ using the @code{\markup} mode specific syntax.
 @cindex typeset text
 
 @funindex \markup
-@funindex markup
 
 A @code{\markup} block is used to typeset text with an extensible
 syntax called @qq{markup mode}.
@@ -518,7 +505,7 @@ Installed Files:
 @file{scm/markup.scm}.
 
 @knownissues
-Syntax errors for markup mode can be confusing.
+Syntax error messages for markup mode can be confusing.
 
 
 @node Selecting font and font size
@@ -529,11 +516,8 @@ Syntax errors for markup mode can be confusing.
 @cindex switching fonts
 
 @funindex \italic
-@funindex italic
 @funindex \bold
-@funindex bold
 @funindex \underline
-@funindex underline
 
 Basic font switching is supported in markup mode:
 
@@ -554,18 +538,14 @@ Basic font switching is supported in markup mode:
 
 @funindex \abs-fontsize
 @funindex \fontsize
-@funindex fontsize
 @funindex \smaller
-@funindex smaller
 @funindex \larger
-@funindex larger
 @funindex \magnify
-@funindex magnify
 
 The font size can be altered, relative to the global staff size, in a
-number of different ways
+number of different ways.
 
-It can be set to predefined size,
+It can be set to predefined size.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -575,7 +555,7 @@ It can be set to predefined size,
 }
 @end lilypond
 
-It can be set relative to its previous value,
+It can be set relative to its previous value.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -586,7 +566,7 @@ It can be set relative to its previous value,
 @end lilypond
 
 It can be increased or decreased relative to the value set by the
-global staff size,
+global staff size.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -597,7 +577,7 @@ global staff size,
 @end lilypond
 
 It can also be set to a fixed point-size, regardless of the global staff
-size,
+size.
 
 @lilypond[quote,verbatim]
 \relative b' {
@@ -620,11 +600,8 @@ other characters.
 @cindex superscript
 
 @funindex \super
-@funindex super
 @funindex \sub
-@funindex sub
 @funindex \normal-size-super
-@funindex normal-size-super
 
 Text may be printed as subscript or superscript.  By default these are
 printed in a smaller size, but a normal size can be used as well:
@@ -691,21 +668,13 @@ Defining custom font sets is also possible, as explained in
 @ref{Fonts}.
 
 @funindex \teeny
-@funindex teeny
 @funindex \tiny
-@funindex tiny
 @funindex \small
-@funindex small
 @funindex \normalsize
-@funindex normalsize
 @funindex \large
-@funindex large
 @funindex \huge
-@funindex huge
 @funindex \smaller
-@funindex smaller
 @funindex \larger
-@funindex larger
 
 
 @predefined
@@ -763,11 +732,8 @@ objects can also be moved as a whole, using the syntax described in
 @cindex horizontal text alignment
 
 @funindex \left-align
-@funindex left-align
 @funindex \center-align
-@funindex center-align
 @funindex \right-align
-@funindex right-align
 
 Markup objects may be aligned in different ways.  By default, a text
 indication is aligned on its left edge: in the following example,
@@ -786,7 +752,6 @@ there is no difference between the first and the second markup.
 @end lilypond
 
 @funindex \halign
-@funindex halign
 
 Horizontal alignment may be fine-tuned using a numeric value:
 
@@ -812,11 +777,8 @@ markup objects as a whole, as shown for instance in
 @cindex vertical text alignment
 
 @funindex \raise
-@funindex raise
 @funindex \lower
-@funindex lower
 @funindex \null
-@funindex null
 
 @c QUERY Should the function of ``\null'' be clarified? rp
 
@@ -848,11 +810,8 @@ has no anchor point, and therefore is not moved.
 @end lilypond
 
 @funindex \general-align
-@funindex general-align
 @funindex \translate
-@funindex translate
 @funindex \translate-scaled
-@funindex translate-scaled
 
 Some commands can affect both the horizontal and vertical alignment of
 text objects in markup mode.  Any object affected by these commands
@@ -886,9 +845,7 @@ must be preceded with an anchor point:
 @cindex columns, text
 
 @funindex \column
-@funindex column
 @funindex \center-column
-@funindex center-column
 
 A markup object may include several lines of text.  In the following
 example, each element or expression is placed on its own line, either
@@ -915,7 +872,6 @@ left-aligned or centered:
 @cindex markup, centering on the page
 
 @funindex \fill-line
-@funindex fill-line
 
 Similarly, a list of elements or expressions may be spread to fill the
 entire horizontal line width (if there is only one element, it will be
@@ -947,9 +903,7 @@ multi-line text or any other markup expression:
 @cindex markup text, justified
 
 @funindex \wordwrap
-@funindex wordwrap
 @funindex \justify
-@funindex justify
 
 Long text indications can also be automatically wrapped accordingly to
 the given line width.  These will be either left-aligned or justified,
@@ -1026,15 +980,10 @@ commands.
 @cindex markup text, framing
 
 @funindex \box
-@funindex box
 @funindex \circle
-@funindex circle
 @funindex \rounded-box
-@funindex rounded-box
 @funindex \bracket
-@funindex bracket
 @funindex \hbracket
-@funindex hbracket
 
 Some markup commands allow decoration of text elements with graphics,
 as demonstrated in the following example.
@@ -1061,13 +1010,9 @@ as demonstrated in the following example.
 @cindex markup text padding
 
 @funindex \pad-markup
-@funindex pad-markup
 @funindex \pad-x
-@funindex pad-x
 @funindex \pad-to-box
-@funindex pad-to-box
 @funindex \pad-around
-@funindex pad-around
 
 Some commands may require an increase in the padding around the text;
 this is achieved with some markup commands exhaustively described in
@@ -1101,17 +1046,11 @@ Flute quartet keeps very uneven time."
 @cindex notation, graphic
 
 @funindex \combine
-@funindex combine
 @funindex \draw-circle
-@funindex draw-circle
 @funindex \filled-box
-@funindex filled-box
 @funindex \triangle
-@funindex triangle
 @funindex \draw-line
-@funindex draw-line
 @funindex \arrow-head
-@funindex arrow-head
 
 Other graphic elements or symbols may be printed without requiring any
 text.  As with any markup expression, such objects can be combined.
@@ -1138,9 +1077,7 @@ text.  As with any markup expression, such objects can be combined.
 @cindex postscript
 
 @funindex \epsfile
-@funindex epsfile
 @funindex \postscript
-@funindex postscript
 
 Advanced graphic features include the ability to include external
 image files converted to the Encapsulated PostScript format
@@ -1203,7 +1140,7 @@ Notes and accidentals can be entered using markup commands:
 
 @lilypond[quote,verbatim,fragment]
 a'2 a'^\markup {
-  \note #"4" #1
+  \note {4} #1
   =
   \note-by-number #1 #1 #1.5
 }
@@ -1241,7 +1178,7 @@ in markup mode:
 More generally, any available musical symbol may be included
 separately in a markup object, as demonstrated below; an exhaustive
 list of these symbols and their names can be found in
-@ref{The Feta font}.
+@ref{The Emmentaler font}.
 
 @lilypond[quote,verbatim]
 \relative {
@@ -1311,7 +1248,7 @@ An exhaustive list of music notation related commands can be found in
 @seealso
 Notation Reference:
 @ref{Music},
-@ref{The Feta font},
+@ref{The Emmentaler font},
 @ref{Fonts explained}.
 
 Installed Files:
@@ -1335,11 +1272,8 @@ Internals Reference:
 @cindex text spread over multiple pages
 
 @funindex \markuplist
-@funindex markuplist
 @funindex \justified-lines
-@funindex justified-lines
 @funindex \wordwrap-lines
-@funindex wordwrap-lines
 
 Although standard markup objects are not breakable, a specific syntax
 makes it possible to enter lines of text that can spread over multiple
@@ -1389,7 +1323,6 @@ Internals Reference:
 @rinternals{TextScript}.
 
 @funindex \markuplist
-@funindex markuplist
 
 @predefined
 @code{\markuplist}.
@@ -1424,9 +1357,8 @@ detect available fonts on the system; the selected fonts are rendered
 using Pango.
 
 Music notation fonts can be described as a set of specific glyphs,
-ordered in several families.  The following syntax allows various
-LilyPond @code{feta} non-text fonts to be used directly in markup
-mode:
+ordered in several families.  The following syntax allows LilyPond's
+various @emph{Feta} glyphs to be used directly in markup mode:
 
 @lilypond[quote,verbatim,fragment]
 a'1^\markup {
@@ -1455,17 +1387,53 @@ left braces; right braces may be obtained by rotation, see
 @ref{Rotating objects}.
 
 Three families of text fonts are made available:
-@itemize
-@item
-The @emph{roman} (serif) font,
-which defaults to LilyPond Serif (an alias of TeX Gyre Schola).
-@item
-The @emph{sans} font,
-which defaults to LilyPond Sans Serif (an alias of TeX Gyre Heros).
-@item
-The @emph{typewriter} (monospaced) font,
-which defaults to LilyPond Monospace (an alias of TeX Gyre Cursor).
-@end itemize
+the @emph{roman} (serif) font,
+the @emph{sans} font, and the @emph{typewriter} font.
+
+For @code{svg} backend:
+@multitable @columnfractions .15 .30
+@headitem Family @tab Default font
+@item @emph{roman} @tab @code{serif}
+@item @emph{sans} @tab @code{sans-serif}
+@item @emph{typewriter} @tab @code{monospace}
+@end multitable
+
+@code{serif}, @code{sans-serif}, and @code{monospace} are
+@code{generic-family} in SVG and CSS specifications.
+
+For other backends:
+@multitable @columnfractions .15 .30 .55
+@headitem Family @tab Default font (alias) @tab Alias definition lists
+@item @emph{roman}
+@tab @code{LilyPond Serif}
+@tab
+TeX Gyre Schola,
+C059, Century SchoolBook URW, Century Schoolbook L,
+DejaVu Serif,
+..., serif
+@item @emph{sans}
+@tab @code{LilyPond Sans Serif}
+@tab
+TeX Gyre Heros,
+Nimbus Sans, Nimbus Sans L, DejaVu Sans,
+..., sans-serif
+@item @emph{typewriter}
+@tab @code{LilyPond Monospace}
+@tab
+TeX Gyre Cursor,
+Nimbus Mono PS, Nimbus Mono, Nimbus Mono L,
+DejaVu Sans Mono,
+..., monospace
+@end multitable
+
+@code{LilyPond Serif}, @code{LilyPond Sans Serif},
+and @code{LilyPond Monospace} are font aliases defined
+in the LilyPond dedicated FontConfig configuration file
+@code{00-lilypond-fonts.conf}.
+Where a character dosen't exist in the first font listed,
+the next font listed will be used instead for that character.
+For details of alias definitions, please see
+to @code{00-lilypond-fonts.conf} under the installed directory.
 
 Each family may include different shapes and series.  The following
 example demonstrates the ability to select alternate families, shapes,
@@ -1509,13 +1477,49 @@ is preferable to use the simpler syntax explained in
 }
 @end lilypond
 
+@noindent
+When using OpenType fonts, font features can be used.
+OpenType font scripts and languages can not be specified.
+Note: Not all OpenType fonts have all functions.
+If you request a feature that doesn't exist in the chosen font,
+then the feature is simply ignored.
+
+@lilypond[quote,verbatim]
+% True small caps
+\markup { Normal Style: Hello HELLO }
+\markup { \caps { Small Caps: Hello } }
+\markup { \override #'(font-features . ("smcp"))
+          { True Small Caps: Hello } }
+
+% Number styles
+\markup { Normal Number Style: 0123456789 }
+\markup { \override #'(font-features . ("onum"))
+          { Old Number Style: 0123456789 } }
+
+% Stylistic Alternates
+\markup { \override #'(font-features . ("salt 0"))
+          { Stylistic Alternates 0: εφπρθ } }
+\markup { \override #'(font-features . ("salt 1"))
+          { Stylistic Alternates 1: εφπρθ } }
+
+% Multiple features
+\markup { \override #'(font-features . ("onum" "smcp" "salt 1"))
+          { Multiple features: Hello 0123456789 εφπρθ } }
+@end lilypond
+
+@noindent For the full OpenType font feature list please see:
+@uref{https://www.microsoft.com/typography/otspec/featurelist.htm}
+
+@noindent For identifying features of OpenType fonts please see:
+@uref{http://lists.gnu.org/archive/html/lilypond-devel/2017-08/msg00004.html}
+
 Although it is easy to switch between preconfigured fonts, it is also
 possible to use other fonts, as explained in the following sections:
 @ref{Single entry fonts} and @ref{Entire document fonts}.
 
 @seealso
 Notation Reference:
-@ref{The Feta font},
+@ref{The Emmentaler font},
 @ref{Music notation inside markup},
 @ref{Rotating objects},
 @ref{Selecting font and font size},
@@ -1605,13 +1609,90 @@ described. For an explanation of fonts, see @ref{Fonts explained}.
 }
 @end lilypond
 
+Note: @code{make-pango-font-tree} resets the notation fonts to default of
+Emmentaler.
+
 @c we don't do Helvetica / Courier, since GS incorrectly loads
 @c Apple TTF fonts
+
+The following syntax allows you to change the specific fonts,
+leaving others to the default values.
+The following example has the same effect
+as the above @code{make-pango-font-tree} example.
+The same as  @code{make-pango-font-tree},
+you can specify a comma-separated list of @q{fonts} for @code{roman},
+@code{sans}, and @code{typewriter} categories.
+If you don't change the staff size from the default of 20 pt,
+@code{#:factor (/ staff-height pt 20)} is unnecessary.
+
+@funindex set-global-fonts
+
+@example
+\paper @{
+  #(define fonts
+    (set-global-fonts
+     #:roman "Times New Roman"
+     #:sans "Nimbus Sans,Nimbus Sans L"
+     #:typewriter "Luxi Mono"
+     #:factor (/ staff-height pt 20) ; unnecessary if the staff size is default
+    ))
+@}
+@end example
+
+It also can specify the notation fonts.
+The following example also has the same effect as the above examples,
+because it sets the notation fonts as the default.
+For more information, see @ref{Replacing the notation font}.
+
+@example
+\paper @{
+  #(define fonts
+    (set-global-fonts
+     #:music "emmentaler"            ; default
+     #:brace "emmentaler"            ; default
+     #:roman "Times New Roman"
+     #:sans "Nimbus Sans,Nimbus Sans L"
+     #:typewriter "Luxi Mono"
+     #:factor (/ staff-height pt 20) ; unnecessary if the staff size is default
+    ))
+@}
+@end example
+
+Note: Each call to @code{set-global-fonts} completely resets both the main
+notation and text fonts. If any category is left unspecified, then the default
+font will be used for that category.
+Each call of @code{set-global-fonts} affects each @code{\book} blocks that
+follow it.
+If there are multiple @code{\book} blocks and you want to use different fonts
+for each, simply call @code{set-global-fonts} again, like this:
+
+@example
+\paper @{
+  #(define fonts
+    (set-global-fonts
+     @dots{}
+    ))
+@}
+\book @{
+  @dots{}
+@}
+
+\paper @{
+  #(define fonts
+    (set-global-fonts
+     @dots{}
+    ))
+@}
+\book @{
+  @dots{}
+@}
+@end example
 
 @seealso
 Notation Reference:
 @ref{Fonts explained},
 @ref{Single entry fonts},
 @ref{Selecting font and font size},
-@ref{Font}.
+@ref{Font},
+@ref{Replacing the notation font}.
 

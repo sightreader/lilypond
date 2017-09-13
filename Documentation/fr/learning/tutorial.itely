@@ -1,7 +1,7 @@
 @c -*- coding: utf-8; mode: texinfo; documentlanguage: fr -*-
 
 @ignore
-   Translation of GIT committish: 9bdebf27dc4be7cf34976e3f44d9395d611305db
+   Translation of GIT committish: 8c1840ca28a05b3dad8d595e04d03779ba0a286a
 
    When revising a translation, copy the HEAD committish of the
    version that you are working on.  For details, see the Contributors'
@@ -240,7 +240,6 @@ explicitement.
 @cindex mode relatif et altérations
 
 @funindex \relative
-@funindex relative
 @funindex '
 @funindex ,
 
@@ -430,7 +429,6 @@ lettre @code{r} (pour @emph{rest}).
 @cindex chiffre de mesure
 
 @funindex \time
-@funindex time
 
 Glossaire musicologique : @rglosnamed{time signature,métrique}.
 
@@ -459,7 +457,6 @@ peut être définie à l'aide de la commande @code{\time} :
 @cindex indication métronomique
 
 @funindex \tempo
-@funindex tempo
 
 Glossaire musicologique :
 @rglosnamed{tempo indication,indication de tempo},
@@ -494,7 +491,6 @@ que le métronome :
 @cindex fa, clef de
 
 @funindex \clef
-@funindex clef
 
 Glossaire musicologique : @rglos{clef}.
 
@@ -596,7 +592,7 @@ opérations de mise à jour automatisée au fil de l'évolution de la
 syntaxe de LilyPond.  Ensuite, cela met en évidence le minimum requis
 pour pouvoir compiler votre fichier.
 
-Si vous ne le mentionnez pas, Lilypond vous rappellera à l'ordre durant
+Si vous ne le mentionnez pas, LilyPond vous rappellera à l'ordre durant
 la compilation.
 
 @item

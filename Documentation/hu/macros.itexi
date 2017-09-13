@@ -71,7 +71,7 @@ translations should be in macros.itexi.
 
 @macro docMain
 @cartouche
-A teljes dokumentáció a @w{@uref{http://@/www@/.lilypond@/.org/}} honlapon
+A teljes dokumentáció a @w{@uref{http://@/lilypond@/.org/}} honlapon
 található.
 @end cartouche
 @end macro
@@ -697,7 +697,7 @@ A LilyPond @version{} verziójához
 
 @macro exampleImage{IMAGE-FILE}
 @html
-<div class="float-center">
+<div class="float-center example-image-wrapper">
   <a class="clickable" href="ly-examples/\IMAGE-FILE\.png">
     <img src="ly-examples/\IMAGE-FILE\-small.png" alt="\IMAGE-FILE\">
   </a>

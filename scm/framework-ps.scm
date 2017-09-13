@@ -214,6 +214,8 @@
    (define-fonts paper ps-define-font ps-define-pango-pf)
    (output-variables paper)))
 
+(define never-embed-font-list (list))
+
 (define (cff-font? font)
   (let* ((cff-string (ly:otf-font-table-data font "CFF ")))
     (> (string-length cff-string) 0)))
@@ -241,9 +243,42 @@
          (footer "\n%%EndData
 %%EndResource
 %%EndResource\n"))
-    (string-append header
-                   binary-data
-                   footer)))
+    (begin
+      (set! never-embed-font-list
+            (append never-embed-font-list (list font-set-name)))
+      (string-append header
+                     binary-data
+                     footer))))
+
+(define check-conflict-and-embed-cff
+  (let ((font-list '()))
+    (lambda (name file-name font-index)
+      (if name
+          (let* ((name-symbol (string->symbol name))
+                 (args-filename-offset
+                  (cons file-name (ly:get-cff-offset file-name font-index)))
+                 (found-filename-offset (assq name-symbol font-list)))
+            (if found-filename-offset
+                (begin
+                  (if (equal? args-filename-offset (cdr found-filename-offset))
+                      (ly:debug
+                       (_ "CFF font `~a' already embedded, skipping.")
+                       name)
+                      (ly:warning
+                       (_ "Different CFF fonts which have the same name `~a' has been detected. The font cannot be embedded.")
+                       name))
+                  "")
+                (begin
+                  (ly:debug (_ "Embedding CFF font `~a'.") name)
+                  (set! font-list
+                        (acons name-symbol args-filename-offset font-list))
+                  (ps-embed-cff (ly:otf->cff file-name font-index) name 0))))
+          (begin
+            (ly:debug (_ "Initializing embedded CFF font list."))
+            (set! font-list '()))))))
+
+(define (initialize-font-embedding)
+  (check-conflict-and-embed-cff #f #f #f))
 
 (define (write-preamble paper load-fonts? port)
   (define (internal-font? font-name-filename)
@@ -257,9 +292,25 @@
                             (ly:get-option 'datadir)))))
 
   (define (load-font-via-GS font-name-filename)
+    (define (is-collection-font? file-name)
+      (let* ((port (open-file file-name "rb"))
+             (retval
+              (if (eq? (read-char port) #\t)
+                  (if (eq? (read-char port) #\t)
+                      (if (eq? (read-char port) #\c)
+                          (if (eq? (read-char port) #\f)
+                              #t
+                              #f)
+                          #f)
+                      #f)
+                  #f)))
+        (close-port port)
+        retval))
+
     (define (ps-load-file file-name)
       (if (string? file-name)
-          (if (string-contains file-name (ly:get-option 'datadir))
+          (if (and (not (ly:get-option 'font-export-dir))
+                   (string-contains file-name (ly:get-option 'datadir)))
               (begin
                 (set! file-name (ly:string-substitute (ly:get-option 'datadir)
                                                       "" file-name))
@@ -272,19 +323,47 @@
     (let* ((font (car font-name-filename))
            (name (cadr font-name-filename))
            (file-name (caddr font-name-filename))
+           (font-index (cadddr font-name-filename))
            (bare-file-name (ly:find-file file-name)))
-      (cons name
-            (if (mac-font? bare-file-name)
-                (handle-mac-font name bare-file-name)
-                (cond
-                 ((and font (cff-font? font))
-                  (ps-load-file (ly:find-file
-                                 (format #f "~a.otf" file-name))))
-                 ((string? bare-file-name)
-                  (ps-load-file file-name))
-                 (else
-                  (ly:warning (_ "cannot embed ~S=~S") name file-name)
-                  ""))))))
+      (cond
+       ((and (number? font-index)
+             (!= font-index 0))
+        (ly:warning (_ "Font ~a cannot be loaded via Ghostscript because its font-index (~a) is not zero.")
+                    name font-index)
+        (load-font font-name-filename))
+       ((and (string? bare-file-name)
+             (eq? (ly:get-font-format bare-file-name font-index) 'CFF)
+             (is-collection-font? bare-file-name))
+        (ly:warning (_ "Font ~a cannot be loaded via Ghostscript because it is an OpenType/CFF Collection (OTC) font.")
+                    name)
+        (load-font font-name-filename))
+       ((and (string? bare-file-name)
+             (eq? (ly:get-font-format bare-file-name font-index) 'TrueType)
+             (not (ly:has-glyph-names? bare-file-name font-index)))
+        (ly:warning (_ "Font ~a cannot be used via Ghostscript because it is a TrueType font that does not have glyph names.")
+                    name)
+        (load-font font-name-filename))
+       (else
+        (begin
+          (if (or (and font (cff-font? font))
+                  (and (string? bare-file-name)
+                       (not (eq? (ly:get-font-format
+                                  bare-file-name
+                                  font-index) 'TrueType))))
+              (set! never-embed-font-list
+                    (append never-embed-font-list (list name))))
+          (cons name
+                (if (mac-font? bare-file-name)
+                    (handle-mac-font name bare-file-name)
+                    (cond
+                     ((and font (cff-font? font))
+                      (ps-load-file (ly:find-file
+                                     (format #f "~a.otf" file-name))))
+                     ((string? bare-file-name)
+                      (ps-load-file file-name))
+                     (else
+                      (ly:warning (_ "cannot embed ~S=~S") name file-name)
+                      "")))))))))
 
   (define (dir-join a b)
     (if (equal? a "")
@@ -331,18 +410,19 @@
       embed))
 
   (define (font-file-as-ps-string name file-name font-index)
-    (let* ((downcase-file-name (string-downcase file-name)))
+    (let ((font-format (ly:get-font-format file-name font-index)))
       (cond
-       ((and file-name (string-endswith downcase-file-name ".pfa"))
-        (embed-document file-name))
-       ((and file-name (string-endswith downcase-file-name ".pfb"))
-        (ly:pfb->pfa file-name))
-       ((and file-name (string-endswith downcase-file-name ".ttf"))
-        (ly:ttf->pfa file-name))
-       ((and file-name (string-endswith downcase-file-name ".ttc"))
+       ((eq? font-format (string->symbol "Type 1"))
+        ;; Type 1 (PFA and PFB) fonts
+        (begin (set! never-embed-font-list
+                     (append never-embed-font-list (list name)))
+               (ly:type1->pfa file-name)))
+       ((eq? font-format 'TrueType)
+        ;; TrueType fonts (TTF) and TrueType Collection (TTC)
         (ly:ttf->pfa file-name font-index))
-       ((and file-name (string-endswith downcase-file-name ".otf"))
-        (ps-embed-cff (ly:otf->cff file-name) name 0))
+       ((eq? font-format 'CFF)
+        ;; OpenType/CFF fonts (OTF) and OpenType/CFF Collection (OTC)
+        (check-conflict-and-embed-cff name file-name font-index))
        (else
         (ly:warning (_ "do not know how to embed ~S=~S") name file-name)
         ""))))
@@ -415,18 +495,83 @@
            (pfas (map font-loader font-names)))
       pfas))
 
+  (define (font-export name body)
+    (let* ((filename (format #f "~a/~a.font.ps"
+                             (ly:get-option 'font-export-dir)
+                             name))
+           (port-excl
+            (catch
+             'system-error
+             (lambda ()
+               ;; Exclusive file create:
+               ;; When the file already exists, it raises system-error.
+               (open filename (logior O_WRONLY O_CREAT O_EXCL)))
+             (lambda stuff
+               ;; Catch the system-error
+               (let ((errno (system-error-errno stuff)))
+                 (cond
+                  ;; If the file already exists, return #f.
+                  ((= errno EEXIST)
+                   (begin
+                     (ly:debug
+                       (_ "Font file `~a' already exists, skipping.")
+                       filename)
+                     #f))
+                  ;; If the cause is something else, re-throw the error.
+                  (#t
+                   (throw 'system-error (cdr stuff)))))))))
+      (if port-excl
+          ;; MinGW hack: need to have "b"inary for fonts
+          (let ((port (open-file filename "wb")))
+            (close port-excl)
+            (ly:debug (_ "Exporting font file `~a'.") filename)
+            (format port "%%BeginFont: ~a\n" name)
+            (display body port)
+            (display "%%EndFont\n" port)
+            (close-port port)))))
 
   (display "%%BeginProlog\n" port)
   (format
    port
    "/lilypond-datadir where {pop} {userdict /lilypond-datadir (~a) put } ifelse"
    (ly:get-option 'datadir))
+  (set! never-embed-font-list (list))
+  (if (ly:get-option 'font-export-dir)
+      (let ((dirname (format #f "~a" (ly:get-option 'font-export-dir))))
+        (ly:debug
+         (_ "Making font export directory `~a'.") dirname)
+        (catch
+         'system-error
+         (lambda ()
+           ;; mkdir:
+           ;; When the directory already exists, it raises system-error.
+           (mkdir dirname))
+         (lambda stuff
+           ;; Catch the system-error
+           (if (= EEXIST (system-error-errno stuff))
+               ;; If the directory already exists, avoid error.
+               (ly:debug
+                (_ "Font export directory `~a' already exists.") dirname)
+               ;; If the cause is something else, re-throw the error.
+               (throw 'system-error (cdr stuff)))))))
   (if load-fonts?
       (for-each (lambda (f)
                   (format port "\n%%BeginFont: ~a\n" (car f))
                   (display (cdr f) port)
-                  (display "%%EndFont\n" port))
+                  (display "%%EndFont\n" port)
+                  (if (ly:get-option 'font-export-dir)
+                      (font-export (car f) (cdr f))))
                 (load-fonts paper)))
+  (if (ly:get-option 'gs-never-embed-fonts)
+      (begin
+        (display "\nsystemdict /DEVICE known\n" port)
+        (display " { systemdict /DEVICE get (pdfwrite) eq {\n" port)
+        (display ".setpdfwrite << /NeverEmbed [" port)
+        (display (string-concatenate
+                  (map (lambda (f) (string-append " /" f))
+                       never-embed-font-list)) port)
+        (display " ] >> setdistillerparams\n" port)
+        (display " } if } if\n" port)))
   (if (ly:bigpdfs)
       (display (procset "encodingdefs.ps") port))
   (display (setup-variables paper) port)
@@ -454,8 +599,14 @@
   (define (metadata-encode val)
     ;; First, call ly:encode-string-for-pdf to encode the string (latin1 or
     ;; utf-16be), then escape all parentheses and backslashes
-    ;; FIXME guile-2.0: use (string->utf16 str 'big) instead
-
+    ;;
+    ;; NOTE: with guile-2.0+ ly:encode-string-for-pdf is not really needed and
+    ;; could be replaced with the following code:
+    ;;
+    ;;    (let* ((utf16be-bom #vu8(#xFE #xFF)))
+    ;;      (string-append (bytevector->string utf16be-bom "ISO-8859-1")
+    ;;                     (bytevector->string (string->utf16 val 'big) "ISO-8859-1")))
+    ;;
     (ps-quote (ly:encode-string-for-pdf val)))
   (define (metadata-lookup-output overridevar fallbackvar field)
     (let* ((overrideval (ly:modules-lookup (list header) overridevar))
@@ -483,8 +634,11 @@
   (if (ly:get-option 'embed-source-code)
       (let ((source-list (delete-duplicates
                           (remove (lambda (str)
-                                    (string-contains str
-                                      (ly:get-option 'datadir)))
+                                    (or
+                                     (string-contains str
+                                       (ly:get-option 'datadir))
+                                     (string=? str
+                                       "<included string>")))
                             (ly:source-files)))))
          (display "\n/pdfmark where
 {pop} {userdict /pdfmark /cleartomark load put} ifelse" port)
@@ -516,6 +670,7 @@ mark {ly~a_stream} /CLOSE pdfmark
          (page-number (1- (ly:output-def-lookup paper 'first-page-number)))
          (page-count (length page-stencils))
          (port (ly:outputter-port outputter)))
+    (initialize-font-embedding)
     (if (ly:get-option 'clip-systems)
         (clip-system-EPSes basename book))
     (if (ly:get-option 'dump-signatures)
@@ -596,6 +751,7 @@ mark {ly~a_stream} /CLOSE pdfmark
          (rounded-bbox (to-rounded-bp-box bbox))
          (port (ly:outputter-port outputter))
          (header (eps-header paper rounded-bbox load-fonts)))
+    (initialize-font-embedding)
     (display header port)
     (write-preamble paper load-fonts port)
     (display "/mark_page_link { pop pop pop pop pop } bind def\n" port)
@@ -707,6 +863,22 @@ mark {ly~a_stream} /CLOSE pdfmark
                         (cons "png" (ly:output-formats))
                         (format #f "~a.preview" basename)
                         (format #f "~a.preview.eps" basename)
+                        #t
+                        )))
+
+(define-public (output-crop-framework basename book scopes fields)
+  (let* ((paper (ly:paper-book-paper book))
+         (systems (relevant-book-systems book)))
+    (dump-stencil-as-EPS paper
+                         (stack-stencils Y DOWN 0.0
+                                         (map paper-system-stencil
+                                              (reverse (reverse systems))))
+                         (format #f "~a.cropped" basename)
+                         #t)
+    (postprocess-output book framework-ps-module
+                        (cons "png" (ly:output-formats))
+                        (format #f "~a.cropped" basename)
+                        (format #f "~a.cropped.eps" basename)
                         #t
                         )))
 

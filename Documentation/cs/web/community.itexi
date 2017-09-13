@@ -200,7 +200,7 @@ našeho společenství: LilyPond Reportu (v angličtině).
 
 @example
 @uref{http://web.archive.org/web/20110325004849/http://news.lilynet.net}
-@end example 
+@end example
 
 @subsubheading Poštovní seznam pro nové verze: @code{info-lilypond@@gnu.org}
 
@@ -620,7 +620,7 @@ lilypond-book-Zkoušky této verze.
 @itemize
 @item @uref{http://lilypond.org/test, Porovnání dvou verzí}:
 
-@item @uref{http://lilypond.org/download/binaries/test-output/,
+@item @uref{http://lilypond.org/downloads/binaries/test-output/,
 Archiv všech zkoušek regresí}
 
 @end itemize
@@ -646,7 +646,7 @@ příručky se nacházejí na @url{http://lilypond.org}.}
 @tab
 @docLinkBig{Lernen,learning,@manualDevelLearningBig-cs}
 @tab
-@docLinkPdf{Lernen,learning,@manualDevelLearningPdf-cs}
+@docLinkPdf{Lernen,learning,@manualDevelLearningPdf}
 
 @item
 @docLinkSplit{Glossar,music-glossary,@manualDevelGlossarySplit}
@@ -693,7 +693,7 @@ příručky se nacházejí na @url{http://lilypond.org}.}
 @tab
 @docLinkBig{Webseite,web,@manualDevelWebBig-cs}
 @tab
-@docLinkPdf{Webseite,web,@manualDevelWebPdf-cs}
+@docLinkPdf{Webseite,web,@manualDevelWebPdf}
 
 @item
 @docLinkSplit{Veränderungen,changes,@manualDevelChangesSplit}
@@ -848,8 +848,8 @@ příručky se nacházejí na @url{http://lilypond.org}.}
 
 @node Starší novinky
 @unnumberedsec Starší novinky
-@translationof Old news
+@translationof News
 
-@include web/news-front.itexi
+@include web/news-new.itexi
 
-@include web/news.itexi
+@include web/news-old.itexi

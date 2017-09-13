@@ -47,6 +47,10 @@
 (define-safe-public THREE-Q-SHARP 3/4)
 (define-safe-public DOUBLE-SHARP 1)
 (define-safe-public SEMI-TONE 1/2)
+(define-safe-public FIVE-HALF-FLAT -5/2)
+(define-safe-public SEVEN-HALF-FLAT -7/2)
+(define-safe-public FIVE-HALF-SHARP 5/2)
+(define-safe-public SEVEN-HALF-SHARP 7/2)
 
 (define-safe-public INFINITY-INT 1000000)
 
@@ -708,29 +712,15 @@ right (@var{dir}=+1)."
   (coord-operation * amount coordinate))
 
 (define-public (coord-rotate coordinate angle-in-radians)
-  ;; getting around (sin PI) not being exactly zero by switching to cos at
-  ;; appropiate angles and/or taking the negative value (vice versa for cos)
-  (let* ((quadrant (inexact->exact (round (/ angle-in-radians (/ PI 2)))))
-         (moved-angle (- angle-in-radians (* quadrant (/ PI 2))))
-         (s (sin moved-angle))
-         (c (cos moved-angle))
-         (x (coord-x coordinate))
-         (y (coord-y coordinate)))
-    (case (modulo quadrant 4)
-      ((0) ;; -45 .. 45
-       (cons (- (* c x) (* s y))
-             (+ (* s x) (* c y))))
-      ((1) ;; 45 .. 135
-       (cons (- (* (- s) x) (* c y))
-             (+ (* c x) (* (- s) y))))
-      ((2) ;; 135 .. 225
-       (cons (- (* (- c) x) (* (- s) y))
-             (+ (* (- s) x) (* (- c) y))))
-      ((3) ;; 225 .. 315
-       (cons (- (* s x) (* (- c) y))
-             (+ (* (- c) x) (* s y))))
-      ;; for other angles (modulo quadrant 4) returns one of the above cases
-       )))
+  (coord-rotated coordinate (/ angle-in-radians PI-OVER-180)))
+
+(define-public (coord-rotated coordinate direction)
+  ;; Same, in degrees or with a given direction
+  (let ((dir (ly:directed direction)))
+    (cons (- (* (car dir) (car coordinate))
+             (* (cdr dir) (cdr coordinate)))
+          (+ (* (car dir) (cdr coordinate))
+             (* (cdr dir) (car coordinate))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; trig
@@ -776,14 +766,8 @@ right (@var{dir}=+1)."
 
 (define-public (polar->rectangular radius angle-in-degrees)
   "Return polar coordinates (@var{radius}, @var{angle-in-degrees})
-as rectangular coordinates @ode{(x-length . y-length)}."
-
-  (let ((complex (make-polar
-                  radius
-                  (degrees->radians angle-in-degrees))))
-    (cons
-     (real-part complex)
-     (imag-part complex))))
+as rectangular coordinates @code{(x-length . y-length)}."
+  (ly:directed angle-in-degrees radius))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; string
@@ -798,9 +782,9 @@ as rectangular coordinates @ode{(x-length . y-length)}."
 
 (define-public (remove-whitespace strg)
 "Remove characters satisfying @code{char-whitespace?} from string @var{strg}"
-  (string-delete
-    strg
-    char-whitespace?))
+  (if (guile-v2)
+      (string-delete char-whitespace? strg)
+      (string-delete strg char-whitespace?)))
 
 (define-public (string-encode-integer i)
   (cond
@@ -907,6 +891,29 @@ and will be applied to NUM."
    ((equal? number-type 'custom)
     (fancy-format #f (car custom-format) num))
    (else (fancy-format #f "~(~@r~)" num))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; lilypond version
+
+(define (lexicographic-list-compare? op a b)
+  "Lexicographically compare two lists @var{a} and @var{b} using
+   the operator @var{op}. The types of the list elements have to
+   be comparable with @var{op}. If the lists are of different length
+   the trailing elements of the longer list are ignored."
+  (let* ((ca (car a))
+         (iseql (op ca ca)))
+    (let loop ((ca ca) (cb (car b)) (a (cdr a)) (b (cdr b)))
+      (let ((axb (op ca cb)))
+        (if (and (pair? a) (pair? b)
+                 (eq? axb iseql (op cb ca)))
+            (loop (car a) (car b) (cdr a) (cdr b))
+            axb)))))
+
+(define (ly:version? op ver)
+  "Using the operator @var{op} compare the currently executed LilyPond
+   version with a given version @var{ver} which is passed as a list of 
+   numbers."
+  (lexicographic-list-compare? op (ly:version) ver))
 
 ;;;;;;;;;;;;;;;;
 ;; other

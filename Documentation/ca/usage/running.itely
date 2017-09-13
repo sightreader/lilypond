@@ -10,6 +10,8 @@
 
 @c \version "2.19.21"
 
+@c Translators: Walter Garcia-Fontes
+@c Translation checkers:
 
 @node Execució del LilyPond
 @chapter Execució del LilyPond
@@ -1037,12 +1039,12 @@ comprimida o que se surti de la pàgina.}
 
 La duració incorrecta es pot trobar fàcilment si s'utilitzen
 comprovacions de compàs, vegeu
-@rusernamed{Bar and bar number checks,Comprovació de compàs i de número de compàs}.
+@ruser{Comprovació de compàs i de número de compàs}.
 
 Si realment volem tenir una sèrie d'aquests compassos amb notes
 solapades, hem d'inserir una línia divisòria invisible on volem
 el salt de línia.  Per veure més detalls, consulteu
-@rusernamed{Bar lines,Barres de compàs}.
+@ruser{Barres de compàs}.
 
 
 @node Apareix un pentagrama de més
@@ -1157,7 +1159,7 @@ Un bloc @code{\score} ha de contenir una @emph{única} expressió
 musical.  Si en comptes d'això conté diverses instruccions
 @code{\new Staff}, @code{\new StaffGroup} o contextos semblants
 introduïts amb @code{\new} sense que s'hagin tancat entre
-claudàtors corbs, @code{@{ @dots{} @}}, o dobles parèntesis en
+claus, @code{@{ @dots{} @}}, o dobles parèntesis en
 angle, @code{<< @dots{}  >>}, així:
 
 @example
@@ -1172,9 +1174,9 @@ angle, @code{<< @dots{}  >>}, així:
 aleshores es produirà un missatge d'error.
 
 Per evitar l'error, tanqueu totes les instruccions @code{\new}
-dins dels claudàtors corbs o dobles parèntesis d'angle.
+dins de les claus o dobles parèntesis d'angle.
 
-L'ús de claudàtors corbs introdueix les instruccions @code{\new}
+L'ús de claus introdueix les instruccions @code{\new}
 de forma seqüencial:
 
 @lilypond[quote,verbatim]

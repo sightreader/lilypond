@@ -33,12 +33,13 @@ public:
 protected:
   void stop_translation_timestep ();
   void process_music ();
-  DECLARE_TRANSLATOR_LISTENER (note);
+  void listen_note (Stream_event *);
 private:
   vector<Stream_event *> note_evs_;
 };
 
-Drum_note_performer::Drum_note_performer ()
+Drum_note_performer::Drum_note_performer (Context *c)
+  : Performer (c)
 {
 }
 
@@ -96,11 +97,16 @@ Drum_note_performer::stop_translation_timestep ()
   note_evs_.clear ();
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Drum_note_performer, note);
 void
 Drum_note_performer::listen_note (Stream_event *ev)
 {
   note_evs_.push_back (ev);
+}
+
+void
+Drum_note_performer::boot ()
+{
+  ADD_LISTENER (Drum_note_performer, note);
 }
 
 ADD_TRANSLATOR (Drum_note_performer,

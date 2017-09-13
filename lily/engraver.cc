@@ -36,16 +36,15 @@ Engraver::get_daddy_engraver () const
 }
 
 void
-Engraver::announce_grob (Grob_info inf)
+Engraver::announce_grob (Grob_info inf, Context *reroute_context)
 {
-  get_daddy_engraver ()->announce_grob (inf);
+  get_daddy_engraver ()->announce_grob (inf, START, reroute_context);
 }
 
 void
-Engraver::announce_end_grob (Grob_info inf)
+Engraver::announce_end_grob (Grob_info inf, Context *reroute_context)
 {
-  inf.start_end_ = STOP;
-  get_daddy_engraver ()->announce_grob (inf);
+  get_daddy_engraver ()->announce_grob (inf, STOP, reroute_context);
 }
 
 Grob_info
@@ -82,7 +81,8 @@ Engraver::announce_end_grob (Grob *e, SCM cause)
   announce_end_grob (make_grob_info (e, cause));
 }
 
-Engraver::Engraver ()
+Engraver::Engraver (Context *c)
+  : Translator (c)
 {
 }
 
@@ -107,7 +107,6 @@ LY_DEFINE (ly_set_grob_creation_callback, "ly:set-grob-creation-callback",
 Grob *
 Engraver::internal_make_grob (SCM symbol,
                               SCM cause,
-                              char const * /* name */,
                               char const *file,
                               int line,
                               char const *fun)
@@ -147,26 +146,24 @@ Engraver::internal_make_grob (SCM symbol,
 
 Item *
 Engraver::internal_make_item (SCM x, SCM cause,
-                              char const *name,
                               char const *file, int line, char const *fun)
 {
-  Item *it = dynamic_cast<Item *> (internal_make_grob (x, cause, name, file, line, fun));
+  Item *it = dynamic_cast<Item *> (internal_make_grob (x, cause, file, line, fun));
   assert (it);
   return it;
 }
 
 Paper_column *
-Engraver::internal_make_column (SCM x, char const *name,
-                                char const *file, int line, char const *fun)
+Engraver::internal_make_column (SCM x, char const *file, int line, char const *fun)
 {
-  return dynamic_cast<Paper_column *> (internal_make_grob (x, SCM_EOL, name, file, line, fun));
+  return dynamic_cast<Paper_column *> (internal_make_grob (x, SCM_EOL, file, line, fun));
 }
 
 Spanner *
-Engraver::internal_make_spanner (SCM x, SCM cause, char const *name,
+Engraver::internal_make_spanner (SCM x, SCM cause,
                                  char const *file, int line, char const *fun)
 {
-  Spanner *sp = dynamic_cast<Spanner *> (internal_make_grob (x, cause, name, file, line, fun));
+  Spanner *sp = dynamic_cast<Spanner *> (internal_make_grob (x, cause, file, line, fun));
   assert (sp);
   return sp;
 }
@@ -176,20 +173,3 @@ ly_is_grob_cause (SCM obj)
 {
   return unsmob<Grob> (obj) || unsmob<Stream_event> (obj) || scm_is_null (obj);
 }
-
-#include "translator.icc"
-
-ADD_TRANSLATOR (Engraver,
-                /* doc */
-                "Base class for engravers.  Does nothing, so it is not used.",
-
-                /* create */
-                "",
-
-                /* read */
-                "",
-
-                /* write */
-                ""
-               );
-

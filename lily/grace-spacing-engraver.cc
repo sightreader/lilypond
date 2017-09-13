@@ -38,7 +38,8 @@ protected:
   void stop_translation_timestep ();
 };
 
-Grace_spacing_engraver::Grace_spacing_engraver ()
+Grace_spacing_engraver::Grace_spacing_engraver (Context *c)
+  : Engraver (c)
 {
   grace_spacing_ = 0;
 }
@@ -75,6 +76,12 @@ Grace_spacing_engraver::stop_translation_timestep ()
 
   if (!last_moment_.grace_part_)
     grace_spacing_ = 0;
+}
+
+void
+Grace_spacing_engraver::boot ()
+{
+
 }
 
 ADD_TRANSLATOR (Grace_spacing_engraver,

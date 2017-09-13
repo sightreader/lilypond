@@ -43,17 +43,17 @@ public:
 
 protected:
   void process_music ();
-  DECLARE_ACKNOWLEDGER (stem);
-  DECLARE_ACKNOWLEDGER (note_column);
-  DECLARE_TRANSLATOR_LISTENER (note);
+  void acknowledge_stem (Grob_info);
+  void acknowledge_note_column (Grob_info);
+  void listen_note (Stream_event *);
   void stop_translation_timestep ();
 };
 
-Drum_notes_engraver::Drum_notes_engraver ()
+Drum_notes_engraver::Drum_notes_engraver (Context *c)
+  : Engraver (c)
 {
 }
 
-IMPLEMENT_TRANSLATOR_LISTENER (Drum_notes_engraver, note);
 void
 Drum_notes_engraver::listen_note (Stream_event *ev)
 {
@@ -63,12 +63,12 @@ Drum_notes_engraver::listen_note (Stream_event *ev)
 void
 Drum_notes_engraver::process_music ()
 {
-  SCM tab = 0;
+  if (events_.empty ())
+    return;
+
+  SCM tab = get_property ("drumStyleTable");
   for (vsize i = 0; i < events_.size (); i++)
     {
-      if (!tab)
-        tab = get_property ("drumStyleTable");
-
       Stream_event *ev = events_[i];
       Item *note = make_item ("NoteHead", ev->self_scm ());
 
@@ -140,8 +140,14 @@ Drum_notes_engraver::stop_translation_timestep ()
   events_.clear ();
 }
 
-ADD_ACKNOWLEDGER (Drum_notes_engraver, stem);
-ADD_ACKNOWLEDGER (Drum_notes_engraver, note_column);
+
+void
+Drum_notes_engraver::boot ()
+{
+  ADD_LISTENER (Drum_notes_engraver, note);
+  ADD_ACKNOWLEDGER (Drum_notes_engraver, stem);
+  ADD_ACKNOWLEDGER (Drum_notes_engraver, note_column);
+}
 
 ADD_TRANSLATOR (Drum_notes_engraver,
                 /* doc */

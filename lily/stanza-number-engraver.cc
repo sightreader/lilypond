@@ -32,7 +32,7 @@ public:
   void process_music ();
   virtual void derived_mark () const;
   void stop_translation_timestep ();
-  DECLARE_ACKNOWLEDGER (lyric_syllable);
+  void acknowledge_lyric_syllable (Grob_info);
 };
 
 void
@@ -47,7 +47,8 @@ Stanza_number_engraver::derived_mark () const
   all aligned.
 */
 
-Stanza_number_engraver::Stanza_number_engraver ()
+Stanza_number_engraver::Stanza_number_engraver (Context *c)
+  : Engraver (c)
 {
   text_ = 0;
   last_stanza_ = SCM_EOL;
@@ -59,7 +60,7 @@ Stanza_number_engraver::process_music ()
   SCM stanza = get_property ("stanza");
 
   if (Text_interface::is_markup (stanza)
-      && stanza != last_stanza_)
+      && !scm_is_eq (stanza, last_stanza_))
     {
       last_stanza_ = stanza;
 
@@ -83,7 +84,12 @@ Stanza_number_engraver::stop_translation_timestep ()
 
 #include "translator.icc"
 
-ADD_ACKNOWLEDGER (Stanza_number_engraver, lyric_syllable);
+void
+Stanza_number_engraver::boot ()
+{
+  ADD_ACKNOWLEDGER (Stanza_number_engraver, lyric_syllable);
+}
+
 ADD_TRANSLATOR (Stanza_number_engraver,
                 /* doc */
                 "Engrave stanza numbers.",
