@@ -55,10 +55,7 @@ underscore = _
 # Maybe guess encoding from LANG/LC_ALL/LC_CTYPE?
 
 importlib.reload (sys)
-sys.setdefaultencoding ('utf-8')
 import codecs
-sys.stdout = codecs.getwriter ('utf8') (sys.stdout)
-sys.stderr = codecs.getwriter ('utf8') (sys.stderr)
 
 def encoded_write(f, s):
     f.write (s.encode (f.encoding or 'utf-8', 'replace'))
