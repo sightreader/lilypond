@@ -173,8 +173,8 @@ class Duration:
             dur_str = '%d' % (1 << self.duration_log)
         dur_str += '.' * self.dots
 
-        if factor <> Rational(1, 1):
-            if factor.denominator() <> 1:
+        if factor != Rational(1, 1):
+            if factor.denominator() != 1:
                 dur_str += '*%d/%d' % (factor.numerator(), factor.denominator())
             else:
                 dur_str += '*%d' % factor.numerator()
@@ -692,13 +692,11 @@ class NestedMusic(Music):
 
     def get_properties (self):
         return ("'elements (list %s)"
-            % string.join (map (lambda x: x.lisp_expression(),
-                      self.elements)))
+            % string.join ([x.lisp_expression() for x in self.elements]))
 
     def get_subset_properties (self, predicate):
         return ("'elements (list %s)"
-            % string.join (map (lambda x: x.lisp_expression(),
-                      filter (predicate, self.elements))))
+            % string.join ([x.lisp_expression() for x in list(filter (predicate, self.elements))]))
     def get_neighbor (self, music, dir):
         assert music.parent == self
         idx = self.elements.index (music)
@@ -849,7 +847,7 @@ class Header:
     def print_ly(self, printer):
         printer.dump("\header {")
         printer.newline()
-        for (k, v) in self.header_fields.items():
+        for (k, v) in list(self.header_fields.items()):
             if v:
                self.format_header_strings(k, v, printer)
         #printer.newline()
@@ -925,17 +923,17 @@ class Layout:
     def __init__ (self):
         self.context_dict = {}
     def add_context (self, context):
-        if not self.context_dict.has_key (context):
+        if context not in self.context_dict:
             self.context_dict[context] = []
     def set_context_item (self, context, item):
         self.add_context (context)
         if not item in self.context_dict[context]:
             self.context_dict[context].append (item)
     def print_ly (self, printer):
-        if self.context_dict.items ():
+        if list(self.context_dict.items ()):
             printer.dump ('\\layout {')
             printer.newline ()
-            for (context, defs) in self.context_dict.items ():
+            for (context, defs) in list(self.context_dict.items ()):
                 printer.dump ('\\context { \\%s' % context)
                 printer.newline ()
                 for d in defs:
@@ -1077,7 +1075,7 @@ class BarLine (Music):
                        'heavy': "|", 'light-light': "||", 'light-heavy': "|.",
                        'heavy-light': ".|", 'heavy-heavy': ".|.", 'tick': "'",
                        'short': "'", 'none': "" }.get (self.type, None)
-        if bar_symbol <> None:
+        if bar_symbol != None:
             printer.dump ('\\bar "%s"' % bar_symbol)
         else:
             printer.dump ("|")
@@ -1432,9 +1430,9 @@ class FretEvent (MarkupEvent):
         self.elements = []
     def ly_expression (self):
         val = ""
-        if self.strings <> 6:
+        if self.strings != 6:
             val += "w:%s;" % self.strings
-        if self.frets <> 4:
+        if self.frets != 4:
             val += "h:%s;" % self.frets
         if self.barre and len (self.barre) >= 3:
             val += "c:%s-%s-%s;" % (self.barre[0], self.barre[1], self.barre[2]+get_transpose("integer"))
@@ -2425,14 +2423,14 @@ def test_pitch ():
     down.normalize ()
 
 
-    print bflat.semitones()
-    print bflat.transposed (fifth), bflat.transposed (fifth).transposed (fifth)
-    print bflat.transposed (fifth).transposed (fifth).transposed (fifth)
+    print(bflat.semitones())
+    print(bflat.transposed (fifth), bflat.transposed (fifth).transposed (fifth))
+    print(bflat.transposed (fifth).transposed (fifth).transposed (fifth))
 
-    print bflat.semitones(), 'down'
-    print bflat.transposed (down)
-    print bflat.transposed (down).transposed (down)
-    print bflat.transposed (down).transposed (down).transposed (down)
+    print(bflat.semitones(), 'down')
+    print(bflat.transposed (down))
+    print(bflat.transposed (down).transposed (down))
+    print(bflat.transposed (down).transposed (down).transposed (down))
 
 
 
@@ -2514,11 +2512,11 @@ if __name__ == '__main__':
 
     expr = test_expr()
     expr.set_start (Rational (0))
-    print expr.ly_expression()
+    print(expr.ly_expression())
     start = Rational (0, 4)
     stop = Rational (4, 2)
     def sub(x, start=start, stop=stop):
         ok = x.start >= start and x.start + x.get_length() <= stop
         return ok
 
-    print expr.lisp_sub_expression(sub)
+    print(expr.lisp_sub_expression(sub))

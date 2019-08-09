@@ -647,7 +647,7 @@ def conv (str):
         "Custos": "custos"
         }
         props =  match.group (1)
-        for (k,v) in break_dict.items():
+        for (k,v) in list(break_dict.items()):
             props = re.sub (k, v, props)
         return  "breakAlignOrder = #'(%s)" % props
 
@@ -1017,7 +1017,7 @@ def sub_chord (m):
     for d in durs:
         if dur_str == '':
             dur_str = d
-        if dur_str <> d:
+        if dur_str != d:
             return '<%s>' % m.group (1)
 
     pslur_strs = ['']
@@ -1025,7 +1025,7 @@ def sub_chord (m):
     slur_strs = ['']
 
     last_str = ''
-    while last_str <> str:
+    while last_str != str:
         last_str = str
 
         def sub_tremolos (m, slur_strs = slur_strs):
@@ -1767,7 +1767,7 @@ def conv (str):
             o -= 1
 
 
-        lower_pitches = filter (lambda x : x <= g, [0, 2, 4, 5, 7, 9, 11, 12])
+        lower_pitches = [x for x in [0, 2, 4, 5, 7, 9, 11, 12] if x <= g]
         s = len (lower_pitches) -1
         a = g - lower_pitches [-1]
 

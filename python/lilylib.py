@@ -24,6 +24,7 @@ import shutil
 import sys
 import optparse
 import time
+import importlib
 
 ################################################################
 # Users of python modules should include this snippet
@@ -53,7 +54,7 @@ underscore = _
 # Urg, Python 2.4 does not define stderr/stdout encoding
 # Maybe guess encoding from LANG/LC_ALL/LC_CTYPE?
 
-reload (sys)
+importlib.reload (sys)
 sys.setdefaultencoding ('utf-8')
 import codecs
 sys.stdout = codecs.getwriter ('utf8') (sys.stdout)
@@ -78,7 +79,7 @@ program_name = os.path.basename (sys.argv[0])
 # makefiles and use its value.
 at_re = re.compile (r'@')
 if at_re.match (program_version):
-    if os.environ.has_key('LILYPOND_VERSION'):
+    if 'LILYPOND_VERSION' in os.environ:
         program_version = os.environ['LILYPOND_VERSION']
     else:
         program_version = "unknown"
@@ -225,18 +226,18 @@ def subprocess_system (cmd,
             retval = proc.returncode
 
     if retval:
-        print >>sys.stderr, 'command failed:', cmd
+        print('command failed:', cmd, file=sys.stderr)
         if retval < 0:
-            print >>sys.stderr, "Child was terminated by signal", -retval
+            print("Child was terminated by signal", -retval, file=sys.stderr)
         elif retval > 0:
-            print >>sys.stderr, "Child returned", retval
+            print("Child returned", retval, file=sys.stderr)
 
         if ignore_error:
-            print >>sys.stderr, "Error ignored by lilylib"
+            print("Error ignored by lilylib", file=sys.stderr)
         else:
             if not show_progress:
-                print log[0]
-                print log[1]
+                print(log[0])
+                print(log[1])
             sys.exit (1)
 
     return abs (retval)
@@ -258,14 +259,14 @@ def ossystem_system (cmd,
 
     retval = os.system (cmd)
     if retval:
-        print >>sys.stderr, 'command failed:', cmd
+        print('command failed:', cmd, file=sys.stderr)
         if retval < 0:
-            print >>sys.stderr, "Child was terminated by signal", -retval
+            print("Child was terminated by signal", -retval, file=sys.stderr)
         elif retval > 0:
-            print >>sys.stderr, "Child returned", retval
+            print("Child returned", retval, file=sys.stderr)
 
         if ignore_error:
-            print >>sys.stderr, "Error ignored"
+            print("Error ignored", file=sys.stderr)
         else:
             sys.exit (1)
 
@@ -296,7 +297,7 @@ def search_exe_path (name):
 
 
 def print_environment ():
-    for (k,v) in os.environ.items ():
+    for (k,v) in list(os.environ.items ()):
         sys.stderr.write ("%s=\"%s\"\n" % (k, v))
 
 class NonDentedHeadingFormatter (optparse.IndentedHelpFormatter):
@@ -340,7 +341,7 @@ class NonEmptyOptionParser (optparse.OptionParser):
 
     def parse_args (self, args=None, values=None):
         options, args = optparse.OptionParser.parse_args (self, args, values)
-        return options, filter (None, args)
+        return options, [_f for _f in args if _f]
 
 def get_option_parser (*args, **kwargs):
     p = NonEmptyOptionParser (*args, **kwargs)

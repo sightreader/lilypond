@@ -17,7 +17,7 @@ def string_to_integer(s):
 
 def escape_ly_output_string (input_string):
     return_string = input_string
-    needs_quotes = not re.match (u"^[a-zA-ZäöüÜÄÖßñ]*$", return_string);
+    needs_quotes = not re.match ("^[a-zA-ZäöüÜÄÖßñ]*$", return_string);
     if needs_quotes:
         return_string = "\"" + string.replace (return_string, "\"", "\\\"") + "\""
     return return_string
@@ -59,7 +59,7 @@ def hex_to_color(hex_val):
         hex_val,
         re.IGNORECASE)
     if res:
-        return map(lambda x: hexcolorval_to_nr (x), res.group (2, 3, 4))
+        return [hexcolorval_to_nr (x) for x in res.group (2, 3, 4)]
     else:
         return None
 
