@@ -1,0 +1,14 @@
+#!/bin/bash
+echo "*****************************" > 2to3log 2>&1
+2to3 -wn ./input/regression/musicxml/*.py >> 2to3log 2>&1
+echo "*****************************" >> 2to3log 2>&1
+2to3 -wn ./python/auxiliar/*.py >> 2to3log 2>&1
+echo "*****************************" >> 2to3log 2>&1
+2to3 -wn ./python/*.py >> 2to3log 2>&1
+echo "*****************************" >> 2to3log 2>&1
+2to3 -wn ./scripts/auxiliar/*.py >> 2to3log 2>&1
+echo "*****************************" >> 2to3log 2>&1
+2to3 -wn ./scripts/build/.py >> 2to3log 2>&1
+echo "*****************************" >> 2to3log 2>&1
+2to3 -wn ./scripts/*.py >> 2to3log 2>&1
+echo "*****************************" >> 2to3log 2>&1
