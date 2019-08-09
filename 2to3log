@@ -1,0 +1,2839 @@
+*****************************
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: No changes to ./input/regression/musicxml/book-musicxml-testsuite.py
+RefactoringTool: Files that need to be modified:
+RefactoringTool: ./input/regression/musicxml/book-musicxml-testsuite.py
+*****************************
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: Refactored ./python/auxiliar/buildlib.py
+RefactoringTool: No changes to ./python/auxiliar/manuals_definitions.py
+RefactoringTool: No changes to ./python/auxiliar/mirrortree.py
+RefactoringTool: Refactored ./python/auxiliar/postprocess_html.py
+RefactoringTool: Files that were modified:
+RefactoringTool: ./python/auxiliar/buildlib.py
+RefactoringTool: ./python/auxiliar/manuals_definitions.py
+RefactoringTool: ./python/auxiliar/mirrortree.py
+RefactoringTool: ./python/auxiliar/postprocess_html.py
+--- ./python/auxiliar/buildlib.py	(original)
++++ ./python/auxiliar/buildlib.py	(refactored)
+@@ -14,7 +14,7 @@
+     (output, error) = child.communicate ()
+     code = str (child.wait ())
+     if not child.stdout or child.stdout.close ():
+-        print "pipe failed: %(command)s" % locals ()
++        print("pipe failed: %(command)s" % locals ())
+     if code != '0':
+         error = code + ' ' + error
+     return (output, error)
+--- ./python/auxiliar/postprocess_html.py	(original)
++++ ./python/auxiliar/postprocess_html.py	(refactored)
+@@ -11,6 +11,7 @@
+ import operator
+ 
+ import langdefs
++from functools import reduce
+ 
+ # This is to try to make the docball not too big with almost duplicate files
+ # see process_links()
+@@ -334,8 +335,8 @@
+ 
+     # Initialize dictionaries for string formatting
+     subst = {}
+-    subst[''] = dict ([i for i in globals ().items() if type (i[1]) is str])
+-    subst[''].update (dict ([i for i in locals ().items() if type (i[1]) is str]))
++    subst[''] = dict ([i for i in list(globals ().items()) if type (i[1]) is str])
++    subst[''].update (dict ([i for i in list(locals ().items()) if type (i[1]) is str]))
+     for l in translation:
+         e = langdefs.LANGDICT[l].webext
+         if e:
+@@ -348,7 +349,7 @@
+         subst[e]['footer_name_version'] = subst[e]['footer_name_version'] % subst[e]
+         subst[e]['footer_report_links'] = subst[e]['footer_report_links'] % subst[e]
+ 
+-    for prefix, ext_list in pages_dict.items ():
++    for prefix, ext_list in list(pages_dict.items ()):
+         for lang_ext in ext_list:
+             file_name = langdefs.lang_file_name (prefix, lang_ext, '.html')
+             source_time = os.path.getmtime(file_name)
+*****************************
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: Refactored ./python/book_base.py
+RefactoringTool: No changes to ./python/book_docbook.py
+RefactoringTool: No changes to ./python/book_html.py
+RefactoringTool: No changes to ./python/book_latex.py
+RefactoringTool: Refactored ./python/book_snippets.py
+RefactoringTool: No changes to ./python/book_texinfo.py
+RefactoringTool: Refactored ./python/convertrules.py
+RefactoringTool: Refactored ./python/fontextract.py
+RefactoringTool: Refactored ./python/langdefs.py
+--- ./python/book_base.py	(original)
++++ ./python/book_base.py	(refactored)
+@@ -98,10 +98,10 @@
+ 
+     def supported_snippet_types (self):
+         # Sort according to snippet_type_order, unknown keys come last
+-        keys = self.snippet_res.keys ()
++        keys = list(self.snippet_res.keys ())
+         # First the entries in snippet_type_order in that order (if present)
+         # then all entries not in snippet_type_order in given order
+-        res = filter (lambda x:x in keys, snippet_type_order) + filter (lambda x:x not in snippet_type_order, keys)
++        res = [x for x in snippet_type_order if x in keys] + [x for x in keys if x not in snippet_type_order]
+         return res
+ 
+     def snippet_regexp (self, snippettype):
+--- ./python/book_snippets.py	(original)
++++ ./python/book_snippets.py	(refactored)
+@@ -310,7 +310,7 @@
+         return self.match.group (s)
+ 
+     def __repr__ (self):
+-        return `self.__class__` + ' type = ' + self.type
++        return repr(self.__class__) + ' type = ' + self.type
+ 
+ 
+ 
+@@ -417,12 +417,12 @@
+                 self.snippet_option_dict[key] = value
+ 
+         # If LINE_WIDTH is used without parameter, set it to default.
+-        has_line_width = self.snippet_option_dict.has_key (LINE_WIDTH)
++        has_line_width = LINE_WIDTH in self.snippet_option_dict
+         if has_line_width and self.snippet_option_dict[LINE_WIDTH] == None:
+             del self.snippet_option_dict[LINE_WIDTH]
+ 
+         # RELATIVE does not work without FRAGMENT, so imply that
+-        if self.snippet_option_dict.has_key (RELATIVE):
++        if RELATIVE in self.snippet_option_dict:
+             self.snippet_option_dict[FRAGMENT] = None
+ 
+         # Now get the default options from the formatter object (HTML, latex,
+@@ -435,8 +435,7 @@
+ 
+         # also construct a list of all options (as strings) that influence the
+         # visual appearance of the snippet
+-        lst = filter (lambda (x,y): x not in PROCESSING_INDEPENDENT_OPTIONS,
+-                      self.option_dict.iteritems ());
++        lst = [x_y for x_y in iter(self.option_dict.items ()) if x_y[0] not in PROCESSING_INDEPENDENT_OPTIONS];
+         option_list = []
+         for (key, value) in lst:
+             if value == None:
+@@ -508,7 +507,7 @@
+         for a in compose_types:
+             compose_dict[a] = []
+ 
+-        option_names = self.option_dict.keys ()
++        option_names = list(self.option_dict.keys ())
+         option_names.sort ()
+         for key in option_names:
+             value = self.option_dict[key]
+@@ -516,12 +515,12 @@
+             if value:
+                 override[key] = value
+             else:
+-                if not override.has_key (key):
++                if key not in override:
+                     override[key] = None
+ 
+             found = 0
+             for typ in compose_types:
+-                if snippet_options[typ].has_key (key):
++                if key in snippet_options[typ]:
+                     compose_dict[typ].append (snippet_options[typ][key])
+                     found = 1
+                     break
+@@ -702,18 +701,18 @@
+         if 'dseparate-log-file' in self.global_options.process_cmd:
+             require_file (base + '.log')
+ 
+-        map (consider_file, [base + '.tex',
++        list(map (consider_file, [base + '.tex',
+                              base + '.eps',
+                              base + '.pdf',
+                              base + '.texidoc',
+                              base + '.doctitle',
+                              base + '-systems.texi',
+                              base + '-systems.tex',
+-                             base + '-systems.pdftexi'])
++                             base + '-systems.pdftexi']))
+         if self.formatter.document_language:
+-            map (consider_file,
++            list(map (consider_file,
+                  [base + '.texidoc' + self.formatter.document_language,
+-                  base + '.doctitle' + self.formatter.document_language])
++                  base + '.doctitle' + self.formatter.document_language]))
+ 
+         required_files = self.formatter.required_files (self, base, full, result)
+         for f in required_files:
+@@ -733,8 +732,8 @@
+             if 'ddump-signature' in self.global_options.process_cmd:
+                 consider_file (systemfile + '.signature')
+ 
+-        map (consider_file, self.additional_files_to_consider (base, full))
+-        map (require_file, self.additional_files_required (base, full))
++        list(map (consider_file, self.additional_files_to_consider (base, full)))
++        list(map (require_file, self.additional_files_required (base, full)))
+ 
+         return (result, missing)
+ 
+@@ -870,12 +869,12 @@
+ 	 }
+ 
+     def snippet_options (self):
+-        return self.musicxml_options_dict.keys ()
++        return list(self.musicxml_options_dict.keys ())
+ 
+     def convert_from_musicxml (self):
+         name = self.filename
+         xml2ly_option_list = []
+-        for (key, value) in self.option_dict.items ():
++        for (key, value) in list(self.option_dict.items ()):
+             cmd_key = self.musicxml_options_dict.get (key, None)
+             if cmd_key == None:
+                 continue
+--- ./python/convertrules.py	(original)
++++ ./python/convertrules.py	(refactored)
+@@ -647,7 +647,7 @@
+         "Custos": "custos"
+         }
+         props =  match.group (1)
+-        for (k,v) in break_dict.items():
++        for (k,v) in list(break_dict.items()):
+             props = re.sub (k, v, props)
+         return  "breakAlignOrder = #'(%s)" % props
+ 
+@@ -1017,7 +1017,7 @@
+     for d in durs:
+         if dur_str == '':
+             dur_str = d
+-        if dur_str <> d:
++        if dur_str != d:
+             return '<%s>' % m.group (1)
+ 
+     pslur_strs = ['']
+@@ -1025,7 +1025,7 @@
+     slur_strs = ['']
+ 
+     last_str = ''
+-    while last_str <> str:
++    while last_str != str:
+         last_str = str
+ 
+         def sub_tremolos (m, slur_strs = slur_strs):
+@@ -1767,7 +1767,7 @@
+             o -= 1
+ 
+ 
+-        lower_pitches = filter (lambda x : x <= g, [0, 2, 4, 5, 7, 9, 11, 12])
++        lower_pitches = [x for x in [0, 2, 4, 5, 7, 9, 11, 12] if x <= g]
+         s = len (lower_pitches) -1
+         a = g - lower_pitches [-1]
+ 
+--- ./python/fontextract.py	(original)
++++ ./python/fontextract.py	(refactored)
+@@ -34,7 +34,7 @@
+                 break
+             name = match.group (1)
+             idx += match.end (1)
+-            if file_of_font_dict.has_key (name):
++            if name in file_of_font_dict:
+                 continue
+ 
+             file_of_font_dict[name] = f
+@@ -43,8 +43,8 @@
+ 
+ def get_file_fonts_dict (file_of_font_dict):
+     dict = {}
+-    for (n, f) in file_of_font_dict.items ():
+-        if not dict.has_key (f):
++    for (n, f) in list(file_of_font_dict.items ()):
++        if f not in dict:
+             dict[f] = []
+ 
+         dict[f].append (n)
+@@ -89,12 +89,12 @@
+ %%Creator: lilypond-extract-fonts
+ ''')
+ 
+-    for x in font_dict.keys ():
++    for x in list(font_dict.keys ()):
+         output.write ('%%%%DocumentSuppliedResources: font %s\n' % x)
+ 
+     output.write ('''%%EndComments\n''')
+ 
+-    for (k,v) in font_dict.items ():
++    for (k,v) in list(font_dict.items ()):
+         output.write ('\n%%%%BeginFont: %s\n' % k)
+         output.write (v)
+         output.write ('\n%%EndFont')
+@@ -105,7 +105,7 @@
+     ff = get_file_fonts_dict (d)
+ 
+     font_dict = {}
+-    for (file, fonts) in ff.items ():
++    for (file, fonts) in list(ff.items ()):
+         extract_fonts_from_file (fonts, font_dict, file)
+ 
+     write_extracted_fonts (output_file_name, font_dict)
+--- ./python/langdefs.py	(original)
++++ ./python/langdefs.py	(refactored)
+@@ -81,7 +81,7 @@
+     LANGUAGES=WEB_LANGUAGES
+ 
+ if __name__ == '__main__':
+-    print ' '.join ([l.code for l in LANGUAGES if l.enabled and l.code != 'en'])
++    print(' '.join ([l.code for l in LANGUAGES if l.enabled and l.code != 'en']))
+ else:
+     LANGDICT = {}
+     for l in LANGUAGES:
+@@ -98,6 +98,6 @@
+                                         [l.code])
+                 translation[l.code] = t.gettext
+     except:
+-        if os.environ.has_key ('LYDOC_LOCALEDIR'):
++        if 'LYDOC_LOCALEDIR' in os.environ:RefactoringTool: Refactored ./python/lilylib.py
+RefactoringTool: Refactored ./python/midi.py
+RefactoringTool: Refactored ./python/musicexp.py
+
+             sys.stderr.write ('langdefs.py: warning: lilypond-doc gettext domain not found.\n')
+         translation = dict ([(l.code, lambda x: x) for l in LANGUAGES])
+--- ./python/lilylib.py	(original)
++++ ./python/lilylib.py	(refactored)
+@@ -24,6 +24,7 @@
+ import sys
+ import optparse
+ import time
++import importlib
+ 
+ ################################################################
+ # Users of python modules should include this snippet
+@@ -53,7 +54,7 @@
+ # Urg, Python 2.4 does not define stderr/stdout encoding
+ # Maybe guess encoding from LANG/LC_ALL/LC_CTYPE?
+ 
+-reload (sys)
++importlib.reload (sys)
+ sys.setdefaultencoding ('utf-8')
+ import codecs
+ sys.stdout = codecs.getwriter ('utf8') (sys.stdout)
+@@ -78,7 +79,7 @@
+ # makefiles and use its value.
+ at_re = re.compile (r'@')
+ if at_re.match (program_version):
+-    if os.environ.has_key('LILYPOND_VERSION'):
++    if 'LILYPOND_VERSION' in os.environ:
+         program_version = os.environ['LILYPOND_VERSION']
+     else:
+         program_version = "unknown"
+@@ -225,18 +226,18 @@
+             retval = proc.returncode
+ 
+     if retval:
+-        print >>sys.stderr, 'command failed:', cmd
++        print('command failed:', cmd, file=sys.stderr)
+         if retval < 0:
+-            print >>sys.stderr, "Child was terminated by signal", -retval
++            print("Child was terminated by signal", -retval, file=sys.stderr)
+         elif retval > 0:
+-            print >>sys.stderr, "Child returned", retval
++            print("Child returned", retval, file=sys.stderr)
+ 
+         if ignore_error:
+-            print >>sys.stderr, "Error ignored by lilylib"
++            print("Error ignored by lilylib", file=sys.stderr)
+         else:
+             if not show_progress:
+-                print log[0]
+-                print log[1]
++                print(log[0])
++                print(log[1])
+             sys.exit (1)
+ 
+     return abs (retval)
+@@ -258,14 +259,14 @@
+ 
+     retval = os.system (cmd)
+     if retval:
+-        print >>sys.stderr, 'command failed:', cmd
++        print('command failed:', cmd, file=sys.stderr)
+         if retval < 0:
+-            print >>sys.stderr, "Child was terminated by signal", -retval
++            print("Child was terminated by signal", -retval, file=sys.stderr)
+         elif retval > 0:
+-            print >>sys.stderr, "Child returned", retval
++            print("Child returned", retval, file=sys.stderr)
+ 
+         if ignore_error:
+-            print >>sys.stderr, "Error ignored"
++            print("Error ignored", file=sys.stderr)
+         else:
+             sys.exit (1)
+ 
+@@ -296,7 +297,7 @@
+ 
+ 
+ def print_environment ():
+-    for (k,v) in os.environ.items ():
++    for (k,v) in list(os.environ.items ()):
+         sys.stderr.write ("%s=\"%s\"\n" % (k, v))
+ 
+ class NonDentedHeadingFormatter (optparse.IndentedHelpFormatter):
+@@ -340,7 +341,7 @@
+ 
+     def parse_args (self, args=None, values=None):
+         options, args = optparse.OptionParser.parse_args (self, args, values)
+-        return options, filter (None, args)
++        return options, [_f for _f in args if _f]
+ 
+ def get_option_parser (*args, **kwargs):
+     p = NonEmptyOptionParser (*args, **kwargs)
+--- ./python/midi.py	(original)
++++ ./python/midi.py	(refactored)
+@@ -110,7 +110,7 @@
+ 
+ def _read_string (nextbyte, getbyte):
+     length = _get_variable_length_number (nextbyte, getbyte)
+-    return ''.join(chr(getbyte()) for i in xrange(length))
++    return ''.join(chr(getbyte()) for i in range(length))
+ 
+ def _read_f0_byte (status, nextbyte, getbyte):
+     if status == 0xff:
+@@ -139,7 +139,7 @@
+ def _parse_track_body (data, clocks_max):
+     # This seems to be the fastest way of getting bytes in order as integers.
+     dataiter = iter(array.array('B', data))
+-    getbyte = dataiter.next
++    getbyte = dataiter.__next__
+ 
+     time = 0
+     status = 0
+@@ -156,7 +156,7 @@
+     except StopIteration:
+         # If the track ended just before the start of an event, the for loop
+         # will exit normally. If it ends anywhere else, we end up here.
+-        print len(list(dataiter))
++        print(len(list(dataiter)))
+         raise error('a track ended in the middle of a MIDI command')
+ 
+ def _parse_hunk (data, pos, type, magic):
+@@ -175,7 +175,7 @@
+ def _parse_tracks (midi, pos, num_tracks, clocks_max):
+     if num_tracks > 256:
+         raise error('too many tracks: %d' % num_tracks)
+-    for i in xrange(num_tracks):
++    for i in range(num_tracks):
+         trackdata, pos = _parse_hunk (midi, pos, 'track', 'MTrk')
+         yield list (_parse_track_body (trackdata, clocks_max))
+     # if pos < len(midi):
+--- ./python/musicexp.py	(original)
++++ ./python/musicexp.py	(refactored)
+@@ -173,8 +173,8 @@
+             dur_str = '%d' % (1 << self.duration_log)
+         dur_str += '.' * self.dots
+ 
+-        if factor <> Rational(1, 1):
+-            if factor.denominator() <> 1:
++        if factor != Rational(1, 1):
++            if factor.denominator() != 1:
+                 dur_str += '*%d/%d' % (factor.numerator(), factor.denominator())
+             else:
+                 dur_str += '*%d' % factor.numerator()
+@@ -692,13 +692,11 @@
+ 
+     def get_properties (self):
+         return ("'elements (list %s)"
+-            % string.join (map (lambda x: x.lisp_expression(),
+-                      self.elements)))
++            % string.join ([x.lisp_expression() for x in self.elements]))
+ 
+     def get_subset_properties (self, predicate):
+         return ("'elements (list %s)"
+-            % string.join (map (lambda x: x.lisp_expression(),
+-                      filter (predicate, self.elements))))
++            % string.join ([x.lisp_expression() for x in list(filter (predicate, self.elements))]))
+     def get_neighbor (self, music, dir):
+         assert music.parent == self
+         idx = self.elements.index (music)
+@@ -849,7 +847,7 @@
+     def print_ly(self, printer):
+         printer.dump("\header {")
+         printer.newline()
+-        for (k, v) in self.header_fields.items():
++        for (k, v) in list(self.header_fields.items()):
+             if v:
+                self.format_header_strings(k, v, printer)
+         #printer.newline()
+@@ -925,17 +923,17 @@
+     def __init__ (self):
+         self.context_dict = {}
+     def add_context (self, context):
+-        if not self.context_dict.has_key (context):
++        if context not in self.context_dict:
+             self.context_dict[context] = []
+     def set_context_item (self, context, item):
+         self.add_context (context)
+         if not item in self.context_dict[context]:
+             self.context_dict[context].append (item)
+     def print_ly (self, printer):
+-        if self.context_dict.items ():
++        if list(self.context_dict.items ()):
+             printer.dump ('\\layout {')
+             printer.newline ()
+-            for (context, defs) in self.context_dict.items ():
++            for (context, defs) in list(self.context_dict.items ()):
+                 printer.dump ('\\context { \\%s' % context)
+                 printer.newline ()
+                 for d in defs:
+@@ -1077,7 +1075,7 @@
+                        'heavy': "|", 'light-light': "||", 'light-heavy': "|.",
+                        'heavy-light': ".|", 'heavy-heavy': ".|.", 'tick': "'",
+                        'short': "'", 'none': "" }.get (self.type, None)
+-        if bar_symbol <> None:
++        if bar_symbol != None:
+             printer.dump ('\\bar "%s"' % bar_symbol)
+         else:
+             printer.dump ("|")
+@@ -1432,9 +1430,9 @@
+         self.elements = []
+     def ly_expression (self):
+         val = ""
+-        if self.strings <> 6:
++        if self.strings != 6:
+             val += "w:%s;" % self.strings
+-        if self.frets <> 4:
++        if self.frets != 4:
+             val += "h:%s;" % self.frets
+         if self.barre and len (self.barre) >= 3:
+             val += "c:%s-%s-%s;" % (self.barre[0], self.barre[1], self.barre[2]+get_transpose("integer"))
+@@ -2425,14 +2423,14 @@
+     down.normalize ()
+ 
+ 
+-    print bflat.semitones()
+-    print bflat.transposed (fifth), bflat.transposed (fifth).transposed (fifth)
+-    print bflat.transposed (fifth).transposed (fifth).transposed (fifth)
+-
+-    print bflat.semitones(), 'down'RefactoringTool: No changes to ./python/musicxml2ly_conversion.py
+RefactoringTool: Refactored ./python/musicxml.py
+
+-    print bflat.transposed (down)
+-    print bflat.transposed (down).transposed (down)
+-    print bflat.transposed (down).transposed (down).transposed (down)
++    print(bflat.semitones())
++    print(bflat.transposed (fifth), bflat.transposed (fifth).transposed (fifth))
++    print(bflat.transposed (fifth).transposed (fifth).transposed (fifth))
++
++    print(bflat.semitones(), 'down')
++    print(bflat.transposed (down))
++    print(bflat.transposed (down).transposed (down))
++    print(bflat.transposed (down).transposed (down).transposed (down))
+ 
+ 
+ 
+@@ -2514,11 +2512,11 @@
+ 
+     expr = test_expr()
+     expr.set_start (Rational (0))
+-    print expr.ly_expression()
++    print(expr.ly_expression())
+     start = Rational (0, 4)
+     stop = Rational (4, 2)
+     def sub(x, start=start, stop=stop):
+         ok = x.start >= start and x.start + x.get_length() <= stop
+         return ok
+ 
+-    print expr.lisp_sub_expression(sub)
++    print(expr.lisp_sub_expression(sub))
+--- ./python/musicxml.py	(original)
++++ ./python/musicxml.py	(refactored)
+@@ -50,11 +50,11 @@
+ 
+         p = self
+         while p:
+-            ly.progress('  In: <%s %s>\n' %(p._name, ' '.join(['%s=%s' % item for item in p._attribute_dict.items()])))
++            ly.progress('  In: <%s %s>\n' %(p._name, ' '.join(['%s=%s' % item for item in list(p._attribute_dict.items())])))
+             p = p.get_parent()
+ 
+     def dump(self, indent=''):
+-        ly.debug_output('%s<%s%s>' %(indent, self._name, ''.join([' %s=%s' % item for item in self._attribute_dict.items()])))
++        ly.debug_output('%s<%s%s>' %(indent, self._name, ''.join([' %s=%s' % item for item in list(self._attribute_dict.items())])))
+         non_text_children = [c for c in self._children if not isinstance(c, Hash_text)]
+         if non_text_children:
+             ly.debug_output('\n')
+@@ -104,7 +104,7 @@
+ 
+     def get_unique_typed_child(self, klass):
+         cn = self.get_typed_children(klass)
+-        if len(cn) <> 1:
++        if len(cn) != 1:
+             ly.error(self.__dict__)
+             raise 'Child is not unique for',(klass, 'found', cn)
+ 
+@@ -350,7 +350,7 @@
+             words = cred.get_maybe_exist_named_child('credit-words')
+             if((words != None) and hasattr(words, 'font-size')):
+                 sizes.append(getattr(words, 'font-size'))
+-        return map(utilities.string_to_integer, sizes)
++        return list(map(utilities.string_to_integer, sizes))
+ 
+     def get_default_xs(self, credits):
+         default_xs = []
+@@ -358,7 +358,7 @@
+             words = cred.get_maybe_exist_named_child('credit-words')
+             if((words != None) and hasattr(words, 'default-x')):
+                 default_xs.append(getattr(words, 'default-x'))
+-        return map(round, map(float, default_xs))
++        return list(map(round, list(map(float, default_xs))))
+ 
+     def get_default_ys(self, credits):
+         default_ys = []
+@@ -366,7 +366,7 @@
+             words = cred.get_maybe_exist_named_child('credit-words')
+             if((words != None) and hasattr(words, 'default-y')):
+                 default_ys.append(getattr(words, 'default-y'))
+-        return map(round, map(float, default_ys))
++        return list(map(round, list(map(float, default_ys))))
+ 
+     def get_text(self):
+         words = self.get_maybe_exist_named_child('credit-words')
+@@ -392,17 +392,17 @@
+ class Pitch(Music_xml_node):
+ 
+     def get_step(self):
+-        ch = self.get_unique_typed_child(get_class(u'step'))
++        ch = self.get_unique_typed_child(get_class('step'))
+         step = ch.get_text().strip()
+         return step
+ 
+     def get_octave(self):
+-        ch = self.get_unique_typed_child(get_class(u'octave'))
++        ch = self.get_unique_typed_child(get_class('octave'))
+         octave = ch.get_text().strip()
+         return int(octave)
+ 
+     def get_alteration(self):
+-        ch = self.get_maybe_exist_typed_child(get_class(u'alter'))
++        ch = self.get_maybe_exist_typed_child(get_class('alter'))
+         return utilities.interpret_alter_element(ch)
+ 
+     def to_lily_object(self):
+@@ -416,12 +416,12 @@
+ class Unpitched(Music_xml_node):
+ 
+     def get_step(self):
+-        ch = self.get_unique_typed_child(get_class(u'display-step'))
++        ch = self.get_unique_typed_child(get_class('display-step'))
+         step = ch.get_text().strip()
+         return step
+ 
+     def get_octave(self):
+-        ch = self.get_unique_typed_child(get_class(u'display-octave'))
++        ch = self.get_unique_typed_child(get_class('display-octave'))
+ 
+         if ch:
+             octave = ch.get_text().strip()
+@@ -643,7 +643,7 @@
+             b.type = bartype
+             retval[2] = b
+ 
+-        return retval.values()
++        return list(retval.values())
+ 
+ 
+ class Partial(Measure_element):
+@@ -747,7 +747,7 @@
+         self._duration = 1
+ 
+     def is_grace(self):
+-        return self.get_maybe_exist_named_child(u'grace')
++        return self.get_maybe_exist_named_child('grace')
+ 
+     def is_after_grace(self):
+         if not self.is_grace():
+@@ -756,12 +756,12 @@
+         return self._after_grace or hasattr(gr, 'steal-time-previous');
+ 
+     def get_duration_log(self):
+-        ch = self.get_maybe_exist_named_child(u'type')
++        ch = self.get_maybe_exist_named_child('type')
+ 
+         if ch:
+             log = ch.get_text().strip()
+             return utilities.musicxml_duration_to_log(log)
+-        elif self.get_maybe_exist_named_child(u'grace'):
++        elif self.get_maybe_exist_named_child('grace'):
+             # FIXME: is it ok to default to eight note for grace notes?
+             return 3
+         else:
+@@ -779,7 +779,7 @@
+         return 1
+ 
+     def get_pitches(self):
+-        return self.get_typed_children(get_class(u'pitch'))
++        return self.get_typed_children(get_class('pitch'))
+ 
+     def set_notehead_style(self, event):
+         noteheads = self.get_named_children('notehead')
+@@ -938,7 +938,7 @@
+         return hasattr(self, 'implicit') and self.implicit == 'yes'
+ 
+     def get_notes(self):
+-        return self.get_typed_children(get_class(u'note'))
++        return self.get_typed_children(get_class('note'))
+ 
+ 
+ class Syllabic(Music_xml_node):
+@@ -1109,14 +1109,14 @@
+         return self._is_whole_measure
+ 
+     def get_step(self):
+-        ch = self.get_maybe_exist_typed_child(get_class(u'display-step'))
++        ch = self.get_maybe_exist_typed_child(get_class('display-step'))
+         if ch:
+             return ch.get_text().strip()
+         else:
+             return None
+ 
+     def get_octave(self):
+-        ch = self.get_maybe_exist_typed_child(get_class(u'display-octave'))
++        ch = self.get_maybe_exist_typed_child(get_class('display-octave'))
+         if ch:
+             oct = ch.get_text().strip()
+             return int(oct)
+@@ -1145,10 +1145,10 @@
+ class ChordPitch(Music_xml_node):
+ 
+     def step_class_name(self):
+-        return u'root-step'
++        return 'root-step'
+ 
+     def alter_class_name(self):
+-        return u'root-alter'
++        return 'root-alter'
+ 
+     def get_step(self):
+         ch = self.get_unique_typed_child(get_class(self.step_class_name()))
+@@ -1162,27 +1162,27 @@
+ class Bass(ChordPitch):
+ 
+     def step_class_name(self):
+-        return u'bass-step'
++        return 'bass-step'
+ 
+     def alter_class_name(self):
+-        return u'bass-alter'
++        return 'bass-alter'
+ 
+ 
+ class ChordModification(Music_xml_node):
+ 
+     def get_type(self):
+-        ch = self.get_maybe_exist_typed_child(get_class(u'degree-type'))
++        ch = self.get_maybe_exist_typed_child(get_class('degree-type'))
+         return {'add': 1, 'alter': 1, 'subtract':-1}.get(ch.get_text().strip(), 0)
+ 
+     def get_value(self):
+-        ch = self.get_maybe_exist_typed_child(get_class(u'degree-value'))
++        ch = self.get_maybe_exist_typed_child(get_class('degree-value'))
+         value = 0
+         if ch:
+             value = int(ch.get_text().strip())
+         return value
+ 
+     def get_alter(self):
+-        ch = self.get_maybe_exist_typed_child(get_class(u'degree-alter'))
++        ch = self.get_maybe_exist_typed_child(get_class('degree-alter'))
+         return utilities.interpret_alter_element(ch)
+ 
+ 
+@@ -1309,12 +1309,12 @@RefactoringTool: Refactored ./python/rational.py
+
+                 if attributes_object and previous_measure and previous_measure.partial == 0:
+                     length = attributes_object.get_measure_length()
+                     new_now = measure_start_moment + length
+-                    if now <> new_now:
++                    if now != new_now:
+                         problem = 'incomplete'
+                         if now > new_now:
+                             problem = 'overfull'
+                         ## only for verbose operation.
+-                        if problem <> 'incomplete' and previous_measure:
++                        if problem != 'incomplete' and previous_measure:
+                             previous_measure.message('%s measure? Expected: %s, Difference: %s' %(problem, now, new_now - now))
+                     now = new_now
+                 measure_start_moment = now
+@@ -1435,7 +1435,7 @@
+                 if attributes_object and m.is_implicit():
+                     length = attributes_object.get_measure_length()
+                     measure_end = measure_start_moment + length
+-                    if measure_end <> now:
++                    if measure_end != now:
+                         m.partial = now
+             previous_measure = m
+ 
+@@ -1472,14 +1472,14 @@
+         # can be assigned to the correct voices
+         voice_to_staff_dict = {}
+         for n in elements:
+-            voice_id = n.get_maybe_exist_named_child(u'voice')
++            voice_id = n.get_maybe_exist_named_child('voice')
+             vid = None
+             if voice_id:
+                 vid = voice_id.get_text()
+             elif isinstance(n, Note):
+                 # TODO: Check whether we shall really use "None" here, or
+                 #       rather use "1" as the default?
+-                if n.get_maybe_exist_named_child(u'chord'):
++                if n.get_maybe_exist_named_child('chord'):
+                     vid = last_voice
+                 else:
+                     vid = "1"
+@@ -1487,7 +1487,7 @@
+             if(vid != None):
+                 last_voice = vid
+ 
+-            staff_id = n.get_maybe_exist_named_child(u'staff')
++            staff_id = n.get_maybe_exist_named_child('staff')
+             sid = None
+             if staff_id:
+                 sid = staff_id.get_text()
+@@ -1497,10 +1497,10 @@
+                 #       If this is changed, need to change the corresponding
+                 #       check in extract_attributes_for_staff, too.
+                 sid = "None"
+-            if vid and not voices.has_key(vid):
++            if vid and vid not in voices:
+                 voices[vid] = Musicxml_voice()
+             if vid and sid and not n.get_maybe_exist_typed_child(Grace):
+-                if not voice_to_staff_dict.has_key(vid):
++                if vid not in voice_to_staff_dict:
+                     voice_to_staff_dict[vid] = sid
+ 
+         # invert the voice_to_staff_dict into a staff_to_voice_dict(since we
+@@ -1508,8 +1508,8 @@
+         # all the correct voices. This will never work entirely correct due
+         # to staff-switches, but that's the best we can do!
+         staff_to_voice_dict = {}
+-        for(v, s) in voice_to_staff_dict.items():
+-            if not staff_to_voice_dict.has_key(s):
++        for(v, s) in list(voice_to_staff_dict.items()):
++            if s not in staff_to_voice_dict:
+                 staff_to_voice_dict[s] = [v]
+             else:
+                 staff_to_voice_dict[s].append(v)
+@@ -1545,7 +1545,7 @@
+ 
+             if isinstance(n, Attributes):
+                 # assign these only to the voices they really belong to!
+-                for(s, vids) in staff_to_voice_dict.items():
++                for(s, vids) in list(staff_to_voice_dict.items()):
+                     staff_attributes = part.extract_attributes_for_staff(n, s)
+                     if staff_attributes:
+                         for v in vids:
+@@ -1553,7 +1553,7 @@
+                 continue
+ 
+             if isinstance(n, Partial) or isinstance(n, Barline) or isinstance(n, Print):
+-                for v in voices.keys():
++                for v in list(voices.keys()):
+                     voices[v].add_element(n)
+                 continue
+ 
+@@ -1586,7 +1586,7 @@
+         assign_to_next_note = []
+ 
+         if start_attr:
+-            for(s, vids) in staff_to_voice_dict.items():
++            for(s, vids) in list(staff_to_voice_dict.items()):
+                 staff_attributes = part.extract_attributes_for_staff(start_attr, s)
+                 staff_attributes.read_self()
+                 part._staff_attributes_dict[s] = staff_attributes
+@@ -1811,12 +1811,12 @@
+     py_node._name = name
+     py_node._data = node.text
+     py_node._children = [lxml_demarshal_node(cn) for cn in node.getchildren()]
+-    py_node._children = filter(lambda x: x, py_node._children)
++    py_node._children = [x for x in py_node._children if x]
+ 
+     for c in py_node._children:
+         c._parent = py_node
+ 
+-    for(k, v) in node.items():
++    for(k, v) in list(node.items()):
+         py_node.__dict__[k] = v
+         py_node._attribute_dict[k] = v
+ 
+@@ -1833,7 +1833,7 @@
+         c._parent = py_node
+ 
+     if node.attributes:
+-        for(nm, value) in node.attributes.items():
++        for(nm, value) in list(node.attributes.items()):
+             py_node.__dict__[nm] = value
+             py_node._attribute_dict[nm] = value
+ 
+@@ -1850,6 +1850,6 @@
+ 
+     tree = lxml.etree.parse('beethoven.xml')
+     mxl_tree = lxml_demarshal_node(tree.getroot())
+-    ks = class_dict.keys()
++    ks = list(class_dict.keys())
+     ks.sort()
+-    print '\n'.join(ks)
++    print('\n'.join(ks))
+--- ./python/rational.py	(original)
++++ ./python/rational.py	(refactored)
+@@ -1,6 +1,6 @@
+ """Implementation of rational arithmetic."""
+ 
+-from __future__ import division
++
+ 
+ import math as _math
+ 
+@@ -32,9 +32,9 @@
+ 
+     def __init__(self, numerator, denominator=1):
+        """Contructs the Rational object for numerator/denominator."""
+-       if not isinstance(numerator, (int, long)):
++       if not isinstance(numerator, int):
+            raise TypeError('numerator must have integer type')
+-       if not isinstance(denominator, (int, long)):
++       if not isinstance(denominator, int):
+            raise TypeError('denominator must have integer type')
+        if not denominator:
+            raise ZeroDivisionError('rational construction')
+@@ -70,7 +70,7 @@
+         try:
+             return hash(float(self))
+         except OverflowError:
+-            return hash(long(self))
++            return hash(int(self))
+     def __float__(self):
+         return self._n / self._d
+     def __int__(self):
+@@ -79,8 +79,8 @@
+         else:
+             return int(self._n // self._d)
+     def __long__(self):
+-        return long(int(self))
+-    def __nonzero__(self):
++        return int(int(self))
++    def __bool__(self):
+         return bool(self._n)
+     def __pos__(self):
+         return self
+@@ -95,7 +95,7 @@
+         if isinstance(other, Rational):
+             return Rational(self._n * other._d + self._d * other._n,
+                             self._d * other._d)
+-        elif isinstance(other, (int, long)):
++        elif isinstance(other, int):
+             return Rational(self._n + self._d * other, self._d)
+         elif isinstance(other, (float, complex)):
+             return float(self) + other
+@@ -106,14 +106,14 @@
+         if isinstance(other, Rational):
+             return Rational(self._n * other._d - self._d * other._n,
+                             self._d * other._d)
+-        elif isinstance(other, (int, long)):
++        elif isinstance(other, int):
+             return Rational(self._n - self._d * other, self._d)
+         elif isinstance(other, (float, complex)):
+             return float(self) - other
+         else:
+             return NotImplemented
+     def __rsub__(self, other):
+-        if isinstance(other, (int, long)):
++        if isinstance(other, int):
+             return Rational(other * self._d - self._n, self._d)
+         elif isinstance(other, (float, complex)):
+             return other - float(self)
+@@ -122,7 +122,7 @@
+     def __mul__(self, other):
+         if isinstance(other, Rational):
+             return Rational(self._n * other._n, self._d * other._d)RefactoringTool: Refactored ./python/safeeval.py
+RefactoringTool: Refactored ./python/utilities.py
+RefactoringTool: Files that were modified:
+RefactoringTool: ./python/book_base.py
+RefactoringTool: ./python/book_docbook.py
+RefactoringTool: ./python/book_html.py
+RefactoringTool: ./python/book_latex.py
+RefactoringTool: ./python/book_snippets.py
+RefactoringTool: ./python/book_texinfo.py
+RefactoringTool: ./python/convertrules.py
+RefactoringTool: ./python/fontextract.py
+RefactoringTool: ./python/langdefs.py
+RefactoringTool: ./python/lilylib.py
+RefactoringTool: ./python/midi.py
+RefactoringTool: ./python/musicexp.py
+RefactoringTool: ./python/musicxml2ly_conversion.py
+RefactoringTool: ./python/musicxml.py
+RefactoringTool: ./python/rational.py
+RefactoringTool: ./python/safeeval.py
+RefactoringTool: ./python/utilities.py
+RefactoringTool: Warnings/messages while refactoring:
+RefactoringTool: ### In file ./python/book_snippets.py ###
+RefactoringTool: Line 714: You should use a for loop here
+RefactoringTool: Line 705: You should use a for loop here
+RefactoringTool: Line 736: You should use a for loop here
+RefactoringTool: Line 737: You should use a for loop here
+RefactoringTool: ### In file ./python/convertrules.py ###
+RefactoringTool: Line 2260: could not convert: raise 'urg'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: ### In file ./python/musicexp.py ###
+RefactoringTool: Line 78: could not convert: raise 'empty'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: Line 2512: could not convert: raise 'bla'
+RefactoringTool: Python 3 does not support string exceptions
+RefactoringTool: ### In file ./python/musicxml.py ###
+RefactoringTool: Line 109: could not convert: raise 'Child is not unique for',(klass, 'found', cn)
+RefactoringTool: Python 3 does not support string exceptions
+
+-        elif isinstance(other, (int, long)):
++        elif isinstance(other, int):
+             return Rational(self._n * other, self._d)
+         elif isinstance(other, (float, complex)):
+             return float(self) * other
+@@ -132,7 +132,7 @@
+     def __truediv__(self, other):
+         if isinstance(other, Rational):
+             return Rational(self._n * other._d, self._d * other._n)
+-        elif isinstance(other, (int, long)):
++        elif isinstance(other, int):
+             return Rational(self._n, self._d * other)
+         elif isinstance(other, (float, complex)):
+             return float(self) / other
+@@ -140,7 +140,7 @@
+             return NotImplemented
+     __div__ = __truediv__
+     def __rtruediv__(self, other):
+-        if isinstance(other, (int, long)):
++        if isinstance(other, int):
+             return Rational(other * self._d, self._n)
+         elif isinstance(other, (float, complex)):
+             return other / float(self)
+@@ -167,7 +167,7 @@
+         else:
+             return cmp(self - other, 0)
+     def __pow__(self, other):
+-        if isinstance(other, (int, long)):
++        if isinstance(other, int):
+             if other < 0:
+                 return Rational(self._d ** -other, self._n ** -other)
+             else:
+@@ -231,7 +231,7 @@
+     """
+     result = None
+     minError = x
+-    for n in xrange(1, maxDenominator + 1):
++    for n in range(1, maxDenominator + 1):
+         m = int(round(x * n))
+         r = Rational(m, n)
+         error = abs(r - x)
+@@ -244,7 +244,7 @@
+ 
+ def divide(x, y):
+     """Same as x/y, but returns a Rational if both are ints."""
+-    if isinstance(x, (int, long)) and isinstance(y, (int, long)):
++    if isinstance(x, int) and isinstance(y, int):
+         return Rational(x, y)
+     else:
+         return x / y
+--- ./python/safeeval.py	(original)
++++ ./python/safeeval.py	(refactored)
+@@ -58,11 +58,11 @@
+     walker = fail_on_error and SafeEvalWithErrors() or SafeEval()
+     try:
+         ast = compiler.parse(source,"eval")
+-    except SyntaxError, err:
++    except SyntaxError as err:
+         raise
+     try:
+         return walker.visit(ast)
+-    except Unsafe_Source_Error, err:
++    except Unsafe_Source_Error as err:
+         raise
+ 
+ 
+@@ -70,15 +70,15 @@
+     walker = fail_on_error and SafeEvalWithErrors() or SafeEval()
+     try:
+         ast = compiler.parse(source,"eval")
+-    except SyntaxError, err:
++    except SyntaxError as err:
+         raise
+     try:
+         return walker.visit(ast)
+-    except Unsafe_Source_Error, err:
++    except Unsafe_Source_Error as err:
+         raise
+ 
+ def test ():
+-    print safe_eval ('{1: [2,3], "4": (-1,2)}')
++    print(safe_eval ('{1: [2,3], "4": (-1,2)}'))
+     
+ if __name__ == '__main__':
+     test ()
+--- ./python/utilities.py	(original)
++++ ./python/utilities.py	(refactored)
+@@ -17,7 +17,7 @@
+ 
+ def escape_ly_output_string (input_string):
+     return_string = input_string
+-    needs_quotes = not re.match (u"^[a-zA-ZäöüÜÄÖßñ]*$", return_string);
++    needs_quotes = not re.match ("^[a-zA-ZäöüÜÄÖßñ]*$", return_string);
+     if needs_quotes:
+         return_string = "\"" + string.replace (return_string, "\"", "\\\"") + "\""
+     return return_string
+@@ -59,7 +59,7 @@
+         hex_val,
+         re.IGNORECASE)
+     if res:
+-        return map(lambda x: hexcolorval_to_nr (x), res.group (2, 3, 4))
++        return [hexcolorval_to_nr (x) for x in res.group (2, 3, 4)]
+     else:
+         return None
+ 
+*****************************
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: Refactored ./scripts/auxiliar/check_texi_refs.py
+RefactoringTool: Refactored ./scripts/auxiliar/check_translation.py
+RefactoringTool: Refactored ./scripts/auxiliar/coverage.py
+RefactoringTool: Refactored ./scripts/auxiliar/find-superfluous-includes.py
+RefactoringTool: Refactored ./scripts/auxiliar/fixcc.py
+RefactoringTool: Refactored ./scripts/auxiliar/makelsr.py
+--- ./scripts/auxiliar/check_texi_refs.py	(original)
++++ ./scripts/auxiliar/check_texi_refs.py	(refactored)
+@@ -107,7 +107,7 @@
+     def yes_prompt (question, default=False, retries=3):
+         d = {True: 'y', False: 'n'}.get (default, False)
+         while retries:
+-            a = raw_input ('%s [default: %s]' % (question, d) + '\n')
++            a = input ('%s [default: %s]' % (question, d) + '\n')
+             if a.lower ().startswith ('y'):
+                 return True
+             if a.lower ().startswith ('n'):
+@@ -124,7 +124,7 @@
+ otherwise return a list of (manual, node name, file) tuples.
+ 
+ """
+-        substring = raw_input ("Enter a substring to search in node names \
++        substring = input ("Enter a substring to search in node names \
+ (press Enter to skip this x-ref):\n")
+         if not substring:
+             return None
+@@ -209,7 +209,8 @@
+         elif m.group (1) == 'include':
+             try:
+                 p = find_file (m.group (2), dir)
+-            except EnvironmentError, (errno, strerror):
++            except EnvironmentError as xxx_todo_changeme:
++                (errno, strerror) = xxx_todo_changeme.args
+                 if strerror == file_not_found:
+                     continue
+                 else:
+@@ -245,13 +246,15 @@
+     manual = manuals_defs.references_dict.get (name, '')
+     try:
+         f = find_file (name + '.tely')
+-    except EnvironmentError, (errno, strerror):
++    except EnvironmentError as xxx_todo_changeme2:
++        (errno, strerror) = xxx_todo_changeme2.args
+         if not strerror == file_not_found:
+             raise
+         else:
+             try:
+                 f = find_file (name + '.texi')
+-            except EnvironmentError, (errno, strerror):
++            except EnvironmentError as xxx_todo_changeme1:
++                (errno, strerror) = xxx_todo_changeme1.args
+                 if strerror == file_not_found:
+                     sys.stderr.write (name + '.{texi,tely}: ' +
+                                       file_not_found + '\n')
+@@ -267,7 +270,7 @@
+ log.write ("Reading files...\n")
+ 
+ manuals = dict ([read_manual (name)
+-                 for name in manuals_defs.references_dict.keys ()])
++                 for name in list(manuals_defs.references_dict.keys ())])
+ 
+ ref_fixes = set ()
+ bad_refs_count = 0
+@@ -308,7 +311,7 @@
+         value = ''
+         stdout.write (message +
+                       "(press Enter to discard and start a new search)\n")
+-        input = raw_input (numbered_list)
++        input = input (numbered_list)
+         if not input:
+             return ''
+         try:
+@@ -490,7 +493,7 @@
+         if original_display_name:
+             if bad_ref:
+                 stdout.write ("Current display name is `%s'\n")
+-                display_name = raw_input \
++                display_name = input \
+                     ("Enter a new display name or press enter to keep the existing name:\n") \
+                     or display_name
+                 (display_name, n) = preserve_linebreak (display_name, display_linebroken)
+@@ -514,7 +517,7 @@
+ except KeyboardInterrupt:
+     log.write ("Operation interrupted, exiting.\n")
+     sys.exit (2)
+-except InteractionError, instance:
++except InteractionError as instance:
+     log.write ("Operation refused by user: %s\nExiting.\n" % instance)
+     sys.exit (3)
+ 
+--- ./scripts/auxiliar/check_translation.py	(original)
++++ ./scripts/auxiliar/check_translation.py	(refactored)
+@@ -162,7 +162,7 @@
+     current_revision = buildlib.read_pipe (vc_revision_parse % 'HEAD')[0]
+ 
+     for i in files:
+-        do_file (i, langdefs.LANGDICT.keys ())
++        do_file (i, list(langdefs.LANGDICT.keys ()))
+ 
+ if __name__ == '__main__':
+     main ()
+--- ./scripts/auxiliar/coverage.py	(original)
++++ ./scripts/auxiliar/coverage.py	(refactored)
+@@ -30,13 +30,13 @@
+     results.sort ()
+     results.reverse()
+ 
+-    print 'files sorted by number of untested lines (decreasing)'
+-    print
+-    print '%5s (%6s): %s' % ('cov %', 'lines', 'file')
+-    print '----------------------------------------------'
++    print('files sorted by number of untested lines (decreasing)')
++    print()
++    print('%5s (%6s): %s' % ('cov %', 'lines', 'file'))
++    print('----------------------------------------------')
+ 
+     for (pain, d) in results:
+-        print '%(cov)5.2f (%(lines)6d): %(file)s' % d
++        print('%(cov)5.2f (%(lines)6d): %(file)s' % d)
+ 
+ class Chunk:
+     def __init__ (self, range, coverage_count, all_lines, file):
+@@ -61,7 +61,7 @@
+         self.range = (min (self.range[0] -1, 0),
+                       self.range[0] +1)
+     def write (self):
+-        print 'chunk in', self.file
++        print('chunk in', self.file)
+         for (c, n, l) in self.lines ():
+             cov = '%d' % c
+             if c == 0:
+@@ -168,8 +168,8 @@
+ def extract_chunks (file):
+     try:
+         ls = read_gcov (file)
+-    except IOError, s :
+-        print s
++    except IOError as s :
++        print(s)
+         return []
+         
+     cs = []
+--- ./scripts/auxiliar/find-superfluous-includes.py	(original)
++++ ./scripts/auxiliar/find-superfluous-includes.py	(refactored)
+@@ -31,13 +31,13 @@
+ for a in sys.argv:
+     parse_file (a)
+ 
+-print '-*-compilation-*-'
+-for (f, lst) in incs.items ():
++print('-*-compilation-*-')
++for (f, lst) in list(incs.items ()):
+     for (n, inc) in lst:
+         for (n2, inc2) in lst:
+             if has_include (inc2, inc):
+-                print "%s:%d: already have %s from %s" % (full_paths[f], n,
+-                                                          inc, inc2)
++                print("%s:%d: already have %s from %s" % (full_paths[f], n,
++                                                          inc, inc2))
+                 break
+ 
+         
+--- ./scripts/auxiliar/fixcc.py	(original)
++++ ./scripts/auxiliar/fixcc.py	(refactored)
+@@ -202,7 +202,7 @@
+         return self.match.group (s)
+ 
+     def __repr__ (self):
+-        return `self.__class__` + ' type = ' + self.type
++        return repr(self.__class__) + ' type = ' + self.type
+ 
+ class Multiline_comment (Snippet):
+     def __init__ (self, source, match, format):
+@@ -242,8 +242,8 @@
+     ##                      types))
+     ## urg python2.1
+     found = {}
+-    map (lambda x, f = found: f.setdefault (x, None),
+-      types)
++    list(map (lambda x, f = found: f.setdefault (x, None),
++      types))
+ 
+     # We want to search for multiple regexes, without searching
+     # the string multiple times for one regex.
+@@ -265,7 +265,7 @@
+                     continue
+ 
+                 cl = Snippet
+-                if snippet_type_to_class.has_key (type):
++                if type in snippet_type_to_class:
+                     cl = snippet_type_to_class[type]
+                 snip = cl (type, m, format)
+                 start = index + m.start ('match')
+@@ -323,7 +323,7 @@
+     #code = filter (lambda x: is_derived_class (x.__class__, Substring),
+     #               chunks)
+ 
+-    t = string.join (map (lambda x: x.filter_text (), chunks), '')
++    t = string.join ([x.filter_text () for x in chunks], '')
+     fixt = file
+     if s != t:
+         if not outdir:
+@@ -419,10 +419,10 @@
+ def main ():
+     files = do_options ()
+     if not check_astyle_version():
+-        print "Warning: try to use %s." % PREFERRED_ASTYLE_VERSION
+-        print "Please limit use of this version to files with changed code."
++        print("Warning: try to use %s." % PREFERRED_ASTYLE_VERSION)
++        print("Please limit use of this version to files with changed code.")
+         if len(files) > 4:
+-            print "Too many files with this version.  See `astyle --help`"
++            print("Too many files with this version.  See `astyle --help`")
+             sys.exit(1)
+     if outdir and not os.path.isdir (outdir):
+         os.makedirs (outdir)
+--- ./scripts/auxiliar/makelsr.py	(original)
++++ ./scripts/auxiliar/makelsr.py	(refactored)
+@@ -301,10 +301,10 @@
+ ## not recreating all of them from the tarball don't delete
+ ## snippets that came from LSR.
+ if in_dir:
+-    map (os.remove, glob.glob (os.path.join (lys_from_lsr, '*.ly')) +
+-        glob.glob (os.path.join (lys_from_lsr, '*.snippet-list')))
+-else:
+RefactoringTool: Refactored ./scripts/auxiliar/musicxml_generate_intervals.py
+RefactoringTool: Refactored ./scripts/auxiliar/musicxml_generate_keys.py
+RefactoringTool: Refactored ./scripts/auxiliar/musicxml_generate_timesignatures.py
+RefactoringTool: Refactored ./scripts/auxiliar/node-menuify.py
+RefactoringTool: Refactored ./scripts/auxiliar/prepare-web-media.py
+RefactoringTool: Refactored ./scripts/auxiliar/readlink.py
+RefactoringTool: Refactored ./scripts/auxiliar/ref_check.py
+-    map (os.remove, glob.glob (os.path.join (lys_from_lsr, '*.snippet-list')))
++    list(map (os.remove, glob.glob (os.path.join (lys_from_lsr, '*.ly')) +
++        glob.glob (os.path.join (lys_from_lsr, '*.snippet-list'))))
++else:
++    list(map (os.remove, glob.glob (os.path.join (lys_from_lsr, '*.snippet-list'))))
+     for f in glob.glob (os.path.join (lys_from_lsr, '*.ly')):
+         if new_lys_marker in open (f).read ():
+             os.remove (f)
+@@ -317,12 +317,12 @@
+ snippets_new, not_used_list = read_source (new_lys)
+ snippets.update (snippets_new)
+ 
+-for (name, (srcdir, file_tags)) in snippets.items ():
++for (name, (srcdir, file_tags)) in list(snippets.items ()):
+     copy_ly (srcdir, name, file_tags)
+ 
+ not_used_snippets, tag_lists = read_source (lys_from_lsr)
+ 
+-for (tag, file_set) in tag_lists.items ():
++for (tag, file_set) in list(tag_lists.items ()):
+     dump_file_list (os.path.join (lys_from_lsr, tag + '.snippet-list'),
+                     file_set)
+ if unconverted:
+--- ./scripts/auxiliar/musicxml_generate_intervals.py	(original)
++++ ./scripts/auxiliar/musicxml_generate_intervals.py	(refactored)
+@@ -4,13 +4,13 @@
+ alterations = [-1, 0, 1]
+ 
+ def print_note (octave, note, alteration):
+-    print "      <note>\n        <pitch>\n          <step>%s</step>" % notes[note]
+-    if alteration <> 0:
+-        print "          <alter>%s</alter>" % alteration
+-    print "          <octave>%s</octave>\n        </pitch>\n        <duration>1</duration>\n        <voice>1</voice>\n        <type>quarter</type>\n      </note>" % octave
++    print("      <note>\n        <pitch>\n          <step>%s</step>" % notes[note])
++    if alteration != 0:
++        print("          <alter>%s</alter>" % alteration)
++    print("          <octave>%s</octave>\n        </pitch>\n        <duration>1</duration>\n        <voice>1</voice>\n        <type>quarter</type>\n      </note>" % octave)
+ 
+ 
+-print """<?xml version="1.0" encoding="UTF-8"?>
++print("""<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 1.0 Partwise//EN"
+                                 "http://www.musicxml.org/dtds/partwise.dtd">
+ <score-partwise>
+@@ -38,7 +38,7 @@
+           <line>2</line>
+         </clef>
+       </attributes>
+-"""
++""")
+ 
+ start_octave = 5
+ 
+@@ -52,7 +52,7 @@
+ #                 continue
+             print_note (start_octave-(octave-start_octave)-(1-(7-note)/7), (7-note)%7, -alteration)
+ 
+-print """    </measure>
++print("""    </measure>
+   </part>
+ </score-partwise>
+-"""
++""")
+--- ./scripts/auxiliar/musicxml_generate_keys.py	(original)
++++ ./scripts/auxiliar/musicxml_generate_keys.py	(refactored)
+@@ -4,7 +4,7 @@
+ alterations = [-1, 0, 1]
+ 
+ def print_measure (nr, fifth, mode, atts1 = "", atts = "", final = ""):
+-    print """    <measure number="%s">
++    print("""    <measure number="%s">
+       <attributes>
+ %s        <key>
+           <fifths>%s</fifths>
+@@ -20,7 +20,7 @@
+         <voice>1</voice>
+         <type>half</type>
+       </note>
+-%s    </measure>""" % (nr, atts1, fifth, mode, atts, final)
++%s    </measure>""" % (nr, atts1, fifth, mode, atts, final))
+ 
+ first_div = """        <divisions>1</divisions>
+ """
+@@ -39,7 +39,7 @@
+       </barline>
+ """
+ 
+-print """<?xml version="1.0" encoding="UTF-8"?>
++print("""<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 1.0 Partwise//EN"
+                                 "http://www.musicxml.org/dtds/partwise.dtd">
+ <score-partwise>
+@@ -57,7 +57,7 @@
+     </score-part>
+   </part-list>
+   <!--=========================================================-->
+-  <part id="P1">"""
++  <part id="P1">""")
+ 
+ max_range = 11
+ measure = 0
+@@ -74,5 +74,5 @@
+         print_measure (measure, fifth, "minor")
+     
+ 
+-print """  </part>
+-</score-partwise>"""
++print("""  </part>
++</score-partwise>""")
+--- ./scripts/auxiliar/musicxml_generate_timesignatures.py	(original)
++++ ./scripts/auxiliar/musicxml_generate_timesignatures.py	(refactored)
+@@ -56,7 +56,7 @@
+     duration = 8*beats/type
+     note = generate_note (duration)
+ 
+-    print """    <measure number="%s">
++    print("""    <measure number="%s">
+       <attributes>
+ %s        <time%s>
+           <beats>%s</beats>
+@@ -64,7 +64,7 @@
+         </time>
+ %s      </attributes>
+ %s
+-%s    </measure>""" % (nr, attr, params, beats, type, attr2, note, barline)
++%s    </measure>""" % (nr, attr, params, beats, type, attr2, note, barline))
+ 
+ first_key = """        <divisions>2</divisions>
+         <key>
+@@ -83,7 +83,7 @@
+       </barline>
+ """
+ 
+-print """<?xml version="1.0" encoding="UTF-8"?>
++print("""<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 1.0 Partwise//EN"
+                                 "http://www.musicxml.org/dtds/partwise.dtd">
+ <score-partwise>
+@@ -100,7 +100,7 @@
+     </score-part>
+   </part-list>
+   <!--=========================================================-->
+-  <part id="P1">"""
++  <part id="P1">""")
+ 
+ measure = 1
+ 
+@@ -137,5 +137,5 @@
+ print_measure (measure, 12, 8, "", "", "", final_barline)
+ measure += 1
+ 
+-print """  </part>
+-</score-partwise>"""
++print("""  </part>
++</score-partwise>""")
+--- ./scripts/auxiliar/node-menuify.py	(original)
++++ ./scripts/auxiliar/node-menuify.py	(refactored)
+@@ -5,7 +5,7 @@
+     infile = sys.argv[1]
+     lines = open(infile).readlines()
+ except:
+-    print "ERROR: need a filename"
++    print("ERROR: need a filename")
+     sys.exit(1)
+ 
+ nodes = []
+@@ -34,8 +34,8 @@
+               section_line.startswith('@appendixsubsubsec ')):
+             section_type = 4
+         else:
+-            print "ERROR: unknown sectioning command"
+-            print section_line
++            print("ERROR: unknown sectioning command")
++            print(section_line)
+             sys.exit(1)
+         nodes.append( (section_type, node_name) )
+ 
+--- ./scripts/auxiliar/prepare-web-media.py	(original)
++++ ./scripts/auxiliar/prepare-web-media.py	(refactored)
+@@ -9,9 +9,9 @@
+     lilypond_git_dir = os.environ["LILYPOND_GIT"]
+     lilypond_web_media_dir = os.environ["LILYPOND_WEB_MEDIA_GIT"]
+ except KeyError:
+-    print "Error: you must have these environment variables defined:"
+-    print "  $LILYPOND_GIT"
+-    print "  $LILYPOND_WEB_MEDIA_GIT"
++    print("Error: you must have these environment variables defined:")
++    print("  $LILYPOND_GIT")
++    print("  $LILYPOND_WEB_MEDIA_GIT")
+     sys.exit(1)
+ 
+ build_dir = os.path.join(lilypond_git_dir, 'build')
+@@ -24,7 +24,7 @@
+             glob.glob(os.path.join(examine_dirname, "*.png")) +
+             glob.glob(os.path.join(examine_dirname, "*.jpg")))
+     except:
+-        print "Cannot find files (maybe a problem with your build directory?)"
++        print("Cannot find files (maybe a problem with your build directory?)")
+     return filenames
+ 
+ pictures_filenames = get_pictures_from("pictures")
+@@ -37,6 +37,6 @@
+ for filename in ly_examples_filenames:
+     shutil.copy(filename, ly_examples_dest)
+ 
+-print "Finished copying."
+-print "Don't forget to git commit and push to the lilypond-web-media repository!"
++print("Finished copying.")
++print("Don't forget to git commit and push to the lilypond-web-media repository!")
+ 
+--- ./scripts/auxiliar/readlink.py	(original)
++++ ./scripts/auxiliar/readlink.py	(refactored)
+@@ -3,4 +3,4 @@
+ import sys
+ 
+ for i in sys.argv[1:]:
+-    print os.path.realpath (i)
++    print(os.path.realpath (i))
+--- ./scripts/auxiliar/ref_check.py	(original)
++++ ./scripts/auxiliar/ref_check.py	(refactored)
+@@ -38,7 +38,7 @@
+     self.Manuals[refManual] = manualName
+ 
+   def getRefManuals(self):
+-    return self.Manuals.keys()
++    return list(self.Manuals.keys())
+ 
+   def getManualName(self, refManual):
+     return self.Manuals[refManual]
+@@ -48,9 +48,9 @@
+ #    print "Node: ", nodeName, " in ", manualName, " found in ", fileName
+     if "\\" in nodeName:
+       returnCode = 1
+-      print "nodeName: ", nodeName, " in ", fileName, " contains backslash"
+-    if manualName+"/"+nodeName in self.Nodes.keys():
+-      print "Error: Duplicate nodename ",nodeName, " in ", fileName, " and ", self.Nodes[manualName+"/"+nodeName][1]
++      print("nodeName: ", nodeName, " in ", fileName, " contains backslash")RefactoringTool: Refactored ./scripts/auxiliar/show_skyline_command.py
+RefactoringTool: Refactored ./scripts/auxiliar/skyline_viewer.py
+RefactoringTool: Refactored ./scripts/auxiliar/split-texidocs.py
+RefactoringTool: No changes to ./scripts/auxiliar/strip-whitespace.py
+RefactoringTool: Refactored ./scripts/auxiliar/tely-gettext.py
+RefactoringTool: Refactored ./scripts/auxiliar/texi-langutils.py
+RefactoringTool: No changes to ./scripts/auxiliar/texi-skeleton-update.py
+RefactoringTool: Refactored ./scripts/auxiliar/translations-status.py
+
++    if manualName+"/"+nodeName in list(self.Nodes.keys()):
++      print("Error: Duplicate nodename ",nodeName, " in ", fileName, " and ", self.Nodes[manualName+"/"+nodeName][1])
+       returnCode=1
+     self.Nodes[manualName + "/" + nodeName] = [manualName, fileName]
+     self.nodeNames[nodeName] = fileName
+@@ -59,7 +59,7 @@
+     global returnCode
+     if "\\" in toHeading:
+       returnCode = 1
+-      print "ref to: ", toHeading, " in ", inFileName, " contains backslash"
++      print("ref to: ", toHeading, " in ", inFileName, " contains backslash")
+ #    if inFileName == "notation/vocal.itely":
+ #      print "Ref to ", toManualName, "/",toHeading, " found in ", inFileName
+     self.Refs.append([toManualName + "/" + toHeading, inFileName])
+@@ -73,9 +73,9 @@
+ #          print "ref to: ", refHeading, " in ", refFileName, " found in ", targetFileName
+       except KeyError:
+         noErrors = False
+-        print "ref to: ", refHeading, " in ", refFileName, " not found"
++        print("ref to: ", refHeading, " in ", refFileName, " not found")
+     if noErrors:
+-      print " All references satisfied"
++      print(" All references satisfied")
+     else:
+       returnCode=1
+ 
+@@ -104,7 +104,7 @@
+     try:
+       myfile = open(self.fullFileName, 'r')
+     except IOError:
+-      print "File ", self.fullFileName, " referenced in ", File.CurrentManualName, " but not found"
++      print("File ", self.fullFileName, " referenced in ", File.CurrentManualName, " but not found")
+       return
+     remainderLine = ""
+     lineNo = 0
+@@ -165,7 +165,7 @@
+             if refStart >= 0:
+               refFound = True
+               if actualToManualName == File.CurrentManualName:
+-                print "Warning: should xref be internal around line ", lineNo, " in ", self.fileName, "?"
++                print("Warning: should xref be internal around line ", lineNo, " in ", self.fileName, "?")
+               twoLines = twoLines[refStart:]
+               refNodeStart = twoLines.find("{") + 1
+               # TODO Need to check here for nested {}
+@@ -186,10 +186,10 @@
+     return
+ 
+ topFile = File("scripts/auxiliar/ref_check.tely") # TODO get from input params
+-print "RefCheck ver 0.1"
++print("RefCheck ver 0.1")
+ returnCode=0
+ crossRefs = CrossRefs()
+ topFile.read(crossRefs)
+ crossRefs.check()
+ if returnCode > 0:
+-  print "Errors found: status code: ",returnCode
++  print("Errors found: status code: ",returnCode)
+--- ./scripts/auxiliar/show_skyline_command.py	(original)
++++ ./scripts/auxiliar/show_skyline_command.py	(refactored)
+@@ -41,7 +41,7 @@
+         # anything fancier here.
+         field = typ.fields()[0]
+         if not field.is_base_class:
+-            raise ValueError, "Cannot find type %s::%s" % (str(orig), name)
++            raise ValueError("Cannot find type %s::%s" % (str(orig), name))
+         typ = field.type
+ 
+ # Class adapted from GCC
+@@ -58,7 +58,7 @@
+     def __iter__ (self):
+         return self
+ 
+-    def next (self):
++    def __next__ (self):
+         if self.base == self.head:
+                 raise StopIteration
+         elt = self.base.cast (self.nodetype).dereference ()
+@@ -83,7 +83,7 @@
+             return None
+         return (x1, y_intercept + slope * x1, x2, y_intercept + slope * x2)
+ 
+-    ret = map (bld_to_line, buildings)
++    ret = list(map (bld_to_line, buildings))
+     return [r for r in ret if r is not None]
+ 
+ viewer = Popen(SKYLINE_VIEWER, stdin=PIPE)
+--- ./scripts/auxiliar/skyline_viewer.py	(original)
++++ ./scripts/auxiliar/skyline_viewer.py	(refactored)
+@@ -154,6 +154,6 @@
+     if m is None:
+         print('line did not match')
+     else:
+-        pts = map(float, m.groups())
++        pts = list(map(float, m.groups()))
+         if not any(map(isinf, pts)):
+             current_skyline.append(pts)
+--- ./scripts/auxiliar/split-texidocs.py	(original)
++++ ./scripts/auxiliar/split-texidocs.py	(refactored)
+@@ -16,5 +16,5 @@
+     contents = open (file_name).read ()
+     for match in texidoc_chunk_re.finditer (contents):
+         language_code = match.group (1)
+-        print language_code
++        print(language_code)
+         open (dest_path % (language_code, base_name), 'w').write (match.group (0))
+--- ./scripts/auxiliar/tely-gettext.py	(original)
++++ ./scripts/auxiliar/tely-gettext.py	(refactored)
+@@ -6,7 +6,7 @@
+ 
+ # USAGE:  tely-gettext.py LANG FILES
+ 
+-print "tely-gettext.py"
++print("tely-gettext.py")
+ 
+ import sys
+ import re
+@@ -45,7 +45,7 @@
+     return '* ' + _doc (m.group (1)) + '::'
+ 
+ def process_file (filename, master_file_dir='.', included=False):
+-    print "Processing %s" % filename
++    print("Processing %s" % filename)
+     f = open (filename, 'r')
+     page = f.read ()
+     f.close()
+--- ./scripts/auxiliar/texi-langutils.py	(original)
++++ ./scripts/auxiliar/texi-langutils.py	(refactored)
+@@ -11,11 +11,11 @@
+ import langdefs
+ 
+ def read_pipe (command):
+-    print command
++    print(command)
+     pipe = os.popen (command)
+     output = pipe.read ()
+     if pipe.close ():
+-        print "pipe failed: %(command)s" % locals ()
++        print("pipe failed: %(command)s" % locals ())
+     return output
+ 
+ 
+@@ -50,7 +50,7 @@
+     if x[0] == '-o': # -o NAME   set PO output file name to NAME
+         output_name = x[1]
+     elif x[0] == '-d': # -d DIR    set working directory to DIR
+-        print 'FIXME: this is evil.  use cd DIR && texi-langutils ...'
++        print('FIXME: this is evil.  use cd DIR && texi-langutils ...')
+         # even better, add a sane -o option
+         os.chdir (x[1])
+     elif x[0] == '-b': # -b BLURB  set blurb written at each node to BLURB
+@@ -162,7 +162,8 @@
+             for item in includes:
+                 process_texi (os.path.join (dir, item.strip ()), i_blurb, n_blurb,
+                               write_skeleton, topfile, output_file, scan_ly, inclusion_level + 1)
+-    except IOError, (errno, strerror):
++    except IOError as xxx_todo_changeme:
++        (errno, strerror) = xxx_todo_changeme.args
+         sys.stderr.write ("I/O error(%s): %s: %s\n" % (errno, texifilename, strerror))
+ 
+ 
+--- ./scripts/auxiliar/translations-status.py	(original)
++++ ./scripts/auxiliar/translations-status.py	(refactored)
+@@ -33,6 +33,7 @@
+ #
+ import langdefs
+ import buildlib
++from functools import reduce
+ 
+ def progress (str):
+     sys.stderr.write (str + '\n')
+@@ -125,7 +126,8 @@
+             return ''
+         return '.'.join ([str (i[0]) for i in self.__data if i[1] != 'u']) + ' '
+ 
+-    def increase (self, (type, level)):
++    def increase (self, xxx_todo_changeme):
++        (type, level) = xxx_todo_changeme
+         if level == 0:
+             self.__data = [[0,'u']]
+         while level + 1 < len (self.__data):
+@@ -345,10 +347,10 @@
+         if not self.language and parent_translation:
+             self.language = parent_translation.__dict__.get ('language', '')
+         if self.language == 'en':
+-            print filename + ': language en specified: set @documentlanguage', self.filename[:2]
++            print(filename + ': language en specified: set @documentlanguage', self.filename[:2])
+             self.language = ''
+         if not self.language and filename[2] == '/':
+-            print filename + ': no language specified: add @documentlanguage', self.filename[:2]
++            print(filename + ': no language specified: add @documentlanguage', self.filename[:2])
+             self.language = filename[:2]
+         if self.language:
+             self.translation = translation[self.language]
+@@ -365,7 +367,7 @@
+             self.translators = [n.strip () for n in
+                                 reduce (operator.add, [n.split (',') for n in m])]
+         if self.language != self.filename[:2]:
+-            print 'Barf:', self.filename
++            print('Barf:', self.filename)
+             barf
+         if (not isinstance (self, UntranslatedTelyDocument)
+             and (not self.translators or not self.translators[0])
+@@ -584,7 +586,7 @@
+         self.translations = {}
+         self.includes = []
+         if not self.language or self.language == 'en':
+-            languages = [x for x in parent_translations.keys () if x != 'en']
++            languages = [x for x in list(parent_translations.keys ()) if x != 'en']RefactoringTool: Refactored ./scripts/auxiliar/update-snippets.py
+RefactoringTool: Files that were modified:
+RefactoringTool: ./scripts/auxiliar/check_texi_refs.py
+RefactoringTool: ./scripts/auxiliar/check_translation.py
+RefactoringTool: ./scripts/auxiliar/coverage.py
+RefactoringTool: ./scripts/auxiliar/find-superfluous-includes.py
+RefactoringTool: ./scripts/auxiliar/fixcc.py
+RefactoringTool: ./scripts/auxiliar/makelsr.py
+RefactoringTool: ./scripts/auxiliar/musicxml_generate_intervals.py
+RefactoringTool: ./scripts/auxiliar/musicxml_generate_keys.py
+RefactoringTool: ./scripts/auxiliar/musicxml_generate_timesignatures.py
+RefactoringTool: ./scripts/auxiliar/node-menuify.py
+RefactoringTool: ./scripts/auxiliar/prepare-web-media.py
+RefactoringTool: ./scripts/auxiliar/readlink.py
+RefactoringTool: ./scripts/auxiliar/ref_check.py
+RefactoringTool: ./scripts/auxiliar/show_skyline_command.py
+RefactoringTool: ./scripts/auxiliar/skyline_viewer.py
+RefactoringTool: ./scripts/auxiliar/split-texidocs.py
+RefactoringTool: ./scripts/auxiliar/strip-whitespace.py
+RefactoringTool: ./scripts/auxiliar/tely-gettext.py
+RefactoringTool: ./scripts/auxiliar/texi-langutils.py
+RefactoringTool: ./scripts/auxiliar/texi-skeleton-update.py
+RefactoringTool: ./scripts/auxiliar/translations-status.py
+RefactoringTool: ./scripts/auxiliar/update-snippets.py
+RefactoringTool: Warnings/messages while refactoring:
+RefactoringTool: ### In file ./scripts/auxiliar/fixcc.py ###
+RefactoringTool: Line 245: You should use a for loop here
+RefactoringTool: ### In file ./scripts/auxiliar/makelsr.py ###
+RefactoringTool: Line 304: You should use a for loop here
+RefactoringTool: Line 307: You should use a for loop here
+RefactoringTool: ### In file ./scripts/auxiliar/update-snippets.py ###
+RefactoringTool: Line 80: could not convert: raise "AAAAARGH: unuseful empty string"
+RefactoringTool: Python 3 does not support string exceptions
+
+             self.translations = dict ([x for x in
+                                        [(lang, self.translated_factory (os.path.join (lang, self.filename),
+                                                                         parent_translations.get (lang)))
+--- ./scripts/auxiliar/update-snippets.py	(original)
++++ ./scripts/auxiliar/update-snippets.py	(refactored)
+@@ -19,8 +19,9 @@
+ import os
+ import glob
+ import re
++from functools import reduce
+ 
+-print "update-snippets.py"
++print("update-snippets.py")
+ 
+ comment_re = re.compile (r'(?<!@)(@c(?:omment)? .*?\n|^@ignore\n.*?\n@end ignore\n)', re.M | re.S)
+ snippet_re = re.compile (r'^(@lilypond(?:file)?(?:\[.*?\])?\s*\{.+?\}|@lilypond(?:\[.*?\])?(?:.|\n)+?@end lilypond)', re.M)
+*****************************
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: Can't open ./scripts/build/.py: [Errno 2] No such file or directory: './scripts/build/.py'
+RefactoringTool: No files need to be modified.
+RefactoringTool: There was 1 error:
+RefactoringTool: Can't open ./scripts/build/.py: [Errno 2] No such file or directory: './scripts/build/.py'
+*****************************
+RefactoringTool: Skipping optional fixer: buffer
+RefactoringTool: Skipping optional fixer: idioms
+RefactoringTool: Skipping optional fixer: set_literal
+RefactoringTool: Skipping optional fixer: ws_comma
+RefactoringTool: Refactored ./scripts/abc2ly.py
+RefactoringTool: Refactored ./scripts/convert-ly.py
+RefactoringTool: Refactored ./scripts/etf2ly.py
+--- ./scripts/abc2ly.py	(original)
++++ ./scripts/abc2ly.py	(refactored)
+@@ -182,7 +182,7 @@
+     return s
+ 
+ def select_voice (name, rol):
+-    if not voice_idx_dict.has_key (name):
++    if name not in voice_idx_dict:
+         state_list.append(Parser_state())
+         voices.append ('')
+         slyrics.append ([])
+@@ -213,7 +213,7 @@
+ 
+ def dump_header (outf,hdr):
+     outf.write ('\\header {\n')
+-    ks = hdr.keys ()
++    ks = list(hdr.keys ())
+     ks.sort ()
+     for k in ks:
+         hdr[k] = re.sub('"', '\\"', hdr[k])
+@@ -237,7 +237,7 @@
+ 
+ 
+ def dump_slyrics (outf):
+-    ks = voice_idx_dict.keys()
++    ks = list(voice_idx_dict.keys())
+     ks.sort ()
+     for k in ks:
+         if re.match('[1-9]', k):
+@@ -252,7 +252,7 @@
+ 
+ def dump_voices (outf):
+     global doing_alternative, in_repeat
+-    ks = voice_idx_dict.keys()
++    ks = list(voice_idx_dict.keys())
+     ks.sort ()
+     for k in ks:
+         if re.match ('[1-9]', k):
+@@ -301,7 +301,7 @@
+     <<
+ """)
+ 
+-    ks = voice_idx_dict.keys ();
++    ks = list(voice_idx_dict.keys ());
+     ks.sort ()
+     for k in  ks:
+         if re.match('[1-9]', k):
+@@ -459,7 +459,7 @@
+         return '%s \\major' % key
+ 
+     type = k[0:3]
+-    if not key_lookup.has_key (type):
++    if type not in key_lookup:
+         #ugh, use lilylib, say WARNING:FILE:LINE:
+         sys.stderr.write ("abc2ly:warning:")
+         sys.stderr.write ("ignoring unknown key: `%s'" % orig)
+@@ -515,7 +515,7 @@
+         intkeyacc = 1
+         k = k[1:]
+     k = k[0:3]
+-    if k and key_shift.has_key(k):
++    if k and k in key_shift:
+         (intkey, intkeyacc) = shift_key(intkey, intkeyacc, key_shift[k])
+     keytup = (intkey, intkeyacc)
+ 
+@@ -527,12 +527,12 @@
+     if keytup in sharp_key_seq:
+         accsign = 1
+         key_count = sharp_key_seq.index (keytup)
+-        accseq = map (lambda x: (4*x -1 ) % 7, range (1, key_count + 1))
++        accseq = [(4*x -1 ) % 7 for x in range (1, key_count + 1)]
+ 
+     elif keytup in flat_key_seq:
+         accsign = -1
+         key_count = flat_key_seq.index (keytup)
+-        accseq = map (lambda x: (3*x + 3 ) % 7, range (1, key_count + 1))
++        accseq = [(3*x + 3 ) % 7 for x in range (1, key_count + 1)]
+     else:
+         error ("Huh?")
+         raise Exception ("Huh")
+@@ -573,7 +573,7 @@
+ 
+ def header_append (key, a):
+     s = ''
+-    if header.has_key (key):
++    if key in header:
+         s = header[key] + "\n"
+         header [key] = s + a
+ 
+@@ -673,7 +673,7 @@
+         a = m.group (2)
+         if g == 'T':        #title
+             a = re.sub('[ \t]*$','', a)        #strip trailing blanks
+-            if header.has_key('title'):
++            if 'title' in header:
+                 if a:
+                     if len(header['title']):
+                         # the non-ascii character
+@@ -711,7 +711,7 @@
+                     # between the key letter and the mode
+                     # convert the mode to lower-case before comparing
+                     mode = m.group(2)[0:3].lower();
+-                    if key_lookup.has_key(mode):
++                    if mode in key_lookup:
+                         # use the full mode, not only the first three letters
+                         key_info = m.group(1) + m.group(2).lower()
+                         clef_info = a[m.start(4):]
+@@ -741,7 +741,7 @@
+         if g == 'B':        # Book
+             header ['book'] = a
+         if g == 'C':        # Composer
+-            if header.has_key('composer'):
++            if 'composer' in header:
+                 if a:
+                     header['composer'] = header['composer'] + '\\\\\\\\' + a
+             else:
+@@ -894,7 +894,7 @@
+ 
+ 
+ def try_parse_rest (str, parser_state):
+-    if not str or str[0] <> 'z' and str[0] <> 'x':
++    if not str or str[0] != 'z' and str[0] != 'x':
+         return str
+ 
+     __main__.lyric_idx = -1
+@@ -934,7 +934,7 @@
+ }
+ 
+ def try_parse_articulation (str, state):
+-    while str and  artic_tbl.has_key(str[:1]):
++    while str and  str[:1] in artic_tbl:
+         state.next_articulation = state.next_articulation + artic_tbl[str[:1]]
+         if not artic_tbl[str[:1]]:
+             sys.stderr.write("Warning: ignoring `%s'\n" % str[:1] )
+@@ -967,7 +967,7 @@
+ # get accidental set in this bar or UNDEF if not set
+ def get_bar_acc(note, octave, state):
+     n_oct = note + octave * 7
+-    if state.in_acc.has_key(n_oct):
++    if n_oct in state.in_acc:
+         return(state.in_acc[n_oct])
+     else:
+         return(UNDEF)
+@@ -1166,7 +1166,7 @@
+         select_voice ('default', '')
+     # first try the longer one
+     for trylen in [3,2,1]:
+-        if str[:trylen] and bar_dict.has_key (str[:trylen]):
++        if str[:trylen] and str[:trylen] in bar_dict:
+             s = str[:trylen]
+             if using_old:
+                 bs = "\\bar \"%s\"" % old_bar_dict[s]
+@@ -1210,12 +1210,12 @@
+     if str[:1] == '}':
+         close_beam_state(state)
+ 
+-    if bs <> None or state.next_bar != '':
++    if bs != None or state.next_bar != '':
+         if state.parsing_tuplet:
+             state.parsing_tuplet =0
+             voices_append ('} ')
+ 
+-    if bs <> None:
++    if bs != None:
+         clear_bar_acc(state)
+         close_beam_state(state)
+         voices_append (bs)
+@@ -1325,7 +1325,7 @@
+ def parse_file (fn):
+     f = open (fn)
+     ls = f.readlines ()
+-    ls = map (lambda x: re.sub ("\r$", '', x), ls)
++    ls = [re.sub ("\r$", '', x) for x in ls]
+ 
+     select_voice('default', '')
+     global lineno
+@@ -1387,7 +1387,7 @@
+ """
+ 
+ def print_version ():
+-    print r"""abc2ly (GNU lilypond) %s""" % version
++    print(r"""abc2ly (GNU lilypond) %s""" % version)
+ 
+ def get_option_parser ():
+     p = ly.get_option_parser (usage=_ ("%s [OPTION]... FILE") % 'abc2ly',
+--- ./scripts/convert-ly.py	(original)
++++ ./scripts/convert-ly.py	(refactored)
+@@ -174,7 +174,7 @@
+ def get_conversions (from_version, to_version):
+     def is_applicable (v, f = from_version, t = to_version):
+         return version_cmp (v[0], f) > 0 and version_cmp (v[0], t) <= 0
+-    return filter (is_applicable, convertrules.conversions)
++    return list(filter (is_applicable, convertrules.conversions))
+ 
+ def latest_version ():
+     return convertrules.conversions[-1][0]
+@@ -252,7 +252,7 @@
+     return back_up
+ 
+ def do_one_file (infile_name):
+-    ly.progress (_ (u"Processing `%s\'... ") % infile_name, True)
++    ly.progress (_ ("Processing `%s\'... ") % infile_name, True)
+ 
+     if infile_name:
+         infile = open (infile_name, 'r')
+@@ -362,19 +362,19 @@
+         if f == '-':
+             f = ''
+         elif not os.path.isfile (f):
+-            ly.error (_ (u"%s: Unable to open file") % f)
++            ly.error (_ ("%s: Unable to open file") % f)
+             errors += 1
+             continue
+         try:
+             errors += do_one_file (f)
+         except UnknownVersion:
+-            ly.error (_ (u"%s: Unable to determine version.  Skipping") % f)
++            ly.error (_ ("%s: Unable to determine version.  Skipping") % f)
+             errors += 1
+         except InvalidVersion:
+             # Compat code for 2.x and 3.0 syntax ("except .. as v" doesn't 
+             # work in python 2.4!):
+             t, v, b = sys.exc_info ()
+-            ly.error (_ (u"%s: Invalid version string `%s' \n"
++            ly.error (_ ("%s: Invalid version string `%s' \n"
+                          "Valid version strings consist of three numbers, "
+                          "separated by dots, e.g. `2.8.12'") % (f, v.version) )
+             errors += 1
+--- ./scripts/etf2ly.py	(original)
++++ ./scripts/etf2ly.py	(refactored)
+@@ -134,17 +134,17 @@
+ 
+ # should cache this.
+ def find_scale (keysig):
+-    cscale = map (lambda x: (x,0), range (0,7))
++    cscale = [(x,0) for x in range (0,7)]
+ #        print "cscale: ", cscale
+-    ascale = map (lambda x: (x,0), range (-2,5))
++    ascale = [(x,0) for x in range (-2,5)]
+ #        print "ascale: ", ascale
+     transposition = keysig.pitch
+     if keysig.sig_type == 1:
+         transposition = transpose(transposition, (2, -1))
+         transposition = (transposition[0] % 7, transposition[1])
+-        trscale = map(lambda x, k=transposition: transpose(x, k), ascale)
++        trscale = list(map(lambda x, k=transposition: transpose(x, k), ascale))RefactoringTool: Refactored ./scripts/lilymidi.py
+RefactoringTool: Refactored ./scripts/lilypond-book.py
+
+     else:
+-        trscale = map(lambda x, k=transposition: transpose(x, k), cscale)
++        trscale = list(map(lambda x, k=transposition: transpose(x, k), cscale))
+ #        print "trscale: ", trscale
+     return trscale
+ 
+@@ -172,9 +172,9 @@
+         d = d >> 1
+ 
+     str = 's%d' % basedur
+-    if n <> 1:
++    if n != 1:
+         str = str + '*%d' % n
+-    if d <> 1:
++    if d != 1:
+         str = str + '/%d' % d
+ 
+     return str
+@@ -262,7 +262,7 @@
+                 edu_left = edu_left - c.EDU_duration ()
+             if edu_left == 0:
+                 c.chord_suffix = c.chord_suffix+ self.dump_end ()
+-            c = c.next
++            c = c.__next__
+ 
+         if edu_left:
+             sys.stderr.write ("\nHuh? Tuplet starting at entry %d was too short." % self.start_note)
+@@ -304,7 +304,7 @@
+         self.finale = []
+ 
+     def __str__ (self):
+-        return `self.finale `
++        return repr(self.finale)
+     
+     def set_timesig (self, finale):
+         (beats, fdur) = finale
+@@ -315,7 +315,7 @@
+             log = log * 2
+             dots = 0
+ 
+-        if dots <> 0:
++        if dots != 0:
+             sys.stderr.write ("\nHuh? Beat duration has  dots? (EDU Duration = %d)" % fdur) 
+         self.timesig = (beats, log)
+ 
+@@ -571,7 +571,7 @@
+                                  g.key_signature.signature_type())
+                     
+                     last_key = g.key_signature
+-                if last_time <> g.timesig :
++                if last_time != g.timesig :
+                     e = e + "\\time %d/%d " % g.timesig
+                     last_time = g.timesig
+ 
+@@ -596,11 +596,11 @@
+                 if g.force_break:
+                     e = e + ' \\break '  
+             
+-            if last_clef <> m.clef :
++            if last_clef != m.clef :
+                 e = e + '\\clef "%s"' % lily_clef (m.clef)
+                 last_clef = m.clef
+             if e:
+-                if gap <> (0,1):
++                if gap != (0,1):
+                     k = k +' ' + rational_to_lily_skip (gap) + '\n'
+                 gap = (0,1)
+                 k = k + e
+@@ -636,7 +636,7 @@
+                     laystr = laystr + "%% non existent frame %d (skipped)\n" % x
+                 if fr:
+                     first_frame = fr
+-                    if gap <> (0,1):
++                    if gap != (0,1):
+                         laystr = laystr +'} %s {\n ' % rational_to_lily_skip (gap)
+                         gap = (0,1)
+                     laystr = laystr + fr.dump ()
+@@ -754,9 +754,9 @@
+         if tiestart :
+             self.chord_suffix = self.chord_suffix + ' ~ '
+         
+-    REST_MASK = 0x40000000L
+-    TIE_START_MASK = 0x40000000L
+-    GRACE_MASK = 0x00800000L
++    REST_MASK = 0x40000000
++    TIE_START_MASK = 0x40000000
++    GRACE_MASK = 0x00800000
+     
+     def ly_string (self):
+         s = ''
+@@ -828,11 +828,11 @@
+             str = str[1:]
+ 
+         
+-        return (long (hex, 16), str)
++        return (int (hex, 16), str)
+     elif str[0] == '"':
+         str = str[1:]
+         s = ''
+-        while str and str[0] <> '"':
++        while str and str[0] != '"':
+             s = s + str[0]
+             str = str[1:]
+ 
+@@ -874,7 +874,7 @@
+ 
+     for l in  ls:
+         m = re.match ('^([a-zA-Z0-9&]+)\(([^)]+)\)', l)
+-        if m and tag_dict.has_key (m.group (1)):
++        if m and m.group (1) in tag_dict:
+             tag = m.group (1)
+ 
+             indices = tuple ([int (s) for s in m.group (2).split (',')])
+@@ -882,7 +882,7 @@
+ 
+ 
+             tdict = etf_file_dict[tag]
+-            if not tdict.has_key (indices):
++            if indices not in tdict:
+                 tdict[indices] = []
+ 
+ 
+@@ -895,7 +895,7 @@
+             else:
+                 while content:
+                     (v, content) = read_finale_value (content)
+-                    if v <> None:
++                    if v != None:
+                         parsed.append (v)
+ 
+             tdict [indices].extend (parsed)
+@@ -957,7 +957,7 @@
+     def try_TP(self,  indices, contents):
+         (nil, num) = indices
+ 
+-        if self.tuplets[-1] == None or num <> self.tuplets[-1].start_note:
++        if self.tuplets[-1] == None or num != self.tuplets[-1].start_note:
+             self.tuplets.append (Tuplet (num))
+ 
+         self.tuplets[-1].append_finale (contents)
+@@ -1054,8 +1054,8 @@
+         sys.stderr.write ('reconstructing ...')
+         sys.stderr.flush ()
+ 
+-        for (tag,routine) in Etf_file.routine_dict.items ():
+-            ks = etf_dict[tag].keys ()
++        for (tag,routine) in list(Etf_file.routine_dict.items ()):
++            ks = list(etf_dict[tag].keys ())
+             ks.sort ()
+             for k in ks:
+                 routine (self, k, etf_dict[tag][k])
+@@ -1130,10 +1130,10 @@
+             return []
+ 
+         
+-        while c and c.number <> endno:
++        while c and c.number != endno:
+             d = c # hack to avoid problem with scripts/build/grand-replace.py
+             thread.append (d)
+-            c = c.next
++            c = c.__next__
+ 
+         if c: 
+             d = c # hack to avoid problem with scripts/build/grand-replace.py
+--- ./scripts/lilymidi.py	(original)
++++ ./scripts/lilymidi.py	(refactored)
+@@ -170,38 +170,38 @@
+ 
+     if f:
+       if len (ev) > 2:
+-        print padding + f.format (ev[1], ev[2])
++        print(padding + f.format (ev[1], ev[2]))
+       elif len (ev) > 1:
+-        print padding + f.format (ev[1])
++        print(padding + f.format (ev[1]))
+       else:
+-        print padding + f.format ()
++        print(padding + f.format ())
+     else:
+-      print padding + "Unrecognized MIDI event: " + str (ev);
++      print(padding + "Unrecognized MIDI event: " + str (ev));
+ 
+ def dump_midi (data, midi_file, options):
+     if not options.pretty:
+-        print data
++        print(data)
+         return
+     # First, dump general info, #tracks, etc.
+-    print "Filename:     " + midi_file;
++    print("Filename:     " + midi_file);
+     i = data[0];
+     m_formats = {0: 'single multi-channel track',
+                  1: "one or more simultaneous tracks",
+                  2: "one or more sequentially independent single-track patterns"}
+-    print "MIDI format:  " + str (i[0]) + " (" + m_formats.get (i[0], "") + ")";
+-    print "Divisions:    " + str (i[1]) + " per whole note";
+-    print "#Tracks:      " + str ( len (data[1]))
++    print("MIDI format:  " + str (i[0]) + " (" + m_formats.get (i[0], "") + ")");
++    print("Divisions:    " + str (i[1]) + " per whole note");
++    print("#Tracks:      " + str ( len (data[1])))
+     n = 0;
+     for tr in data[1]:
+       time = 0;
+       n += 1;
+-      print
+-      print "Track " + str(n) + ":"
+-      print "    Time 0:"
++      print()
++      print("Track " + str(n) + ":")
++      print("    Time 0:")
+       for ev in tr:
+         if ev[0]>time:
+            time = ev[0]
+-           print "    Time " + str(time) + ": "
++           print("    Time " + str(time) + ": ")
+         dump_event (ev[1], time, "        ");
+ 
+ 
+--- ./scripts/lilypond-book.py	(original)
++++ ./scripts/lilypond-book.py	(refactored)
+@@ -53,6 +53,7 @@
+ import tempfile
+ import imp
+ from optparse import OptionGroup
++from functools import reduce
+ 
+ 
+ """
+@@ -393,7 +394,7 @@
+               ignore_error=global_options.redirect_output)
+     if retval != 0:
+         print ("Error trapped by lilypond-book")
+-        print ("\nPlease see " + logfile + ".log\n")
++        print(("\nPlease see " + logfile + ".log\n"))
+         sys.exit(1)
+ 
+     os.chdir (current)
+@@ -567,7 +568,7 @@
+         global_options.output_dir = os.path.abspath(global_options.output_dir)
+ 
+         if not os.path.isdir (global_options.output_dir):
+-            os.mkdir (global_options.output_dir, 0777)
++            os.mkdir (global_options.output_dir, 0o777)
+         os.chdir (global_options.output_dir)
+ 
+     output_filename = os.path.join(global_options.output_dir,
+@@ -609,9 +610,8 @@
+             progress (_ ("Processing include: %s") % name)
+             return do_file (name, included=True)
+ 
+-        include_chunks = map (process_include,
+-                              filter (lambda x: isinstance (x, BookSnippet.IncludeSnippet),
+-                                      chunks))RefactoringTool: Refactored ./scripts/lilysong.py
+RefactoringTool: Refactored ./scripts/midi2ly.py
+RefactoringTool: Refactored ./scripts/musicxml2ly.py
+
++        include_chunks = list(map (process_include,
++                              [x for x in chunks if isinstance (x, BookSnippet.IncludeSnippet)]))
+ 
+         return chunks + reduce (lambda x, y: x + y, include_chunks, [])
+ 
+@@ -691,7 +691,7 @@
+ 
+ def main ():
+     # FIXME: 85 lines of `main' macramee??
+-    if (os.environ.has_key ("LILYPOND_BOOK_LOGLEVEL")):
++    if ("LILYPOND_BOOK_LOGLEVEL" in os.environ):
+         ly.set_loglevel (os.environ["LILYPOND_BOOK_LOGLEVEL"])
+     files = do_options ()
+ 
+--- ./scripts/lilysong.py	(original)
++++ ./scripts/lilysong.py	(refactored)
+@@ -42,7 +42,7 @@
+ """
+ 
+ def usage ():
+-    print 'Usage:', _USAGE
++    print('Usage:', _USAGE)
+     sys.exit (2)
+ 
+ def process_options (args):
+@@ -88,16 +88,16 @@
+     return voice
+ 
+ def list_voices ():
+-    print call_festival ('''
++    print(call_festival ('''
+ (let ((voices (voice.list))
+       (print-voice (lambda (v) (format t "voice_%s\n" v))))
+   (mapcar print-voice voices)
+   (mapcar (lambda (v) (if (not (member v voices)) (print-voice v)))
+           (mapcar car Voice_descriptions)))
+-''')
++'''))
+ 
+ def list_languages ():
+-    print call_festival ('''
++    print(call_festival ('''
+ (let ((languages '()))
+   (let ((voices (voice.list))
+         (print-language (lambda (v)
+@@ -109,7 +109,7 @@
+     (mapcar print-language voices)
+     (mapcar (lambda (v) (if (not (member v voices)) (print-language v)))
+             (mapcar car Voice_descriptions))))
+-''')
++'''))
+ 
+ def process_xml_file (file_name, voice, speedup, play_program):
+     if speedup == 1:
+@@ -139,7 +139,7 @@
+         else:
+             wav_temp_file = wav_file
+         try:
+-            print "text2wave -eval '(%s)' -mode singing '%s' -o '%s'" % (voice, xml_temp_file, wav_temp_file,)
++            print("text2wave -eval '(%s)' -mode singing '%s' -o '%s'" % (voice, xml_temp_file, wav_temp_file,))
+             result = os.system ("text2wave -eval '(%s)' -mode singing '%s' -o '%s'" %
+                                 (voice, xml_temp_file, wav_temp_file,))
+             if result:
+--- ./scripts/midi2ly.py	(original)
++++ ./scripts/midi2ly.py	(refactored)
+@@ -457,7 +457,7 @@
+                 end_note (pitches, notes, t, e[1][1])
+ 
+             elif e[1][0] == midi.NOTE_ON:
+-                if not pitches.has_key (e[1][1]):
++                if e[1][1] not in pitches:
+                     debug ('%d: NOTE ON: %s' % (t, e[1][1]))
+                     pitches[e[1][1]] = (t, e[1][2])
+                 else:
+@@ -476,16 +476,16 @@
+                     break
+ 
+                 elif e[1][1] == midi.SET_TEMPO:
+-                    (u0, u1, u2) = map (ord, e[1][2])
++                    (u0, u1, u2) = list(map (ord, e[1][2]))
+                     us_per_4 = u2 + 256 * (u1 + 256 * u0)
+                     seconds_per_1 = us_per_4 * 4 / 1e6
+                     music.append ((t, Tempo (seconds_per_1)))
+                 elif e[1][1] == midi.TIME_SIGNATURE:
+-                    (num, dur, clocks4, count32) = map (ord, e[1][2])
++                    (num, dur, clocks4, count32) = list(map (ord, e[1][2]))
+                     den = 2 ** dur
+                     music.append ((t, Time (num, den)))
+                 elif e[1][1] == midi.KEY_SIGNATURE:
+-                    (alterations, minor) = map (ord, e[1][2])
++                    (alterations, minor) = list(map (ord, e[1][2]))
+                     sharps = 0
+                     flats = 0
+                     if alterations < 127:
+@@ -523,10 +523,10 @@
+                         self.name = text.text
+                 else:
+                     if global_options.verbose:
+-                        sys.stderr.write ("SKIP: %s\n" % `e`)
++                        sys.stderr.write ("SKIP: %s\n" % repr(e))
+             else:
+                 if global_options.verbose:
+-                    sys.stderr.write ("SKIP: %s\n" % `e`)
++                    sys.stderr.write ("SKIP: %s\n" % repr(e))
+ 
+         if last_lyric:
+             # last_lyric.clocks = t - last_time
+@@ -791,11 +791,11 @@
+     for i in range (len (average_pitch)):
+         d[average_pitch[i]] = lst_append (d.get (average_pitch[i], []), i)
+     s = list (reversed (sorted (average_pitch)))
+-    non_empty = len (filter (lambda x: x, s))
++    non_empty = len ([x for x in s if x])
+     names = ['One', 'Two']
+     if non_empty > 2:
+         names = ['One', 'Three', 'Four', 'Two']
+-    layout = map (lambda x: '', range (len (average_pitch)))
++    layout = ['' for x in range (len (average_pitch))]
+     for i, n in zip (s, names):
+         if i:
+             v = d[i]
+@@ -810,7 +810,7 @@
+     track_name = get_track_name (n)
+ 
+     average_pitch = track_average_pitch (track)
+-    voices = len (filter (lambda x: x, average_pitch[1:]))
++    voices = len ([x for x in average_pitch[1:] if x])
+     clef = get_best_clef (average_pitch[0])
+ 
+     c = 0
+@@ -965,7 +965,7 @@
+         allowed_tuplet_clocks.append (clocks_per_1 / dur * num / den)
+ 
+     if global_options.verbose:
+-        print 'allowed tuplet clocks:', allowed_tuplet_clocks
++        print('allowed tuplet clocks:', allowed_tuplet_clocks)
+ 
+     tracks = [create_track (t) for t in midi_dump[1]]
+     # urg, parse all global track events, such as Key first
+@@ -1145,7 +1145,7 @@
+         options.duration_quant = int (options.duration_quant)
+ 
+     if options.key:
+-        (alterations, minor) = map (int, (options.key + ':0').split (':'))[0:2]
++        (alterations, minor) = list(map (int, (options.key + ':0').split (':')))[0:2]
+         sharps = 0
+         flats = 0
+         if alterations >= 0:
+@@ -1161,11 +1161,11 @@
+     if options.preview:
+         bar_max = 4
+ 
+-    options.allowed_tuplets = [map (int, a.replace ('/','*').split ('*'))
++    options.allowed_tuplets = [list(map (int, a.replace ('/','*').split ('*')))
+                 for a in options.allowed_tuplets]
+ 
+     if options.verbose:
+-        sys.stderr.write ('Allowed tuplets: %s\n' % `options.allowed_tuplets`)
++        sys.stderr.write ('Allowed tuplets: %s\n' % repr(options.allowed_tuplets))
+ 
+     global global_options
+     global_options = options
+@@ -1201,7 +1201,7 @@
+             (outdir, outbase) = os.path.split (o)
+ 
+         if outdir and outdir != '.' and not os.path.exists (outdir):
+-            os.mkdir (outdir, 0777)
++            os.mkdir (outdir, 0o777)
+ 
+         convert_midi (f, o)
+ 
+--- ./scripts/musicxml2ly.py	(original)
++++ ./scripts/musicxml2ly.py	(refactored)
+@@ -8,8 +8,9 @@
+ import codecs
+ import zipfile
+ import tempfile
+-import StringIO
++import io
+ import warnings
++from functools import reduce
+ 
+ """
+ @relocate-preamble@
+@@ -322,15 +323,15 @@
+             pass
+         tunings[line] = p
+ 
+-        step = i.get_named_child(u'tuning-step')
++        step = i.get_named_child('tuning-step')
+         step = step.get_text().strip()
+         p.step = musicxml2ly_conversion.musicxml_step_to_lily(step)
+ 
+-        octave = i.get_named_child(u'tuning-octave')
++        octave = i.get_named_child('tuning-octave')
+         octave = octave.get_text().strip()
+         p.octave = int(octave) - 4
+ 
+-        alter = i.get_named_child(u'tuning-alter')
++        alter = i.get_named_child('tuning-alter')
+         if alter:
+             p.alteration = int(alter.get_text().strip())
+     # lilypond seems to use the opposite ordering than MusicXML...
+@@ -341,7 +342,7 @@
+     if not mxl_attr:
+         return musicexp.Staff()
+ 
+-    (staff_id, attributes) = mxl_attr.items()[0]
++    (staff_id, attributes) = list(mxl_attr.items())[0]
+ 
+     # distinguish by clef:
+     # percussion(percussion and rhythmic), tab, and everything else
+@@ -487,20 +488,20 @@
+             elif len(el.end) > 0: # no group to end here
+                 el.end = {}
+             if len(el.end) > 0: # closes an existing group
+-                ends = el.end.keys()
+-                prev_started = staves[prev_start].start.keys()
++                ends = list(el.end.keys())
++                prev_started = list(staves[prev_start].start.keys())
+                 grpid = None
+-                intersection = filter(lambda x:x in ends, prev_started)
++                intersection = [x for x in prev_started if x in ends]
+                 if len(intersection) > 0:
+                     grpid = intersection[0]
+                 else:
+                     # Close the last started group
+-                    grpid = staves[prev_start].start.keys() [0]
++                    grpid = list(staves[prev_start].start.keys()) [0]
+                     # Find the corresponding closing tag and remove it!
+                     j = pos + 1
+                     foundclosing = False
+                     while j < len(staves) and not foundclosing:
+-                        if isinstance(staves[j], PartGroupInfo) and staves[j].end.has_key(grpid):
++                        if isinstance(staves[j], PartGroupInfo) and grpid in staves[j].end:
+                             foundclosing = True
+                             del staves[j].end[grpid]
+                             if staves[j].is_empty():
+@@ -509,7 +510,7 @@
+                 grpobj = staves[prev_start].start[grpid]
+                 group = read_score_group(grpobj)
+                 # remove the id from both the start and end
+-                if el.end.has_key(grpid):
++                if grpid in el.end:
+                     del el.end[grpid]
+                 del staves[prev_start].start[grpid]
+                 if el.is_empty():
+@@ -898,7 +899,7 @@
+         'transpose': musicxml_transpose_to_lily,
+         'staff-details': musicxml_staff_details_to_lily,
+     }
+-    for (k, func) in attr_dispatch.items():
++    for (k, func) in list(attr_dispatch.items()):
+         children = attrs.get_named_children(k)
+         if children:
+             ev = func(attrs)
+@@ -1263,7 +1264,7 @@
+ def hex_to_color(hex_val):
+     res = re.match(r'#([0-9a-f][0-9a-f]|)([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])([0-9a-f][0-9a-f])$', hex_val, re.IGNORECASE)
+     if res:
+-        return map(lambda x: hexcolorval_to_nr(x), res.group(2, 3, 4))
++        return [hexcolorval_to_nr(x) for x in res.group(2, 3, 4)]
+     else:
+         return None
+ 
+@@ -1277,7 +1278,7 @@
+         (24, float('inf')): r'\huge',
+     }
+     result = None
+-    for r in d.keys():
++    for r in list(d.keys()):
+         if r[0] <= size < r[1]:
+             result = d[r]
+             break
+@@ -1699,7 +1700,7 @@
+     #offset = frame.get_first_fret() - 1
+     #offset = frame.get_first_fret()
+     barre = []
+-    open_strings = range(1,ev.strings+1)
++    open_strings = list(range(1,ev.strings+1))
+     for fn in frame.get_named_children('frame-note'):
+         fret = fn.get_fret()
+         if fret <= 0:
+@@ -1874,7 +1875,7 @@
+         elif isinstance(e, musicxml.Text):
+             # We need to convert soft hyphens to -, otherwise the ascii codec as well
+             # as lilypond will barf on that character
+-            text += string.replace(e.get_text(), u'\xad', '-')
++            text += string.replace(e.get_text(), '\xad', '-')
+         elif isinstance(e, musicxml.Elision):
+             if text:
+                 text += " "
+@@ -1894,7 +1895,7 @@
+             if (ignoremelismata == "on"):
+                 return " \set ignoreMelismata = ##t " + utilities.escape_ly_output_string (text)
+             elif (ignoremelismata == "off"):
+-                return " " + utilities.escape_ly_output_string(text) + " -- \unset ignoreMelismata"
++                return " " + utilities.escape_ly_output_string(text) + " -- \\unset ignoreMelismata"
+             else:
+                 return " " + utilities.escape_ly_output_string(text) + " --"
+         else:
+@@ -2224,8 +2225,8 @@
+     in_slur = False
+ 
+     all_lyric_parts = set(get_all_lyric_parts_in_voice(voice))
+-    if lyrics.keys():
+-        for number in lyrics.keys():
++    if list(lyrics.keys()):
++        for number in list(lyrics.keys()):
+             extracted_lyrics = extract_lyrics(voice, number, lyrics)
+ 
+     for idx, n in enumerate(voice._elements):
+@@ -2235,7 +2236,7 @@
+         staff = n.get_maybe_exist_named_child('staff')
+         if staff:
+             staff = staff.get_text()
+-            if current_staff and staff <> current_staff and not n.get_maybe_exist_named_child('chord'):
++            if current_staff and staff != current_staff and not n.get_maybe_exist_named_child('chord'):
+                 voice_builder.add_command(musicexp.StaffChange(staff))
+             current_staff = staff
+ 
+@@ -2256,7 +2257,7 @@
+                 figured_bass_builder.jumpto(n._when)
+                 chordnames_builder.jumpto(n._when)
+                 fretboards_builder.jumpto(n._when)
+-            except NegativeSkip, neg:
++            except NegativeSkip as neg:
+                 voice_builder.correct_negative_skip(n._when)
+                 figured_bass_builder.correct_negative_skip(n._when)
+                 chordnames_builder.correct_negative_skip(n._when)
+@@ -2433,7 +2434,7 @@
+                 figured_bass_builder.jumpto(n._when)
+                 if (figured_bass_builder.stay_here):
+                     figured_bass_builder.stay_here = False
+-            except NegativeSkip, neg:
++            except NegativeSkip as neg:
+                 pass
+             for fb in pending_figured_bass:
+                 # if a duration is given, use that, otherwise the one of the note
+@@ -2450,7 +2451,7 @@
+                 chordnames_builder.jumpto(n._when)
+                 if (chordnames_builder.stay_here):
+                     chordnames_builder.stay_here = False
+-            except NegativeSkip, neg:
++            except NegativeSkip as neg:
+                 pass
+             for cn in pending_chordnames:
+                 # Assign the duration of the EventChord
+@@ -2463,7 +2464,7 @@
+                 fretboards_builder.jumpto(n._when)
+                 if (fretboards_builder.stay_here):
+                     fretboards_builder.stay_here = False
+-            except NegativeSkip, neg:
++            except NegativeSkip as neg:
+                 pass
+             for fb in pending_fretboards:
+                 # Assign the duration of the EventChord
+@@ -2620,19 +2621,19 @@
+ 
+     seq_music = musicexp.SequentialMusic()
+ 
+-    if 'drummode' in modes_found.keys():
++    if 'drummode' in list(modes_found.keys()):
+         ## \key <pitch> barfs in drummode.
+         ly_voice = [e for e in ly_voice
+                     if not isinstance(e, musicexp.KeySignatureChange)]
+ 
+     seq_music.elements = ly_voice
+-    for k in lyrics.keys():
++    for k in list(lyrics.keys()):
+         return_value.lyrics_dict[k] = musicexp.Lyrics()
+         return_value.lyrics_dict[k].lyrics_syllables = lyrics[k]
+ 
+ 
+     if len(modes_found) > 1:
+-       ly.warning(_('cannot simultaneously have more than one mode: %s') % modes_found.keys())
++       ly.warning(_('cannot simultaneously have more than one mode: %s') % list(modes_found.keys()))
+ 
+     if hasattr(options, 'shift_meter') and options.shift_meter:
+         sd[-1].element = seq_music
+@@ -2646,7 +2647,7 @@
+         seq_music = v
+ 
+     return_value.ly_voice = seq_music
+-    for mode in modes_found.keys():
++    for mode in list(modes_found.keys()):
+         v = musicexp.ModeChangingMusicWrapper()
+         v.element = seq_music
+         v.mode = mode
+@@ -2747,10 +2748,10 @@
+ 
+     all_ly_voices = {}
+     all_ly_staffinfo = {}
+-    for p, (name_voice, staff_info) in all_voices.items():
++    for p, (name_voice, staff_info) in list(all_voices.items()):
+ 
+         part_ly_voices = {}
+-        for n, v in name_voice.items():
++        for n, v in list(name_voice.items()):
+             ly.progress(_("Converting to LilyPond expressions..."), True)
+             # musicxml_voice_to_lily_voice returns (lily_voice, {nr->lyrics, nr->lyrics})
+             voice = musicxml_voice_to_lily_voice(v)
+@@ -2941,7 +2942,7 @@
+     for part in part_list:
+         part_id = part.id
+         nv_dict = voices.get (part_id, {})
+-        for (name, voice) in nv_dict.items ():
++        for (name, voice) in list(nv_dict.items ()):
+             k = music_xml_voice_name_to_lily_name (part_id, name)
+             printer.dump ('%s = ' % k)
+             voice.ly_voice.print_ly (printer)
+@@ -2968,7 +2969,7 @@
+                 printer.newline()
+ 
+ def uniq_list(l):
+-    return dict([(elt, 1) for elt in l]).keys()
++    return list(dict([(elt, 1) for elt in l]).keys())
+ 
+ # format the information about the staff in the form
+ #     [staffid,
+@@ -3006,8 +3007,8 @@
+             continue
+ 
+         staves = reduce(lambda x, y: x + y,RefactoringTool: Files that were modified:
+RefactoringTool: ./scripts/abc2ly.py
+RefactoringTool: ./scripts/convert-ly.py
+RefactoringTool: ./scripts/etf2ly.py
+RefactoringTool: ./scripts/lilymidi.py
+RefactoringTool: ./scripts/lilypond-book.py
+RefactoringTool: ./scripts/lilysong.py
+RefactoringTool: ./scripts/midi2ly.py
+RefactoringTool: ./scripts/musicxml2ly.py
+
+-                [voice.voicedata._staves.keys()
+-                 for voice in nv_dict.values()],
++                [list(voice.voicedata._staves.keys())
++                 for voice in list(nv_dict.values())],
+                 [])
+         staves_info = []
+         if len(staves) > 1:
+@@ -3016,12 +3017,12 @@
+             staves.sort()
+             for s in staves:
+                 thisstaff_raw_voices = [(voice_name, voice.lyrics_order, voice.figured_bass, voice.chordnames, voice.fretboards)
+-                    for (voice_name, voice) in nv_dict.items()
++                    for (voice_name, voice) in list(nv_dict.items())
+                     if voice.voicedata._start_staff == s]
+                 staves_info.append(format_staff_info(part_id, s, thisstaff_raw_voices))
+         else:
+             thisstaff_raw_voices = [(voice_name, voice.lyrics_order, voice.figured_bass, voice.chordnames, voice.fretboards)
+-                for (voice_name, voice) in nv_dict.items()]
++                for (voice_name, voice) in list(nv_dict.items())]
+             staves_info.append(format_staff_info(part_id, None, thisstaff_raw_voices))
+         score_structure.set_part_information(part_id, staves_info)
+ 
+@@ -3110,7 +3111,7 @@
+         container_xml = z.read("META-INF/container.xml")
+         if not container_xml:
+             return None
+-        container = read_xml(StringIO.StringIO(container_xml), use_lxml)
++        container = read_xml(io.StringIO(container_xml), use_lxml)
+         if not container:
+             return None
+         rootfiles = container.get_maybe_exist_named_child('rootfiles')
+@@ -3124,7 +3125,7 @@
+             raw_string = z.read(mxml_file)
+ 
+     if raw_string:
+-        io_object = StringIO.StringIO(raw_string)
++        io_object = io.StringIO(raw_string)
+     elif filename == "-":
+         io_object = sys.stdin
+     else:
+*****************************
