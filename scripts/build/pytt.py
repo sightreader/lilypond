@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 
 '''
     Copyright (C) 2008--2019 Jan Nieuwenhuizen <janneke@gnu.org>
