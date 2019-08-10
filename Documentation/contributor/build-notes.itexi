@@ -358,7 +358,7 @@ is empty at this point, but the line starting @w{@code{-$(INSTALL)}}
 translates to:
 
 @example
--/usr/bin/python /home/phil/lilypond-git/stepmake/bin/install.py \
+-/usr/bin/python3 /home/phil/lilypond-git/stepmake/bin/install.py \
   -c -m 755 -d /usr/local/share/doc/lilypond/html
 @end example
 
@@ -638,7 +638,7 @@ one is executed first.  Have not checked if the second executes.
 The first recipe translates as this:
 
 @example
-LILYPOND_VERSION=2.15.0 /usr/bin/python   --process=' ' \
+LILYPOND_VERSION=2.15.0 /usr/bin/python3   --process=' ' \
   --output=./out-www --format= --lily-output-dir \
     /home/phil/lilypond-git/build/out/lybook-db
 @end example
@@ -734,7 +734,7 @@ this, it runs lilypond-book.py on collated-files.tely, as below:
 
 @example
 LILYPOND_VERSION=2.15.0
-  /usr/bin/python
+  /usr/bin/python3
   /home/phil/lilypond-git/scripts/lilypond-book.py
     -I /home/phil/lilypond-git/input/regression/
     -I ./out-www -I /home/phil/lilypond-git/input
