@@ -27,6 +27,17 @@ import time
 import importlib
 
 ################################################################
+# Python 3 does not allow string exeception.
+# Use
+#
+
+class LilyError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+################################################################
 # Users of python modules should include this snippet
 # and customize variables below.
 
