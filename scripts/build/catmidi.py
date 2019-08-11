@@ -9,4 +9,4 @@ tracks = tracks[1:]
 
 for t in tracks:
     for e in t:
-        print e
+        print(e)

@@ -6,7 +6,7 @@ import sys
 header = '''
 '''
 
-print header
+print(header)
 
 body = sys.stdin.read ()
 body = re.sub ('(?ms)<!--\s*\n*(.*?)FILL-IN(.*?)\s*\n*!?-->', '', body)
@@ -90,5 +90,5 @@ body = re.sub ('(?ms)<td[^>]*>(.*?)</td>', r'@tab\n\1\n', body)
 #body = re.sub ('(?ms)\s*<p align="(center|left|right)">\s*((?:.|\n)*)\n\n', '@divClass{float-\\1}\n\\2\n@divEnd', body)
 body = re.sub ('(?ms)\s*<p align="(center|left|right)"\s*>\s*', '\n\n@divClass{float-\\1}\n@divEnd\n', body)
 
-print body
+print(body)
 
