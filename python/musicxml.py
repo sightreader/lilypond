@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import new
+#import new
 import string
 from rational import *
 import re
