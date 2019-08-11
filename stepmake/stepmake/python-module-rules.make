@@ -2,7 +2,7 @@
 $(outdir)/%$(SHARED_MODULE_SUFFIX): $(outdir)/%.lo
 	$(LD) -o $@ $< $(SHARED_FLAGS) $(ALL_LDFLAGS)
 
-$(outdir)/%.pyc: $(outdir)/%.py
+$(outdir)/__pycache__/%.cpython-37.pyc: $(outdir)/%.py
 	PYTHONOPTIMIZE= $(PYTHON) -c 'import py_compile; py_compile.compile ("$<")'
 
 $(outdir)/%.pyo: $(outdir)/%.py
@@ -11,4 +11,3 @@ $(outdir)/%.pyo: $(outdir)/%.py
 $(outdir)/%.py: %.py $(config_make) $(depth)/VERSION
 	cat $< | sed $(sed-atfiles) | sed $(sed-atvariables) > $@
 	chmod 755 $@
-
