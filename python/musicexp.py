@@ -816,7 +816,7 @@ class Lyrics:
         for l in self.lyrics_syllables:
             lstr += l
         #lstr += "\n}"
-        return lstr.encode('utf-8')
+        return lstr
 
 class Header:
 

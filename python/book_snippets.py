@@ -601,7 +601,7 @@ class LilypondSnippet (Snippet):
             os.makedirs (directory)
         filename = path + '.ly'
         if os.path.exists (filename):
-            existing = open (filename, 'r').read ()
+            existing = codecs.open (filename, 'r', 'utf-8').read ()
 
             if self.relevant_contents (existing) != self.relevant_contents (self.full_ly ()):
                 warning ("%s: duplicate filename but different contents of original file,\n\

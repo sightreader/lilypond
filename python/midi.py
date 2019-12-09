@@ -176,19 +176,19 @@ def _parse_tracks (midi, pos, num_tracks, clocks_max):
     if num_tracks > 256:
         raise error('too many tracks: %d' % num_tracks)
     for i in range(num_tracks):
-        trackdata, pos = _parse_hunk (midi, pos, 'track', 'MTrk')
+        trackdata, pos = _parse_hunk (midi, pos, 'track', b'MTrk')
         yield list (_parse_track_body (trackdata, clocks_max))
     # if pos < len(midi):
     #     warn
 
 def parse_track (track, clocks_max=None):
-    track_body, end = _parse_hunk (track, 0, 'track', 'MTrk')
+    track_body, end = _parse_hunk (track, 0, 'track', b'MTrk')
     # if end < len(track):
     #     warn
     return list (_parse_track_body (track_body, clocks_max))
 
 def parse (midi, clocks_max=None):
-    header, first_track_pos = _parse_hunk(midi, 0, 'file', 'MThd')
+    header, first_track_pos = _parse_hunk(midi, 0, 'file', b'MThd')
     try:
         format, num_tracks, division = struct.unpack ('>3H', header[:6])
     except struct.error:

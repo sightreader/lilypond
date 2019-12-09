@@ -402,7 +402,7 @@ def macroLang(name, lang):
 
 def make_macro(name, string):
     print("@macro", name)
-    print(string)
+    print(string.encode('utf-8'))
     print("@end macro")
     print("")
 

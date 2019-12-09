@@ -1250,7 +1250,7 @@ def musicxml_dynamics_to_lily_event(dynentry):
               " = #(make-dynamic-script \"" + dynamicstext + "\")"
         needed_additional_definitions.append(dynamicsname)
     event = musicexp.DynamicsEvent()
-    event.type = dynamicsname.encode('utf-8')
+    event.type = dynamicsname
     return event
 
 # Convert single-color two-byte strings to numbers 0.0 - 1.0
@@ -3257,7 +3257,7 @@ def main():
     conversion_settings.convert_stem_directions = options.convert_stem_directions
 
     # Allow the user to leave out the .xml or xml on the filename
-    basefilename = args[0].decode('utf-8')
+    basefilename = args[0]
     if basefilename == "-": # Read from stdin
         filename = "-"
     else:

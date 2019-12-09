@@ -7,7 +7,7 @@ import re
 import sys
 import time
 
-sys.stdout = codecs.getwriter ('utf8') (sys.stdout)
+sys.stdout = codecs.getwriter ('utf8') (sys.stdout.detach ())
 
 def usage ():
     sys.stderr.write ('''
