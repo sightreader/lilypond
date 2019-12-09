@@ -7,7 +7,7 @@ import os
 import math
 import re
 
-import cgi
+import html
 from functools import reduce
 
 ## so we can call directly as scripts/build/output-distance.py
@@ -509,7 +509,7 @@ class GitFileCompareLink (FileCompareLink):
         str = '\n'.join ([l[:80] for l in str.split ('\n')])
 
         if str:
-            str = '<pre>%s</pre>' % cgi.escape (str)
+            str = '<pre>%s</pre>' % html.escape (str)
         return '', str
 
     def calc_distance (self):
@@ -557,7 +557,7 @@ class TextFileCompareLink (FileCompareLink):
         if oldnew == 1:
             str = '\n'.join ([d.replace ('\n','') for d in self.diff_lines])
         if str:
-            str = '<pre>%s</pre>' % cgi.escape (str)
+            str = '<pre>%s</pre>' % html.escape (str)
         return '', str
 
 class LogFileCompareLink (TextFileCompareLink):
@@ -586,7 +586,7 @@ class ProfileFileLink (FileCompareLink):
                     str += '%-8s: %d\n' %  (k, int (self.results[oldnew][k]))
 
         if str:
-            str = '<pre>%s</pre>' % cgi.escape (str)
+            str = '<pre>%s</pre>' % html.escape (str)
         return '', str
 
     def get_ratio (self, key):
