@@ -11,6 +11,7 @@ import time
 import operator
 
 import langdefs
+from functools import reduce
 
 # This is to try to make the docball not too big with almost duplicate files
 # see process_links()
@@ -334,8 +335,8 @@ def process_html_files (package_name = '',
 
     # Initialize dictionaries for string formatting
     subst = {}
-    subst[''] = dict ([i for i in globals ().items() if type (i[1]) is str])
-    subst[''].update (dict ([i for i in locals ().items() if type (i[1]) is str]))
+    subst[''] = dict ([i for i in list(globals ().items()) if type (i[1]) is str])
+    subst[''].update (dict ([i for i in list(locals ().items()) if type (i[1]) is str]))
     for l in translation:
         e = langdefs.LANGDICT[l].webext
         if e:
@@ -348,7 +349,7 @@ def process_html_files (package_name = '',
         subst[e]['footer_name_version'] = subst[e]['footer_name_version'] % subst[e]
         subst[e]['footer_report_links'] = subst[e]['footer_report_links'] % subst[e]
 
-    for prefix, ext_list in pages_dict.items ():
+    for prefix, ext_list in list(pages_dict.items ()):
         for lang_ext in ext_list:
             file_name = langdefs.lang_file_name (prefix, lang_ext, '.html')
             source_time = os.path.getmtime(file_name)
