@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2007--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -21,6 +21,8 @@
 #include "all-font-metrics.hh"
 #include "main.hh"
 #include "protected-scm.hh"
+
+using std::string;
 
 All_font_metrics *all_fonts_global = 0;
 Protected_scm all_fonts_global_scm;

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Juergen Reuter <reuter@ipd.uka.de>,
+  Copyright (C) 2000--2020 Juergen Reuter <reuter@ipd.uka.de>,
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -28,6 +28,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 /*
  * This class implements an engraver for custos symbols.
  *
@@ -43,7 +45,7 @@ public:
   void acknowledge_note_head (Grob_info);
   void process_acknowledged ();
   void stop_translation_timestep ();
-  virtual void finalize ();
+  void finalize () override;
 
 private:
   Item *create_custos ();

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include <cmath>
 #include <cctype>
-using namespace std;
 
 #include "dimensions.hh"
 #include "modified-font-metric.hh"
@@ -29,6 +28,7 @@ using namespace std;
 #include "stencil.hh"
 #include "warn.hh"
 
+using std::string;
 
 Real
 Font_metric::design_size () const
@@ -40,11 +40,11 @@ Stencil
 Font_metric::find_by_name (string s) const
 {
   replace_all (&s, '-', 'M');
-  int idx = name_to_index (s);
+  size_t idx = name_to_index (s);
   Box b;
 
   SCM expr = SCM_EOL;
-  if (idx >= 0)
+  if (idx != GLYPH_INDEX_INVALID)
     {
       expr = scm_list_3 (ly_symbol2scm ("named-glyph"),
                          self_scm (),

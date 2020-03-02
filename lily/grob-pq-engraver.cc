@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2001--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2001--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 struct Grob_pq_entry
 {
   Grob *grob_;
@@ -41,8 +43,8 @@ class Grob_pq_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Grob_pq_engraver);
 protected:
-  virtual void initialize ();
-  void acknowledge_grob (Grob_info);
+  void initialize () override;
+  void acknowledge_grob (Grob_info) override;
   void start_translation_timestep ();
   void stop_translation_timestep ();
   void process_acknowledged ();
@@ -100,7 +102,7 @@ Grob_pq_engraver::acknowledge_grob (Grob_info gi)
 void
 Grob_pq_engraver::process_acknowledged ()
 {
-  vector_sort (started_now_, less<Grob_pq_entry> ());
+  vector_sort (started_now_, std::less<Grob_pq_entry> ());
   SCM lst = SCM_EOL;
   SCM *tail = &lst;
   for (vsize i = 0; i < started_now_.size (); i++)

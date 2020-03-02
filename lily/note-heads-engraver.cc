@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "engraver.hh"
 
 #include <cctype>
-using namespace std;
 
 #include "duration.hh"
 #include "item.hh"
@@ -32,6 +31,8 @@ using namespace std;
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 class Note_heads_engraver : public Engraver
 {

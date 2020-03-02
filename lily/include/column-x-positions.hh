@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,12 +23,15 @@
 #include "std-vector.hh"
 #include "lily-proto.hh"
 
-struct Column_x_positions
-{
-  vector<Grob *> cols_;
-  vector<Grob *> loose_cols_;
+class Paper_column;
 
-  vector<Real> config_;
+class Column_x_positions
+{
+public:
+  std::vector<Paper_column *> cols_;
+  std::vector<Paper_column *> loose_cols_;
+
+  std::vector<Real> config_;
   Real force_;
   bool satisfies_constraints_;
 

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,10 +20,59 @@
 #include "smobs.hh"
 #include "listener.hh"
 
+#if (GUILEV2)
+#include <gc/gc.h>
+#endif
+
 Listener
 Smob_core::get_listener (SCM callback)
 {
   return Listener (callback, self_scm ());
+}
+
+size_t Smob_core::count = 0;
+
+void
+Smob_core::maybe_grow_heap ()
+{
+#if (GUILEV2)
+  /*
+    BDWGC has a special case for objects with finalizers
+
+  https://github.com/ivmai/bdwgc/blob/v8.0.4/alloc.c#L1435
+
+  where it decides to not expand the heap if there are more than 500
+  objects with finalizers outstanding.
+
+  Since smobs with free functions are implemented with finalizer, we
+  always fall into this case.
+
+  The symptom of this problem is that running with GC_PRINT_STATS=1
+  will print
+
+    In-use heap: 85% (370824 KiB pointers + 60065 KiB other)
+    In-use heap: 85% (370725 KiB pointers + 59737 KiB other)
+    ..
+
+  We can reconsider this hack if we have dropped all smob free functions from
+  our code base.
+  */
+  static GC_word last_gc_no;
+  GC_word no = GC_get_gc_no ();
+  if (no == last_gc_no)
+    {
+      return;
+    }
+  last_gc_no = no;
+
+  GC_word size = GC_get_heap_size ();
+  GC_word bytes_per_obj = 2000;
+  GC_word want_heap = count * bytes_per_obj;
+  if (size < want_heap)
+    {
+      GC_expand_hp (want_heap - size);
+    }
+#endif
 }
 
 /*
@@ -49,48 +98,15 @@ LY_DEFINE (ly_smob_protects, "ly:smob-protects",
 }
 
 void
-protect_smob (SCM smob, SCM *prot_cons)
+protect_smob (SCM smob)
 {
-#if 0
-  SCM s = scm_cdr (smob_protection_list);
-  while (scm_is_pair (s) && scm_is_false (scm_car (s))
-    {
-      s = scm_cdr (s);
-    }
-  SCM prot = scm_cons (smob, s);
-  scm_set_cdr_x (smob_protection_list,
-                 prot);
-  *prot_cons = prot;
-#else
-  (void) prot_cons;
   scm_gc_protect_object (smob);
-#endif
 }
 
 void
-unprotect_smob (SCM smob, SCM *prot_cons)
+unprotect_smob (SCM smob)
 {
-#if 1
-  (void) prot_cons;
   scm_gc_unprotect_object (smob);
-#else
-  SCM next = scm_cdr (*prot_cons);
-
-  if (scm_is_null (next)))
-    scm_set_car_x (*prot_cons, SCM_BOOL_F);
-  else
-    {
-      scm_set_car_x (*prot_cons, SCM_BOOL_F);
-      while (scm_is_pair (next)
-             && scm_is_false (scm_car (next)))
-
-        next = scm_cdr (next);
-
-      scm_set_cdr_x (*prot_cons, next);
-    }
-
-  *prot_cons = SCM_EOL;
-#endif
 }
 
 

@@ -4,10 +4,6 @@ TEXINFO_SOURCES = $(TEXI_FILES)
 
 OUTTXT_FILES += $(addprefix $(outdir)/,$(TEXI_FILES:.texi=.txt))
 
-OMF_FILES += $(filter-out $(outdir)/web.pdf.omf,$(foreach format, html pdf, $(foreach f, $(TEXI_FILES), $(outdir)/$(f:.texi=.$(format)).omf)))
-
-GENERATE_OMF = $(buildscript-dir)/texi2omf --format $(1) --location $(webdir)$(tree-dir)/$(notdir $(basename $@))  --version $(TOPLEVEL_VERSION) $< > $@
-
 # Find the file $(1) within the texinfo include dirs and return its path.
 # If not found, return $(outdir)/$(1) assuming that it is a generated file.
 find-texi = \
@@ -32,7 +28,7 @@ DO_TEXI_DEP = ( echo ./$@: $(call scan-texi,$<) > $(basename $@).dep ) &&
 TEXINFO_PAPERSIZE_OPTION= $(if $(findstring $(PAPERSIZE),a4),,-t @afourpaper)
 
 MAKEINFO_FLAGS += --enable-encoding --error-limit=0 $(DOCUMENTATION_INCLUDES)
-MAKEINFO = LANG= $(MAKEINFO_PROGRAM) $(MAKEINFO_FLAGS)
+MAKEINFO = LANG=C $(MAKEINFO_PROGRAM) $(MAKEINFO_FLAGS)
 
 # texi2html xref map files
 XREF_MAPS_DIR = $(top-build-dir)/$(outdir)/xref-maps
@@ -60,6 +56,11 @@ TEXI2HTML = TOP_SRC_DIR=$(top-src-dir) PERL_UNICODE=SD $(TEXI2HTML_PROGRAM)
 ###########
 
 TEXI2PDF_FLAGS += $(DOCUMENTATION_INCLUDES)
+
+ifndef VERBOSE
+  TEXI2PDF_QUIET = -q
+  TEXINFO_GS_QUIET = -q
+endif
 
 # info stuff
 INFO_INSTALL_FILES = $(wildcard $(addsuffix *, $(INFO_FILES)))

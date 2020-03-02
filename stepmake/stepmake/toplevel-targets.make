@@ -2,7 +2,7 @@
 install-doc:
 uninstall-doc:
 
-distclean: clean doc-clean test-clean log-clean
+distclean: clean doc-clean test-clean
 	$(MAKE) local-distclean
 
 local-distclean:
@@ -10,9 +10,6 @@ local-distclean:
 		config.cache config.status config.log
 	rm -rf autom4te.cache
 	rm -rf $(outdir)
-
-GNUmakefile: GNUmakefile.in
-	$(MAKE) INFILE=$< OUTFILE=$@ -f $(stepdir)/automatically-generated.sub.make
 
 $(package-icon):
 	$(MAKE) -C Documentation/logo icon
@@ -35,7 +32,7 @@ endif
 local-help:
 	@echo "  config          rerun configure"
 	@echo "  dist            roll tarball: $(depth)/$(outdir)/$(distname).tar.gz"
-	@echo "  distclean       make clean, doc-clean, test-clean, log-clean and"
+	@echo "  distclean       make clean, doc-clean, test-clean and"
 	@echo "                   also remove configure output"
 	@echo "  po              make new translation Portable Object database"
 	@echo "  po-replace      do po-update and replace catalogs with msgmerged versions"
@@ -51,10 +48,8 @@ local-help:
 	@echo "Some more targets are available for testing changes:"
 	@echo "  test-baseline"
 	@echo "  check"
-	@echo "  test-redo"
 	@echo "  test-clean"
 	@echo
 	@echo "  For more information on these targets, see"
 	@echo "    \`Verify regression tests' in the Contributor's Guide."
 	@echo
-

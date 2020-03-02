@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@ class Rational
   int sign_;
   U64 num_, den_;
   void normalize ();
-  void copy (Rational const &);
 
 public:
   void set_infinite (int sign);
@@ -52,32 +51,37 @@ public:
   I64 num () const { return numerator (); }
   I64 den () const { return denominator (); }
 
+  // n.b. not valid for infinities
+  I64 trunc_int () const;
   Rational trunc_rat () const;
   Rational div_rat (Rational) const;
   Rational mod_rat (Rational) const;
   Rational abs () const;
   void negate ();
-  int to_int () const;
 
-  operator double () const { return to_double (); }
-  double to_double () const;
+  explicit operator bool () const { return sign_ != 0; }
+  explicit operator double () const;
 
   Rational operator - () const;
   /**
      Initialize to 0.
   */
   Rational ();
-  Rational (int);
-  Rational (I64);
-  Rational (U64);
+
+  // Allow implicit conversion from integer.  All of these must be defined or
+  // deleted to avoid ambiguity.  "long long" is specified by the C++ standard
+  // to be at least 64 bits wide, which is what we are storing.
+  Rational (int n) : Rational (static_cast<long long> (n)) {}
+  Rational (long n) : Rational (static_cast<long long> (n)) {}
+  Rational (long long n);
+  Rational (unsigned n) : Rational (static_cast<unsigned long long> (n)) {}
+  Rational (unsigned long n) : Rational (static_cast<unsigned long long> (n)) {}
+  Rational (unsigned long long);
+
   explicit Rational (I64, I64);
   explicit Rational (double);
-  Rational (Rational const &r) { copy (r);}
-  Rational &operator = (Rational const &r)
-  {
-    copy (r);
-    return *this;
-  }
+  Rational (Rational const &r) = default;
+  Rational &operator = (Rational const &r) = default;
 
   Rational &operator *= (Rational);
   Rational &operator /= (Rational);
@@ -86,7 +90,7 @@ public:
   Rational &operator %= (Rational);
   static int compare (Rational const &, Rational const &);
   int sign () const;
-  string to_string () const;
+  std::string to_string () const;
 };
 
 #include "arithmetic-operator.hh"
@@ -102,19 +106,15 @@ INSTANTIATE_COMPARE (Rational const &, Rational::compare);
 int compare (Rational const &, Rational const &);
 int sign (Rational r);
 
-inline void
-Rational::copy (Rational const &r)
-{
-  sign_ = r.sign_;
-  num_ = r.num_;
-  den_ = r.den_;
-}
-
 #if 0
 ostream &
 operator << (ostream &, Rational);
 #endif
 
-const Rational infinity_rat (U64_MAX);
+inline std::string
+to_string (Rational const &r)
+{
+  return r.to_string ();
+}
 
 #endif // RATIONAL_HH

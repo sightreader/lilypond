@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2016 Paul Morris
+  Copyright (C) 2016--2020 Paul Morris
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "paper-book.hh"
 #include "paper-score.hh"
 #include "system.hh"
+
+using std::vector;
 
 One_page_breaking::One_page_breaking (Paper_book *pb)
   : Page_breaking (pb, 0, 0)
@@ -76,7 +78,7 @@ One_page_breaking::solve ()
 
   // PAGE BREAKING
   message (_ ("Fitting music on 1 page..."));
-  vsize first_page_num = robust_scm2int (book_->paper_->c_variable ("first-page-number"), 1);
+  int first_page_num = robust_scm2int (book_->paper_->c_variable ("first-page-number"), 1);
   Page_spacing_result res = space_systems_on_n_pages (0, 1, first_page_num);
   SCM lines = systems ();
   SCM pages = make_pages (res.systems_per_page_, lines);

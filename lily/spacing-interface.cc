@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2007--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "skyline.hh"
 #include "skyline-pair.hh"
 #include "system.hh"
+
+using std::vector;
 
 /* return the right-pointing skyline of the left-items and the left-pointing
    skyline of the right-items (with the skyline of the left-items in
@@ -96,45 +98,50 @@ Spacing_interface::minimum_distance (Grob *me, Grob *right)
 {
   Drul_array<Skyline> skylines = Spacing_interface::skylines (me, right);
 
-  return max (0.0, skylines[LEFT].distance (skylines[RIGHT]));
+  return std::max (0.0, skylines[LEFT].distance (skylines[RIGHT]));
 }
 
 /*
   Compute the left-most column of the right-items.
 */
-Item *
+Paper_column *
 Spacing_interface::right_column (Grob *me)
 {
   if (!me->is_live ())
     return 0;
 
-  Grob_array *a = unsmob<Grob_array> (me->get_object ("right-items"));
-  Item *mincol = 0;
-  int min_rank = INT_MAX;
-  for (vsize i = 0; a && i < a->size (); i++)
+  Paper_column *mincol = 0;
+  if (Grob_array *a = unsmob<Grob_array> (me->get_object ("right-items")))
     {
-      Item *ri = a->item (i);
-      Item *col = ri->get_column ();
-
-      int rank = Paper_column::get_rank (col);
-
-      if (rank < min_rank)
+      int min_rank = INT_MAX;
+      for (vsize i = 0; i < a->size (); i++)
         {
-          min_rank = rank;
-          mincol = col;
+          if (Item *ri = dynamic_cast<Item *> (a->grob (i)))
+            {
+              if (Paper_column *col = ri->get_column ())
+                {
+                  int rank = col->get_rank ();
+                  if (rank < min_rank)
+                    {
+                      min_rank = rank;
+                      mincol = col;
+                    }
+                }
+            }
         }
     }
 
   return mincol;
 }
 
-Item *
-Spacing_interface::left_column (Grob *me)
+Paper_column *
+Spacing_interface::left_column (Grob *me_as_grob)
 {
-  if (!me->is_live ())
+  Item *me = dynamic_cast<Item *> (me_as_grob);
+  if (!me || !me->is_live ())
     return 0;
 
-  return dynamic_cast<Item *> (me)->get_column ();
+  return me->get_column ();
 }
 
 static vector<Item *>

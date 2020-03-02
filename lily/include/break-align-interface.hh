@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 class Break_alignment_interface
 {
 public:
-  static vector<Grob *> ordered_elements (Grob *me);
+  static std::vector<Grob *> ordered_elements (Grob *me);
   static void add_element (Grob *me, Grob *add);
   static SCM break_align_order (Item *me);
   DECLARE_SCHEME_CALLBACK (calc_positioning_done, (SCM element));
@@ -37,10 +37,16 @@ struct Break_aligned_interface
   DECLARE_SCHEME_CALLBACK (calc_average_anchor, (SCM));
   DECLARE_SCHEME_CALLBACK (calc_extent_aligned_anchor, (SCM));
   DECLARE_SCHEME_CALLBACK (calc_break_visibility, (SCM));
+
+  DECLARE_SCHEME_CALLBACK (calc_joint_anchor_alignment, (SCM));
+  static int calc_joint_anchor_alignment(Grob *me);
 };
 
 struct Break_alignable_interface
 {
+  DECLARE_SCHEME_CALLBACK (find_parent, (SCM grob));
+  static Grob* find_parent (Grob *me);
+
   DECLARE_SCHEME_CALLBACK (self_align_callback, (SCM element));
 };
 

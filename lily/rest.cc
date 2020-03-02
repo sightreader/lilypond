@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "staff-symbol.hh"
 #include "stencil.hh"
 #include "grob.hh"
+
+using std::string;
 
 // -> offset callback
 MAKE_SCHEME_CALLBACK (Rest, y_offset_callback, 1);
@@ -90,6 +92,9 @@ Rest::staff_position_internal (Grob *me, int duration_log, int dir)
 
   if (linepos.empty ())
     return pos;
+
+  if (linepos.size () == 1 && duration_log < 0 && !get_grob_direction (me))
+    return linepos[0] - 2;
 
   std::sort (linepos.begin (), linepos.end ());
 
@@ -216,7 +221,7 @@ Rest::glyph_name (Grob *me, int durlog, const string &style, bool try_ledgers,
       actual_style = "";
     }
 
-  return ("rests." + ::to_string (durlog) + (is_ledgered ? "o" : "")
+  return ("rests." + std::to_string (durlog) + (is_ledgered ? "o" : "")
           + actual_style);
 }
 
@@ -237,6 +242,13 @@ Rest::brew_internal_stencil (Grob *me, bool ledgered)
   Stencil out = fm->find_by_name (font_char);
   if (out.is_empty ())
     me->warning (_f ("rest `%s' not found", font_char.c_str ()));
+
+  if (durlog < 0)
+    {
+      Real fs = pow (2, robust_scm2double (me->get_property ("font-size"), 0) / 6);
+      Real ss = Staff_symbol_referencer::staff_space (me);
+      out.translate_axis (ss - fs, Y_AXIS);
+    }
 
   return out.smobbed_copy ();
 }

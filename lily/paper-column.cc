@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,22 +39,22 @@
 #include "text-interface.hh"
 #include "warn.hh"
 
-Grob *
-Paper_column::clone () const
-{
-  return new Paper_column (*this);
-}
+using std::string;
+using std::vector;
 
-void
-Paper_column::do_break_processing ()
+bool
+Paper_column::internal_set_as_bound_of_spanner (Spanner *s, Direction)
 {
-  Item::do_break_processing ();
-}
-
-int
-Paper_column::get_rank (Grob const *me)
-{
-  return dynamic_cast<Paper_column const *> (me)->rank_;
+  bool ok = s->accepts_as_bound_paper_column (this);
+  if (ok)
+    {
+      // Signal that this column needs to be kept alive. They need to be kept
+      // alive to have meaningful position and linebreaking.  [maybe we should
+      // try keeping all columns alive?, and perhaps inherit position from
+      // their (non-)musical brother]
+      Pointer_group_interface::add_grob (this, ly_symbol2scm ("bounded-by-me"), s);
+    }
+  return ok;
 }
 
 void
@@ -95,24 +95,6 @@ Paper_column::Paper_column (Paper_column const &src)
   rank_ = src.rank_;
 }
 
-int
-Paper_column::compare (Grob *const &a,
-                       Grob *const &b)
-{
-  return sign (dynamic_cast<Paper_column *> (a)->rank_
-               - dynamic_cast<Paper_column *> (b)->rank_);
-}
-
-bool
-Paper_column::less_than (Grob *const &a,
-                         Grob *const &b)
-{
-  Paper_column *pa = dynamic_cast<Paper_column *> (a);
-  Paper_column *pb = dynamic_cast<Paper_column *> (b);
-
-  return pa->rank_ < pb->rank_;
-}
-
 Moment
 Paper_column::when_mom (Grob *me)
 {
@@ -126,10 +108,9 @@ bool
 Paper_column::is_musical (Grob *me)
 {
   SCM m = me->get_property ("shortest-starter-duration");
-  Moment s (0);
-  if (unsmob<Moment> (m))
-    s = *unsmob<Moment> (m);
-  return s != Moment (0);
+  if (Moment *s = unsmob<Moment> (m))
+    return *s != Moment (0);
+  return false;
 }
 
 bool
@@ -176,7 +157,7 @@ Paper_column::minimum_distance (Grob *left, Grob *right)
 
   skys[RIGHT].merge (Separation_item::conditional_skyline (right, left));
 
-  return max (0.0, skys[LEFT].distance (skys[RIGHT]));
+  return std::max (0.0, skys[LEFT].distance (skys[RIGHT]));
 }
 
 Interval
@@ -284,7 +265,7 @@ Paper_column::print (SCM p)
 {
   Paper_column *me = unsmob<Paper_column> (p);
 
-  string r = ::to_string (Paper_column::get_rank (me));
+  string r = std::to_string (me->get_rank ());
 
   Moment *mom = unsmob<Moment> (me->get_property ("when"));
   string when = mom ? mom->to_string () : "?/?";

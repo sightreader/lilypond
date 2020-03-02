@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,30 +24,24 @@
 #include "std-string.hh"
 
 /**
-   search in directories for a file.
-
-   Abstraction of PATH variable. An interface for searching input files.
-   Search a number of dirs for a file.
-
-   TODO: add a unix style PATH interface
+   A list of directories to look for files, analogous to $PATH.
 */
-
 class File_path
 {
-  vector<string> dirs_;
+  std::vector<std::string> dirs_;
 
 public:
-  vector<string> directories () const;
-  string find (const string &name) const;
-  string find (const string &name, char const *extensions[]);
-  string to_string () const;
-  bool try_append (string str);
-  void append (const string&);
-  void parse_path (const string&);
-  void prepend (const string&);
+  std::vector<std::string> directories () const;
+  std::string find (const std::string &name) const;
+  std::string find (const std::string &name, char const *extensions[]);
+  std::string to_string () const;
+  bool try_append (std::string str);
+  void append (const std::string&);
+  void parse_path (const std::string&);
+  void prepend (const std::string&);
 };
 
-bool is_file (const string &file_name);
-bool is_dir (string file_name);
+bool is_file (const std::string &file_name);
+bool is_dir (std::string file_name);
 
 #endif /* FILE_PATH */

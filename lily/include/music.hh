@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ class Music : Preinit_Music, public Prob
 public:
   Music (SCM init);
   Music (Music const &m);
-  VIRTUAL_COPY_CONSTRUCTOR (Music, Music);
+  OVERRIDE_CLASS_NAME (Music);
+  virtual Music *clone () const { return new Music (*this); }
 
   Input *origin () const;
   void set_spot (Input);
@@ -55,7 +56,7 @@ public:
   void print () const;
 
   /// Scale the music in time by #factor#.
-  void compress (Moment factor);
+  void compress (Rational factor);
 
   // Broadcast the event in a context's event-source.
   void send_to_context (Context *c);
@@ -63,9 +64,9 @@ public:
   DECLARE_SCHEME_CALLBACK (duration_length_callback, (SCM));
 
 protected:
-  virtual SCM copy_mutable_properties () const;
-  virtual void type_check_assignment (SCM, SCM) const;
-  virtual void derived_mark () const;
+  SCM copy_mutable_properties () const override;
+  void type_check_assignment (SCM, SCM) const override;
+  void derived_mark () const override;
 protected:
   friend SCM ly_extended_make_music (SCM, SCM);
 };

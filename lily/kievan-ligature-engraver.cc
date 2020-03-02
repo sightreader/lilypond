@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2013--2015 Aleksandr Andreev <aleksandr.andreev@gmail.com>
+  Copyright (C) 2013--2020 Aleksandr Andreev <aleksandr.andreev@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,13 +29,15 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Kievan_ligature_engraver : public Coherent_ligature_engraver
 {
 
 protected:
-  virtual Spanner *create_ligature_spanner ();
-  virtual void build_ligature (Spanner *ligature,
-                               vector<Grob_info> const &primitives);
+  Spanner *create_ligature_spanner () override;
+  void build_ligature (Spanner *ligature,
+                       vector<Grob_info> const &primitives) override;
 
 public:
   TRANSLATOR_DECLARATIONS (Kievan_ligature_engraver);

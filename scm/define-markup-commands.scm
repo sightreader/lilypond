@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2000--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 2000--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;                  Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -149,7 +149,7 @@ determines the space between markups in @var{args}.
   #:category graphic
   #:properties ((thickness 1))
   "
-@cindex drawing lines within text
+@cindex drawing line, within text
 
 A simple line.
 @lilypond[verbatim,quote]
@@ -174,7 +174,7 @@ A simple line.
                 (phase 0)
                 (full-length #t))
   "
-@cindex drawing dashed lines within text
+@cindex drawing dashed line, within text
 
 A dashed line.
 
@@ -187,8 +187,7 @@ Manual settings for @code{on},@code{off} and @code{phase} are possible.
 @lilypond[verbatim,quote]
 \\markup {
   \\draw-dashed-line #'(5.1 . 2.3)
-  \\override #'(on . 0.3)
-  \\override #'(off . 0.5)
+  \\override #'((on . 0.3) (off . 0.5))
   \\draw-dashed-line #'(5.1 . 2.3)
 }
 @end lilypond"
@@ -280,7 +279,7 @@ Manual settings for @code{on},@code{off} and @code{phase} are possible.
                 (off 1)
                 (phase 0))
   "
-@cindex drawing dotted lines within text
+@cindex drawing dotted line, within text
 
 A dotted line.
 
@@ -293,8 +292,7 @@ line-length.
 @lilypond[verbatim,quote]
 \\markup {
   \\draw-dotted-line #'(5.1 . 2.3)
-  \\override #'(thickness . 2)
-  \\override #'(off . 0.2)
+  \\override #'((thickness . 2) (off . 0.2))
   \\draw-dotted-line #'(5.1 . 2.3)
 }
 @end lilypond"
@@ -314,7 +312,7 @@ line-length.
                 (height 0.5)
                 (orientation 1))
   "
-@cindex drawing squiggled lines within text
+@cindex drawing squiggled line, within text
 
 A squiggled line.
 
@@ -394,7 +392,7 @@ Its appearance may be customized by overrides for @code{thickness},
                 (line-width)
                 (span-factor 1))
   "
-@cindex drawing a line across a page
+@cindex drawing line, across a page
 
 Draws a line across a page, where the property @code{span-factor}
 controls what fraction of the page is taken up.
@@ -417,7 +415,7 @@ controls what fraction of the page is taken up.
   (number? number? boolean?)
   #:category graphic
   "
-@cindex drawing circles within text
+@cindex drawing circle, within text
 
 A circle of radius @var{radius} and thickness @var{thickness},
 optionally filled.
@@ -438,7 +436,7 @@ optionally filled.
                 (font-size 0)
                 (baseline-skip 2))
   "
-@cindex drawing triangles within text
+@cindex drawing triangle, within text
 
 A triangle, either filled or empty.
 
@@ -494,7 +492,7 @@ thickness and padding around the markup.
                 (x-padding 0.2)
                 (y-padding 0.2))
   "
-@cindex drawing ellipse around text
+@cindex drawing ellipse, around text
 
 Draw an ellipse around @var{arg}.  Use @code{thickness},
 @code{x-padding}, @code{y-padding} and @code{font-size} properties to determine
@@ -522,7 +520,7 @@ line thickness and padding around the markup.
                 (x-padding 0.75)
                 (y-padding 0.75))
   "
-@cindex drawing oval around text
+@cindex drawing oval, around text
 
 Draw an oval around @var{arg}.  Use @code{thickness},
 @code{x-padding}, @code{y-padding} and @code{font-size} properties to determine
@@ -546,7 +544,7 @@ line thickness and padding around the markup.
   (string? markup?)
   #:category graphic
   "
-@cindex inserting URL links into text
+@cindex inserting URL link, into text
 
 Add a link to URL @var{url} around @var{arg}.  This only works in
 the PDF backend.
@@ -572,7 +570,7 @@ the PDF backend.
   (number? markup?)
   #:category other
   "
-@cindex referencing page numbers in text
+@cindex referencing page number, in text
 
 Add a link to the page @var{page-number} around @var{arg}.  This only works
 in the PDF backend.
@@ -604,7 +602,7 @@ in the PDF backend.
   (symbol? markup?)
   #:category other
   "
-@cindex referencing page labels in text
+@cindex referencing page label, in text
 
 Add a link to the page holding label @var{label} around @var{arg}.  This
 only works in the PDF backend.
@@ -642,7 +640,7 @@ only works in the PDF backend.
   (number? number? number?)
   #:category graphic
   "
-@cindex drawing beams within text
+@cindex drawing beam, within text
 
 Create a beam with the specified parameters.
 @lilypond[verbatim,quote]
@@ -740,6 +738,7 @@ makes little sense, it would end up adding the provided value to the one of
   #:properties ((thickness 1)
                 (offset 2)
                 (direction UP)
+                (height-limit 0.7)
                 (shorten-pair '(0 . 0)))
   "
 @cindex tie-ing text
@@ -776,7 +775,12 @@ of @var{arg}.  Looks at @code{thickness} to determine line thickness, and
              (cons (+ x1 (car shorten-pair) line-thickness) y)
              (cons (- x2 (cdr shorten-pair) line-thickness) y)
              thick
-             direction)))
+             direction
+             ;; For usage in text we choose a little less `height-limit'
+             ;; than the default for `Tie', i.e 0.7 (see properties above)
+             ;; TODO add the other optional arguments of `make-tie-stencil'
+             ;; i.e. `ratio' and `angularity' ?
+             height-limit)))
     (ly:stencil-add stil tie)))
 
 (define-markup-command (undertie layout props arg)
@@ -789,11 +793,9 @@ of @var{arg}.  Looks at @code{thickness} to determine line thickness, and
 @lilypond[verbatim,quote]
 \\markup \\line {
   \\undertie \"undertied\"
-  \\override #'(offset . 5)
-  \\override #'(thickness . 1)
+  \\override #'((offset . 5) (thickness . 1))
   \\undertie \"undertied\"
-  \\override #'(offset . 1)
-  \\override #'(thickness . 5)
+  \\override #'((offset . 1) (thickness . 5))
   \\undertie \"undertied\"
 }
 @end lilypond"
@@ -812,11 +814,9 @@ Overtie @var{arg}.
 @lilypond[verbatim,quote]
 \\markup \\line {
   \\overtie \"overtied\"
-  \\override #'(offset . 5)
-  \\override #'(thickness . 1)
+  \\override #'((offset . 5) (thickness . 1))
   \\overtie \"overtied\"
-  \\override #'(offset . 1)
-  \\override #'(thickness . 5)
+  \\override #'((offset . 1) (thickness . 5))
   \\overtie \"overtied\"
 }
 @end lilypond"
@@ -853,8 +853,8 @@ thickness and padding around the markup.
   (number-pair? number-pair? number?)
   #:category graphic
   "
-@cindex drawing solid boxes within text
-@cindex drawing boxes with rounded corners
+@cindex drawing solid box, within text
+@cindex drawing box, with rounded corners
 
 Draw a box with rounded corners of dimensions @var{xext} and
 @var{yext}.  For example,
@@ -884,8 +884,8 @@ circle of diameter@tie{}0 (i.e., sharp corners).
                 (corner-radius 1)
                 (font-size 0)
                 (box-padding 0.5))
-  "@cindex enclosing text in a box with rounded corners
-   @cindex drawing boxes with rounded corners around text
+  "@cindex enclosing text in box, with rounded corners
+   @cindex drawing box, with rounded corners, around text
 Draw a box with rounded corners around @var{arg}.  Looks at @code{thickness},
 @code{box-padding} and @code{font-size} properties to determine line
 thickness and padding around the markup; the @code{corner-radius} property
@@ -933,7 +933,7 @@ Rotate object with @var{ang} degrees around its center.
   #:properties ((style 'box)
                 (thickness '()))
   "
-@cindex adding a white background to text
+@cindex adding white background, to text
 
 Provide a white background for @var{arg}.  The shape of the white
 background is determined by @code{style}.  The default
@@ -951,15 +951,13 @@ outline of the markup.
 \\markup {
   \\combine
     \\filled-box #'(-1 . 24) #'(-3 . 4) #1
-    \\override #'(style . rounded-box)
-    \\override #'(thickness . 3)
+    \\override #'((style . rounded-box) (thickness . 3))
     \\whiteout whiteout-rounded-box
 }
 \\markup {
   \\combine
     \\filled-box #'(-1 . 18) #'(-3 . 4) #1
-    \\override #'(style . outline)
-    \\override #'(thickness . 3)
+    \\override #'((style . outline) (thickness . 3))
     \\whiteout whiteout-outline
 }
 @end lilypond"
@@ -1006,7 +1004,7 @@ Identical to @code{pad-around}.
   ()
   #:category other
   "
-@cindex creating vertical spaces in text
+@cindex creating vertical space, in text
 
 Create a box of the same height as the space in the current font."
   (let ((m (ly:text-interface::interpret-markup layout props " ")))
@@ -1019,7 +1017,7 @@ Create a box of the same height as the space in the current font."
   (number?)
   #:category align
   "
-@cindex creating horizontal spaces in text
+@cindex creating horizontal space, in text
 
 Create an invisible object taking up horizontal space @var{amount}.
 
@@ -1038,7 +1036,7 @@ Create an invisible object taking up horizontal space @var{amount}.
   (number?)
   #:category align
   "
-@cindex creating vertical spaces in text
+@cindex creating vertical space, in text
 
 Create an invisible object taking up vertical space
 of @var{amount} multiplied by 3.
@@ -1066,7 +1064,7 @@ of @var{amount} multiplied by 3.
   (ly:stencil?)
   #:category other
   "
-@cindex importing stencils into text
+@cindex importing stencil, into text
 
 Use a stencil as markup.
 
@@ -1118,7 +1116,7 @@ Inline an EPS image.  The image is scaled along @var{axis} to
   (string?)
   #:category graphic
   "
-@cindex inserting PostScript directly into text
+@cindex inserting PostScript directly, into text
 This inserts @var{str} directly into the output as a PostScript
 command string.
 
@@ -1160,8 +1158,8 @@ grestore
                 (line-join-style 'round)
                 (filled #f))
   "
-@cindex paths, drawing
-@cindex drawing paths
+@cindex path, drawing
+@cindex drawing path
 Draws a path with line @var{thickness} according to the
 directions given in @var{commands}.  @var{commands} is a list of
 lists where the @code{car} of each sublist is a drawing command and
@@ -1315,7 +1313,7 @@ braces like it would be for @code{\\score}."
   #:category music
   #:properties ((baseline-skip))
   "
-@cindex inserting music into text
+@cindex inserting music, into text
 
 Inline an image of music.  The reference point (usually the middle
 staff line) of the lowest staff in the top system is placed on the
@@ -1368,7 +1366,7 @@ baseline.
   ()
   #:category other
   "
-@cindex creating empty text objects
+@cindex creating empty text object
 
 An empty markup with extents of a single point.
 
@@ -1387,7 +1385,7 @@ An empty markup with extents of a single point.
   (string?)
   #:category font
   "
-@cindex simple text strings
+@cindex simple text string
 
 A simple text string; @code{\\markup @{ foo @}} is equivalent with
 @code{\\markup @{ \\simple #\"foo\" @}}.
@@ -1571,6 +1569,11 @@ If there are no arguments, return an empty stencil.
       }
       \\line { across the page }
     }
+    \\null
+    \\override #'(line-width . 50)
+    \\fill-line {
+      Width explicitly specified
+    }
   }
 }
 @end lilypond"
@@ -1602,7 +1605,7 @@ space.  If there are no arguments, return an empty stencil.
   #:category align
   "
 @cindex concatenating text
-@cindex ligatures in text
+@cindex ligature, in text
 
 Concatenate @var{args} in a horizontal line, without spaces in between.
 Strings and simple markups are concatenated on the input level, allowing
@@ -2012,27 +2015,25 @@ in @var{args}.
   #:properties ((direction)
                 (baseline-skip))
   "
-@cindex changing direction of text columns
+@cindex changing direction of text column
 
 Make a column of @var{args}, going up or down, depending on the
 setting of the @code{direction} layout property.
 
 @lilypond[verbatim,quote]
 \\markup {
-  \\override #`(direction . ,UP) {
-    \\dir-column {
-      going up
-    }
+  \\override #`(direction . ,UP)
+  \\dir-column {
+    going up
   }
   \\hspace #1
   \\dir-column {
     going down
   }
   \\hspace #1
-  \\override #'(direction . 1) {
-    \\dir-column {
-      going up
-    }
+  \\override #'(direction . 1)
+  \\dir-column {
+    going up
   }
 }
 @end lilypond"
@@ -2042,29 +2043,25 @@ setting of the @code{direction} layout property.
                (interpret-markup-list layout props args)))
 
 (define (general-column align-dir baseline mols)
-  "Stack @var{mols} vertically, aligned to @var{align-dir} horizontally.
-Remove empty stencils from @var{mols}.  If @var{mols} is an empty list return
-@code{empty-stencil}."
-  (let ((aligned-mols
-          (filter-map
-            (lambda (x)
-              (if (ly:stencil-empty? x)
-                  #f
-                  (ly:stencil-aligned-to x X align-dir)))
-            mols)))
-    (if (pair? aligned-mols)
-        (let* ((stacked-stencil (stack-lines -1 0.0 baseline aligned-mols))
-               (stacked-extent (ly:stencil-extent stacked-stencil X)))
-          (ly:stencil-translate-axis
-            stacked-stencil (- (car stacked-extent)) X))
-        empty-stencil)))
+  "Stack @var{mols} vertically, aligned to  @var{align-dir} horizontally."
+  (let* ((aligned-mols
+           (map (lambda (x) (ly:stencil-aligned-to x X align-dir)) mols))
+         (stacked-stencil (stack-lines -1 0.0 baseline aligned-mols))
+         (stacked-extent (ly:stencil-extent stacked-stencil X)))
+    ;; empty stencils are not moved
+    (if (interval-sane? stacked-extent)
+        (ly:stencil-translate-axis
+          stacked-stencil
+          (- (car stacked-extent))
+          X)
+        stacked-stencil)))
 
 (define-markup-command (center-column layout props args)
   (markup-list?)
   #:category align
   #:properties ((baseline-skip))
   "
-@cindex centering a column of text
+@cindex centering column of text
 
 Put @code{args} in a centered column.
 
@@ -2084,7 +2081,7 @@ Put @code{args} in a centered column.
   #:category align
   #:properties ((baseline-skip))
   "
-@cindex text columns, left-aligned
+@cindex text column, left-aligned
 
 Put @code{args} in a left-aligned column.
 
@@ -2104,7 +2101,7 @@ Put @code{args} in a left-aligned column.
   #:category align
   #:properties ((baseline-skip))
   "
-@cindex text columns, right-aligned
+@cindex text column, right-aligned
 
 Put @code{args} in a right-aligned column.
 
@@ -2163,7 +2160,7 @@ Align @code{arg} to its X@tie{}center.
   (markup?)
   #:category align
   "
-@cindex right aligning text
+@cindex right-aligning text
 
 Align @var{arg} on its right edge.
 
@@ -2184,7 +2181,7 @@ Align @var{arg} on its right edge.
   (markup?)
   #:category align
   "
-@cindex left aligning text
+@cindex left-aligning text
 
 Align @var{arg} on its left edge.
 
@@ -2283,15 +2280,13 @@ alignment accordingly.
   (number-pair? number-pair? markup?)
   #:category other
   "
-@cindex setting extent of text objects
+@cindex setting extent of text object
 
 Set the dimensions of @var{arg} to @var{x} and@tie{}@var{y}."
-  (let* ((expr (ly:stencil-expr (interpret-markup layout props arg))))
-    (ly:stencil-add
-     (make-transparent-box-stencil x y)
-     (ly:make-stencil
-      `(delay-stencil-evaluation ,(delay expr))
-      x y))))
+  (ly:stencil-outline
+   (interpret-markup layout props arg)
+   (make-filled-box-stencil x y)))
+
 
 (define-markup-command (with-outline layout props outline arg)
   (markup? markup?)
@@ -2576,31 +2571,29 @@ The footnote will be annotated automatically."
   (pair? markup?)
   #:category other
   "
-@cindex overriding properties within text markup
+@cindex overriding property within text markup
 
 Add the argument @var{new-prop} to the property list.  Properties
 may be any property supported by @rinternals{font-interface},
 @rinternals{text-interface} and
 @rinternals{instrument-specific-markup-interface}.
 
+@var{new-prop} may be either a single alist pair, or non-empty alist
+of its own.
+
 @lilypond[verbatim,quote]
 \\markup {
-  \\line {
-    \\column {
-      default
-      baseline-skip
-    }
-    \\hspace #2
-    \\override #'(baseline-skip . 4) {
-      \\column {
-        increased
-        baseline-skip
-      }
-    }
-  }
+  \\undertie \"undertied\"
+  \\override #'(offset . 15)
+  \\undertie \"offset undertied\"
+  \\override #'((offset . 15)(thickness . 3))
+  \\undertie \"offset thick undertied\"
 }
 @end lilypond"
-  (interpret-markup layout (cons (list new-prop) props) arg))
+  (interpret-markup layout
+                    (cons (if (pair? (car new-prop)) new-prop (list new-prop))
+                          props)
+                    arg))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; files
@@ -3307,7 +3300,7 @@ Draw @var{arg} in color specified by @var{color}.
   #:category music
   #:properties ((word-space))
   "
-@cindex simple text strings with tie characters
+@cindex simple text string, with tie characters
 
 Like simple-markup, but use tie characters for @q{~} tilde symbols.
 
@@ -3417,27 +3410,24 @@ format require the prefix @code{#x}.
 @end lilypond"
   (ly:text-interface::interpret-markup layout props (ly:wide-char->utf-8 num)))
 
-(define number->mark-letter-vector (make-vector 25 #\A))
+(define mark-alphabets
+   `((alphabet        . ,(list->vector (string->list "ABCDEFGHIJKLMNOPQRSTUVWXYZ")))
+     (alphabet-omit-i . ,(list->vector (string->list "ABCDEFGHJKLMNOPQRSTUVWXYZ")))
+     (alphabet-omit-j . ,(list->vector (string->list "ABCDEFGHIKLMNOPQRSTUVWXYZ")))))
 
-(do ((i 0 (1+ i))
-     (j 0 (1+ j)))
-    ((>= i 26))
-  (if (= i (- (char->integer #\I) (char->integer #\A)))
-      (set! i (1+ i)))
-  (vector-set! number->mark-letter-vector j
-               (integer->char (+ i (char->integer #\A)))))
-
-(define number->mark-alphabet-vector (list->vector
-                                      (map (lambda (i) (integer->char (+ i (char->integer #\A)))) (iota 26))))
-
-(define (number->markletter-string vec n)
-  "Double letters for big marks."
-  (let* ((lst (vector-length vec)))
-
-    (if (>= n lst)
-        (string-append (number->markletter-string vec (1- (quotient n lst)))
-                       (number->markletter-string vec (remainder n lst)))
-        (make-string 1 (vector-ref vec n)))))
+(define (markgeneric-string number alphabet double-letters)
+  (let* ((the-alphabet (assq-ref mark-alphabets alphabet))
+         (the-alphabet-length (vector-length the-alphabet)))
+    (case double-letters
+      ((repeat) (let ((the-length (1+ (quotient (1- number) the-alphabet-length)))
+                      (the-index     (remainder (1- number) the-alphabet-length)))
+                  (make-string the-length (vector-ref the-alphabet the-index))))
+      ((combine) (let loop ((num (1- number)))
+                   (if (< num the-alphabet-length)
+                       (string (vector-ref the-alphabet num))
+                       (string-append
+                         (loop (1- (quotient num the-alphabet-length)))
+                         (loop    (remainder num the-alphabet-length)))))))))
 
 (define-markup-command (markletter layout props num)
   (integer?)
@@ -3453,7 +3443,7 @@ to@tie{}Z (skipping letter@tie{}I), and continue with double letters.
 }
 @end lilypond"
   (ly:text-interface::interpret-markup layout props
-                                       (number->markletter-string number->mark-letter-vector num)))
+                                       (markgeneric-string num 'alphabet-omit-i 'combine)))
 
 (define-markup-command (markalphabet layout props num)
   (integer?)
@@ -3469,7 +3459,7 @@ and continue with double letters.
 }
 @end lilypond"
   (ly:text-interface::interpret-markup layout props
-                                       (number->markletter-string number->mark-alphabet-vector num)))
+                                       (markgeneric-string num 'alphabet 'combine)))
 
 (define-public (horizontal-slash-interval num forward number-interval mag)
   (if forward
@@ -3538,7 +3528,7 @@ and continue with double letters.
   #:properties ((font-size 0)
                 (thickness 1.6))
   "
-@cindex slashed digits
+@cindex slashed digit
 
 A feta number, with slash.  This is for use in the context of
 figured bass notation.
@@ -3558,7 +3548,7 @@ figured bass notation.
   #:properties ((font-size 0)
                 (thickness 1.6))
   "
-@cindex backslashed digits
+@cindex backslashed digit
 
 A feta number, with backslash.  This is for use in the context of
 figured bass notation.
@@ -3676,7 +3666,7 @@ A feta brace in point size @var{size}, rotated 180 degrees.
                 (flag-style '())
                 (style '()))
   "
-@cindex notes within text by log and dot-count
+@cindex note, within text, by @code{log} and @code{dot-count}
 
 Construct a note symbol, with stem and flag.  By using fractional values for
 @var{dir}, longer or shorter stems can be obtained.
@@ -3921,28 +3911,29 @@ and return a (log dots) list."
         (ly:error (_ "not a valid duration string: ~a") duration-string))))
 
 (define-markup-command (note layout props duration dir)
-  (string? number?)
+  (ly:duration? number?)
   #:category music
   #:properties (note-by-number-markup)
   "
-@cindex notes within text by string
+@cindex note, within text, by duration
 
 This produces a note with a stem pointing in @var{dir} direction, with
 the @var{duration} for the note head type and augmentation dots.  For
-example, @code{\\note #\"4.\" #-0.75} creates a dotted quarter note, with
+example, @code{\\note @{4.@} #-0.75} creates a dotted quarter note, with
 a shortened down stem.
 
 @lilypond[verbatim,quote]
 \\markup {
-  \\override #'(style . cross) {
-    \\note #\"4..\" #UP
-  }
+  \\override #'(style . cross)
+  \\note {4..} #UP
   \\hspace #2
-  \\note #\"breve\" #0
+  \\note {\\breve} #0
 }
 @end lilypond"
-  (let ((parsed (parse-simple-duration duration)))
-    (note-by-number-markup layout props (car parsed) (cadr parsed) dir)))
+  (note-by-number-markup layout props
+                         (ly:duration-log duration)
+                         (ly:duration-dot-count duration)
+                         dir))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; the rest command.
@@ -3955,7 +3946,8 @@ a shortened down stem.
                 (style '())
                 (multi-measure-rest #f))
   "
-@cindex rests or multi-measure-rests within text by log and dot-count
+@cindex rest, within text, by @code{log} and @code{dot-count}
+@cindex multi-measure rest, within text, by @code{log} and @code{dot-count}
 
 A rest or multi-measure-rest symbol.
 
@@ -4070,7 +4062,8 @@ A rest or multi-measure-rest symbol.
                 (multi-measure-rest-number #t)
                 (word-space 0.6))
   "
-@cindex rests or multi-measure-rests within text by string
+@cindex rest, within text, by string
+@cindex multi-measure rest, within text, by string
 
 This produces a rest, with the @var{duration} for the rest type and
 augmentation dots.
@@ -4089,7 +4082,7 @@ Could be disabled with @code{\\override #'(multi-measure-rest-number . #f)}
   \\hspace #2
   \\rest #\"breve\"
   \\hspace #2
-  \\override #'(multi-measure-rest . #t)
+  \\override-lines #'(multi-measure-rest . #t)
   {
   \\rest #\"7\"
   \\hspace #2
@@ -4312,7 +4305,7 @@ and/or @code{extra-offset} properties.
   #:category other
   #:properties ((font-size 0))
   "
-@cindex creating text fractions
+@cindex creating text fraction
 
 Make a fraction of two markups.
 @lilypond[verbatim,quote]
@@ -4348,7 +4341,7 @@ Make a fraction of two markups.
   #:category font
   #:properties ((font-size 0))
   "
-@cindex setting superscript in standard font size
+@cindex setting superscript, in standard font size
 
 Set @var{arg} in superscript with a normal font size.
 
@@ -4443,7 +4436,7 @@ Set @var{arg} in subscript.
   #:category font
   #:properties ((font-size 0))
   "
-@cindex setting subscript in standard font size
+@cindex setting subscript, in standard font size
 
 Set @var{arg} in subscript with a normal font size.
 
@@ -4468,7 +4461,7 @@ Set @var{arg} in subscript with a normal font size.
   (markup?)
   #:category graphic
   "
-@cindex placing horizontal brackets around text
+@cindex placing horizontal brackets, around text
 
 Draw horizontal brackets around @var{arg}.
 
@@ -4489,14 +4482,14 @@ Draw horizontal brackets around @var{arg}.
   (markup?)
   #:category graphic
   "
-@cindex placing vertical brackets around text
+@cindex placing vertical brackets, around text
 
 Draw vertical brackets around @var{arg}.
 
 @lilypond[verbatim,quote]
 \\markup {
   \\bracket {
-    \\note #\"2.\" #UP
+    \\note {2.} #UP
   }
 }
 @end lilypond"
@@ -4514,28 +4507,23 @@ Draw vertical brackets around @var{arg}.
                 (line-thickness 0.1)
                 (width 0.25))
   "
-@cindex placing parentheses around text
+@cindex placing parentheses, around text
 
 Draw parentheses around @var{arg}.  This is useful for parenthesizing
 a column containing several lines of text.
 
 @lilypond[verbatim,quote]
 \\markup {
-  \\line {
-    \\parenthesize {
-      \\column {
-        foo
-        bar
-      }
-    }
-    \\override #'(angularity . 2) {
-      \\parenthesize {
-        \\column {
-          bah
-          baz
-        }
-      }
-    }
+  \\parenthesize
+  \\column {
+    foo
+    bar
+  }
+  \\override #'(angularity . 2)
+  \\parenthesize
+  \\column {
+    bah
+    baz
   }
 }
 @end lilypond"
@@ -4559,7 +4547,7 @@ a column containing several lines of text.
   (symbol? markup? markup?)
   #:category other
   "
-@cindex referencing page numbers in text
+@cindex referencing page number, in text
 
 Reference to a page number.  @var{label} is the label set on the referenced
 page (using the @code{\\label} command), @var{gauge} a markup used to estimate
@@ -4572,26 +4560,26 @@ width may require additional tweaking.)"
   (let* ((gauge-stencil (interpret-markup layout props gauge))
          (x-ext (ly:stencil-extent gauge-stencil X))
          (y-ext (ly:stencil-extent gauge-stencil Y)))
-   (ly:stencil-add
-    (make-transparent-box-stencil x-ext y-ext))
-    (ly:make-stencil
-     `(delay-stencil-evaluation
-       ,(delay (ly:stencil-expr
-                (let* ((table (ly:output-def-lookup layout 'label-page-table))
-                       (page-number (if (list? table)
-                                        (assoc-get label table)
-                                        #f))
-                       (number-type (ly:output-def-lookup layout 'page-number-type))
-                       (page-markup (if page-number
-                                        (number-format number-type page-number)
-                                        default))
-                       (page-stencil (interpret-markup layout props page-markup))
-                       (gap (- (interval-length x-ext)
-                               (interval-length (ly:stencil-extent page-stencil X)))))
-                  (interpret-markup layout props
-                                    (markup #:hspace gap page-markup))))))
-     x-ext
-     y-ext)))
+    (ly:stencil-outline
+     (ly:make-stencil
+      `(delay-stencil-evaluation
+        ,(delay (ly:stencil-expr
+                 (let* ((table (ly:output-def-lookup layout 'label-page-table))
+                        (page-number (if (list? table)
+                                         (assoc-get label table)
+                                         #f))
+                        (number-type (ly:output-def-lookup layout 'page-number-type))
+                        (page-markup (if page-number
+                                         (number-format number-type page-number)
+                                         default))
+                        (page-stencil (interpret-markup layout props page-markup))
+                        (gap (- (interval-length x-ext)
+                                (interval-length (ly:stencil-extent page-stencil X)))))
+                   (interpret-markup layout props
+                                     (markup #:hspace gap page-markup))))))
+      x-ext
+      y-ext)
+     (make-filled-box-stencil x-ext y-ext))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; scaling
@@ -4793,13 +4781,16 @@ where @var{X} is the number of staff spaces."
 (define-markup-list-command (override-lines layout props new-prop args)
   (pair? markup-list?)
   "Like @code{\\override}, for markup lists."
-  (interpret-markup-list layout (cons (list new-prop) props) args))
+  (interpret-markup-list layout
+                    (cons (if (pair? (car new-prop)) new-prop (list new-prop))
+                          props)
+                    args))
 
 (define-markup-list-command (table layout props column-align lst)
   (number-list? markup-list?)
   #:properties ((padding 0)
                 (baseline-skip))
-  "@cindex creating a table.
+  "@cindex creating a table
 
 Returns a table.
 

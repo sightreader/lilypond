@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2001--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2001--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
                   Erik Sandberg <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -24,17 +24,19 @@
 #include "sequential-iterator.hh"
 #include "lily-imports.hh"
 
+using std::string;
+
 class Percent_repeat_iterator : public Sequential_iterator
 {
 public:
-  DECLARE_CLASSNAME (Percent_repeat_iterator);
+  OVERRIDE_CLASS_NAME (Percent_repeat_iterator);
   DECLARE_SCHEME_CALLBACK (constructor, ());
   Percent_repeat_iterator ();
 protected:
-  virtual SCM get_music_list () const;
-  virtual void construct_children ();
-  virtual void next_element (bool);
-  virtual void derived_mark () const;
+  SCM get_music_list () const override;
+  void construct_children () override;
+  void next_element (bool) override;
+  void derived_mark () const override;
 private:
   SCM child_list_;
   int starting_bar_;

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -129,7 +129,7 @@ Ottava_bracket::print (SCM smob)
                    ? 0.0 : text.extent (X_AXIS)[RIGHT] + 0.3;
 
   span_points[LEFT]
-    = min (span_points[LEFT],
+    = std::min (span_points[LEFT],
            (span_points[RIGHT] - text_size
             - robust_scm2double (me->get_property ("minimum-length"), -1.0)));
 
@@ -188,9 +188,10 @@ ADD_INTERFACE (Ottava_bracket,
                "An ottava bracket.",
 
                /* properties */
-               "edge-height "
                "bracket-flare "
-               "shorten-pair "
+               "dashed-edge "
+               "edge-height "
                "minimum-length "
+               "shorten-pair "
               );
 

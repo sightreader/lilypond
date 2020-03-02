@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 1998--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;                 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -219,6 +219,8 @@ an ending t-value, a @code{dash-fraction}, and a @code{dash-period}.")
 produced")
      (dash-period ,number? "The length of one dash together with
 whitespace.  If negative, no line is drawn at all.")
+     (dashed-edge ,boolean? "If set, the bracket edges are dashed like
+the rest of the bracket.")
      (default-direction ,ly:dir? "Direction determined by note head
 positions.")
      (default-staff-staff-spacing ,list? "The settings to use for
@@ -391,6 +393,10 @@ Default@tie{}0.
 the center of the fret in direction orthogonal to strings.
 Default@tie{}0.
 @item
+@code{handedness} -- Print the fret-diagram left- or right-handed.
+@w{@code{-1}}, @code{LEFT} for left ; @code{1}, @code{RIGHT} for right.
+Default @code{RIGHT}.
+@item
 @code{paren-padding} -- The padding for the parenthesis.
 Default@tie{}0.05.
 @item
@@ -537,10 +543,10 @@ for ambitus calculation.")
      (ignore-collision ,boolean? "If set, don't do note collision
 resolution on this @code{NoteColumn}.")
      (implicit ,boolean? "Is this an implicit bass figure?")
-     (inspect-index ,integer? "If debugging is set, set beam and slur
-configuration to this index, and print the respective scores.")
      (inspect-quants ,number-pair? "If debugging is set, set beam and
-slur quants to this position, and print the respective scores.")
+slur position to a (quantized) position that is as close as possible
+to this value, and print the demerits for the inspected position in
+the output.")
 
 
 ;;;
@@ -779,6 +785,7 @@ break at a column with a negative penalty.")
      (page-break-permission ,symbol? "Instructs the page breaker on
 whether to put a page break at this column.  Can be @code{force} or
 @code{allow}.")
+     (page-number ,number? "Page number on which this system ends up.")
      (page-turn-penalty ,number? "Penalty for a page turn at this
 column.  This affects the choices of the page breaker; it avoids a
 page turn at a column with a positive penalty and prefers a page turn
@@ -814,6 +821,7 @@ horizontal edges.")
 ;;;
 ;;; r
 ;;;
+     (rank-on-page ,number? "0-based index of the system on a page.")
      (ratio ,number? "Parameter for slur shape.  The higher this
 number, the quicker the slur attains its @code{height-limit}.")
      (remove-empty ,boolean? "If set, remove group if it contains no
@@ -1135,6 +1143,8 @@ direction and it is associated with a @code{ScriptColumn} object.
 @code{0.0} means centered on the note head (the default position of
 most scripts); @code{1.0} means centered on the stem.  Interpolated
 values are possible.")
+     (tuplet-slur ,boolean? "Draw a slur instead of a bracket for
+tuplets.")
      (transparent ,boolean? "This makes the grob invisible.")
 
 

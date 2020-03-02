@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 #include "text-interface.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    typeset directions that are  plain text.
@@ -62,13 +64,12 @@ Text_engraver::process_music ()
       Item *script = make_item ("TextScript", ev->self_scm ());
       scripts_.push_back (script);
 
-      int priority = robust_scm2int (script->get_property ("script-priority"),
-                                     200);
-
       /* see script-engraver.cc */
-      priority += i;
-
-      script->set_property ("script-priority", scm_from_int (priority));
+      SCM priority = script->get_property ("script-priority");
+      if (!scm_is_number (priority))
+        priority = scm_from_int (200); // TODO: Explain magic.
+      priority = scm_sum (priority, scm_from_size_t (i));
+      script->set_property ("script-priority", priority);
 
       Direction dir = to_dir (ev->get_property ("direction"));
       if (dir)

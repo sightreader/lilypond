@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -28,6 +28,8 @@
 #include "axis-group-interface.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /*
   TODO:
@@ -74,7 +76,7 @@ public:
   TRANSLATOR_DECLARATIONS (Piano_pedal_align_engraver);
 
 protected:
-  virtual void finalize ();
+  void finalize () override;
 
   void acknowledge_piano_pedal_script (Grob_info);
   void acknowledge_piano_pedal_bracket (Grob_info);
@@ -213,14 +215,15 @@ Piano_pedal_align_engraver::acknowledge_piano_pedal_bracket (Grob_info gi)
   Grob *sp = make_line_spanner (type, gi.grob ()->self_scm ());
 
   Axis_group_interface::add_element (sp, gi.grob ());
-  pedal_info_[type].carrying_spanner_ = gi.spanner ();
+  pedal_info_[type].carrying_spanner_ = dynamic_cast<Spanner *> (gi.grob ());
 }
 
 void
 Piano_pedal_align_engraver::acknowledge_end_piano_pedal_bracket (Grob_info gi)
 {
   Pedal_type type = get_grob_pedal_type (gi);
-  pedal_info_[type].finished_carrying_spanner_ = gi.spanner ();
+  pedal_info_[type].finished_carrying_spanner_
+    = dynamic_cast<Spanner *> (gi.grob ());
 }
 
 void

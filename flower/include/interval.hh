@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 #ifndef INTERVAL_HH
 #define INTERVAL_HH
 
-#include <math.h>
+#include <cmath>
 
 #include "flower-proto.hh"
 #include "std-string.hh"
@@ -34,8 +34,12 @@ struct Interval_t : public Drul_array<T>
 {
   using Drul_array<T>::at;
 
+  template <typename T2>
+  Interval_t (Interval_t<T2> const &src) : Interval_t (src[LEFT], src[RIGHT])
+  {
+  }
+
   static T infinity ();
-  static string T_to_string (T arg);
   T center () const;
   void translate (T t)
   {
@@ -65,8 +69,8 @@ struct Interval_t : public Drul_array<T>
   void intersect (Interval_t<T> h);
   void add_point (T p)
   {
-    at (LEFT) = min (at (LEFT), p);
-    at (RIGHT) = max (at (RIGHT), p);
+    at (LEFT) = std::min (at (LEFT), p);
+    at (RIGHT) = std::max (at (RIGHT), p);
   }
   T length () const;
 
@@ -82,7 +86,6 @@ struct Interval_t : public Drul_array<T>
   {
     return at (LEFT) > at (RIGHT);
   }
-  bool superset (Interval_t<T> const &) const;
   Interval_t ()
   {
     set_empty ();
@@ -120,7 +123,7 @@ struct Interval_t : public Drul_array<T>
   }
 
   Real linear_combination (Real x) const;
-  string to_string () const;
+  std::string to_string () const;
 
   bool contains (T r) const;
   void negate ()
@@ -233,4 +236,3 @@ typedef Interval_t<int> Slice;  // weird name
 
 
 #endif // INTERVAL_HH
-

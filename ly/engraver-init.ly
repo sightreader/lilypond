@@ -1,6 +1,6 @@
 %%%% This file is part of LilyPond, the GNU music typesetter.
 %%%%
-%%%% Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+%%%% Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 %%%%                          Jan Nieuwenhuizen <janneke@gnu.org>
 %%%%
 %%%% LilyPond is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 %%%% You should have received a copy of the GNU General Public License
 %%%% along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 
-\version "2.19.46"
+\version "2.21.0"
 
 \context {
   \name "Global"
@@ -104,6 +104,7 @@
   \description "Handles clefs, bar lines, keys, accidentals.  It can contain
 @code{Voice} contexts."
 
+  ottavationMarkups = #ottavation-numbers
 }
 
 \context {
@@ -666,6 +667,8 @@ automatically when an output definition (a @code{\\score} or
 
   repeatCountVisibility = #all-repeat-counts-visible
 
+  restNumberThreshold = 1
+
   %% Other Timing variables are derived and set by the Timing_translator
   %% at initialization time by calling the functions in
   %% scm/time-signature-settings.scm
@@ -718,6 +721,12 @@ automatically when an output definition (a @code{\\score} or
 
   barCheckSynchronize = ##f
 
+  %% note names:
+  noteNameFunction = #note-name-markup
+  noteNameSeparator = "/"
+  printOctaveNames = ##f
+  printAccidentalNames = ##t
+
   %% chord names:
   chordNameFunction = #ignatzek-chord-names
   minorChordModifier = #(make-simple-markup "m")
@@ -730,8 +739,6 @@ automatically when an output definition (a @code{\\score} or
   chordNoteNamer = #'()
   chordRootNamer = #note-name->markup
   chordPrefixSpacer = #0
-  chordNameExceptionsFull = #fullJazzExceptions
-  chordNameExceptionsPartial = #partialJazzExceptions
   noChordSymbol = #(make-simple-markup "N.C.")
 
   %% tablature:
@@ -942,6 +949,7 @@ contexts and handles the line spacing, the tablature clef etc. properly."
   \override Rest.stencil = ##f
   \override MultiMeasureRest.stencil = ##f
   \override MultiMeasureRestNumber.stencil = ##f
+  \override MultiMeasureRestScript.stencil = ##f
   \override MultiMeasureRestText.stencil = ##f
   %% ... all kinds of ties/slurs
   \override Tie.stencil = ##f

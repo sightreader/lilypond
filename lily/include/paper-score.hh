@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,30 +31,31 @@ class Paper_score : public Music_output
   SCM systems_;
   SCM paper_systems_;
 
-  mutable vector<Grob *> cols_;
-  mutable vector<vsize> break_indices_;
-  mutable vector<vsize> break_ranks_;
+  mutable std::vector<Paper_column *> cols_;
+  mutable std::vector<vsize> break_indices_;
+  mutable std::vector<vsize> break_ranks_;
 public:
   Paper_score (Output_def *);
 
-  DECLARE_CLASSNAME (Paper_score);
+  OVERRIDE_CLASS_NAME (Paper_score);
 
   Output_def *layout () const;
   System *root_system () const;
 
   void typeset_system (System *);
-  vector<Column_x_positions> calc_breaking ();
-  vector<vsize> get_break_indices () const;
-  vector<vsize> get_break_ranks () const;
-  vector<Grob *> get_columns () const;
+  std::vector<Column_x_positions> calc_breaking ();
+  std::vector<vsize> const &get_break_indices () const;
+  std::vector<vsize> const &get_break_ranks () const;
+  std::vector<Paper_column *> const &get_columns () const;
   SCM get_paper_systems ();
 protected:
   void find_break_indices () const;
-  virtual void process ();
-  virtual void derived_mark () const;
+  void process () override;
+  void derived_mark () const override;
 
 private:
-  Paper_score (Paper_score const &); // Do not define!  Not copyable!
+  Paper_score (Paper_score const &) = delete;
+  Paper_score& operator= (Paper_score const &) = delete;
 };
 
 #endif /* PAPER_SCORE_HH */

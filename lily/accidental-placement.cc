@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2002--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 
 #include "accidental-placement.hh"
 
+#include <memory>
+
 #include "accidental-interface.hh"
 #include "item.hh"
 #include "music.hh"
@@ -31,12 +33,14 @@
 #include "stream-event.hh"
 #include "warn.hh"
 
+using std::unique_ptr;
+using std::vector;
+
 static Pitch *
 accidental_pitch (Grob *acc)
 {
-  SCM cause = acc->get_parent (Y_AXIS)->get_property ("cause");
+  Stream_event *mcause = acc->get_parent (Y_AXIS)->event_cause ();
 
-  Stream_event *mcause = unsmob<Stream_event> (cause);
   if (!mcause)
     {
       programming_error ("note head has no event cause");
@@ -54,10 +58,10 @@ Accidental_placement::add_accidental (Grob *me, Grob *a, bool stagger, long cont
     return;
 
   a->set_parent (me, X_AXIS);
-  long n = p->get_notename ();
 
   SCM accs = me->get_object ("accidental-grobs");
-  SCM key = scm_cons (scm_from_int (n), scm_from_long  (stagger ? context_hash : 1));
+  SCM key = scm_cons (scm_from_int (p->get_notename ()),
+                      scm_from_long (stagger ? context_hash : 1));
   // assoc because we're dealing with pairs
   SCM entry = scm_assoc (key, accs);
   if (scm_is_false (entry))
@@ -126,15 +130,15 @@ Real ape_priority (Accidental_placement_entry const *a)
   return a->horizontal_skylines_.right ();
 }
 
-bool ape_less (Accidental_placement_entry *const &a,
-               Accidental_placement_entry *const &b)
+bool ape_less (unique_ptr<Accidental_placement_entry> const &a,
+               unique_ptr<Accidental_placement_entry> const &b)
 {
   vsize size_a = a->grobs_.size ();
   vsize size_b = b->grobs_.size ();
   if (size_a != size_b)
     return size_b < size_a;
 
-  return ape_priority (a) < ape_priority (b);
+  return ape_priority (a.get ()) < ape_priority (b.get ());
 }
 
 /*
@@ -181,25 +185,24 @@ acc_less (Grob *const &a, Grob *const &b)
   placement
 */
 void
-stagger_apes (vector<Accidental_placement_entry *> *apes)
+stagger_apes (vector<unique_ptr<Accidental_placement_entry>> *apes)
 {
-  vector<Accidental_placement_entry *> asc = *apes;
-
-  vector_sort (asc, &ape_less);
+  vector_sort (*apes, &ape_less);
   // we do the staggering below based on size
   // this ensures that if a placement has 4 entries, it will
   // always be closer to the NoteColumn than a placement with 1
   // this allows accidentals to be on-average closer to notes
   // while still preserving octave alignment
-  vector<vector<Accidental_placement_entry *> > ascs;
+  vector<vector<unique_ptr<Accidental_placement_entry>>> ascs;
 
   vsize sz = INT_MAX;
-  for (vsize i = 0; i < asc.size (); i++)
+  for (vsize i = 0; i < apes->size (); i++)
     {
-      vsize my_sz = asc[i]->grobs_.size ();
+      auto a = std::move ((*apes)[i]);
+      vsize my_sz = a->grobs_.size ();
       if (sz != my_sz)
-        ascs.push_back (vector<Accidental_placement_entry *> ());
-      ascs.back ().push_back (asc[i]);
+        ascs.push_back ({}); // empty vector
+      ascs.back ().push_back (std::move (a));
       sz = my_sz;
     }
 
@@ -210,16 +213,16 @@ stagger_apes (vector<Accidental_placement_entry *> *apes)
       int parity = 1;
       for (vsize j = 0; j < ascs[i].size ();)
         {
-          Accidental_placement_entry *a = 0;
+          unique_ptr<Accidental_placement_entry> a;
           if (parity)
             {
-              a = ascs[i].back ();
+              a = std::move (ascs[i].back ());
               ascs[i].pop_back ();
             }
           else
-            a = ascs[i][j++];
+            a = std::move (ascs[i][j++]);
 
-          apes->push_back (a);
+          apes->push_back (std::move (a));
           parity = !parity;
         }
     }
@@ -227,18 +230,19 @@ stagger_apes (vector<Accidental_placement_entry *> *apes)
   reverse (*apes);
 }
 
-static vector<Accidental_placement_entry *>
+static vector<unique_ptr<Accidental_placement_entry>>
 build_apes (SCM accs)
 {
-  vector<Accidental_placement_entry *> apes;
+  vector<unique_ptr<Accidental_placement_entry>> apes;
   for (SCM s = accs; scm_is_pair (s); s = scm_cdr (s))
     {
-      Accidental_placement_entry *ape = new Accidental_placement_entry;
+      unique_ptr<Accidental_placement_entry>
+      ape (new Accidental_placement_entry);
 
       for (SCM t = scm_cdar (s); scm_is_pair (t); t = scm_cdr (t))
         ape->grobs_.push_back (unsmob<Grob> (scm_car (t)));
 
-      apes.push_back (ape);
+      apes.push_back (std::move (ape));
     }
 
   return apes;
@@ -298,14 +302,14 @@ set_ape_skylines (Accidental_placement_entry *ape,
 }
 
 static vector<Grob *>
-extract_heads_and_stems (vector<Accidental_placement_entry *> const &apes)
+extract_heads_and_stems (vector<unique_ptr<Accidental_placement_entry>> const &apes)
 {
   vector<Grob *> note_cols;
   vector<Grob *> ret;
 
   for (vsize i = apes.size (); i--;)
     {
-      Accidental_placement_entry *ape = apes[i];
+      Accidental_placement_entry *ape = apes[i].get ();
       for (vsize j = ape->grobs_.size (); j--;)
         {
           Grob *acc = ape->grobs_[j];
@@ -347,7 +351,8 @@ extract_heads_and_stems (vector<Accidental_placement_entry *> const &apes)
 }
 
 static Grob *
-common_refpoint_of_accidentals (vector<Accidental_placement_entry *> const &apes, Axis a)
+common_refpoint_of_accidentals (vector<unique_ptr<Accidental_placement_entry>> const &apes,
+                                Axis a)
 {
   Grob *ret = 0;
 
@@ -381,7 +386,7 @@ build_heads_skyline (vector<Grob *> const &heads_and_stems,
 */
 static Interval
 position_apes (Grob *me,
-               vector<Accidental_placement_entry *> const &apes,
+               vector<unique_ptr<Accidental_placement_entry>> const &apes,
                Skyline const &heads_skyline)
 {
   Real padding = robust_scm2double (me->get_property ("padding"), 0.2);
@@ -395,11 +400,11 @@ position_apes (Grob *me,
   Real last_offset = 0.0;
   for (vsize i = apes.size (); i-- > 0;)
     {
-      Accidental_placement_entry *ape = apes[i];
+      Accidental_placement_entry *ape = apes[i].get ();
 
       Real offset = -ape->horizontal_skylines_[RIGHT]
                     .distance (left_skyline, 0.1);
-      if (isinf (offset))
+      if (std::isinf (offset))
         offset = last_offset;
       else
         offset -= padding;
@@ -416,7 +421,7 @@ position_apes (Grob *me,
       for (LEFT_and_RIGHT (d))
         {
           Real mh = ape->horizontal_skylines_[d].max_height ();
-          if (!isinf (mh))
+          if (!std::isinf (mh))
             width.add_point (mh + offset);
         }
 
@@ -479,7 +484,7 @@ Accidental_placement::calc_positioning_done (SCM smob)
   if (!scm_is_pair (accs))
     return SCM_BOOL_T;
 
-  vector<Accidental_placement_entry *> apes = build_apes (accs);
+  vector<unique_ptr<Accidental_placement_entry>> apes = build_apes (accs);
 
   Grob *common[] = {me, 0};
 
@@ -491,7 +496,7 @@ Accidental_placement::calc_positioning_done (SCM smob)
   Real padding = robust_scm2double (me->get_property ("padding"), 0.2);
 
   for (vsize i = apes.size (); i--;)
-    set_ape_skylines (apes[i], common, padding);
+    set_ape_skylines (apes[i].get (), common, padding);
   Skyline heads_skyline = build_heads_skyline (heads_and_stems, common);
 
   stagger_apes (&apes);
@@ -499,8 +504,6 @@ Accidental_placement::calc_positioning_done (SCM smob)
 
   me->flush_extent_cache (X_AXIS);
   me->set_property ("X-extent", ly_interval2scm (width));
-
-  junk_pointers (apes);
 
   return SCM_BOOL_T;
 }

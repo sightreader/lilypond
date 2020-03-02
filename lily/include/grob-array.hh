@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ public:
   SCM mark_smob () const;
   static const char * const type_p_name_;
 private:
-  vector<Grob *> grobs_;
+  std::vector<Grob *> grobs_;
   bool ordered_;
 
 
@@ -39,17 +39,15 @@ private:
 public:
   bool ordered () const { return ordered_; }
   void set_ordered (bool b) { ordered_ = b; }
-  Item *item (vsize i);
-  Spanner *spanner (vsize i);
   Grob *grob (vsize i) const { return grobs_.at (i); }
   vsize size () const { return grobs_.size (); }
   bool empty () const { return grobs_.empty (); }
   void remove_duplicates ();
   void clear () { grobs_.clear (); }
   void add (Grob *x) { grobs_.push_back (x); }
-  void set_array (vector<Grob *> const &src) { grobs_ = src; }
-  vector<Grob *> &array_reference () { return grobs_; }
-  vector<Grob *> const &array () const { return grobs_; }
+  void set_array (std::vector<Grob *> const &src) { grobs_ = src; }
+  std::vector<Grob *> &array_reference () { return grobs_; }
+  std::vector<Grob *> const &array () const { return grobs_; }
   static SCM make_array ();
 
   // Remove grobs that do not satisfy the predicate, leaving the order
@@ -67,7 +65,7 @@ public:
 };
 
 
-vector<Grob *> const &ly_scm2link_array (SCM x);
+std::vector<Grob *> const &ly_scm2link_array (SCM x);
 SCM grob_list_to_grob_array (SCM lst);
 SCM grob_array_to_list (Grob_array *array);
 

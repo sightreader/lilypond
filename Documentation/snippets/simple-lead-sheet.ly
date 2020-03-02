@@ -18,7 +18,7 @@ When put together, chord names, a melody, and lyrics form a lead sheet:
 
 <<
   \chords { c2 g:sus4 f e }
-  \relative c'' {
+  \new Staff \relative c'' {
     a4 e c8 e r4
     b2 c4( d)
   }

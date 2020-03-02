@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@
 #include "warn.hh"
 #include "semi-tie-column.hh"
 
+using std::string;
+
 bool
 Tie::less (Grob *g1, Grob *g2)
 {
@@ -77,7 +79,7 @@ Tie::head (Spanner *me, Direction d)
 int
 Tie::get_column_rank (Spanner *me, Direction d)
 {
-  return Paper_column::get_rank (me->get_bound (d)->get_column ());
+  return me->get_bound (d)->get_column ()->get_rank ();
 }
 
 int

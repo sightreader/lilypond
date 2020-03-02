@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "page-breaking.hh"
 #include "warn.hh"
 
+using std::vector;
+
 void
 Page_spacing::calc_force ()
 {
@@ -35,7 +37,7 @@ Page_spacing::calc_force ()
     force_ = -infinity_f;
   else
     force_ = (height - rod_height_ - last_line_.bottom_padding_ - spring_len_)
-             / max (0.1, inverse_spring_k_);
+             / std::max (0.1, inverse_spring_k_);
 }
 
 void
@@ -134,7 +136,7 @@ Page_spacing::clear ()
   has_footnotes_ = false;
 }
 
-Page_spacer::Page_spacer (vector<Line_details> const &lines, vsize first_page_num, Page_breaking const *breaker)
+Page_spacer::Page_spacer (vector<Line_details> const &lines, int first_page_num, Page_breaking const *breaker)
   : lines_ (lines)
 {
   first_page_num_ = first_page_num;
@@ -191,7 +193,7 @@ Page_spacer::solve (vsize page_count)
   vsize extra_systems = 0;
   vsize extra_pages = 0;
 
-  if (isinf (state_.at (system, page_count - 1).demerits_))
+  if (std::isinf (state_.at (system, page_count - 1).demerits_))
     {
       programming_error ("tried to space systems on a bad number of pages");
       /* Usually, this means that we tried to cram too many systems into
@@ -200,7 +202,7 @@ Page_spacer::solve (vsize page_count)
          All the systems that don't fit get tacked onto the last page.
       */
       vsize i;
-      for (i = system; isinf (state_.at (i, page_count - 1).demerits_) && i; i--)
+      for (i = system; std::isinf (state_.at (i, page_count - 1).demerits_) && i; i--)
         ;
 
       if (i)
@@ -212,7 +214,7 @@ Page_spacer::solve (vsize page_count)
         {
           /* try chopping off pages from the end */
           vsize j;
-          for (j = page_count; j && isinf (state_.at (system, j - 1).demerits_); j--)
+          for (j = page_count; j && std::isinf (state_.at (system, j - 1).demerits_); j--)
             ;
 
           if (j)
@@ -303,7 +305,7 @@ Page_spacer::calc_subproblem (vsize page, vsize line)
   // good example of this is input/regression/page-spacing-tall-headfoot.ly
   vsize page_num = page == VPOS ? 0 : page;
   Real paper_height = breaker_->paper_height ();
-  Page_spacing space (breaker_->page_height (page_num + first_page_num_, last),
+  Page_spacing space (breaker_->page_height (first_page_num_ + static_cast<int> (page), last),
                       breaker_);
   Page_spacing_node &cur = page == VPOS ? simple_state_[line] : state_.at (line, page);
   bool ragged = ragged_ || (ragged_last_ && last);
@@ -354,13 +356,13 @@ Page_spacer::calc_subproblem (vsize page, vsize line)
           // Clamp the demerits at BAD_SPACING_PENALTY, even if the page
           // is overfull.  This ensures that TERRIBLE_SPACING_PENALTY takes
           // precedence over overfull pages.
-          demerits = min (demerits, BAD_SPACING_PENALTY);
+          demerits = std::min (demerits, BAD_SPACING_PENALTY);
           demerits += (prev ? prev->demerits_ : 0);
 
           Real penalty = breaker_->line_count_penalty (line_count);
           if (page_start > 0)
             penalty += lines_[page_start - 1].page_penalty_
-                       + (page % 2 == 0) ? lines_[page_start - 1].turn_penalty_ : 0;
+                       + ((page % 2 == 0) ? lines_[page_start - 1].turn_penalty_ : 0);
 
           /* Deal with widow/orphan lines */
           /* Last line of paragraph is first line on the new page */
@@ -392,6 +394,6 @@ Page_spacer::calc_subproblem (vsize page, vsize line)
                         ly_symbol2scm ("force")))
         break;
     }
-  return !isinf (cur.demerits_);
+  return !std::isinf (cur.demerits_);
 }
 

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@
 #include "std-vector.hh"
 #include "international.hh"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 /** We have several different loglevels, each with its own message function(s):
       ERROR: error, non_fatal_error, programming_error
@@ -109,7 +110,7 @@ void check_expected_warnings ()
   if (expected_warnings.size () > 0)
     {
       /* Some expected warning was not triggered, so print out a warning. */
-      string msg = _f ("%d expected warning(s) not encountered: ",
+      string msg = _f ("%zu expected warning(s) not encountered: ",
                        expected_warnings.size ());
       for (vsize i = 0; i < expected_warnings.size (); i++)
         msg += "\n        " + expected_warnings[i];

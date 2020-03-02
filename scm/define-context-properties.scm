@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 1998--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;                  Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -365,6 +365,7 @@ string selector for tablature notation.")
 
 
      (ignoreBarChecks ,boolean? "Ignore bar checks.")
+     (ignoreBarNumberChecks ,boolean? "Ignore bar number checks.")
      (ignoreFiguredBassRest ,boolean? "Don't swallow rest events.")
      (ignoreMelismata ,boolean? "Ignore melismata for this
 @rinternals{Lyrics} line.")
@@ -483,6 +484,10 @@ for a minor chord")
 
      (noChordSymbol ,markup? "Markup to be displayed for rests in a
 ChordNames context.")
+     (noteNameFunction ,procedure? "Function used to convert pitches
+into strings and markups.")
+     (noteNameSeparator ,string? "String used to separate simultaneous
+NoteName objects.")
      (noteToFretFunction ,procedure? "Convert list of notes and list of
 defined strings to full list of strings and fret numbers.
 Parameters: The context, a list of note events, a list of
@@ -494,11 +499,14 @@ any effect the note would have had on accidentals in other voices.")
 
      (ottavation ,markup? "If set, the text for an ottava spanner.
 Changing this creates a new text spanner.")
+     (ottavationMarkups ,list? "An alist defining the markups used
+for ottava brackets.  It contains entries of the form
+@code{(@var{number of octaves} . @var{markup})}.")
      (output ,ly:music-output? "The output produced by a score-level
 translator during music interpretation.")
 
 
-     (partCombineForced ,symbol? "Override for the partcombine
+     (partCombineForced ,symbol? "Override for the partCombine
 decision.  Can be @code{apart}, @code{chords}, @code{unisono},
 @code{solo1}, or @code{solo2}.")
      (partCombineTextsOnNote ,boolean? "Print part-combine texts only on
@@ -517,7 +525,11 @@ sustain pedals: @code{text}, @code{bracket} or @code{mixed} (both).")
 fret diagrams to use in FretBoards.")
      (printKeyCancellation ,boolean? "Print restoration alterations
 before a key signature change.")
-     (printOctaveNames ,boolean? "Print octave marks for the
+     (printAccidentalNames ,boolean-or-symbol? "Print accidentals in the
+@code{NoteNames} context.")
+     (printNotesLanguage ,string? "Use a specific language in the
+@code{NoteNames} context.")
+     (printOctaveNames ,boolean-or-symbol? "Print octave marks in the
 @code{NoteNames} context.")
      (printPartCombineTexts ,boolean? "Set @q{Solo} and @q{A due} texts
 in the part combiner?")
@@ -599,8 +611,9 @@ one).")
 @code{fingeringOrientations}.")
      (subdivideBeams ,boolean? "If set, multiple beams will be
 subdivided at @code{baseMoment} positions by only drawing one beam over the beat.")
-     (suggestAccidentals ,boolean? "If set, accidentals are typeset as
-cautionary suggestions over the note.")
+     (suggestAccidentals ,boolean-or-symbol? "If set to @code{#t},
+accidentals are typeset as suggestions above the note.  Setting it to
+@code{'cautionary} only applies that to cautionary accidentals.")
      (supportNonIntegerFret ,boolean? "If set in @code{Score} the
 @code{TabStaff} will print micro-tones as @samp{2½}")
      (systemStartDelimiter ,symbol? "Which grob to make for the start

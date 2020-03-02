@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #ifndef CONTEXT_DEF_HH
 #define CONTEXT_DEF_HH
 
+#include "acceptance-set.hh"
 #include "std-vector.hh"
 #include "lily-proto.hh"
 #include "smobs.hh"
@@ -31,31 +32,31 @@
   The definition of an interpretation context as given in the
   input. The lists are stored in order of definition.
 */
-struct Context_def : public Smob<Context_def>
+class Context_def : public Smob<Context_def>
 {
+public:
   SCM mark_smob () const;
   int print_smob (SCM, scm_print_state *) const;
   static const char * const type_p_name_;
   virtual ~Context_def ();
+
 private:
   /*
     these lists store the definition, in opposite order of entry
   */
   SCM translator_mods_;
-  SCM accept_mods_;
+  Acceptance_set acceptance_;
   SCM property_ops_;
   SCM description_;
   SCM context_name_;
   SCM context_aliases_;
   SCM translator_group_type_;
-  SCM default_child_;
   SCM input_location_;
+
 public:
   Input *origin () const;
   void add_context_mod (SCM);
-  SCM get_default_child (SCM user_mods) const;
   SCM get_context_name () const { return context_name_; }
-  SCM get_accepted (SCM user_mods) const;
   SCM get_property_ops () const { return property_ops_; }
   SCM get_translator_names (SCM) const;
   SCM get_translator_group_type () const { return translator_group_type_; }
@@ -63,15 +64,15 @@ public:
   SCM lookup (SCM sym) const;
   bool is_alias (SCM sym) const;
 
-  VIRTUAL_COPY_CONSTRUCTOR (Context_def, Context_def);
+  VIRTUAL_CLASS_NAME (Context_def);
+  virtual Context_def *clone () const { return new Context_def (*this); }
 
-  vector<Context_def *> path_to_acceptable_context (SCM type_string,
+  std::vector<Context_def *> path_to_acceptable_context (SCM type_string,
                                                     Output_def *,
                                                     SCM) const;
-  vector<Context_def *> internal_path_to_acceptable_context (SCM type_string,
-                                                             Output_def *,
-                                                             SCM,
-                                                             set<const Context_def *> *seen) const;
+
+  static std::vector<Context_def *> path_to_bottom_context (Output_def *,
+                                                       SCM first_child_type_sym);
   Context *instantiate (SCM extra_ops);
 
   SCM to_alist () const;
@@ -82,7 +83,16 @@ public:
 private:
   Context_def ();
   Context_def (Context_def const &);
-};
 
+  std::vector<Context_def *> internal_path_to_acceptable_context (SCM type_string,
+                                                             bool instantiable,
+                                                             Output_def *,
+                                                             SCM,
+                                                             std::set<const Context_def *> *seen) const;
+
+  static bool internal_path_to_bottom_context (Output_def *,
+                                               std::vector<Context_def *> *path,
+                                               SCM next_type_sym);
+};
 
 #endif /* CONTEXT_DEF_HH */

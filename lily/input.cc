@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "input.hh"
 
 #include <cstdio>
-using namespace std;
 
 #include "international.hh"
 #include "lily-imports.hh"
@@ -29,19 +28,7 @@ using namespace std;
 #include "sources.hh"
 #include "warn.hh"
 
-Input::Input (Input const &i)
-{
-  source_file_ = i.source_file_;
-  start_ = i.start_;
-  end_ = i.end_;
-}
-
-Input::Input ()
-{
-  source_file_ = 0;
-  start_ = 0;
-  end_ = 0;
-}
+using std::string;
 
 Input
 Input::spot () const
@@ -142,7 +129,7 @@ string
 Input::line_number_string () const
 {
   if (source_file_)
-    return ::to_string (source_file_->get_line (start_));
+    return std::to_string (source_file_->get_line (start_));
   return "?";
 }
 
@@ -154,7 +141,7 @@ Input::file_string () const
   return "";
 }
 
-int
+ssize_t
 Input::line_number () const
 {
   if (source_file_)
@@ -162,16 +149,16 @@ Input::line_number () const
   return 0;
 }
 
-int
+ssize_t
 Input::column_number () const
 {
-  int line, chr, col, offset = 0;
+  ssize_t line, chr, col, offset = 0;
   source_file_->get_counts (start_, &line, &chr, &col, &offset);
 
   return col;
 }
 
-int
+ssize_t
 Input::end_line_number () const
 {
   if (source_file_)
@@ -179,17 +166,18 @@ Input::end_line_number () const
   return 0;
 }
 
-int
+ssize_t
 Input::end_column_number () const
 {
-  int line, chr, col, offset = 0;
+  ssize_t line, chr, col, offset = 0;
   source_file_->get_counts (end_, &line, &chr, &col, &offset);
 
   return col;
 }
 
 void
-Input::get_counts (int *line, int *chr, int *col, int *offset) const
+Input::get_counts (ssize_t *line, ssize_t *chr,
+                   ssize_t *col, ssize_t *offset) const
 {
   source_file_->get_counts (start_, line, chr, col, offset);
 }
@@ -206,18 +194,6 @@ Source_file *
 Input::get_source_file () const
 {
   return source_file_;
-}
-
-char const *
-Input::start () const
-{
-  return start_;
-}
-
-char const *
-Input::end () const
-{
-  return end_;
 }
 
 static SCM

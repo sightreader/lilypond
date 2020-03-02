@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2001--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2001--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ SCM
 Percent_repeat_item_interface::beat_slash (SCM grob)
 {
   Grob *me = unsmob<Grob> (grob);
-  Stream_event *cause = unsmob<Stream_event> (me->get_property ("cause"));
+  Stream_event *cause = me->event_cause ();
   int count = robust_scm2int (cause->get_property ("slash-count"), 1);
 
   Stencil m;

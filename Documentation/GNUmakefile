@@ -11,7 +11,7 @@ NAME = documentation
 LANGS = $(shell $(PYTHON) $(top-src-dir)/python/langdefs.py)
 SUBDIRS = logo pictures misc po css topdocs \
   ly-examples $(LANGS)
-STEPMAKE_TEMPLATES = documentation texinfo tex omf
+STEPMAKE_TEMPLATES = documentation texinfo tex
 LOCALSTEPMAKE_TEMPLATES = lilypond ly
 
 ### Extra flags
@@ -37,7 +37,6 @@ OUT_SNIPPET_LY_FILES = $(SNIPPET_LY_FILES:%.ly=out/%.ly)
 GENERATED_ITELY_FILES = $(IN_ITELY_FILES:snippets/%-intro.itely=$(outdir)/%.itely)
 
 XREF_MAPS_FILES += $(XREF_MAPS_DIR)/internals.xref-map
-OMF_FILES += $(outdir)/internals.html.omf $(outdir)/internals.pdf.omf
 
 # Main manuals
 TEXINFO_MANUALS = internals\
@@ -111,11 +110,13 @@ OUT_PHP_FILES = $(PHP_FILES:%.php=$(outdir)/%.php)
 
 ### bad hack for badly-integrated roadmap.
 $(outdir)/ROADMAP:
+	$(call ly_progress,Making,$@,(copy))
 	cp $(top-src-dir)/ROADMAP $(outdir)
 $(outdir)/contributor.texi: $(outdir)/ROADMAP
 
 ### bad hack for badly-integrated bibliography
 $(outdir)/colorado.itexi:
+	$(call ly_progress,Making,$@,< bib)
 	BSTINPUTS=$(src-dir)/essay $(buildscript-dir)/bib2texi \
 		-s $(top-src-dir)/Documentation/lily-bib \
 		-o $(outdir)/colorado.itexi \
@@ -123,6 +124,7 @@ $(outdir)/colorado.itexi:
 		$(src-dir)/essay/colorado.bib
 
 $(outdir)/computer-notation.itexi:
+	$(call ly_progress,Making,$@,< bib)
 	BSTINPUTS=$(src-dir)/essay $(buildscript-dir)/bib2texi \
 		-s $(top-src-dir)/Documentation/lily-bib \
 		-o $(outdir)/computer-notation.itexi \
@@ -130,6 +132,7 @@ $(outdir)/computer-notation.itexi:
 		$(src-dir)/essay/computer-notation.bib
 
 $(outdir)/engravingbib.itexi:
+	$(call ly_progress,Making,$@,< bib)
 	BSTINPUTS=$(src-dir)/essay $(buildscript-dir)/bib2texi \
 		-s $(top-src-dir)/Documentation/lily-bib \
 		-o $(outdir)/engravingbib.itexi \
@@ -188,9 +191,9 @@ ifeq ($(out),www)
 local-WWW-1: $(OUT_TEXINFO_MANUALS) $(PDF_FILES) info
 
 ifeq ($(AJAX_SEARCH),1)
-local-WWW-2: txt-to-html $(OUT_HTML_FILES) $(DEEP_HTML_FILES) $(OUT_JS_FILES) $(OUT_PHP_FILES) $(source-links) $(OMF_FILES)
+local-WWW-2: txt-to-html $(OUT_HTML_FILES) $(DEEP_HTML_FILES) $(OUT_JS_FILES) $(OUT_PHP_FILES) $(source-links)
 else
-local-WWW-2: txt-to-html $(OUT_HTML_FILES) $(DEEP_HTML_FILES) $(source-links) $(OMF_FILES)
+local-WWW-2: txt-to-html $(OUT_HTML_FILES) $(DEEP_HTML_FILES) $(source-links)
 endif
 
 endif
@@ -200,14 +203,17 @@ endif
 ### Rules
 
 $(outdir)/lilypond-%.info: $(outdir)/%.texi $(outdir)/$(INFO_IMAGES_DIR).info-images-dir-dep $(outdir)/version.itexi $(outdir)/weblinks.itexi | $(OUT_TEXINFO_MANUALS)
+	$(call ly_progress,Making,$@,< texi)
 	$(buildscript-dir)/run-and-check "$(MAKEINFO) -I$(src-dir) -I$(outdir) --output=$@ $<"  "$*.makeinfo.log"
 
 txt-to-html: $(OUT_TXT_FILES) $(OUT_TXT_FILES:%.txt=%.html)
 
 $(OUT_TXT_FILES): $(outdir)/%.txt: $(top-src-dir)/%
+	$(call ly_progress,Making,$@,(copy))
 	cp -f $< $@
 
 $(OUT_TXT_FILES:%.txt=%.html): $(outdir)/%.html: $(outdir)/%.txt
+	$(call ly_progress,Making,$@,< txt)
 	$(buildscript-dir)/text2html $<
 
 # Explicitly list the dependencies on generated content
@@ -235,10 +241,12 @@ endif
 
 # Ugh, using '%' twice not possible
 $(outdir)/notation/notation.xml: $(outdir)/notation.texi
+	$(call ly_progress,Making,$@,< texi)
 	mkdir -p $(dir $@)
 	$(buildscript-dir)/run-and-check "$(MAKEINFO) -I$(src-dir) -I$(outdir) --output=$(dir $@) --docbook $<"  "$*.makeinfoxml.log"
 
 $(outdir)/internals/internals.xml: $(outdir)/internals.texi
+	$(call ly_progress,Making,$@,< texi)
 	mkdir -p $(dir $@)
 	$(buildscript-dir)/run-and-check "$(MAKEINFO) -I$(src-dir) -I$(outdir) --output=$(dir $@) --docbook $<"  "$*.makeinfoxml.log"
 
@@ -256,6 +264,7 @@ $(outdir)/%/source:
 
 ## Snippets rules idiosyncrasies
 $(outdir)/%.itely: snippets/%-intro.itely snippets/%.snippet-list
+	$(call ly_progress,Making,$@,)
 	xargs $(LYS_TO_TELY) -f doctitle,texidoc,verbatim --name=$@ --template=$< < $(filter %.snippet-list, $^)
 
 $(TEXI_FILES_FROM_TELY): $(GENERATED_ITELY_FILES) $(OUT_SNIPPET_LY_FILES)
@@ -263,18 +272,22 @@ $(TEXI_FILES_FROM_TELY): $(GENERATED_ITELY_FILES) $(OUT_SNIPPET_LY_FILES)
 $(OUT_SNIPPET_LY_FILES): out/ly-snippets.dep
 
 out/ly-snippets.dep: $(SNIPPET_LY_FILES)
+	$(call ly_progress,Making,$@,)
 	mkdir -p snippets/out
 	$(buildscript-dir)/makesnippets $(src-dir)/snippets snippets/out $(src-dir)
 	mkdir -p out
 	touch $@
 
 $(outdir)/%.bib: %.bib
+	$(call ly_progress,Making,$@,(hard link))
 	ln -f $< $@
 
 $(outdir)/%.js: %.js
+	$(call ly_progress,Making,$@,(hard link))
 	ln -f $< $@
 
 $(outdir)/%.php: %.php
+	$(call ly_progress,Making,$@,(hard link))
 	ln -f $< $@
 
 ## notation.texi deps
@@ -285,6 +298,7 @@ $(outdir)/contributor.texi: $(outdir)/ly-grammar.txt
 
 ## Rules for the automatically generated documentation
 $(outdir)/ly-grammar.txt: $(top-src-dir)/lily/parser.yy
+	$(call ly_progress,Making,$@,< yy)
 	cd $(outdir) && $(BISON) -v $<
 	$(buildscript-dir)/yyout2grammar $(outdir)/parser.output $@
 
@@ -293,6 +307,7 @@ $(outdir)/ly-grammar.txt: $(top-src-dir)/lily/parser.yy
 # compilation during install, which is a bad thing (tm).
 
 $(outdir)/internals.texi: $(LILYPOND_BINARY) $(INIT_LY_SOURCES) $(SCHEME_SOURCES)
+	$(call ly_progress,Making,$@,)
 	cd $(outdir) && $(buildscript-dir)/run-and-check "$(LILYPOND_BINARY) --verbose $(top-src-dir)/ly/generate-documentation" "generate-documentation.log"
 
 ###############################################

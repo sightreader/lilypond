@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,9 +31,10 @@ struct Bracket
                                Interval gap, Drul_array<Real> flare,
                                Drul_array<Real> shorten);
   static Stencil make_axis_constrained_bracket (Grob *me, Real length,
-                                                Axis a, Direction dir);
+                                                Axis a, Direction dir,
+                                                Interval gap);
   static Stencil make_enclosing_bracket (Grob *me, Grob *refpoint,
-                                         vector<Grob *> grobs,
+                                         std::vector<Grob *> grobs,
                                          Axis a, Direction dir);
 };
 

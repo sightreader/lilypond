@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2002--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -96,9 +96,9 @@ Ligature_bracket_engraver::acknowledge_note_column (Grob_info info)
 {
   if (ligature_)
     {
-      Tuplet_bracket::add_column (ligature_,
-                                  info.item ());
-      add_bound_item (ligature_, info.item ());
+      Item *item = dynamic_cast<Item *> (info.grob ());
+      Tuplet_bracket::add_column (ligature_, item);
+      add_bound_item (ligature_, item);
     }
 }
 

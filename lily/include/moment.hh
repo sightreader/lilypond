@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -56,12 +56,9 @@ public:
   bool to_bool () const;
   I64 den () const;
   I64 num () const;
-  /*
-    Deliver a copy of THIS as a smobified SCM
-  */
-  string to_string () const;
+
+  std::string to_string () const;
   static int compare (Moment const &, Moment const &);
-  SCM as_scheme () const;
 };
 
 IMPLEMENT_ARITHMETIC_OPERATOR (Moment, +);
@@ -80,5 +77,11 @@ ostream &operator << (ostream &, Moment const &);
 #endif
 
 bool moment_less (SCM a, SCM b);
+
+inline std::string
+to_string (Moment const &m)
+{
+  return m.to_string ();
+}
 
 #endif /* MOMENT_HH */

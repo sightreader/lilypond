@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,8 +43,9 @@
   Graces at the start of a sequential music iterator are handled
   by initting here_mom_ with Music::start_music (); no fixups are needed.
 */
-struct Grace_fixup
+class Grace_fixup
 {
+public:
   Moment start_;
   Moment length_;
 

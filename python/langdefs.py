@@ -1,4 +1,3 @@
-#!@PYTHON@
 #-*- coding: utf-8 -*-
 
 """
@@ -68,21 +67,20 @@ hu = LanguageDef ('hu', 'magyar')
 it = LanguageDef ('it', 'italiano')
 ja = LanguageDef ('ja', '日本語', enable_ly_identifier_l10n=False)
 nl = LanguageDef ('nl', 'nederlands')
-pt = LanguageDef ('pt', 'Português')
 zh = LanguageDef ('zh', '中文', enable_ly_identifier_l10n=False)
 
 # Outdated or broken translations may be disabled
 # (please run 'make doc-clean' before doing that):
 #fr.enabled = False
 
-LANGUAGES = (site, ca, cs, de, es, fr, hu, it, ja, nl, pt, zh)
-WEB_LANGUAGES = (site, ca, cs, de, es, fr, hu, it, ja, nl, pt, zh)
+LANGUAGES = (site, ca, cs, de, es, fr, hu, it, ja, nl, zh)
+WEB_LANGUAGES = (site, ca, cs, de, es, fr, hu, it, ja, nl, zh)
 
 if os.getenv("MAKEWEB") == '1':
     LANGUAGES=WEB_LANGUAGES
 
 if __name__ == '__main__':
-    print ' '.join ([l.code for l in LANGUAGES if l.enabled and l.code != 'en'])
+    print(' '.join ([l.code for l in LANGUAGES if l.enabled and l.code != 'en']))
 else:
     LANGDICT = {}
     for l in LANGUAGES:
@@ -99,6 +97,6 @@ else:
                                         [l.code])
                 translation[l.code] = t.gettext
     except:
-        if os.environ.has_key ('LYDOC_LOCALEDIR'):
+        if 'LYDOC_LOCALEDIR' in os.environ:
             sys.stderr.write ('langdefs.py: warning: lilypond-doc gettext domain not found.\n')
         translation = dict ([(l.code, lambda x: x) for l in LANGUAGES])

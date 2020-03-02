@@ -36,11 +36,11 @@
 @c commit: d189a2119004c2f75da2020ea2ed36d817582fc5
 
 @c @macro copyrightDeclare
-@c Copyright @copyright{} 2003--2015 by the authors.
+@c Copyright @copyright{} 2003--2020 by the authors.
 @c @end macro
 
 @copying
-Copyright @copyright{} 2009--2015 por los autores.
+Copyright @copyright{} 2009--2020 por los autores.
 
 @c next line is necessary for broken pre-4.13 texinfo's
 @c install-info, so leave it there until we officially
@@ -362,8 +362,7 @@ Si tiene conocimiento de cualesquiera otros \topic\ que merezcan
 aparecer relacionados aquí, le rogamos que nos lo haga saber
 escribiendo un mensaje a la lista de correo bug-lilypond.  Si no
 está suscrito a la lista, aún puede hacerlo en la
-@uref{https://lists.gnu.org/mailman/listinfo/bug-lilypond,página informativa}
-de la misma.
+@uref{https://lists.gnu.org/mailman/listinfo/bug-lilypond,página informativa}.
 
 @divEnd
 @divEnd

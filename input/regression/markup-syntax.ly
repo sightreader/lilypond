@@ -1,4 +1,4 @@
-\version "2.19.80"
+\version "2.21.0"
 
 \header {
   texidoc = "Demo of markup texts, using LilyPond syntax."

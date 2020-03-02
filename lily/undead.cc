@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2012 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2012--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 */
 
 #include "smobs.hh"
+
+using std::vector;
+
+bool parsed_objects_should_be_dead = false;
 
 class Undead : public Simple_smob<Undead>
 {

@@ -17,7 +17,7 @@
 }
 
 \header {
-texidoc="Partcombined music is preserved"
+texidoc="PartCombined music is preserved"
 options="--skip"
 }
 

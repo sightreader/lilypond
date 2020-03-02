@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1999--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Auto_beam_engraver : public Engraver
 {
   TRANSLATOR_DECLARATIONS (Auto_beam_engraver);
@@ -42,8 +44,8 @@ protected:
   void process_acknowledged ();
 
   virtual void process_music ();
-  virtual void finalize ();
-  virtual void derived_mark () const;
+  void finalize () override;
+  void derived_mark () const override;
 
   void acknowledge_rest (Grob_info);
   void acknowledge_beam (Grob_info);
@@ -438,7 +440,7 @@ Auto_beam_engraver::acknowledge_stem (Grob_info info)
                        (to_boolean (stem->get_property ("tuplet-start"))));
   stems_->push_back (stem);
   last_add_mom_ = now;
-  extend_mom_ = max (extend_mom_, now) + get_event_length (ev, now);
+  extend_mom_ = std::max (extend_mom_, now) + get_event_length (ev, now);
   if (recheck_needed)
     recheck_beam ();
 }
@@ -585,9 +587,9 @@ class Grace_auto_beam_engraver : public Auto_beam_engraver
 private:
   Moment last_grace_start_; // Full starting time of last grace group
   Moment last_grace_position_; // Measure position of same
-  virtual void process_music ();
-  virtual bool is_same_grace_state (Moment, Moment);
-  virtual bool test_moment (Direction, Moment, Moment);
+  void process_music () override;
+  bool is_same_grace_state (Moment, Moment) override;
+  bool test_moment (Direction, Moment, Moment) override;
 };
 
 Grace_auto_beam_engraver::Grace_auto_beam_engraver (Context *c)

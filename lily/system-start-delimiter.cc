@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ System_start_delimiter::staff_brace (Grob *me, Real y)
 
   int
   lo = 0;
-  int hi = max ((int) fm->count () - 1, 2);
+  int hi = std::max ((int) fm->count () - 1, 2);
 
   /* do a binary search for each Y, not very efficient, but passable?  */
   Box b;
@@ -169,7 +169,7 @@ System_start_delimiter::staff_brace (Grob *me, Real y)
     }
   while (hi - lo > 1);
 
-  Stencil stil (fm->find_by_name ("brace" + ::to_string (lo)));
+  Stencil stil (fm->find_by_name ("brace" + std::to_string (lo)));
   stil.translate_axis (-b[X_AXIS].length () / 2, X_AXIS);
 
   stil.translate_axis (-0.2, X_AXIS);

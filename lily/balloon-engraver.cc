@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,12 +24,14 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Balloon_engraver : public Engraver
 {
   TRANSLATOR_DECLARATIONS (Balloon_engraver);
 
   void listen_annotate_output (Stream_event *);
-  void acknowledge_grob (Grob_info);
+  void acknowledge_grob (Grob_info) override;
   vector<Stream_event *> events_;
 
   void stop_translation_timestep ();

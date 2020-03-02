@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,10 +24,11 @@
 #include "rational.hh"
 #include "std-vector.hh"
 
-struct Scale : public Smob<Scale>
+class Scale : public Smob<Scale>
 {
+public:
   virtual ~Scale ();
-  Scale (vector<Rational> const &);
+  Scale (std::vector<Rational> const &);
   Scale (Scale const &);
 
   Rational tones_at_step (int step, int octave) const;
@@ -35,9 +36,8 @@ struct Scale : public Smob<Scale>
   int step_count () const;
   int normalize_step (int step) const;
 
-
 private:
-  vector<Rational> step_tones_;
+  std::vector<Rational> step_tones_;
 };
 
 extern Scale *default_global_scale;

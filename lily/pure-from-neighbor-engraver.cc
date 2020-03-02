@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2011--2015 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2011--2020 Mike Solomon <mike@mikesolomon.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Pure_from_neighbor_engraver : public Engraver
 {
   vector<Grob *> pure_relevants_;
@@ -38,7 +40,7 @@ public:
 protected:
   void acknowledge_pure_from_neighbor (Grob_info);
   void acknowledge_item (Grob_info);
-  void finalize ();
+  void finalize () override;
 };
 
 Pure_from_neighbor_engraver::Pure_from_neighbor_engraver (Context *c)
@@ -49,8 +51,11 @@ Pure_from_neighbor_engraver::Pure_from_neighbor_engraver (Context *c)
 void
 Pure_from_neighbor_engraver::acknowledge_item (Grob_info i)
 {
-  if (!has_interface<Pure_from_neighbor_interface> (i.item ()))
-    pure_relevants_.push_back (i.item ());
+  if (Item *item = dynamic_cast<Item *> (i.grob ()))
+    {
+      if (!has_interface<Pure_from_neighbor_interface> (item))
+        pure_relevants_.push_back (item);
+    }
 }
 
 bool
@@ -67,7 +72,8 @@ in_same_column (Grob *g1, Grob *g2)
 void
 Pure_from_neighbor_engraver::acknowledge_pure_from_neighbor (Grob_info i)
 {
-  need_pure_heights_from_neighbors_.push_back (i.item ());
+  Item *item = dynamic_cast<Item *> (i.grob ());
+  need_pure_heights_from_neighbors_.push_back (item);
 }
 
 void

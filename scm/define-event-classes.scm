@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2005--2015 Erik Sandberg <mandolaerik@gmail.com>
+;;;; Copyright (C) 2005--2020 Erik Sandberg <mandolaerik@gmail.com>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@
                     tremolo-event bend-after-event fingering-event
                     glissando-event harmonic-event hyphen-event
                     laissez-vibrer-event mark-event multi-measure-text-event
+                    multi-measure-articulation-event
                     note-grouping-event pes-or-flexa-event repeat-tie-event
                     spacing-section-event layout-instruction-event
                     time-signature-event
@@ -48,6 +49,7 @@
     (dynamic-event . (absolute-dynamic-event))
     (span-event . (span-dynamic-event
                    beam-event episema-event ligature-event
+                   measure-spanner-event
                    measure-counter-event pedal-event
                    phrasing-slur-event slur-event
                    staff-span-event text-span-event

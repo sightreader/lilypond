@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Nicolas Sceaux <nicolas.sceaux@free.fr>
+  Copyright (C) 2007--2020 Nicolas Sceaux <nicolas.sceaux@free.fr>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ Minimal_page_breaking::solve ()
   break_into_pieces (0, end, current_configuration (0));
 
   message (_ ("Calculating page breaks..."));
-  vsize first_page_num = robust_scm2int (book_->paper_->c_variable ("first-page-number"), 1);
+  int first_page_num = robust_scm2int (book_->paper_->c_variable ("first-page-number"), 1);
   Page_spacing_result res = pack_systems_on_least_pages (0, first_page_num);
   SCM lines = systems ();
   return make_pages (res.systems_per_page_, lines);

@@ -19,8 +19,9 @@ import sys
 import os
 import glob
 import re
+from functools import reduce
 
-print "update-snippets.py"
+print("update-snippets.py")
 
 comment_re = re.compile (r'(?<!@)(@c(?:omment)? .*?\n|^@ignore\n.*?\n@end ignore\n)', re.M | re.S)
 snippet_re = re.compile (r'^(@lilypond(?:file)?(?:\[.*?\])?\s*\{.+?\}|@lilypond(?:\[.*?\])?(?:.|\n)+?@end lilypond)', re.M)
@@ -77,7 +78,7 @@ for pattern in file_patterns:
         target_source = snippet_split (target_source)
         ref_source = snippet_split (ref_source)
         if '' in target_source or '' in ref_source:
-            raise "AAAAARGH: unuseful empty string"
+            raise RuntimeError ("target_source and ref_source must not be empty")
         snippet_count = count_snippet (target_source)
         if not snippet_count == count_snippet (ref_source):
             update_exit_code (1)

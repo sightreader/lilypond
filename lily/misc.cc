@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -21,6 +21,9 @@
 #include "misc.hh"
 #include "offset.hh"
 #include "warn.hh"
+
+using std::string;
+using std::vector;
 
 double
 log_2 (double x)
@@ -45,7 +48,7 @@ peak_around (Real epsilon, Real threshold, Real x)
 {
   if (x < 0)
     return 1.0;
-  return max (- epsilon * (x - threshold) / ((x + epsilon) * threshold), 0.0);
+  return std::max (- epsilon * (x - threshold) / ((x + epsilon) * threshold), 0.0);
 }
 
 /*

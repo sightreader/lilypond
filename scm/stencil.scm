@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2003--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 2003--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -118,20 +118,18 @@ Limitation: s-curves are currently not supported.
             moved-coord-list
             (min (* 2 thickness) line-width))))))
 
-(define-public (make-tie-stencil start stop thickness orientation)
-  (let* (;; For usage in text we choose a little less `height-limit'
-         ;; than the default for `Tie'
-         (height-limit 0.7)
-         (ratio 0.33)
-         ;; taken from bezier-bow.cc
+(define* (make-tie-stencil
+            start stop thickness orientation
+            #:optional (height-limit 1.0)(ratio 0.33)(angularity 0.5))
+  (let* (;; taken from bezier-bow.cc
          (F0_1
            (lambda (x) (* (/ 2 PI) (atan (* PI x 0.5)))))
          (slur-height
-           (lambda (w h_inf r_0) (F0_1 (* (/ (* w r_0) h_inf) h_inf))))
+           (lambda (w h_inf r_0) (* (F0_1 (/ (* w r_0) h_inf)) h_inf)))
          (width (abs (- (car start) (car stop))))
-         (angularity 0.5)
          (height (slur-height width height-limit ratio)))
     (make-bow-stencil start stop thickness angularity height orientation)))
+(export make-tie-stencil)
 
 (define-public (stack-stencils axis dir padding stils)
   "Stack stencils @var{stils} in direction @var{axis}, @var{dir}, using

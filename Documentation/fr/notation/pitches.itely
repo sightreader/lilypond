@@ -8,7 +8,7 @@
    Guide, node Updating translation committishes.
 @end ignore
 
-@c \version "2.19.22"
+@c \version "2.21.0"
 
 @c Translators: Frédéric Chiasson, Jean-Charles Malahieude
 @c Translation checkers: Valentin Villenave, Jean-Charles Malahieude
@@ -508,18 +508,18 @@ Les langues disponibles ainsi que les noms de note utilisés
 sont les suivants :
 
 @quotation
-@multitable {@code{espanol} ou @code{español}} {@code{do} @code{re}/@code{re} @code{mi} @code{fa} @code{sol} @code{la} @code{sib} @code{si}}
-@headitem Language
-  @tab Note Names
+@multitable {@w{@code{português} ou}} {@code{do} @code{re}/@code{re} @code{mi} @code{fa} @code{sol} @code{la} @code{sib} @code{si}}
+@headitem Langue
+  @tab Nom des notes
 @item @code{nederlands}
   @tab @code{c} @code{d} @code{e} @code{f} @code{g} @code{a} @code{bes} @code{b}
-@item @code{catalan}
+@item @code{català} ou@*@ @code{catalan}
   @tab @code{do} @code{re} @code{mi} @code{fa} @code{sol} @code{la} @code{sib} @code{si}
 @item @code{deutsch}
   @tab @code{c} @code{d} @code{e} @code{f} @code{g} @code{a} @code{b} @code{h}
 @item @code{english}
   @tab @code{c} @code{d} @code{e} @code{f} @code{g} @code{a} @code{bf}/@code{b-flat} @code{b}
-@item @code{espanol} ou @code{español}
+@item @code{español} ou@*@ @code{espanol}
   @tab @code{do} @code{re} @code{mi} @code{fa} @code{sol} @code{la} @code{sib} @code{si}
 @item @code{français}
   @tab @code{do} @code{ré}/@code{re} @code{mi} @code{fa} @code{sol} @code{la} @code{sib} @code{si}
@@ -527,7 +527,7 @@ sont les suivants :
   @tab @code{do} @code{re} @code{mi} @code{fa} @code{sol} @code{la} @code{sib} @code{si}
 @item @code{norsk}
   @tab @code{c} @code{d} @code{e} @code{f} @code{g} @code{a} @code{b} @code{h}
-@item @code{portugues}
+@item @code{português} ou@*@ @code{portugues}
   @tab @code{do} @code{re} @code{mi} @code{fa} @code{sol} @code{la} @code{sib} @code{si}
 @item @code{suomi}
   @tab @code{c} @code{d} @code{e} @code{f} @code{g} @code{a} @code{b} @code{h}
@@ -542,28 +542,30 @@ sont les suivants :
 et les suffixes d'altération correspondants :
 
 @quotation
-@multitable {@code{nederlands}} {@code{s}/@code{-sharp}} {@code{f}/@code{-flat}} {@code{ss}/@code{x}/@code{-sharpsharp}} {@code{ff}/@code{-flatflat}}
-@headitem Language
-  @tab sharp @tab flat @tab double sharp @tab double flat
+@multitable {@w{@code{português} ou}} {@code{s}/@code{-sharp}} {@code{f}/@code{-flat}} {@code{ss}/@code{x}/@code{-sharpsharp}} {@code{ff}/@code{-flatflat}}
+@headitem Langue
+  @tab dièse @tab bémol @tab double dièse @tab double bémol
 @item @code{nederlands}
   @tab @code{is} @tab @code{es} @tab @code{isis} @tab @code{eses}
-@item @code{catalan}
-  @tab @code{d}/@code{s} @tab @code{b} @tab @code{dd}/@code{ss} @tab @code{bb}
+@item @code{català} ou@*@ @code{catalan}
+  @tab @code{d}/@code{s} @tab @code{b} @tab @code{dd}/@code{ss}
+    @tab @code{bb}
 @item @code{deutsch}
   @tab @code{is} @tab @code{es} @tab @code{isis} @tab @code{eses}
 @item @code{english}
-  @tab @code{s}/@code{-sharp} @tab @code{f}/@code{-flat} @tab @code{ss}/@code{x}/@code{-sharpsharp}
+  @tab @code{s}/@code{-sharp} @tab @code{f}/@code{-flat}
+    @tab @code{ss}/@code{x}/@code{-sharpsharp}
     @tab @code{ff}/@code{-flatflat}
-@item @code{espanol} ou@*@ @code{español}
+@item @code{español} ou@*@ @code{espanol}
   @tab @code{s} @tab @code{b} @tab @code{ss}/@code{x} @tab @code{bb}
 @item @code{français}
   @tab @code{d} @tab @code{b} @tab @code{dd}/@code{x} @tab @code{bb}
 @item @code{italiano}
   @tab @code{d} @tab @code{b} @tab @code{dd} @tab @code{bb}
 @item @code{norsk}
-  @tab @code{iss}/@code{is} @tab @code{ess}/@code{es} @tab @code{ississ}/@code{isis}
-    @tab @code{essess}/@code{eses}
-@item @code{portugues}
+  @tab @code{iss}/@code{is} @tab @code{ess}/@code{es}
+    @tab @code{ississ}/@code{isis} @tab @code{essess}/@code{eses}
+@item @code{português} ou@*@ @code{portugues}
   @tab @code{s} @tab @code{b} @tab @code{ss} @tab @code{bb}
 @item @code{suomi}
   @tab @code{is} @tab @code{es} @tab @code{isis} @tab @code{eses}
@@ -597,31 +599,41 @@ utilisée de @code{asas} pour @code{ases}.
 
 @noindent
 Certaines musiques utilisent des microtonalités, pour lesquelles les
-altérations sont des fractions de dièse ou bémol « normaux ». Le tableau
-suivant répertorie les suffixes d'altération en quart de ton, tels que
-définis dans plusieurs fichiers linguistiques. Les préfixes @emph{semi-}
-et @emph{sesqui-} correspondent au @emph{demi-} et @emph{trois demis}. À
-noter qu'aucune définition n'existe à ce jour pour le norvégien, le
-suédois, le catalan et l'espagnol.
+altérations sont des fractions de dièse ou bémol « normaux ».  Le
+tableau suivant répertorie les noms de note en quart de ton, tels que
+définis dans les fichiers linguistiques.  Les préfixes @emph{semi-}
+et @emph{sesqui-} correspondent au @emph{demi-} et @emph{trois demis}.
 
 @quotation
-@multitable {@code{espanol} ou @code{español}} {@b{semi-dièse}} {@b{semi-bémol}} {@b{sesqui-dièse}} {@b{sesqui-bémol}}
+@multitable {@w{@code{português} ou}} {@b{semi-dièse}} {@b{semi-bémol}} {@b{sesqui-dièse}} {@b{sesqui-bémol}}
 @headitem Langue
   @tab semi-dièse @tab semi-bémol @tab sesqui-dièse @tab sesqui-bémol
 @item @code{nederlands}
   @tab @code{ih} @tab @code{eh} @tab @code{isih} @tab @code{eseh}
+@item @code{català} ou@*@ @code{catalan}
+  @tab @code{qd}/@code{qs} @tab @code{qb} @tab @code{tqd}/@code{tqs}
+   @tab @code{tqb}
 @item @code{deutsch}
   @tab @code{ih} @tab @code{eh} @tab @code{isih} @tab @code{eseh}
 @item @code{english}
   @tab @code{qs} @tab @code{qf} @tab @code{tqs} @tab @code{tqf}
-@item @code{espanol} ou @code{español}
+@item @code{español} ou@*@ @code{espanol}
   @tab @code{cs} @tab @code{cb} @tab @code{tcs} @tab @code{tcb}
 @item @code{français}
   @tab @code{sd} @tab @code{sb} @tab @code{dsd} @tab @code{bsb}
 @item @code{italiano}
   @tab @code{sd} @tab @code{sb} @tab @code{dsd} @tab @code{bsb}
-@item @code{portugues}
+@item @code{norsk}
+  @tab @code{ih} @tab @code{eh} @tab @code{issih}/@code{isih}
+   @tab @code{esseh}/@code{eseh}
+@item @code{português} ou@*@ @code{portugues}
   @tab @code{sqt} @tab @code{bqt} @tab @code{stqt} @tab @code{btqt}
+@item @code{suomi}
+  @tab @code{ih} @tab @code{eh} @tab @code{isih} @tab @code{eseh}
+@item @code{svenska}
+  @tab @code{ih} @tab @code{eh} @tab @code{issih} @tab @code{esseh}
+@item @code{vlaams}
+  @tab @code{hk} @tab @code{hb} @tab @code{khk} @tab @code{bhb}
 @end multitable
 @end quotation
 

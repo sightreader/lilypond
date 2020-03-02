@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -25,13 +25,15 @@
 #include <unistd.h>
 #include <limits.h>
 
-using namespace std;
 
 #include "config.hh"
 
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
+
+using std::string;
+using std::vector;
 
 #ifndef ROOTSEP
 #define ROOTSEP ':'
@@ -101,11 +103,11 @@ File_name::dir_part () const
   string s;
 
   if (!root_.empty ())
-    s = root_ + ::to_string (ROOTSEP);
+    s = root_ + ROOTSEP;
 
   // handle special case of `/'
   if (dir_.empty () && is_absolute_)
-    s += ::to_string (DIRSEP);
+    s += DIRSEP;
 
   if (!dir_.empty ())
     s += dir_;
@@ -119,7 +121,7 @@ File_name::file_part () const
   string s = base_;
 
   if (!ext_.empty ())
-    s += ::to_string (EXTSEP) + ext_;
+    s += EXTSEP + ext_;
 
   return s;
 }
@@ -132,7 +134,7 @@ File_name::to_string () const
 
   if (!f.empty ()
       && !dir_.empty ())
-    d += ::to_string (DIRSEP);
+    d += DIRSEP;
 
   return d + f;
 }
@@ -159,6 +161,15 @@ File_name::File_name (string file_name)
     {
       dir_ = file_name.substr (0, i);
       file_name = file_name.substr (i + 1);
+    }
+
+  // handle `.' and `..' specially
+  if (file_name == string (".") || file_name == string (".."))
+    {
+      if (!dir_.empty ())
+        dir_ += DIRSEP;
+      dir_ += file_name;
+      return;
     }
 
   i = file_name.rfind ('.');
@@ -189,8 +200,20 @@ File_name::canonicalized () const
 
   for (vsize i = 0; i < components.size (); i++)
     {
-      if (components[i] == "..")
-        new_components.pop_back ();
+      if (i && components[i] == string ("."))
+        continue;
+      else if (new_components.size () && components[i] == string (".."))
+        {
+          string s = new_components.back ();
+          new_components.pop_back ();
+          if (!new_components.size ())
+            {
+              if (s == string ("."))
+                new_components.push_back ("..");
+              else
+                new_components.push_back (".");
+            }
+        }
       else
         new_components.push_back (components[i]);
     }

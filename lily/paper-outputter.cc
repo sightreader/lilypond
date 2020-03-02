@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -23,7 +23,6 @@
 #include <cmath>
 #include <ctime>
 
-using namespace std;
 
 #include "dimensions.hh"
 #include "file-name.hh"
@@ -39,6 +38,7 @@ using namespace std;
 #include "warn.hh"
 #include "lily-imports.hh"
 
+using std::string;
 
 Paper_outputter::Paper_outputter (SCM port, const string &format)
 {

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,10 @@
 #ifndef CONTEXT_HH
 #define CONTEXT_HH
 
+#include "acceptance-set.hh"
+#include "direction.hh"
 #include "duration.hh"
+#include "lily-guile.hh"
 #include "lily-proto.hh"
 #include "listener.hh"
 #include "moment.hh"
@@ -36,10 +39,35 @@ public:
   static const char * const type_p_name_;
   virtual ~Context ();
 private:
+  void add_global_finalization (SCM x);
+  Context *create_hierarchy (const std::vector<Context_def *> &path,
+                             const std::string &intermediate_id,
+                             const std::string &leaf_id,
+                             SCM leaf_operations);
+  Context *find_child_to_adopt_grandchild (SCM child_name, SCM grandchild_name);
+  SCM make_revert_finalization (SCM sym);
   Scheme_hash_table *properties_dict () const;
-  Context (Context const &src); // Do not define!  Not copyable!
 
-  DECLARE_CLASSNAME (Context);
+  enum FindMode
+  {
+    FIND_CREATE,
+    FIND_ONLY,
+    CREATE_ONLY
+  };
+
+  Context *core_find (FindMode, Direction,
+                      SCM context_name, const std::string &id, SCM ops);
+
+  Context *find (FindMode, Direction,
+                 SCM context_name, const std::string &id, SCM ops);
+
+  Context *unchecked_find (FindMode, Direction,
+                           SCM context_name, const std::string &id, SCM ops);
+
+  Context (Context const &src) = delete;
+  Context& operator= (Context const &) = delete;
+
+  VIRTUAL_CLASS_NAME (Context);
   void terminate ();
 
 private:
@@ -60,11 +88,13 @@ protected:
 
   SCM properties_scm_;
   SCM context_list_;
-  SCM accepts_list_;
-  SCM default_child_;
+  Acceptance_set acceptance_;
+  /* When a context needs to be added to the tree, but its descent is not fully
+     specified, can this context accept it as a descendant? */
+  bool adopts_ = false;
   SCM aliases_;
   Translator_group *implementation_;
-  string id_string_;
+  std::string id_string_;
 
   /* Events reported in the context is sent to this dispatcher. */
   Dispatcher *event_source_;
@@ -84,9 +114,13 @@ protected:
   void unset_property_from_event (SCM);
 
 public:
-  string id_string () const { return id_string_; }
+  // e.g. "mel" in "\context Voice = mel ..."
+  std::string id_string () const { return id_string_; }
+
+  // formatted identification for log messages
+  static std::string diagnostic_id (SCM name, const std::string& id);
+
   SCM children_contexts () const { return context_list_; }
-  SCM default_child_context_name () const;
 
   Dispatcher *event_source () const { return event_source_; }
   Dispatcher *events_below () const { return events_below_; }
@@ -118,21 +152,23 @@ public:
   void instrumented_set_property (SCM, SCM, const char *, int, const char *);
   void internal_set_property (SCM var_sym, SCM value);
 
-  Context *create_context (Context_def *, const string&, SCM);
+  Context *create_context (Context_def *, const std::string&, SCM);
+  bool matches (SCM type, const std::string &id) const;
+  virtual bool is_accessible_to_user () const { return true; }
+
   void create_context_from_event (SCM);
   void acknowledge_infant (SCM);
   void remove_context (SCM);
   void change_parent (SCM);
   void disconnect_from_parent ();
   void check_removal ();
-  string context_name () const;
+  std::string context_name () const;
   SCM context_name_symbol () const;
-  Global_context *get_global_context () const;
 
-  virtual Context *get_score_context () const;
   virtual Output_def *get_output_def () const;
   virtual Moment now_mom () const;
-  virtual Context *get_default_interpreter (const string &context_id = "");
+
+  Context *get_default_interpreter (const std::string &context_id = "");
 
   bool is_alias (SCM) const;
   void add_alias (SCM);
@@ -140,11 +176,33 @@ public:
   bool is_bottom_context () const;
   bool is_removable () const;
 
-  Context *find_create_context (SCM context_name,
-                                const string &id, SCM ops);
-  Context *create_unique_context (SCM context_name, const string &context_id,
-                                  SCM ops);
-  vector<Context_def *> path_to_acceptable_context (SCM alias) const;
+  // This is like find_create_context () without the possibility of finding an
+  // existing context.
+  Context *
+  create_unique_context (Direction dir,
+                         SCM name, const std::string &id, SCM ops);
+
+  // This is like find_create_context () without the possibility of creating a
+  // new context.
+  Context *
+  find_context (Direction dir, SCM name, const std::string &id);
+
+  // Find the first context with the given name and ID, or create a new context
+  // with the given name, ID, and context ops.
+  //
+  // The search proceeds as follows:
+  //   1. this context
+  //   2. an existing descendant of this context
+  //   3. an ancestor of this context (nearest first)
+  //   4. a new descendant of this context
+  //   5. an existing or new descendant of an ancestor (nearest first)
+  //
+  // A direction of DOWN skips the ancestors and a direction of UP skips the
+  // descendants.  This context is always considered.
+  Context *
+  find_create_context (Direction dir, SCM name, const std::string &id, SCM ops);
+
+  std::vector<Context_def *> path_to_acceptable_context (SCM alias) const;
 };
 
 /*
@@ -154,27 +212,31 @@ public:
 void apply_property_operations (Context *tg, SCM pre_init_ops);
 void execute_pushpop_property (Context *trg, SCM prop, SCM eltprop, SCM val);
 
-// Search for a context of the given type starting from the given context and
-// moving toward the root of the tree.  If the starting context matches, it is
-// returned.
-Context *find_context_above (Context *where, SCM type_sym);
+// abbreviate calling where->find_context when where might be null
+inline Context *
+find_context_above (Context *where, SCM type_sym, const std::string &id = "")
+{
+  return where ? where->find_context (UP, type_sym, id) : nullptr;
+}
 
 // Search for a context of the given type starting from the given context and
 // moving toward the root of the tree.  If found, return its child that was
 // found on the way there.
 Context *find_context_above_by_parent_type (Context *where, SCM parent_type);
 
-// Search for a context of the given type and ID starting from the given
-// context and moving toward the leaves of the tree.  If the starting context
-// matches, it is returned.  An empty ID matches any context of the given type.
-Context *find_context_below (Context *where,
-                             SCM type_sym, const string &id);
+// abbreviate calling where->find_context when where might be null
+inline Context *
+find_context_below (Context *where, SCM type_sym, const std::string &id)
+{
+  return where ? where->find_context (DOWN, type_sym, id) : nullptr;
+}
 
-// Search for a context of the given type and ID starting with the given
-// context, then searching its descendants, then its parent's descendants, etc.
-// An empty ID matches any context of the given type.
-Context *find_context_near (Context *where,
-                            SCM type_sym, const string &id);
+// abbreviate calling where->find_context when where might be null
+inline Context *
+find_context_near (Context *where, SCM type_sym, const std::string &id)
+{
+  return where ? where->find_context (CENTER, type_sym, id) : nullptr;
+}
 
 // Search for the top context (i.e. the ancestor with no parent) starting with
 // the given context.

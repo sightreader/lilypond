@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "virtual-methods.hh"
 #include "dimension-cache.hh"
 #include "grob-interface.hh"
+#include "lily-proto.hh"
 
 #include <set>
 
@@ -35,13 +36,13 @@ public:
   static const char * const type_p_name_;
   virtual ~Grob ();
 private:
-  DECLARE_CLASSNAME (Grob);
+  VIRTUAL_CLASS_NAME (Grob);
 
   void init ();
 
 protected:
   /* data */
-  Dimension_cache dim_cache_[NO_AXES];
+  mutable Dimension_cache dim_cache_[NO_AXES];
   Output_def *layout_;
   Grob *original_;
 
@@ -65,7 +66,6 @@ protected:
 public:
 
   /* friends */
-  friend class Spanner;
   friend class System;
   friend SCM ly_grob_properties (SCM);
   friend SCM ly_grob_basic_properties (SCM);
@@ -102,14 +102,15 @@ public:
   bool is_live () const;
 
   /* naming. */
-  string name () const;
+  std::string name () const;
 
   /* Properties */
   SCM get_property_alist_chain (SCM) const;
   SCM internal_get_property (SCM symbol) const;
   SCM internal_get_property_data (SCM symbol) const;
-  SCM internal_get_pure_property (SCM symbol, int start, int end) const;
-  SCM internal_get_maybe_pure_property (SCM symbol, bool pure, int start, int end) const;
+  SCM internal_get_pure_property (SCM symbol, vsize start, vsize end) const;
+  SCM internal_get_maybe_pure_property (SCM symbol, bool pure,
+                                        vsize start, vsize end) const;
   SCM internal_get_non_callback_marker_property_data (SCM symbol) const;
   SCM internal_get_object (SCM symbol) const;
   void internal_set_object (SCM sym, SCM val);
@@ -117,39 +118,45 @@ public:
   void instrumented_set_property (SCM, SCM, char const *, int, char const *);
   void internal_set_property (SCM sym, SCM val);
 
+  /* causes */
+  Stream_event *event_cause () const;
+  Stream_event *ultimate_event_cause () const;
+
   /* messages */
-  void warning (const string&) const;
-  void programming_error (const string&) const;
+  void warning (const std::string&) const;
+  void programming_error (const std::string&) const;
 
   /* class hierarchy */
   virtual System *get_system () const;
   static System *get_system (Grob *);
   virtual void do_break_processing ();
   virtual Grob *find_broken_piece (System *) const;
-  virtual void discretionary_processing ();
+  virtual void break_breakable_item (System *);
   virtual void derived_mark () const;
   virtual void handle_broken_dependencies ();
   virtual void handle_prebroken_dependencies ();
+  virtual bool internal_set_as_bound_of_spanner (Spanner *, Direction) { return false; }
 
   /* printing */
   Stencil *get_stencil () const;
   Stencil get_print_stencil () const;
 
   /* interfaces */
-  bool internal_has_interface (SCM intf);
+  bool internal_has_interface (SCM intf) const;
 
   /* offsets */
   void translate_axis (Real, Axis);
   Real relative_coordinate (Grob const *refp, Axis) const;
   Real parent_relative (Grob const *refp, Axis) const;
-  Real pure_relative_y_coordinate (Grob const *refp, int start, int end);
-  Real maybe_pure_coordinate (Grob const *refp, Axis a, bool pure, int start, int end);
+  Real pure_relative_y_coordinate (Grob const *refp, vsize start, vsize end);
+  Real maybe_pure_coordinate (Grob const *refp, Axis a, bool pure, vsize start, vsize end);
 
   /* extents */
-  Interval extent (Grob *refpoint, Axis) const;
+  Interval extent (Grob const *refpoint, Axis) const;
   void flush_extent_cache (Axis);
-  virtual Interval pure_y_extent (Grob *refpoint, int start, int end);
-  Interval maybe_pure_extent (Grob *refpoint, Axis, bool pure, int start, int end);
+  virtual Interval pure_y_extent (Grob *refpoint, vsize start, vsize end);
+  Interval maybe_pure_extent (Grob *refpoint, Axis, bool pure,
+                              vsize start, vsize end);
 
   /* refpoints */
   Grob *common_refpoint (Grob const *s, Axis a) const;
@@ -167,7 +174,10 @@ public:
 
   /* skylines */
   virtual Interval_t<int> spanned_rank_interval () const;
-  virtual bool pure_is_visible (int start, int end) const;
+  virtual bool pure_is_visible (vsize /*start*/, vsize /*end*/) const
+  {
+    return true;
+  }
   bool check_cross_staff (Grob *common);
   static bool less (Grob *g1, Grob *g2);
   static SCM maybe_pure_internal_simple_skylines_from_extents (Grob *, Axis, bool, int, int, bool, bool);
@@ -176,18 +186,18 @@ public:
 };
 
 template <class T>
-inline bool has_interface(Grob *g)
+inline bool has_interface(Grob const *g)
 {
   return g && g->internal_has_interface (Grob_interface<T>::interface_symbol_);
 }
 
 /* unification */
-void uniquify (vector <Grob *> &);
+void uniquify (std::vector<Grob *> &);
 
 /* refpoints */
 Grob *common_refpoint_of_list (SCM elt_list, Grob *, Axis a);
-Grob *common_refpoint_of_array (vector<Grob *> const &, Grob *, Axis a);
-Grob *common_refpoint_of_array (set<Grob *> const &, Grob *, Axis a);
+Grob *common_refpoint_of_array (std::vector<Grob *> const &, Grob *, Axis a);
+Grob *common_refpoint_of_array (std::set<Grob *> const &, Grob *, Axis a);
 System *get_root_system (Grob *me);
 
 /* extents */
@@ -200,7 +210,7 @@ void chain_callback (Grob *g, SCM proc, SCM sym);
 SCM axis_offset_symbol (Axis a);
 SCM axis_parent_positioning (Axis a);
 
-SCM call_pure_function (SCM unpure, SCM args, int start, int end);
+SCM call_pure_function (SCM unpure, SCM args, vsize start, vsize end);
 
 void set_nested_property (Grob *, SCM property_path, SCM value);
 

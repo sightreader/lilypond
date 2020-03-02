@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -144,7 +144,7 @@
     debugging purposes.  If the class does not define this function,
     the output will be #<Classname> when printing.
 
-  - a static const * const type_p_name_ string set to something like
+  - a static const * const type_p_name_ std::string set to something like
     "ly:grob?".  When provided, an accordingly named function for
     checking for the given smob type will be available in Scheme.
 
@@ -174,7 +174,7 @@ class Smob_base
   static scm_t_bits smob_tag_;
   static Scm_init scm_init_;
   static void init (void);
-  static string smob_name_;
+  static std::string smob_name_;
 protected:
   static Super *unchecked_unsmob (SCM s)
   {
@@ -229,8 +229,8 @@ private:
                         REQ, OPT, VAR);                                 \
   }
 
-  // Well, function template argument packs are a C++11 feature.  So
-  // we just define a bunch of trampolines manually.  It turns out
+  // Template parameter packs could reduce repetition here; however,
+  // they would allow parameter types other than SCM.  It turns out
   // that GUILE 1.8.8 cannot actually make callable structures with
   // more than 3 arguments anyway.  That's surprising, to say the
   // least, but in emergency situations one can always use a "rest"
@@ -295,8 +295,8 @@ public:
   }
 };
 
-void protect_smob (SCM smob, SCM *prot_cons);
-void unprotect_smob (SCM smob, SCM *prot_cons);
+void protect_smob (SCM smob);
+void unprotect_smob (SCM smob);
 
 // The Smob_core class is not templated and contains material not
 // depending on the Super class.
@@ -304,7 +304,13 @@ void unprotect_smob (SCM smob, SCM *prot_cons);
 class Smob_core {
 protected:
   SCM self_scm_;
-  Smob_core () : self_scm_ (SCM_UNDEFINED) { };
+  Smob_core () : self_scm_ (SCM_UNDEFINED) {
+    count++;
+    maybe_grow_heap();
+  };
+  ~Smob_core() { count--; }
+  static size_t count;
+  void maybe_grow_heap();
 public:
   SCM self_scm () const { return self_scm_; }
   Listener get_listener (SCM callback);
@@ -313,10 +319,10 @@ public:
 template <class Super>
 class Smob : public Smob_core, public Smob_base<Super> {
 private:
-  SCM protection_cons_;
-  Smob (const Smob<Super> &); // Do not define!  Not copyable!
+  Smob (const Smob<Super> &) = delete;
+  Smob& operator= (const Smob<Super> &) = delete;
 protected:
-  Smob () : protection_cons_ (SCM_EOL) { };
+  Smob () = default;
 public:
   static size_t free_smob (SCM obj)
   {
@@ -331,15 +337,15 @@ public:
   }
   void protect ()
   {
-    protect_smob (self_scm_, &protection_cons_);
+    protect_smob (self_scm_);
   }
   void smobify_self () {
-    protect_smob (unprotected_smobify_self (), &protection_cons_);
+    protect_smob (unprotected_smobify_self ());
   }
   SCM unprotect ()
   {
     SCM s = self_scm_;
-    unprotect_smob (s, &protection_cons_);
+    unprotect_smob (s);
     return s;
   }
 };
@@ -347,7 +353,7 @@ public:
 extern bool parsed_objects_should_be_dead;
 class parsed_dead
 {
-  static vector<parsed_dead *> elements;
+  static std::vector<parsed_dead *> elements;
   SCM data;
   SCM readout_one ()
   {

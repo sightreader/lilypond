@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #define MISC_HH
 
 #include <cstdlib>
-using namespace std;
 
 #include "std-vector.hh"
 #include "interval.hh"
@@ -35,8 +34,10 @@ template <class T>
 int
 intlog2 (T d)
 {
+  // TODO: To support user-defined types, use namespace std and call
+  // unqualified to_string().
   if (d <= 0)
-    error ("intlog2 with negative argument: " + ::to_string (d));
+    error ("intlog2 with negative argument: " + std::to_string (d));
   int i = 0;
   while ((d != 1))
     {
@@ -82,7 +83,7 @@ Real directed_round (Real f, Direction d);
 
 Real peak_around (Real epsilon, Real threshold, Real x);
 Real convex_amplifier (Real standard_x, Real increase_factor, Real x);
-string camel_case_to_lisp_identifier (const string &in);
+std::string camel_case_to_lisp_identifier (const std::string &in);
 
 #endif
 

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 
 #include "interval.tcc"
 
+using std::string;
+
 template<>
 Real
 Interval_t<Real>::infinity ()
@@ -29,24 +31,10 @@ Interval_t<Real>::infinity ()
 }
 
 template<>
-string
-Interval_t<Real>::T_to_string (Real r)
-{
-  return ::to_string (r);
-}
-
-template<>
 int
 Interval_t<int>::infinity ()
 {
   return INT_MAX;
-}
-
-template<>
-string
-Interval_t<int>::T_to_string (int i)
-{
-  return ::to_string (i);
 }
 
 template INTERVAL__INSTANTIATE (int);

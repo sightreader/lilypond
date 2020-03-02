@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2006--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #define STD_STRING_HH
 
 #include "flower-proto.hh"
+#include "unistd.h"
 
 #if 0
 /*
@@ -33,25 +34,16 @@
 
 #include <string>
 
-using namespace std;
 
 typedef size_t ssize;
-#define NPOS string::npos
+#define NPOS std::string::npos
 
-string to_string (const string&);
-string to_string (char c, int n = 1);
-string to_string (int i, char const *format = 0);
-string to_string (double f, char const *format = 0);
-string to_string (long);
-string to_string (long unsigned);
-string to_string (I64, char const *format = 0);
-string to_string (unsigned);
-string to_string (bool b);
-string to_string (char const *format, ...)
+// TODO: This should probably be renamed to avoid any possible confusion with
+// std::to_string.
+std::string to_string (char const *format, ...)
 __attribute__ ((format (printf, 1, 2)));
 
-string &replace_all (string *str, string const &find, string const &replace);
-string &replace_all (string *str, char find, char replace);
-char *string_copy (const string &s);
+std::string &replace_all (std::string *str, std::string const &find, std::string const &replace);
+std::string &replace_all (std::string *str, char find, char replace);
 
 #endif /* STD_STRING_HH */

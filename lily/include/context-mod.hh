@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2010--2015 Reinhold Kainhofer <reinhold@kainhofer.com>
+  Copyright (C) 2010--2020 Reinhold Kainhofer <reinhold@kainhofer.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,8 +34,9 @@
   Modifications for an interpretation context as given in the
   input.
 */
-struct Context_mod : public Simple_smob<Context_mod>
+class Context_mod : public Simple_smob<Context_mod>
 {
+public:
   SCM mark_smob () const;
   int print_smob (SCM, scm_print_state *) const;
   static const char * const type_p_name_;

@@ -1,6 +1,6 @@
 #!@TARGET_PYTHON@
 
-# Copyright (c) 2006--2015 Brailcom, o.p.s.
+# Copyright (c) 2006--2020 Brailcom, o.p.s.
 #
 # Author: Milan Zamazal <pdm@brailcom.org>
 #
@@ -23,7 +23,7 @@
 import codecs
 import optparse
 import os
-import popen2
+import subprocess
 import sys
 import tempfile
 
@@ -32,7 +32,7 @@ import tempfile
 """
 
 
-FESTIVAL_COMMAND = 'festival --pipe'
+FESTIVAL_COMMAND = ['festival', '--pipe']
 VOICE_CODINGS = {'voice_czech_ph': 'iso-8859-2'}
 
 _USAGE = """lilysong [-p PLAY-PROGRAM] FILE.xml [LANGUAGE-CODE-OR-VOICE [SPEEDUP]]
@@ -42,7 +42,7 @@ _USAGE = """lilysong [-p PLAY-PROGRAM] FILE.xml [LANGUAGE-CODE-OR-VOICE [SPEEDUP
 """
 
 def usage ():
-    print 'Usage:', _USAGE
+    print('Usage:', _USAGE)
     sys.exit (2)
 
 def process_options (args):
@@ -58,12 +58,13 @@ def process_options (args):
     return options, args
 
 def call_festival (scheme_code):
-    in_, out = popen2.popen2 (FESTIVAL_COMMAND)
-    out.write (scheme_code)
-    out.close ()
+    p = subprocess.Popen (FESTIVAL_COMMAND, stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE, close_fds=True)
+    p.stdin.write (scheme_code)
+    p.stdin.close ()
     answer = ''
     while True:
-        process_output = in_.read ()
+        process_output = p.stdout.read ()
         if not process_output:
             break
         answer = answer + process_output
@@ -88,16 +89,16 @@ def select_voice (language_or_voice):
     return voice
 
 def list_voices ():
-    print call_festival ('''
+    print(call_festival ('''
 (let ((voices (voice.list))
       (print-voice (lambda (v) (format t "voice_%s\n" v))))
   (mapcar print-voice voices)
   (mapcar (lambda (v) (if (not (member v voices)) (print-voice v)))
           (mapcar car Voice_descriptions)))
-''')
+'''))
 
 def list_languages ():
-    print call_festival ('''
+    print(call_festival ('''
 (let ((languages '()))
   (let ((voices (voice.list))
         (print-language (lambda (v)
@@ -109,7 +110,7 @@ def list_languages ():
     (mapcar print-language voices)
     (mapcar (lambda (v) (if (not (member v voices)) (print-language v)))
             (mapcar car Voice_descriptions))))
-''')
+'''))
 
 def process_xml_file (file_name, voice, speedup, play_program):
     if speedup == 1:
@@ -139,7 +140,7 @@ def process_xml_file (file_name, voice, speedup, play_program):
         else:
             wav_temp_file = wav_file
         try:
-            print "text2wave -eval '(%s)' -mode singing '%s' -o '%s'" % (voice, xml_temp_file, wav_temp_file,)
+            print("text2wave -eval '(%s)' -mode singing '%s' -o '%s'" % (voice, xml_temp_file, wav_temp_file,))
             result = os.system ("text2wave -eval '(%s)' -mode singing '%s' -o '%s'" %
                                 (voice, xml_temp_file, wav_temp_file,))
             if result:

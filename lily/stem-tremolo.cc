@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 #include "staff-symbol-referencer.hh"
 #include "stem.hh"
 #include "warn.hh"
+
+using std::vector;
 
 MAKE_SCHEME_CALLBACK (Stem_tremolo, calc_slope, 1)
 SCM
@@ -184,7 +186,7 @@ Stem_tremolo::pure_height (SCM smob, SCM, SCM)
   int beam_count = Stem::beam_multiplicity (stem).length () + 1;
   Real beam_translation = get_beam_translation (me);
 
-  ph = ph - dir * max (beam_count, 1) * beam_translation;
+  ph = ph - dir * std::max (beam_count, 1) * beam_translation;
   ph = ph - ph.center ();  // TODO: this nullifies the previous line?!?
 
   return ly_interval2scm (ph);
@@ -308,14 +310,14 @@ Stem_tremolo::y_offset (Grob *me, bool pure)
       Stem_info si = Stem::get_stem_info (stem);
       ph[-dir] = si.shortest_y_;
 
-      return (ph - dir * max (beam_count, 1) * beam_translation)[dir] - dir * 0.5 * me->pure_y_extent (me, 0, INT_MAX).length ();
+      return (ph - dir * std::max (beam_count, 1) * beam_translation)[dir] - dir * 0.5 * me->pure_y_extent (me, 0, INT_MAX).length ();
     }
 
   Real end_y
     = (pure
        ? stem->pure_y_extent (stem, 0, INT_MAX)[dir]
        : stem->extent (stem, Y_AXIS)[dir])
-      - dir * max (beam_count, 1) * beam_translation
+      - dir * std::max (beam_count, 1) * beam_translation
       - Stem::beam_end_corrective (stem);
 
   if (!beam && Stem::duration_log (stem) >= 3)
@@ -326,7 +328,7 @@ Stem_tremolo::y_offset (Grob *me, bool pure)
     }
 
   bool whole_note = Stem::duration_log (stem) <= 0;
-  if (whole_note || isinf(end_y))
+  if (whole_note || std::isinf(end_y))
     {
       /* we shouldn't position relative to the end of the stem since the stem
          is invisible */

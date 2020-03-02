@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;                 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -308,9 +308,20 @@ Example: @code{\\mark \"A\"}")
         (types . (mark-event event))
         ))
 
+    (MeasureSpannerEvent
+     . ((description . "Used to signal the start and end of a measure
+spanner.")
+       (types . (measure-spanner-event span-event event))
+        ))
+
     (MeasureCounterEvent
      . ((description . "Used to signal the start and end of a measure count.")
         (types . (measure-counter-event span-event event))
+        ))
+
+    (MultiMeasureArticulationEvent
+     . ((description . "Articulations on multi-measure rests.")
+        (types . (post-event event multi-measure-articulation-event))
         ))
 
     (MultiMeasureRestEvent
@@ -321,7 +332,8 @@ to signal rests.")
         ))
 
     (MultiMeasureRestMusic
-     . ((description . "Rests that may be compressed into Multi rests.
+     . ((description . "Rests that may be compressed into
+multi-measure rests.
 
 Syntax: @code{R2.*4} for 4 measures in 3/4 time.")
         (iterator-ctor . ,ly:sequential-iterator::constructor)
@@ -330,7 +342,7 @@ Syntax: @code{R2.*4} for 4 measures in 3/4 time.")
         ))
 
     (MultiMeasureTextEvent
-     . ((description . "Texts on multi measure rests.
+     . ((description . "Texts on multi-measure rests.
 
 Syntax: @code{R-\\markup @{ \\roman \"bla\" @}}
 

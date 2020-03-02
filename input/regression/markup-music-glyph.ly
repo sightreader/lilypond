@@ -1,4 +1,4 @@
-\version "2.19.80"
+\version "2.21.0"
 
 #(ly:set-option 'warning-as-error #f)
 #(ly:expect-warning (_ "Cannot find glyph ~a") "UNKNOWN-GLYPH")

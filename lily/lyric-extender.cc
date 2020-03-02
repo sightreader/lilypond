@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -61,7 +61,7 @@ Lyric_extender::print (SCM smob)
   else
     left_point = left_edge->extent (common, X_AXIS)[RIGHT];
 
-  if (isinf (left_point))
+  if (std::isinf (left_point))
     return SCM_EOL;
 
   /* It seems that short extenders are even lengthened to go past the
@@ -70,21 +70,21 @@ Lyric_extender::print (SCM smob)
   Real right_point
     = left_point + (robust_scm2double (minlen, 0));
 
-  right_point = min (right_point, me->get_system ()->get_bound (RIGHT)->relative_coordinate (common, X_AXIS));
+  right_point = std::min (right_point, me->get_system ()->get_bound (RIGHT)->relative_coordinate (common, X_AXIS));
 
   if (heads.size ())
-    right_point = max (right_point, heads.back ()->extent (common, X_AXIS)[RIGHT]);
+    right_point = std::max (right_point, heads.back ()->extent (common, X_AXIS)[RIGHT]);
 
   Real h = sl * robust_scm2double (me->get_property ("thickness"), 0);
   Drul_array<Real> paddings (robust_scm2double (me->get_property ("left-padding"), h),
                              robust_scm2double (me->get_property ("right-padding"), h));
 
   if (right_text)
-    right_point = min (right_point, (robust_relative_extent (right_text, common, X_AXIS)[LEFT] - paddings[RIGHT]));
+    right_point = std::min (right_point, (robust_relative_extent (right_text, common, X_AXIS)[LEFT] - paddings[RIGHT]));
 
   /* run to end of line. */
   if (me->get_bound (RIGHT)->break_status_dir ())
-    right_point = max (right_point, (robust_relative_extent (me->get_bound (RIGHT), common, X_AXIS)[LEFT] - paddings[RIGHT]));
+    right_point = std::max (right_point, (robust_relative_extent (me->get_bound (RIGHT), common, X_AXIS)[LEFT] - paddings[RIGHT]));
 
   left_point += paddings[LEFT];
   Real w = right_point - left_point;

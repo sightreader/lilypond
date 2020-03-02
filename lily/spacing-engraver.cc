@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include "stream-event.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 struct Rhythmic_tuple
 {
@@ -87,7 +89,7 @@ protected:
   void process_music ();
   void add_starter_duration (Grob_info i);
 
-  virtual void finalize ();
+  void finalize () override;
 
   void start_spanner ();
   void stop_spanner ();
@@ -220,7 +222,7 @@ Spacing_engraver::stop_translation_timestep ()
       if (ev)
         {
           Moment m = get_event_length (ev);
-          shortest_playing = min (shortest_playing, m);
+          shortest_playing = std::min (shortest_playing, m);
         }
     }
   Moment starter;
@@ -231,13 +233,13 @@ Spacing_engraver::stop_translation_timestep ()
       Moment m = get_event_length (now_durations_[i].info_.event_cause ());
       if (m.to_bool ())
         {
-          starter = min (starter, m);
+          starter = std::min (starter, m);
           playing_durations_.insert (now_durations_[i]);
         }
     }
   now_durations_.clear ();
 
-  shortest_playing = min (shortest_playing, starter);
+  shortest_playing = std::min (shortest_playing, starter);
 
   assert (starter.to_bool ());
   SCM sh = shortest_playing.smobbed_copy ();

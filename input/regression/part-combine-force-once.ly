@@ -1,7 +1,7 @@
 
 \header {
   texidoc ="Overrides for the part-combiner, affecting only one moment.
-  The @code{partcombine...Once} override applies only to one moment, after which the
+  The @code{partCombine...Once} override applies only to one moment, after which the
   old override -- if any -- is in effect again.
 "
 }

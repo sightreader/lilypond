@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2007--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public:
 
   int delta_ticks_;
   Midi_item *midi_;
-  string to_string () const;
+  std::string to_string () const;
 };
 
 /**
@@ -43,21 +43,21 @@ public:
 class Midi_chunk
 {
 public:
-  void set (const string &header_string, const string &data_string, const string &footer_string);
-  virtual string to_string () const;
-  virtual string data_string () const;
-  DECLARE_CLASSNAME (Midi_chunk);
+  void set (const std::string &header_string, const std::string &data_string, const std::string &footer_string);
+  virtual std::string to_string () const;
+  virtual std::string data_string () const;
+  VIRTUAL_CLASS_NAME (Midi_chunk);
   virtual ~Midi_chunk ();
 private:
-  string data_string_;
-  string footer_string_;
-  string header_string_;
+  std::string data_string_;
+  std::string footer_string_;
+  std::string header_string_;
 };
 
 class Midi_header : public Midi_chunk
 {
 public:
-  DECLARE_CLASSNAME (Midi_header);
+  OVERRIDE_CLASS_NAME (Midi_header);
 
   Midi_header (int format, int tracks, int clocks_per_4);
 };
@@ -67,15 +67,15 @@ class Midi_track : public Midi_chunk
 public:
   int number_;
   int port_;
-  DECLARE_CLASSNAME (Midi_track);
+  OVERRIDE_CLASS_NAME (Midi_track);
 
-  vector<Midi_event *> events_;
+  std::vector<Midi_event *> events_;
 
   Midi_track (int number, bool port);
   ~Midi_track ();
 
   void add (int, Midi_item *midi);
-  virtual string data_string () const;
+  std::string data_string () const override;
   void push_back (int, Midi_item *midi);
 };
 

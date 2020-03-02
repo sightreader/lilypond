@@ -7,7 +7,7 @@ things are quoted. In this example, a 16th rest is not quoted, since
 @code{rest-event} is not in @code{quotedEventTypes}."
 
 }
-\version "2.19.21"
+\version "2.21.0"
 \layout {
     ragged-right = ##t
 }

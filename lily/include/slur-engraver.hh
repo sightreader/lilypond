@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2013--2015 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2013--2020 Mike Solomon <mike@mikesolomon.org>
   Copyright (C) 2016 David Kastrup <dak@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -34,14 +34,16 @@ protected:
     { }
   };
   // protected so that subclasses can see them
-  vector<Event_info> start_events_;
-  vector<Event_info> stop_events_;
+  std::vector<Event_info> start_events_;
+  std::vector<Event_info> stop_events_;
 
   typedef std::multimap<Stream_event *, Spanner *> Note_slurs;
   Drul_array<Note_slurs> note_slurs_;
-  vector<Grob *> slurs_;
-  vector<Grob *> end_slurs_;
-  vector<Grob_info> objects_to_acknowledge_;
+  std::vector<Grob *> slurs_;
+  std::vector<Grob *> end_slurs_;
+
+  // objects that we need for formatting, eg. scripts and ties.
+  std::vector<Grob_info> objects_to_acknowledge_;
 
   virtual SCM event_symbol () const;
   virtual bool double_property () const;
@@ -65,8 +67,8 @@ protected:
   bool try_to_end (Event_info evi);
 
   virtual void set_melisma (bool);
-  virtual void finalize ();
-  virtual void derived_mark () const;
+  void finalize () override;
+  void derived_mark () const override;
 
 public:
   TRANSLATOR_DECLARATIONS (Slur_engraver);

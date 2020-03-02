@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,14 +17,16 @@
   along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "context.hh"
 #include "dispatcher.hh"
-#include "global-context.hh"
 #include "grob.hh"
 #include "input.hh"
 #include "international.hh"
 #include "listener.hh"
 #include "music-iterator.hh"
 #include "music.hh"
+
+using std::string;
 
 /*
   This iterator is hairy.  It tracks both lyric and melody contexts,
@@ -47,14 +49,14 @@ public:
   Lyric_combine_music_iterator (Lyric_combine_music_iterator const &src);
   DECLARE_SCHEME_CALLBACK (constructor, ());
 protected:
-  virtual void construct_children ();
-  virtual Moment pending_moment () const;
-  virtual void do_quit ();
-  virtual void process (Moment);
-  virtual bool run_always ()const;
-  virtual bool ok () const;
-  virtual void derived_mark () const;
-  virtual void derived_substitute (Context *, Context *);
+  void construct_children () override;
+  Moment pending_moment () const override;
+  void do_quit () override;
+  void process (Moment) override;
+  bool run_always () const override;
+  bool ok () const override;
+  void derived_mark () const override;
+  void derived_substitute (Context *, Context *) override;
   void set_music_context (Context *to);
 private:
   bool start_new_syllable () const;
@@ -101,7 +103,7 @@ Lyric_combine_music_iterator::set_busy (SCM se)
   if ((e->in_event_class ("note-event") || e->in_event_class ("cluster-note-event"))
       && music_context_)
 
-    busy_moment_ = max (music_context_->now_mom (),
+    busy_moment_ = std::max (music_context_->now_mom (),
                         busy_moment_);
 
 }
@@ -217,7 +219,7 @@ Lyric_combine_music_iterator::construct_children ()
     Wait for a Create_context event. If this isn't done, lyrics can be
     delayed when voices are created implicitly.
   */
-  Global_context *g = get_outlet ()->get_global_context ();
+  Context *g = find_top_context (get_outlet ());
   g->events_below ()->add_listener (GET_LISTENER (Lyric_combine_music_iterator, check_new_context), ly_symbol2scm ("CreateContext"));
 
   /*
@@ -330,19 +332,23 @@ Lyric_combine_music_iterator::process (Moment /* when */)
 void
 Lyric_combine_music_iterator::do_quit ()
 {
-  if (!music_found_)
+  /* Don't print a warning for empty lyrics (in which case we don't try
+     to find the proper voice, so it will not be found) */
+  if (lyrics_found_ && !music_found_)
     {
-      SCM voice_name = get_music ()->get_property ("associated-context");
-      SCM voice_type = get_music ()->get_property ("associated-context-type");
-      string name, type;
-      if (scm_is_string (voice_name))
-        name = ly_scm2string (voice_name);
-      type = robust_symbol2string (voice_type, "Voice");
-      /* Don't print a warning for empty lyrics (in which case we don't try
-         to find the proper voice, so it will not be found) */
-      if (lyrics_found_)
-        get_music ()->origin ()->warning (_f ("cannot find %s `%s'",
-                                              type.c_str (), name.c_str ()) + "\n");
+      Music *m = get_music ();
+
+      // ugh: defaults are repeated elsewhere
+      SCM voice_type = m->get_property ("associated-context-type");
+      if (!scm_is_symbol (voice_type))
+        voice_type = ly_symbol2scm ("Voice");
+
+      string id = robust_scm2string (m->get_property ("associated-context"),
+                                     "");
+
+      Input *origin = m->origin ();
+      origin->warning (_f ("cannot find context: %s",
+                           Context::diagnostic_id (voice_type, id).c_str ()));
     }
 
   if (lyric_iter_)

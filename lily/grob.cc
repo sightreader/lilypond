@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include <cstring>
 #include <set>
+#include <unordered_set>
 
 #include "align-interface.hh"
 #include "axis-group-interface.hh"
@@ -40,6 +41,9 @@
 #include "warn.hh"
 #include "lily-imports.hh"
 
+using std::set;
+using std::string;
+using std::vector;
 
 Grob *
 Grob::clone () const
@@ -213,7 +217,7 @@ Grob::do_break_processing ()
 }
 
 void
-Grob::discretionary_processing ()
+Grob::break_breakable_item (System *)
 {
 }
 
@@ -313,14 +317,14 @@ Grob::find_broken_piece (System *) const
 void
 Grob::translate_axis (Real y, Axis a)
 {
-  if (isinf (y) || isnan (y))
+  if (!std::isfinite (y))
     {
       programming_error ("Infinity or NaN encountered");
       return;
     }
 
   if (!dim_cache_[a].offset_)
-    dim_cache_[a].offset_ = new Real (y);
+    dim_cache_[a].offset_ = y;
   else
     *dim_cache_[a].offset_ += y;
 }
@@ -351,7 +355,7 @@ Grob::parent_relative (Grob const *refp, Axis a) const
 }
 
 Real
-Grob::pure_relative_y_coordinate (Grob const *refp, int start, int end)
+Grob::pure_relative_y_coordinate (Grob const *refp, vsize start, vsize end)
 {
   if (refp == this)
     return 0.0;
@@ -369,15 +373,14 @@ Grob::pure_relative_y_coordinate (Grob const *refp, int start, int end)
     {
       SCM proc = get_property_data ("Y-offset");
 
-      dim_cache_[Y_AXIS].offset_ = new Real (0.0);
+      dim_cache_[Y_AXIS].offset_ = 0;
       set_property ("pure-Y-offset-in-progress", SCM_BOOL_T);
       off = robust_scm2double (call_pure_function (proc,
                                                    scm_list_1 (self_scm ()),
                                                    start, end),
                                0.0);
       del_property ("pure-Y-offset-in-progress");
-      delete dim_cache_[Y_AXIS].offset_;
-      dim_cache_[Y_AXIS].offset_ = 0;
+      dim_cache_[Y_AXIS].offset_.reset ();
     }
 
   /* we simulate positioning-done if we are the child of a VerticalAlignment,
@@ -403,28 +406,27 @@ Grob::get_offset (Axis a) const
   if (dim_cache_[a].offset_)
     return *dim_cache_[a].offset_;
 
-  Grob *me = (Grob *) this;
-
   SCM sym = axis_offset_symbol (a);
-  me->dim_cache_[a].offset_ = new Real (0.0);
+  dim_cache_[a].offset_ = 0;
 
   /*
     UGH: can't fold next 2 statements together. Apparently GCC thinks
     dim_cache_[a].offset_ is unaliased.
   */
   Real off = robust_scm2double (get_property (sym), 0.0);
-  if (me->dim_cache_[a].offset_)
+  if (dim_cache_[a].offset_)
     {
-      *me->dim_cache_[a].offset_ += off;
-      me->del_property (sym);
-      return *me->dim_cache_[a].offset_;
+      *dim_cache_[a].offset_ += off;
+      const_cast<Grob *> (this)->del_property (sym);
+      return *dim_cache_[a].offset_;
     }
   else
     return 0.0;
 }
 
 Real
-Grob::maybe_pure_coordinate (Grob const *refp, Axis a, bool pure, int start, int end)
+Grob::maybe_pure_coordinate (Grob const *refp, Axis a, bool pure,
+                             vsize start, vsize end)
 {
   if (pure && a != Y_AXIS)
     programming_error ("tried to get pure X-offset");
@@ -446,15 +448,14 @@ Grob::flush_extent_cache (Axis axis)
         callback to be called if.
        */
       del_property ((axis == X_AXIS) ? ly_symbol2scm ("X-extent") : ly_symbol2scm ("Y-extent"));
-      delete dim_cache_[axis].extent_;
-      dim_cache_[axis].extent_ = 0;
+      dim_cache_[axis].extent_.reset ();
       if (get_parent (axis))
         get_parent (axis)->flush_extent_cache (axis);
     }
 }
 
 Interval
-Grob::extent (Grob *refp, Axis a) const
+Grob::extent (Grob const *refp, Axis a) const
 {
   Real offset = relative_coordinate (refp, a);
   Interval real_ext;
@@ -479,11 +480,11 @@ Grob::extent (Grob *refp, Axis a) const
       if (is_number_pair (min_ext))
         real_ext.unite (ly_scm2interval (min_ext));
 
-      ((Grob *)this)->dim_cache_[a].extent_ = new Interval (real_ext);
+      dim_cache_[a].extent_ = real_ext;
     }
 
   // We never want nan, so we avoid shifting infinite values.
-    if(!isinf (offset))
+    if(!std::isinf (offset))
       real_ext.translate(offset);
     else
       warning(_f ("ignored infinite %s-offset",
@@ -493,7 +494,7 @@ Grob::extent (Grob *refp, Axis a) const
 }
 
 Interval
-Grob::pure_y_extent (Grob *refp, int start, int end)
+Grob::pure_y_extent (Grob *refp, vsize start, vsize end)
 {
   SCM iv_scm = get_pure_property ("Y-extent", start, end);
   Interval iv = robust_scm2interval (iv_scm, Interval ());
@@ -513,7 +514,7 @@ Grob::pure_y_extent (Grob *refp, int start, int end)
 }
 
 Interval
-Grob::maybe_pure_extent (Grob *refp, Axis a, bool pure, int start, int end)
+Grob::maybe_pure_extent (Grob *refp, Axis a, bool pure, vsize start, vsize end)
 {
   return (pure && a == Y_AXIS) ? pure_y_extent (refp, start, end) : extent (refp, a);
 }
@@ -522,12 +523,6 @@ Interval_t<int>
 Grob::spanned_rank_interval () const
 {
   return Interval_t<int> (-1, 0);
-}
-
-bool
-Grob::pure_is_visible (int /* start */, int /* end */) const
-{
-  return true;
 }
 
 /* Sort grobs according to their starting column. */
@@ -722,19 +717,35 @@ Grob::internal_vertical_less (Grob *g1, Grob *g2, bool pure)
 }
 
 /****************************************************************
+  CAUSES
+****************************************************************/
+Stream_event *
+Grob::event_cause () const
+{
+  SCM cause = get_property ("cause");
+  return unsmob<Stream_event> (cause);
+}
+
+Stream_event *
+Grob::ultimate_event_cause () const
+{
+  SCM cause = get_property ("cause");
+  while (Grob *g = unsmob<Grob> (cause))
+    {
+      cause = g->get_property ("cause");
+    }
+  return unsmob<Stream_event> (cause);
+}
+
+
+
+/****************************************************************
   MESSAGES
 ****************************************************************/
 void
 Grob::programming_error (const string &s) const
 {
-  SCM cause = self_scm ();
-  while (Grob *g = unsmob<Grob> (cause))
-    cause = g->get_property ("cause");
-
-  /* ES TODO: cause can't be Music*/
-  if (Music *m = unsmob<Music> (cause))
-    m->origin ()->programming_error (s);
-  else if (Stream_event *ev = unsmob<Stream_event> (cause))
+  if (Stream_event *ev = ultimate_event_cause ())
     ev->origin ()->programming_error (s);
   else
     ::programming_error (s);
@@ -743,14 +754,7 @@ Grob::programming_error (const string &s) const
 void
 Grob::warning (const string &s) const
 {
-  SCM cause = self_scm ();
-  while (Grob *g = unsmob<Grob> (cause))
-    cause = g->get_property ("cause");
-
-  /* ES TODO: cause can't be Music*/
-  if (Music *m = unsmob<Music> (cause))
-    m->origin ()->warning (s);
-  else if (Stream_event *ev = unsmob<Stream_event> (cause))
+  if (Stream_event *ev = ultimate_event_cause ())
     ev->origin ()->warning (s);
   else
     ::warning (s);
@@ -973,50 +977,18 @@ Grob::check_cross_staff (Grob *commony)
   return false;
 }
 
-static
-bool
-indirect_less (Grob **a, Grob **b)
-{
-  // Use original order as tie breaker.  That gives us a stable sort
-  // at the lower price tag of an unstable one, and we want a stable
-  // sort in order to reliably retain the first instance of a grob
-  // pointer.
-  return *a < *b || (*a == *b && a < b);
-}
-
-static
-bool
-indirect_eq (Grob **a, Grob **b)
-{
-  return *a == *b;
-}
-
-static
-bool
-direct_less (Grob **a, Grob **b)
-{
-  return a < b;
-}
-
-// uniquify uniquifies on the memory addresses of the Grobs, but then
-// uses the original order.  This makes results independent from the
-// memory allocation of Grobs.
-
 void
 uniquify (vector <Grob *> & grobs)
 {
-  vector <Grob **> vec (grobs.size ());
+  std::unordered_set<Grob*> seen(grobs.size());
+  vsize j = 0;
   for (vsize i = 0; i < grobs.size (); i++)
-    vec[i] = &grobs[i];
-  vector_sort (vec, indirect_less);
-  vec.erase (unique (vec.begin (), vec.end (), indirect_eq), vec.end ());
-  vector_sort (vec, direct_less);
+    {
+      if (seen.insert(grobs[i]).second)
+        {
+          grobs[j++] = grobs[i];
+        }
+    }
 
-  // Since the output is a sorted copy of the input with some elements
-  // removed, we can fill in the vector in-place if we do it starting
-  // from the front.
-  for (vsize i = 0; i < vec.size (); i++)
-    grobs[i] = *vec[i];
-  grobs.erase (grobs.begin () + vec.size (), grobs.end ());
-  return;
+  grobs.resize(j);
 }

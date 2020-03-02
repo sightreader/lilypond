@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@
 
 // MacOS 10.3 problems:
 // #include <cmath>
-using namespace std;
 
 template<class T>
 int
@@ -43,16 +42,6 @@ _Interval__compare (const Interval_t<T> &a, Interval_t<T> const &b)
     return -1;
 
   return -2;
-}
-
-template<class T>
-bool
-Interval_t<T>::superset (Interval_t<T> const &a) const
-{
-  int c_i = _Interval__compare (*this, a);
-  if (c_i == -2)
-    return false;
-  return c_i >= 0;
 }
 
 template<class T>
@@ -103,8 +92,8 @@ template<class T>
 void
 Interval_t<T>::unite (Interval_t<T> h)
 {
-  at (LEFT) = min (h.at (LEFT), at (LEFT));
-  at (RIGHT) = max (h.at (RIGHT), at (RIGHT));
+  at (LEFT) = std::min (h.at (LEFT), at (LEFT));
+  at (RIGHT) = std::max (h.at (RIGHT), at (RIGHT));
 }
 
 /* Unites h and this interval, but in such a way
@@ -136,20 +125,22 @@ template<class T>
 void
 Interval_t<T>::intersect (Interval_t<T> h)
 {
-  at (LEFT) = max (h.at (LEFT), at (LEFT));
-  at (RIGHT) = min (h.at (RIGHT), at (RIGHT));
+  at (LEFT) = std::max (h.at (LEFT), at (LEFT));
+  at (RIGHT) = std::min (h.at (RIGHT), at (RIGHT));
 }
 
 template<class T>
-string
+std::string
 Interval_t<T>::to_string () const
 {
   if (is_empty ())
     return "[empty]";
-  string s ("[");
 
-  return (s + T_to_string (at (LEFT)) + string (",")
-          + T_to_string (at (RIGHT)) + string ("]"));
+  // Rely on argument-dependent lookup to find to_string for classes,
+  // and import std::to_string to support basic types.
+  using std::to_string;
+  std::string s ("[");
+  return s + to_string (at (LEFT)) + ',' + to_string (at (RIGHT)) + ']';
 }
 
 template<class T>

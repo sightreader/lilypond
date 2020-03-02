@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ public:
       data_.resize (rows * columns, t);
     else
       {
-        vector<T, A> new_data;
+        std::vector<T, A> new_data;
         new_data.resize (rows * columns, t);
         vsize cur_cols = rank_ ? data_.size () / rank_ : 0;
 
@@ -70,7 +70,7 @@ public:
   }
 
 private:
-  vector<T, A> data_;
+  std::vector<T, A> data_;
   vsize rank_;
 };
 

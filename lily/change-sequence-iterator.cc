@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2015 Daniel Eble <dan@faithful.be>
+  Copyright (C) 2015--2020 Daniel Eble <dan@faithful.be>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "change-sequence-iterator.hh"
 #include "context.hh"
 #include "music.hh"
+
+using std::string;
 
 Change_sequence_iterator::Change_sequence_iterator () :
   change_list_(SCM_EOL)

@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 
 @node Ancient notation
@@ -261,12 +261,16 @@ The syntax still uses the deprecated @qq{infix} style
 @code{\[ music expr \]}.  For consistency reasons, it will eventually
 be changed to @qq{postfix} style @code{note\[ @dots{} note\]}.
 
-Alternatively, the file @file{gregorian.ly} can be included; it
-provides a scheme function
-@example
-\ligature @var{music expr}
-@end example
-with the same effect and is believed to be stable.
+@c Alternatively, the file
+@c @file{gregorian-init.ly} can be included; it provides a scheme
+@c function
+@c @example
+@c \ligature @var{music expr}
+@c @end example
+@c with the same effect and is believed to be stable.
+
+@c TODO: this does not seem to work at the moment.
+@c -- eo
 
 
 @node Custodes

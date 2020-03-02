@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ Hairpin::print (SCM smob)
                 {
                   Spanner *span_elt = dynamic_cast<Spanner *> (chp[i]);
                   if (span_elt->get_bound (RIGHT)->break_status_dir () == LEFT)
-                    broken_bound_padding = max (broken_bound_padding,
+                    broken_bound_padding = std::max (broken_bound_padding,
                                                 robust_scm2double (span_elt->get_property ("broken-bound-padding"), 0.0));
                 }
               x_points[d] -= d * broken_bound_padding;

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
                  Erik Sandberg <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -22,7 +22,6 @@
 #include "engraver-group.hh"
 #include "international.hh"
 #include "item.hh"
-#include "math.h" // ceil
 #include "misc.hh"
 #include "repeated-music.hh"
 #include "rhythmic-head.hh"
@@ -33,6 +32,8 @@
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::string;
 
 /**
 
@@ -60,7 +61,7 @@ protected:
   Grob *previous_stem_;
 
 protected:
-  virtual void finalize ();
+  void finalize () override;
   void process_music ();
   void listen_tremolo_span (Stream_event *);
   void acknowledge_stem (Grob_info);
@@ -118,9 +119,9 @@ Chord_tremolo_engraver::acknowledge_stem (Grob_info info)
   if (beam_)
     {
       int tremolo_type = robust_scm2int (repeat_->get_property ("tremolo-type"), 1);
-      int flags = max (0, intlog2 (tremolo_type) - 2);
+      int flags = std::max (0, intlog2 (tremolo_type) - 2);
       int repeat_count = robust_scm2int (repeat_->get_property ("repeat-count"), 1);
-      int gap_count = min (flags, intlog2 (repeat_count) + 1);
+      int gap_count = std::min (flags, intlog2 (repeat_count) + 1);
 
       Grob *s = info.grob ();
       if (previous_stem_)

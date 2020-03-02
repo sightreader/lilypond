@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -25,6 +25,8 @@
 #include "spanner.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /*
   generate bars. Either user ("|:"), or default (new measure)
@@ -94,7 +96,7 @@ void
 Bar_engraver::stop_translation_timestep ()
 {
   if (!bar_)
-    context ()->get_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
+    find_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
 
   bar_ = 0;
   spanners_.clear ();

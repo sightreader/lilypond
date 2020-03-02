@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -31,6 +31,8 @@
 #include "text-interface.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 struct Figure_group
 {
@@ -125,7 +127,7 @@ protected:
   void listen_rest (Stream_event *);
   void listen_bass_figure (Stream_event *);
 
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 
   void start_translation_timestep ();
   void stop_translation_timestep ();
@@ -192,7 +194,7 @@ Figured_bass_engraver::listen_bass_figure (Stream_event *ev)
 {
   new_event_found_ = true;
   Moment stop = now_mom () + get_event_length (ev, now_mom ());
-  stop_moment_ = max (stop_moment_, stop);
+  stop_moment_ = std::max (stop_moment_, stop);
 
   // Handle no-continuation here, don't even add it to the already existing
   // spanner... This fixes some layout issues (figure will be placed separately)

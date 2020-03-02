@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,9 @@
 
 #include "translator.icc"
 
+using std::string;
+using std::vector;
+
 class Vertical_align_engraver : public Engraver
 {
   Spanner *valign_;
@@ -38,12 +41,13 @@ class Vertical_align_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Vertical_align_engraver);
   void acknowledge_axis_group (Grob_info);
+  void acknowledge_outside_staff (Grob_info);
 
 protected:
-  virtual void derived_mark () const;
+  void derived_mark () const override;
   void process_music ();
-  virtual void finalize ();
-  virtual void initialize ();
+  void finalize () override;
+  void initialize () override;
 
   bool top_level_;
 };
@@ -52,6 +56,7 @@ void
 Vertical_align_engraver::boot ()
 {
   ADD_ACKNOWLEDGER (Vertical_align_engraver, axis_group);
+  ADD_ACKNOWLEDGER (Vertical_align_engraver, outside_staff);
 }
 
 ADD_TRANSLATOR (Vertical_align_engraver,
@@ -124,9 +129,7 @@ Vertical_align_engraver::finalize ()
 bool
 Vertical_align_engraver::qualifies (Grob_info i) const
 {
-  int sz = i.origin_contexts ((Translator *)this).size ();
-
-  return sz > 0 && has_interface<Axis_group_interface> (i.grob ())
+  return has_interface<Axis_group_interface> (i.grob ())
          && !i.grob ()->get_parent (Y_AXIS)
          && !to_boolean (i.grob ()->get_property ("no-alignment"))
          && Axis_group_interface::has_axis (i.grob (), Y_AXIS);
@@ -190,5 +193,24 @@ Vertical_align_engraver::acknowledge_axis_group (Grob_info i)
       Pointer_group_interface::add_grob (valign_, ly_symbol2scm ("elements"), i.grob ());
       if (!unsmob<Grob> (i.grob ()->get_object ("staff-grouper")))
         i.grob ()->set_object ("staff-grouper", valign_->self_scm ());
+    }
+}
+
+void
+Vertical_align_engraver::acknowledge_outside_staff (Grob_info i)
+{
+  if (!top_level_) // valign_ is a staff grouper
+    {
+      if (valign_)
+        {
+          // Claim outside-staff grobs created by engravers in this immediate
+          // context.
+          if (i.context () == context ())
+            i.grob ()->set_parent (valign_, Y_AXIS);
+        }
+      else
+        {
+          programming_error ("cannot claim outside-staff grob before creating staff grouper");
+        }
     }
 }

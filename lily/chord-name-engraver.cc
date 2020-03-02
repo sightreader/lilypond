@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,13 +32,15 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Chord_name_engraver : public Engraver
 {
   TRANSLATOR_DECLARATIONS (Chord_name_engraver);
 protected:
   void stop_translation_timestep ();
   void process_music ();
-  virtual void finalize ();
+  void finalize () override;
   void listen_note (Stream_event *);
   void listen_rest (Stream_event *);
 private:

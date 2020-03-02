@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -27,6 +27,8 @@
 #include "translator.icc"
 #include "axis-group-interface.hh"
 
+using std::vector;
+
 class Figured_bass_position_engraver : public Engraver
 {
   TRANSLATOR_DECLARATIONS (Figured_bass_position_engraver);
@@ -43,7 +45,7 @@ protected:
   void acknowledge_bass_figure_alignment (Grob_info);
   void acknowledge_end_bass_figure_alignment (Grob_info);
 
-  virtual void finalize ();
+  void finalize () override;
   void start_spanner ();
   void stop_spanner ();
   void stop_translation_timestep ();

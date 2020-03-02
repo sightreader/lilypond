@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,18 +17,14 @@
   along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Necessary for supporting pango_context_new() and
-// pango_context_set_font_map() in Pango < 1.22
-#define PANGO_ENABLE_BACKEND
-
-#include <pango/pangoft2.h>
 #include "freetype.hh"
+
+// The PangoFcFont definition is only visible if PANGO_ENABLE_BACKEND
+// is defined.
+#define PANGO_ENABLE_BACKEND
+#include <pango/pangofc-font.h>
+#include <pango/pangoft2.h>
 #include FT_XFREE86_H
-
-#include <map>
-#include <cstdio>
-
-// Ugh.
 
 #include "pango-font.hh"
 #include "dimensions.hh"
@@ -43,8 +39,32 @@
 #include "program-option.hh"
 #include "open-type-font.hh"
 
-#if HAVE_PANGO_FT2
 #include "stencil.hh"
+
+using std::string;
+
+// RAII for extracting FT_Face from PangoFcFont
+class FTFace_accessor
+{
+  PangoFcFont *pango_font_;
+  FT_Face face_;
+
+public:
+  operator FT_Face () { return face_; }
+  FT_Face operator-> () { return face_; }
+  FTFace_accessor (PangoFcFont *pango_font)
+  {
+    pango_font_ = pango_font;
+    // This is deprecated in Pango 1.44, but we still support 1.36.
+    face_ = pango_fc_font_lock_face (pango_font);
+  }
+
+  ~FTFace_accessor ()
+  {
+    // Idem.
+    pango_fc_font_unlock_face (pango_font_);
+  }
+};
 
 Preinit_Pango_font::Preinit_Pango_font ()
 {
@@ -69,7 +89,8 @@ Pango_font::Pango_font (PangoFT2FontMap *fontmap,
   //  --hwn
   output_scale_ = output_scale;
   scale_ = INCH_TO_BP
-           / (Real (PANGO_SCALE) * Real (PANGO_RESOLUTION) * output_scale);
+           / (static_cast<Real> (PANGO_SCALE)
+              * static_cast<Real> (PANGO_RESOLUTION) * output_scale);
 
   // ugh. Should make this configurable.
   pango_context_set_language (context_, pango_language_from_string ("en_US"));
@@ -99,16 +120,25 @@ size_t
 Pango_font::name_to_index (string nm) const
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (pango_context_load_font (context_, pango_description_));
-  FT_Face face = pango_fc_font_lock_face (fcfont);
+  FTFace_accessor face (fcfont);
   char *nm_str = (char *) nm.c_str ();
-  if (FT_UInt idx = FT_Get_Name_Index (face, nm_str))
+  FT_UInt idx = FT_Get_Name_Index (face, nm_str);
+  return (idx != 0) ? idx : GLYPH_INDEX_INVALID;
+}
+
+static PangoGlyph
+glyph_index_to_pango (size_t index)
+{
+  if (index != GLYPH_INDEX_INVALID)
     {
-      pango_fc_font_unlock_face (fcfont);
-      return (size_t) idx;
+      // TODO: size_t can be wider than PangoGlyph.  Using a cast to silence
+      // warnings is probably OK in practice but is still a little concerning.
+      // Consider changing the type used for indices or mapping out-of-range
+      // indices to PANGO_GLYPH_INVALID_INPUT.
+      return static_cast<PangoGlyph> (index);
     }
 
-  pango_fc_font_unlock_face (fcfont);
-  return (size_t) - 1;
+  return PANGO_GLYPH_INVALID_INPUT;
 }
 
 void
@@ -138,9 +168,8 @@ Box
 Pango_font::get_unscaled_indexed_char_dimensions (size_t signed_idx) const
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (pango_context_load_font (context_, pango_description_));
-  FT_Face face = pango_fc_font_lock_face (fcfont);
+  FTFace_accessor face (fcfont);
   Box b = ly_FT_get_unscaled_indexed_char_dimensions (face, signed_idx);
-  pango_fc_font_unlock_face (fcfont);
   return b;
 }
 
@@ -150,7 +179,8 @@ Pango_font::get_scaled_indexed_char_dimensions (size_t signed_idx) const
   PangoFont *font = pango_context_load_font (context_, pango_description_);
   PangoRectangle logical_rect;
   PangoRectangle ink_rect;
-  pango_font_get_glyph_extents (font, signed_idx, &ink_rect, &logical_rect);
+  PangoGlyph glyph = glyph_index_to_pango (signed_idx);
+  pango_font_get_glyph_extents (font, glyph, &ink_rect, &logical_rect);
   Box out (Interval (PANGO_LBEARING (ink_rect),
                      PANGO_RBEARING (ink_rect)),
            Interval (-PANGO_DESCENT (ink_rect),
@@ -163,9 +193,8 @@ Box
 Pango_font::get_glyph_outline_bbox (size_t signed_idx) const
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (pango_context_load_font (context_, pango_description_));
-  FT_Face face = pango_fc_font_lock_face (fcfont);
+  FTFace_accessor face (fcfont);
   Box b = ly_FT_get_glyph_outline_bbox (face, signed_idx);
-  pango_fc_font_unlock_face (fcfont);
   return b;
 }
 
@@ -173,9 +202,8 @@ SCM
 Pango_font::get_glyph_outline (size_t signed_idx) const
 {
   PangoFcFont *fcfont = PANGO_FC_FONT (pango_context_load_font (context_, pango_description_));
-  FT_Face face = pango_fc_font_lock_face (fcfont);
+  FTFace_accessor face (fcfont);
   SCM s = ly_FT_get_glyph_outline (face, signed_idx);
-  pango_fc_font_unlock_face (fcfont);
   return s;
 }
 
@@ -193,7 +221,7 @@ Pango_font::pango_item_string_stencil (PangoGlyphItem const *glyph_item) const
   pango_glyph_string_extents (pgs, pa->font, &ink_rect, &logical_rect);
 
   PangoFcFont *fcfont = PANGO_FC_FONT (pa->font);
-  FT_Face ftface = pango_fc_font_lock_face (fcfont);
+  FTFace_accessor ftface (fcfont);
 
   Box b (Interval (PANGO_LBEARING (logical_rect),
                    PANGO_RBEARING (logical_rect)),
@@ -315,12 +343,11 @@ Pango_font::pango_item_string_stencil (PangoGlyphItem const *glyph_item) const
                         SCM_EOL);
       tail = SCM_CDRLOC (*tail);
     }
-  pango_fc_font_unlock_face (fcfont);
   pango_glyph_string_free (pgs);
   pgs = 0;
   PangoFontDescription *descr = pango_font_describe (pa->font);
   Real size = pango_font_description_get_size (descr)
-              / (Real (PANGO_SCALE));
+              / (static_cast<Real> (PANGO_SCALE));
 
   if (ps_name_str0.empty ())
     warning (_f ("no PostScript font name for font `%s'", file_name));
@@ -503,5 +530,3 @@ Pango_font::font_file_name () const
 {
   return SCM_BOOL_F;
 }
-
-#endif // HAVE_PANGO_FT2

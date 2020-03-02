@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -53,7 +53,8 @@ public:
   SCM mark_smob () const;
   static const char * const type_p_name_;
   virtual ~Output_def ();
-  VIRTUAL_COPY_CONSTRUCTOR (Output_def, Output_def);
+  VIRTUAL_CLASS_NAME (Output_def);
+  virtual Output_def *clone () const { return new Output_def (*this); }
 
   SCM scope_;
   Output_def *parent_;
@@ -66,7 +67,7 @@ public:
   /*
     variables.
    */
-  SCM c_variable (const string &id) const;
+  SCM c_variable (const std::string &id) const;
   SCM lookup_variable (SCM sym) const;
   void set_variable (SCM sym, SCM val);
   void normalize ();

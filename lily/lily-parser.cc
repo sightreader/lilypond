@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -37,6 +37,7 @@
 #include "warn.hh"
 #include "program-option.hh"
 
+using std::string;
 
 Lily_parser::Lily_parser (Sources *sources)
 {
@@ -108,11 +109,6 @@ Lily_parser::parse_file (const string &init, const string &name, const string &o
   set_yydebug (0);
 
   lexer_->new_input (init, sources_);
-
-  File_name f (name);
-  string s = global_path.find (f.base_ + ".twy");
-  s = gulp_file_to_string (s, false, -1);
-  scm_eval_string (ly_string2scm (s));
 
   /* Read .ly IN_FILE, lex, parse, write \score blocks from IN_FILE to
      OUT_FILE (unless IN_FILE redefines output file name).  */
@@ -237,8 +233,7 @@ get_paper (Lily_parser *parser)
                        ? 0 : unsmob<Output_def> (scm_car (papers));
   SCM default_paper = parser->lexer_->lookup_identifier ("$defaultpaper");
   layout = layout ? layout : unsmob<Output_def> (default_paper);
-
-  layout = layout ? dynamic_cast<Output_def *> (layout->clone ()) : new Output_def;
+  layout = layout ? layout->clone () : new Output_def;
   layout->set_variable (ly_symbol2scm ("is-paper"), SCM_BOOL_T);
   return layout;
 }

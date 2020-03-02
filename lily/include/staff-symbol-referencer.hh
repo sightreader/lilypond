@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@ public:
   static Grob *get_staff_symbol (Grob *);
   static bool on_line (Grob *, int);
   static bool on_staff_line (Grob *, int);
-  static int line_count (Grob *);
   static Real get_position (Grob *);
   static Real pure_get_position (Grob *);
 

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #include "pointer-group-interface.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 struct Spacings
 {
@@ -77,7 +79,7 @@ Separating_line_group_engraver::Separating_line_group_engraver (Context *c)
 void
 Separating_line_group_engraver::acknowledge_item (Grob_info i)
 {
-  Item *it = i.item ();
+  Item *it = dynamic_cast<Item *> (i.grob ());
 
   if (has_interface<Note_spacing> (it))
     {

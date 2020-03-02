@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include "string-convert.hh"
 #include "warn.hh"
 
+using std::vector;
 
 Stencil::Stencil ()
 {
@@ -150,8 +151,8 @@ Stencil::translate (Offset o)
   Axis a = X_AXIS;
   while (a < NO_AXES)
     {
-      if (isinf (o[a])
-          || isnan (o[a])
+      if (std::isinf (o[a])
+          || std::isnan (o[a])
 
           // ugh, hardcoded.
           || fabs (o[a]) > 1e6)
@@ -248,7 +249,7 @@ Stencil::align_to (Axis a, Real x)
 /*  See scheme Function.  */
 
 // Any stencil that is empty in the orthogonal axis is spacing.
-// Spacing is not subjected to the max (0) rule and can thus be
+// Spacing is not subjected to the std::max (0) rule and can thus be
 // negative.
 
 void

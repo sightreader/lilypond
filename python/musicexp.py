@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+
+
+
 import inspect
 import sys
-import string
 import re
 import math
 import lilylib as ly
 import warnings
 import utilities
-
-_ = ly._
 
 from rational import Rational
 
@@ -19,7 +19,7 @@ whatOrnament = ""
 ly_dur = None # stores lilypond durations
 
 def escape_instrument_string (input_string):
-    retstring = string.replace (input_string, "\"", "\\\"")
+    retstring = input_string.replace ("\"", "\\\"")
     if re.match ('.*[\r\n]+.*', retstring):
         rx = re.compile (r'[\n\r]+')
         strings = rx.split (retstring)
@@ -75,7 +75,7 @@ class Output_printer(object):
     def revert (self):
         del self._output_state_stack[-1]
         if not self._output_state_stack:
-            raise 'empty'
+            raise RuntimeError ('empty stack')
 
     def duration_factor (self):
         return self._output_state_stack[-1].factor
@@ -173,8 +173,8 @@ class Duration:
             dur_str = '%d' % (1 << self.duration_log)
         dur_str += '.' * self.dots
 
-        if factor <> Rational(1, 1):
-            if factor.denominator() <> 1:
+        if factor != Rational(1, 1):
+            if factor.denominator() != 1:
                 dur_str += '*%d/%d' % (factor.numerator(), factor.denominator())
             else:
                 dur_str += '*%d' % factor.numerator()
@@ -314,58 +314,79 @@ def pitch_generic (pitch, notenames, accidentals):
 
 def pitch_general (pitch):
     str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'b'], ['es', 'eh', 'ih', 'is'])
+    if "h" in str:    # no short forms for quarter tones
+        return str
     return str.replace ('aes', 'as').replace ('ees', 'es')
 
 def pitch_nederlands (pitch):
     return pitch_general (pitch)
 
-def pitch_english (pitch):
-    str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'b'], ['f', 'qf', 'qs', 's'])
-    return str.replace ('aes', 'as').replace ('ees', 'es')
+def pitch_catalan (pitch):
+    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', 'qb', 'qd', 'd'])
+    return str.replace('bq', 'tq').replace('dq', 'tq').replace('bt', 'c').replace('dt', 'c')
 
 def pitch_deutsch (pitch):
     str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'h'], ['es', 'eh', 'ih', 'is'])
-    return str.replace ('hes', 'b').replace ('aes', 'as').replace ('ees', 'es')
+    if str == 'hes':
+        return 'b'
+    if str[0] == "a":
+	    return str.replace ('e', 'a').replace ('aa', 'a')
+    return str.replace ('ee', 'e')
 
-def pitch_norsk (pitch):
-    return pitch_deutsch (pitch)
+def pitch_english (pitch):
+    str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'b'], ['f', 'qf', 'qs', 's'])
+    return str[0] + str[1:].replace ('fq', 'tq').replace ('sq', 'tq')
 
-def pitch_svenska (pitch):
-    str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'h'], ['ess', None, None, 'iss'])
-    return str.replace ('hess', 'b').replace ('aes', 'as').replace ('ees', 'es')
-
-def pitch_italiano (pitch):
-    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', 'sb', 'sd', 'd'])
-    return str
-
-def pitch_catalan (pitch):
-    return pitch_italiano (pitch)
+def pitch_espanol (pitch):
+    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', 'cb', 'cs', 's'])
+    return str.replace ('bc', 'tc').replace('sc', 'tc')
 
 def pitch_francais (pitch):
     str = pitch_generic (pitch, ['do', 'ré', 'mi', 'fa', 'sol', 'la', 'si'], ['b', 'sb', 'sd', 'd'])
     return str
 
-def pitch_espanol (pitch):
-    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', None, None, 's'])
+def pitch_italiano (pitch):
+    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', 'sb', 'sd', 'd'])
     return str
 
+def pitch_norsk (pitch):
+    str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'h'], ['ess', 'eh', 'ih', 'iss'])
+    return str.replace('hess', 'b')
+
+def pitch_portugues (pitch):
+    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', 'bqt', 'sqt', 's'])
+    return str.replace ('bbq', 'btq').replace ('ssq', 'stq')
+
+def pitch_suomi (pitch):
+    str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'h'], ['es', 'eh', 'ih', 'is'])
+    if str == 'hes':
+	    return 'b'
+    return str.replace ('aes', 'as').replace ('ees', 'es')
+
+def pitch_svenska (pitch):
+    str = pitch_generic (pitch, ['c', 'd', 'e', 'f', 'g', 'a', 'h'], ['ess', 'eh', 'ih', 'iss'])
+    if str == 'hess':
+	    return 'b'
+    return str.replace ('aes', 'as').replace ('ees', 'es')
+
 def pitch_vlaams (pitch):
-    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', None, None, 'k'])
+    str = pitch_generic (pitch, ['do', 're', 'mi', 'fa', 'sol', 'la', 'si'], ['b', 'hb', 'hk', 'k'])
     return str
 
 def set_pitch_language (language):
     global pitch_generating_function
     function_dict = {
         "nederlands": pitch_nederlands,
-        "english": pitch_english,
+        "català": pitch_catalan,
         "deutsch": pitch_deutsch,
-        "norsk": pitch_norsk,
-        "svenska": pitch_svenska,
-        "italiano": pitch_italiano,
-        "français": pitch_francais,
-        "catalan": pitch_catalan,
-        "espanol": pitch_espanol,
+        "english": pitch_english,
         "español": pitch_espanol,
+        "français": pitch_francais,
+        "italiano": pitch_italiano,
+        "norsk": pitch_norsk,
+        "português": pitch_portugues,
+        "suomi": pitch_suomi,
+        "svenska": pitch_svenska,
         "vlaams": pitch_vlaams}
     pitch_generating_function = function_dict.get (language, pitch_general)
 
@@ -397,7 +418,7 @@ class Pitch:
         while c.step < 0:
             c.step += 7
             c.octave -= 1
-        c.octave += c.step / 7
+        c.octave += c.step // 7
         c.step = c.step % 7
 
     def lisp_expression (self):
@@ -462,9 +483,9 @@ class Pitch:
         pitch_diff = (this_pitch_steps - previous_pitch_steps)
         previous_pitch = self
         if pitch_diff > 3:
-            return "'" * ((pitch_diff + 3) / 7)
+            return "'" * ((pitch_diff + 3) // 7)
         elif pitch_diff < -3:
-            return "," * ((-pitch_diff + 3) / 7)
+            return "," * ((-pitch_diff + 3) // 7)
         else:
             return ""
 
@@ -529,7 +550,7 @@ class Music:
             printer.newline ()
             return
 
-        lines = string.split (text, '\n')
+        lines = text.split ('\n')
         for l in lines:
             if l:
                 printer.unformatted_output ('% ' + l)
@@ -621,9 +642,8 @@ class TimeScaledMusic (MusicWrapper):
 
 
         if self.display_type == "actual" and self.normal_type:
-            # Obtain the note duration in scheme-mode, i.e. \longa as \\longa
-            base_duration = self.normal_type.ly_expression (None, True)
-            func ("\\once \\override TupletNumber.text = #(tuplet-number::append-note-wrapper %s \"%s\")" %
+            base_duration = self.normal_type.lisp_expression ()
+            func ("\\once \\override TupletNumber.text = #(tuplet-number::append-note-wrapper %s %s)" %
                 (base_number_function, base_duration))
             func.newline ()
         elif self.display_type == "both": # TODO: Implement this using actual_type and normal_type!
@@ -631,19 +651,19 @@ class TimeScaledMusic (MusicWrapper):
                 func ("\\once \\omit TupletNumber")
                 func.newline ()
             elif self.display_number == "both":
-                den_duration = self.normal_type.ly_expression (None, True)
+                den_duration = self.normal_type.lisp_expression ()
                 # If we don't have an actual type set, use the normal duration!
                 if self.actual_type:
-                    num_duration = self.actual_type.ly_expression (None, True)
+                    num_duration = self.actual_type.lisp_expression ()
                 else:
                     num_duration = den_duration
                 if (self.display_denominator or self.display_numerator):
-                    func ("\\once \\override TupletNumber.text = #(tuplet-number::non-default-fraction-with-notes %s \"%s\" %s \"%s\")" %
+                    func ("\\once \\override TupletNumber.text = #(tuplet-number::non-default-fraction-with-notes %s %s %s %s)" %
                                 (self.display_denominator, den_duration,
                                  self.display_numerator, num_duration))
                     func.newline ()
                 else:
-                    func ("\\once \\override TupletNumber.text = #(tuplet-number::fraction-with-notes \"%s\" \"%s\")" %
+                    func ("\\once \\override TupletNumber.text = #(tuplet-number::fraction-with-notes %s %s)" %
                                 (den_duration, num_duration))
                     func.newline ()
         else:
@@ -693,13 +713,11 @@ class NestedMusic(Music):
 
     def get_properties (self):
         return ("'elements (list %s)"
-            % string.join (map (lambda x: x.lisp_expression(),
-                      self.elements)))
+            % " ".join ([x.lisp_expression() for x in self.elements]))
 
     def get_subset_properties (self, predicate):
         return ("'elements (list %s)"
-            % string.join (map (lambda x: x.lisp_expression(),
-                      filter (predicate, self.elements))))
+            % " ".join ([x.lisp_expression() for x in list(filter (predicate, self.elements))]))
     def get_neighbor (self, music, dir):
         assert music.parent == self
         idx = self.elements.index (music)
@@ -817,7 +835,7 @@ class Lyrics:
         for l in self.lyrics_syllables:
             lstr += l
         #lstr += "\n}"
-        return lstr.encode('utf-8')
+        return lstr
 
 class Header:
 
@@ -850,7 +868,7 @@ class Header:
     def print_ly(self, printer):
         printer.dump("\header {")
         printer.newline()
-        for (k, v) in self.header_fields.items():
+        for (k, v) in list(self.header_fields.items()):
             if v:
                self.format_header_strings(k, v, printer)
         #printer.newline()
@@ -926,17 +944,17 @@ class Layout:
     def __init__ (self):
         self.context_dict = {}
     def add_context (self, context):
-        if not self.context_dict.has_key (context):
+        if context not in self.context_dict:
             self.context_dict[context] = []
     def set_context_item (self, context, item):
         self.add_context (context)
         if not item in self.context_dict[context]:
             self.context_dict[context].append (item)
     def print_ly (self, printer):
-        if self.context_dict.items ():
+        if list(self.context_dict.items ()):
             printer.dump ('\\layout {')
             printer.newline ()
-            for (context, defs) in self.context_dict.items ():
+            for (context, defs) in list(self.context_dict.items ()):
                 printer.dump ('\\context { \\%s' % context)
                 printer.newline ()
                 for d in defs:
@@ -1039,7 +1057,7 @@ class ChordEvent (NestedMusic):
                     basepitch = previous_pitch
             if stem:
                 printer (stem.ly_expression ())
-            printer ('<%s>' % string.join (pitches))
+            printer ('<%s>' % ' '.join (pitches))
             previous_pitch = basepitch
             duration = self.get_duration ()
             if duration:
@@ -1078,7 +1096,7 @@ class BarLine (Music):
                        'heavy': "|", 'light-light': "||", 'light-heavy': "|.",
                        'heavy-light': ".|", 'heavy-heavy': ".|.", 'tick': "'",
                        'short': "'", 'none': "" }.get (self.type, None)
-        if bar_symbol <> None:
+        if bar_symbol != None:
             printer.dump ('\\bar "%s"' % bar_symbol)
         else:
             printer.dump ("|")
@@ -1321,7 +1339,7 @@ class MarkEvent (Event):
 class MusicGlyphMarkEvent (MarkEvent):
     def ly_contents (self):
         if self.mark:
-            return '\\markup { \\musicglyph #"scripts.%s" }' % self.mark
+            return '\\markup { \\musicglyph "scripts.%s" }' % self.mark
         else:
             return ''
 
@@ -1433,9 +1451,9 @@ class FretEvent (MarkupEvent):
         self.elements = []
     def ly_expression (self):
         val = ""
-        if self.strings <> 6:
+        if self.strings != 6:
             val += "w:%s;" % self.strings
-        if self.frets <> 4:
+        if self.frets != 4:
             val += "h:%s;" % self.frets
         if self.barre and len (self.barre) >= 3:
             val += "c:%s-%s-%s;" % (self.barre[0], self.barre[1], self.barre[2]+get_transpose("integer"))
@@ -1478,7 +1496,7 @@ class FretBoardEvent (NestedMusic):
           notes = []
           for n in fretboard_notes:
               notes.append (n.ly_expression ())
-          contents = string.join (notes)
+          contents = ' '.join (notes)
           printer ('<%s>%s' % (contents,self.duration))
 
 class FunctionWrapperEvent (Event):
@@ -1596,7 +1614,7 @@ class ChordNameEvent (Event):
         if self.duration:
             value += self.duration.ly_expression ()
         if self.kind:
-            value = self.kind % value
+            value = value + self.kind
         # First print all additions/changes, and only afterwards all subtractions
         for m in self.modifications:
             if m.type == 1:
@@ -1668,7 +1686,7 @@ class RhythmicEvent(Event):
         return [ev.pre_note_ly (is_chord_element) for ev in self.associated_events]
 
     def ly_expression_pre_note (self, is_chord_element):
-        res = string.join (self.pre_note_ly (is_chord_element), ' ')
+        res = ' '.join (self.pre_note_ly (is_chord_element))
         if res != '':
             res = res + ' '
         return res
@@ -1715,7 +1733,6 @@ class NoteEvent(RhythmicEvent):
     def  __init__ (self):
         RhythmicEvent.__init__ (self)
         #self.pitch = None
-        self.drum_type = None
         self.cautionary = False
         self.forced_accidental = False
 
@@ -1724,8 +1741,6 @@ class NoteEvent(RhythmicEvent):
 
         if self.pitch:
             str += self.pitch.lisp_expression ()
-        elif self.drum_type:
-            str += "'drum-type '%s" % self.drum_type
 
         return str
 
@@ -1745,9 +1760,6 @@ class NoteEvent(RhythmicEvent):
             return res + '%s%s%s' % (self.pitch.ly_expression (),
                                self.pitch_mods(),
                                self.duration.ly_expression ())
-        elif self.drum_type:
-            return res + '%s%s' (self.drum_type,
-                           self.duration.ly_expression ())
 
     def chord_element_ly (self):
         # obtain all stuff that needs to be printed before the note:
@@ -1755,8 +1767,6 @@ class NoteEvent(RhythmicEvent):
         if self.pitch:
             return res + '%s%s' % (self.pitch.ly_expression (),
                                self.pitch_mods())
-        elif self.drum_type:
-            return res + '%s%s' (self.drum_type)
 
 
     def print_ly (self, printer):
@@ -1770,8 +1780,6 @@ class NoteEvent(RhythmicEvent):
         if self.pitch:
             self.pitch.print_ly (printer)
             printer (self.pitch_mods ())
-        else:
-            printer (self.drum_type)
 
         self.duration.print_ly (printer)
 
@@ -1816,7 +1824,7 @@ class KeySignatureChange (Music):
         elif self.non_standard_alterations:
             alterations = [self.format_non_standard_alteration (a) for
                                         a in self.non_standard_alterations]
-            return "\\set Staff.keyAlterations = #`(%s)" % string.join (alterations, " ")
+            return "\\set Staff.keyAlterations = #`(%s)" % " ".join (alterations)
         else:
             return ''
 
@@ -1860,7 +1868,7 @@ class TimeSignatureChange (Music):
     def format_fraction (self, frac):
         if isinstance (frac, list):
             l = [self.format_fraction (f) for f in frac]
-            return "(" + string.join (l, " ") + ")"
+            return "(" + " ".join (l) + ")"
         else:
             return "%s" % frac
 
@@ -2004,9 +2012,8 @@ class TempoMark (Music):
         return False
     def duration_to_markup (self, dur):
         if dur:
-            # Generate the markup to print the note, use scheme mode for
-            # ly_expression to get longa and not \longa (which causes an error)
-            return "\\general-align #Y #DOWN \\smaller \\note #\"%s\" #UP" % dur.ly_expression(None, True)
+            # Generate the markup to print the note
+            return "\\general-align #Y #DOWN \\smaller \\note {%s} #UP" % dur.ly_expression ()
         else:
             return ''
     def tempo_markup_template (self):
@@ -2078,7 +2085,7 @@ class FiguredBassEvent (NestedMusic):
           notes = []
           for x in figured_bass_events:
               notes.append (x.ly_expression ())
-          contents = string.join (notes)
+          contents = ' '.join (notes)
           if self.parentheses:
               contents = '[%s]' % contents
           printer ('<%s>' % contents)
@@ -2230,7 +2237,7 @@ class StaffGroup:
                     escape_instrument_string (self.short_instrument_name)))
             printer.newline ()
         if self.sound:
-            printer.dump (r'\set %s.midiInstrument = #"%s"' % (self.stafftype, self.sound))
+            printer.dump (r'\set %s.midiInstrument = "%s"' % (self.stafftype, self.sound))
             printer.newline ()
         self.print_ly_contents (printer)
         printer.newline ()
@@ -2427,14 +2434,14 @@ def test_pitch ():
     down.normalize ()
 
 
-    print bflat.semitones()
-    print bflat.transposed (fifth), bflat.transposed (fifth).transposed (fifth)
-    print bflat.transposed (fifth).transposed (fifth).transposed (fifth)
+    print(bflat.semitones())
+    print(bflat.transposed (fifth), bflat.transposed (fifth).transposed (fifth))
+    print(bflat.transposed (fifth).transposed (fifth).transposed (fifth))
 
-    print bflat.semitones(), 'down'
-    print bflat.transposed (down)
-    print bflat.transposed (down).transposed (down)
-    print bflat.transposed (down).transposed (down).transposed (down)
+    print(bflat.semitones(), 'down')
+    print(bflat.transposed (down))
+    print(bflat.transposed (down).transposed (down))
+    print(bflat.transposed (down).transposed (down).transposed (down))
 
 
 
@@ -2511,16 +2518,15 @@ def test_expr ():
 
 if __name__ == '__main__':
     test_printer ()
-    raise 'bla'
     test_pitch()
 
     expr = test_expr()
     expr.set_start (Rational (0))
-    print expr.ly_expression()
+    print(expr.ly_expression())
     start = Rational (0, 4)
     stop = Rational (4, 2)
     def sub(x, start=start, stop=stop):
         ok = x.start >= start and x.start + x.get_length() <= stop
         return ok
 
-    print expr.lisp_sub_expression(sub)
+    print(expr.lisp_sub_expression(sub))

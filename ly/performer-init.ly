@@ -1,6 +1,6 @@
 %%%% This file is part of LilyPond, the GNU music typesetter.
 %%%%
-%%%% Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+%%%% Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 %%%%                          Jan Nieuwenhuizen <janneke@gnu.org>
 %%%%
 %%%% LilyPond is free software: you can redistribute it and/or modify
@@ -272,6 +272,10 @@
   timeSignatureSettings = #default-time-signature-settings
   timeSignatureFraction = 4/4
   autoBeaming = ##t  % needed for consistent melismata with engravers
+
+  %% It is not unusual for bar number checks to be wrong in MIDI
+  %% scores, for example when repeats are unfolded.
+  ignoreBarNumberChecks = ##t
 
   %% Other beaming variables are not important as autobeams don't affect
   %% the Midi.  Melismata are only affected by beams when autobeaming

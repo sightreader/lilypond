@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Erik Sandberg <mandolaerik@gmail.com>
+  Copyright (C) 2005--2020 Erik Sandberg <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,8 @@ class Stream_event : public Prob
 {
 public:
   Stream_event ();
-  VIRTUAL_COPY_CONSTRUCTOR (Stream_event, Stream_event);
+  OVERRIDE_CLASS_NAME (Stream_event);
+  virtual Stream_event *clone () const { return new Stream_event (*this); }
 
   Stream_event (SCM event_class, SCM immutable_props = SCM_EOL);
   Stream_event (SCM class_name, Input *);
@@ -38,7 +39,7 @@ public:
   bool internal_in_event_class (SCM class_name);
   void make_transposable ();
 
-  virtual SCM copy_mutable_properties () const;
+  SCM copy_mutable_properties () const override;
 
   DECLARE_SCHEME_CALLBACK (undump, (SCM));
   DECLARE_SCHEME_CALLBACK (dump, (SCM));
@@ -47,5 +48,28 @@ public:
 #define in_event_class(class_name) internal_in_event_class (ly_symbol2scm (class_name))
 
 SCM ly_event_deep_copy (SCM);
+
+void warn_reassign_event_ptr (Stream_event &old_ev, Stream_event *new_ev);
+
+// Assign to old_ev at most once, returning true when it happens, and warning
+// (with some exceptions) about attempted reassignments.
+inline bool
+assign_event_ptr_once (Stream_event *&old_ev, Stream_event *new_ev)
+{
+  if (!old_ev)
+    {
+      old_ev = new_ev;
+      return old_ev;
+    }
+  else
+    {
+      warn_reassign_event_ptr (*old_ev, new_ev);
+      return false;
+    }
+}
+
+// This macro is no longer necessary.
+// If you have time to eliminate it, go ahead.
+#define ASSIGN_EVENT_ONCE(o,n) assign_event_ptr_once (o, n)
 
 #endif /* STREAM_EVENT_HH */

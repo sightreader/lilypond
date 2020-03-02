@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -136,11 +136,15 @@
 #include "page-layout-problem.hh"
 #include "page-spacing.hh"
 #include "paper-book.hh"
+#include "paper-column.hh"
 #include "paper-score.hh"
 #include "paper-system.hh"
 #include "text-interface.hh"
 #include "system.hh"
 #include "warn.hh"
+
+using std::pair;
+using std::vector;
 
 /* for each forbidden page break, merge the systems around it into one
    system. */
@@ -248,9 +252,9 @@ Page_breaking::Page_breaking (Paper_book *pb, Break_predicate is_break, Prob_bre
   paper_height_ = robust_scm2double (pb->paper_->c_variable ("paper-height"), 1.0);
   ragged_ = to_boolean (pb->paper_->c_variable ("ragged-bottom"));
   ragged_last_ = to_boolean (pb->paper_->c_variable ("ragged-last-bottom"));
-  systems_per_page_ = max (0, robust_scm2int (pb->paper_->c_variable ("systems-per-page"), 0));
-  max_systems_per_page_ = max (0, robust_scm2int (pb->paper_->c_variable ("max-systems-per-page"), 0));
-  min_systems_per_page_ = max (0, robust_scm2int (pb->paper_->c_variable ("min-systems-per-page"), 0));
+  systems_per_page_ = std::max (0, robust_scm2int (pb->paper_->c_variable ("systems-per-page"), 0));
+  max_systems_per_page_ = std::max (0, robust_scm2int (pb->paper_->c_variable ("max-systems-per-page"), 0));
+  min_systems_per_page_ = std::max (0, robust_scm2int (pb->paper_->c_variable ("min-systems-per-page"), 0));
   orphan_penalty_ = robust_scm2int (pb->paper_->c_variable ("orphan-penalty"), 100000);
 
   Stencil footnote_separator = Page_layout_problem::get_footnote_separator_stencil (pb->paper_);
@@ -584,7 +588,7 @@ Page_breaking::draw_page (SCM systems, SCM configuration, int page_num, bool las
 }
 
 SCM
-Page_breaking::make_pages (vector<vsize> lines_per_page, SCM systems)
+Page_breaking::make_pages (const vector<vsize> &lines_per_page, SCM systems)
 {
   if (scm_is_null (systems))
     return SCM_EOL;
@@ -609,14 +613,27 @@ Page_breaking::make_pages (vector<vsize> lines_per_page, SCM systems)
   vsize footnote_count = 0;
   Real last_page_force = 0;
 
-  for (vsize i = 0; i < lines_per_page.size (); i++)
+  const vsize page_count = lines_per_page.size ();
+  for (vsize i = 0; i < page_count; i++)
     {
-      int page_num = i + first_page_number;
-      bool bookpart_last_page = (i == lines_per_page.size () - 1);
+      int page_num = first_page_number + static_cast<int> (i);
+      bool bookpart_last_page = (i == page_count - 1);
       bool rag = ragged () || (bookpart_last_page && ragged_last ());
-      SCM line_count = scm_from_int (lines_per_page[i]);
+      SCM line_count = scm_from_size_t (lines_per_page[i]);
       SCM lines = scm_list_head (systems, line_count);
-      int fn_lines = Page_layout_problem::get_footnote_count (lines);
+
+      int rank_on_page = 0;
+      for (SCM line = lines; scm_is_pair (line); line = scm_cdr (line))
+        {
+          System *sys = unsmob<System> (scm_car (line));
+          if (sys) {
+            sys->set_property ("rank-on-page", scm_from_int (rank_on_page));
+            sys->set_property ("page-number", scm_from_int (page_num));
+            rank_on_page++;
+          }
+        }
+
+      vsize fn_lines = Page_layout_problem::get_footnote_count (lines);
       Page_layout_problem::add_footnotes_to_lines (lines, reset_footnotes_on_new_page ? 0 : footnote_count, book_);
 
       SCM config = SCM_EOL;
@@ -632,7 +649,7 @@ Page_breaking::make_pages (vector<vsize> lines_per_page, SCM systems)
         config = layout.solution (rag);
 
       if ((ragged () && layout.force () < 0.0)
-          || isinf (layout.force ()))
+          || std::isinf (layout.force ()))
         warning (_f ("page %d has been compressed", page_num));
       else
         last_page_force = layout.force ();
@@ -645,7 +662,7 @@ Page_breaking::make_pages (vector<vsize> lines_per_page, SCM systems)
   // TODO: previously, the following loop caused the systems to be
   // drawn.  Now that we no longer draw anything in Page_breaking,
   // it is safe to merge these two loops.
-  int page_num = first_page_number + lines_per_page.size () - 1;
+  int page_num = first_page_number + static_cast<int> (page_count) - 1;
   for (SCM s = systems_configs_fncounts; scm_is_pair (s); s = scm_cdr (s))
     {
       SCM lines = scm_caar (s);
@@ -726,8 +743,8 @@ Page_breaking::find_chunks_and_breaks (Break_predicate is_break, Prob_break_pred
     {
       if (system_specs_[i].pscore_)
         {
-          vector<Grob *> cols = system_specs_[i].pscore_->root_system ()->used_columns ();
-          vector<Grob *> forced_line_break_cols;
+          vector<Paper_column *> cols = system_specs_[i].pscore_->root_system ()->used_columns ();
+          vector<Paper_column *> forced_line_break_cols;
 
           SCM system_count = system_specs_[i].pscore_->layout ()->c_variable ("system-count");
           if (scm_is_number (system_count))
@@ -742,7 +759,7 @@ Page_breaking::find_chunks_and_breaks (Break_predicate is_break, Prob_break_pred
                 forced_line_break_cols.push_back (details[j].last_column_);
             }
 
-          int last_forced_line_break_idx = 0;
+          vsize last_forced_line_break_idx = 0;
           vsize forced_line_break_idx = 0;
           vector<vsize> line_breaker_columns;
           line_breaker_columns.push_back (0);
@@ -924,7 +941,7 @@ Page_breaking::set_current_breakpoints (vsize start,
 
           dems_and_indices.push_back (pair<Real, vsize> (dem, i));
         }
-      vector_sort (dems_and_indices, less<pair<Real, vsize> > ());
+      vector_sort (dems_and_indices, std::less<pair<Real, vsize> > ());
 
       vector<Line_division> best_5_configurations;
       for (vsize i = 0; i < 5; i++)
@@ -1020,19 +1037,18 @@ Page_breaking::line_divisions_rec (vsize system_count,
                                    Line_division *cur_division)
 {
   vsize my_index = cur_division->size ();
-  int others_min = 0;
-  int others_max = 0;
+  vsize others_min = 0;
+  vsize others_max = 0;
 
   for (vsize i = my_index + 1; i < min_sys.size (); i++)
     {
       others_min += min_sys[i];
       others_max += max_sys[i];
     }
-  others_max = min (others_max, (int) system_count);
-  int real_min = max ((int) min_sys[my_index], (int) system_count - others_max);
-  int real_max = min ((int) max_sys[my_index], (int) system_count - others_min);
+  others_max = std::min (others_max, system_count);
+  vsize real_min = std::max (min_sys[my_index], system_count - others_max);
 
-  if (real_min > real_max || real_min < 0)
+  if (system_count < others_min)
     {
       /* this should never happen within a recursive call. If it happens
          at all, it means that we were called with an unsolvable problem
@@ -1041,7 +1057,18 @@ Page_breaking::line_divisions_rec (vsize system_count,
       return;
     }
 
-  for (int i = real_min; i <= real_max; i++)
+  vsize real_max = std::min (max_sys[my_index], system_count - others_min);
+
+  if (real_min > real_max)
+    {
+      /* this should never happen within a recursive call. If it happens
+         at all, it means that we were called with an unsolvable problem
+         and we should return an empty result */
+      assert (my_index == 0);
+      return;
+    }
+
+  for (vsize i = real_min; i <= real_max; i++)
     {
       cur_division->push_back (i);
       if (my_index == min_sys.size () - 1)
@@ -1070,7 +1097,7 @@ Page_breaking::compute_line_heights ()
       Real a = shape.begin_[UP];
       Real b = shape.rest_[UP];
       bool title = cur.title_;
-      Real refpoint_hanging = max (prev_hanging_begin + a, prev_hanging_rest + b);
+      Real refpoint_hanging = std::max (prev_hanging_begin + a, prev_hanging_rest + b);
 
       if (i > 0)
         {
@@ -1083,14 +1110,14 @@ Page_breaking::compute_line_heights ()
           Real min_dist = title
                           ? prev.title_min_distance_
                           : prev.min_distance_;
-          refpoint_hanging = max (refpoint_hanging + padding,
+          refpoint_hanging = std::max (refpoint_hanging + padding,
                                   prev_refpoint_hanging - prev.refpoint_extent_[DOWN]
                                   + cur.refpoint_extent_[UP] + min_dist);
         }
 
       Real hanging_begin = refpoint_hanging - shape.begin_[DOWN];
       Real hanging_rest = refpoint_hanging - shape.rest_[DOWN];
-      Real hanging = max (hanging_begin, hanging_rest);
+      Real hanging = std::max (hanging_begin, hanging_rest);
       cur.tallness_ = hanging - prev_hanging;
       prev_hanging = hanging;
       prev_hanging_begin = hanging_begin;
@@ -1100,9 +1127,9 @@ Page_breaking::compute_line_heights ()
 }
 
 vsize
-Page_breaking::min_page_count (vsize configuration, vsize first_page_num)
+Page_breaking::min_page_count (vsize configuration, int first_page_num)
 {
-  vsize ret = 1;
+  int ret = 1;
   vsize page_starter = 0;
   Real cur_rod_height = 0;
   Real cur_spring_height = 0;
@@ -1177,7 +1204,7 @@ Page_breaking::min_page_count (vsize configuration, vsize first_page_num)
           /* don't increase the page count if the last page had only one system */
           && cur_rod_height > cached_line_details_.back ().full_height ())
         ret++;
-      assert (ret <= cached_line_details_.size ());
+      assert (static_cast<vsize> (ret) <= cached_line_details_.size ());
     }
 
   return ret;
@@ -1187,7 +1214,7 @@ Page_breaking::min_page_count (vsize configuration, vsize first_page_num)
 // we just put the requested number of systems on each page and penalize
 // if the result doesn't have N pages.
 Page_spacing_result
-Page_breaking::space_systems_on_n_pages (vsize configuration, vsize n, vsize first_page_num)
+Page_breaking::space_systems_on_n_pages (vsize configuration, vsize n, int first_page_num)
 {
   Page_spacing_result ret;
 
@@ -1242,7 +1269,7 @@ Page_breaking::blank_page_penalty () const
 // If systems_per_page_ is positive, we don't really try to space on N
 // or N+1 pages; see the comment to space_systems_on_n_pages.
 Page_spacing_result
-Page_breaking::space_systems_on_n_or_one_more_pages (vsize configuration, vsize n, vsize first_page_num,
+Page_breaking::space_systems_on_n_or_one_more_pages (vsize configuration, vsize n, int first_page_num,
                                                      Real penalty_for_fewer_pages)
 {
   Page_spacing_result n_res;
@@ -1295,7 +1322,7 @@ Page_breaking::space_systems_on_n_or_one_more_pages (vsize configuration, vsize 
 }
 
 Page_spacing_result
-Page_breaking::space_systems_on_best_pages (vsize configuration, vsize first_page_num)
+Page_breaking::space_systems_on_best_pages (vsize configuration, int first_page_num)
 {
   if (systems_per_page_ > 0)
     return space_systems_with_fixed_number_per_page (configuration, first_page_num);
@@ -1308,20 +1335,20 @@ Page_breaking::space_systems_on_best_pages (vsize configuration, vsize first_pag
 
 Page_spacing_result
 Page_breaking::space_systems_with_fixed_number_per_page (vsize configuration,
-                                                         vsize first_page_num)
+                                                         int first_page_num)
 {
   Page_spacing_result res;
   Page_spacing space (page_height (first_page_num, false), this);
   vsize line = 0;
-  vsize page = 0;
+  int page_num = first_page_num;
   vsize page_first_line = 0;
 
   cache_line_details (configuration);
   while (line < cached_line_details_.size ())
     {
-      page++;
+      page_num++;
       space.clear ();
-      space.resize (page_height (first_page_num + page, false));
+      space.resize (page_height (page_num, false));
 
       int system_count_on_this_page = 0;
       while (system_count_on_this_page < systems_per_page_
@@ -1352,19 +1379,19 @@ Page_breaking::space_systems_with_fixed_number_per_page (vsize configuration,
 
   /* Recalculate forces for the last page because we know now that is
      really the last page. */
-  space.resize (page_height (first_page_num + page, true));
+  space.resize (page_height (page_num, true));
   res.force_.back () = space.force_;
   return finalize_spacing_result (configuration, res);
 }
 
 Page_spacing_result
-Page_breaking::pack_systems_on_least_pages (vsize configuration, vsize first_page_num)
+Page_breaking::pack_systems_on_least_pages (vsize configuration, int first_page_num)
 {
   // TODO: add support for min/max-systems-per-page.
   Page_spacing_result res;
-  vsize page = 0;
+  int page_num = first_page_num;
   vsize page_first_line = 0;
-  Page_spacing space (page_height (first_page_num, false), this);
+  Page_spacing space (page_height (page_num, false), this);
 
   cache_line_details (configuration);
   for (vsize line = 0; line < cached_line_details_.size (); line++)
@@ -1372,7 +1399,7 @@ Page_breaking::pack_systems_on_least_pages (vsize configuration, vsize first_pag
       Real prev_force = space.force_;
       space.append_system (cached_line_details_[line]);
       if ((line > page_first_line)
-          && (isinf (space.force_)
+          && (std::isinf (space.force_)
               || ((line > 0)
                   && scm_is_eq (cached_line_details_[line - 1].page_permission_,
                                 ly_symbol2scm ("force")))))
@@ -1380,8 +1407,8 @@ Page_breaking::pack_systems_on_least_pages (vsize configuration, vsize first_pag
           res.systems_per_page_.push_back (line - page_first_line);
           res.force_.push_back (prev_force);
           res.penalty_ += cached_line_details_[line - 1].page_penalty_;
-          page++;
-          space.resize (page_height (first_page_num + page, false));
+          page_num++;
+          space.resize (page_height (page_num, false));
           space.clear ();
           space.append_system (cached_line_details_[line]);
           page_first_line = line;
@@ -1393,13 +1420,13 @@ Page_breaking::pack_systems_on_least_pages (vsize configuration, vsize first_pag
           /* When the last page height was computed, we did not know yet that it
            * was the last one. If the systems put on it don't fit anymore, the last
            * system is moved to a new page */
-          space.resize (page_height (first_page_num + page, true));
-          if ((line > page_first_line) && (isinf (space.force_)))
+          space.resize (page_height (page_num, true));
+          if ((line > page_first_line) && (std::isinf (space.force_)))
             {
               res.systems_per_page_.push_back (line - page_first_line);
               res.force_.push_back (prev_force);
               /* the last page containing the last line */
-              space.resize (page_height (first_page_num + page + 1, true));
+              space.resize (page_height (page_num + 1, true));
               space.clear ();
               space.append_system (cached_line_details_[line]);
               res.systems_per_page_.push_back (1);
@@ -1446,7 +1473,7 @@ Page_breaking::finalize_spacing_result (vsize configuration, Page_spacing_result
     {
       Real f = res.force_[i];
 
-      page_demerits += min (f * f, BAD_SPACING_PENALTY);
+      page_demerits += std::min (f * f, BAD_SPACING_PENALTY);
     }
 
   /* for a while we tried averaging page and line forces across pages instead
@@ -1480,7 +1507,7 @@ Page_breaking::space_systems_on_1_page (vector<Line_details> const &lines, Real 
     }
 
   ret.systems_per_page_.push_back (lines.size ());
-  ret.force_.push_back (ragged ? min (space.force_, 0.0) : space.force_);
+  ret.force_.push_back (ragged ? std::min (space.force_, 0.0) : space.force_);
   ret.penalty_ = line_count_penalty (line_count) + lines.back ().page_penalty_ + lines.back ().turn_penalty_;
   ret.system_count_status_ |= line_count_status (line_count);
 
@@ -1489,7 +1516,7 @@ Page_breaking::space_systems_on_1_page (vector<Line_details> const &lines, Real 
 }
 
 Page_spacing_result
-Page_breaking::space_systems_on_2_pages (vsize configuration, vsize first_page_num)
+Page_breaking::space_systems_on_2_pages (vsize configuration, int first_page_num)
 {
   Real page1_height = page_height (first_page_num, false);
   Real page2_height = page_height (first_page_num + 1, is_last ());
@@ -1654,8 +1681,8 @@ Page_breaking::min_whitespace_at_top_of_page (Line_details const &line) const
                                           ly_symbol2scm ("padding"));
 
   // FIXME: take into account the height of the header
-  Real translate = max (line.shape_.begin_[UP], line.shape_.rest_[UP]);
-  return max (0.0, max (padding, min_distance - translate));
+  Real translate = std::max (line.shape_.begin_[UP], line.shape_.rest_[UP]);
+  return std::max (0.0, std::max (padding, min_distance - translate));
 }
 
 Real
@@ -1673,8 +1700,8 @@ Page_breaking::min_whitespace_at_bottom_of_page (Line_details const &line) const
                                           ly_symbol2scm ("padding"));
 
   // FIXME: take into account the height of the footer
-  Real translate = min (line.shape_.begin_[DOWN], line.shape_.rest_[DOWN]);
-  return max (0.0, max (padding, min_distance + translate));
+  Real translate = std::min (line.shape_.begin_[DOWN], line.shape_.rest_[DOWN]);
+  return std::max (0.0, std::max (padding, min_distance + translate));
 }
 
 int

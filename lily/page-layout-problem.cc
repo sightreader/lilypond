@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2009--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2009--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@
 #include "system.hh"
 #include "text-interface.hh"
 #include "lily-imports.hh"
+
+using std::vector;
 
 /*
  Returns the number of footnotes associated with a given line.
@@ -121,7 +123,7 @@ Page_layout_problem::get_footnotes_from_lines (SCM lines)
 */
 
 void
-Page_layout_problem::add_footnotes_to_lines (SCM lines, int counter, Paper_book *pb)
+Page_layout_problem::add_footnotes_to_lines (SCM lines, vsize counter, Paper_book *pb)
 {
   /*
     first, we have to see how many footnotes are on this page.
@@ -171,9 +173,9 @@ Page_layout_problem::add_footnotes_to_lines (SCM lines, int counter, Paper_book 
         {
           SCM assertion_function = fn_grobs[i]->get_property ("numbering-assertion-function");
           if (ly_is_procedure (assertion_function))
-            (void) scm_call_1 (assertion_function, scm_from_int (counter));
+            (void) scm_call_1 (assertion_function, scm_from_size_t (counter));
         }
-      SCM markup = scm_call_1 (numbering_function, scm_from_int (counter));
+      SCM markup = scm_call_1 (numbering_function, scm_from_size_t (counter));
       SCM stencil = Text_interface::interpret_markup (layout, props, markup);
       Stencil *st = unsmob<Stencil> (stencil);
       if (!st)
@@ -187,7 +189,7 @@ Page_layout_problem::add_footnotes_to_lines (SCM lines, int counter, Paper_book 
       numbers = scm_cons (stencil, numbers);
 
       if (!st->extent (X_AXIS).is_empty ())
-        max_length = max (max_length, st->extent (X_AXIS)[RIGHT]);
+        max_length = std::max (max_length, st->extent (X_AXIS)[RIGHT]);
 
       counter++;
     }
@@ -465,7 +467,7 @@ Page_layout_problem::Page_layout_problem (Paper_book *pb, SCM page_scm, SCM syst
             spec = top_system_spacing;
           else if (last_system_was_title)
             spec = markup_system_spacing;
-          else if (0 == Paper_column::get_rank (sys->get_bound (LEFT)))
+          else if (0 == sys->get_bound (LEFT)->get_rank ())
             spec = score_system_spacing;
 
           Spring spring (0, 0);
@@ -663,7 +665,7 @@ Page_layout_problem::append_prob (Prob *prob, Spring const &spring, Real padding
 
   if (sky)
     {
-      minimum_distance = max ((*sky)[UP].distance (bottom_skyline_),
+      minimum_distance = std::max ((*sky)[UP].distance (bottom_skyline_),
                               bottom_loose_baseline_);
       bottom_skyline_ = (*sky)[DOWN];
     }
@@ -706,7 +708,7 @@ Page_layout_problem::solve_rod_spring_problem (bool ragged, Real fixed_force)
   for (vsize i = 0; i < springs_.size (); ++i)
     spacer.add_spring (springs_[i]);
 
-  if (ragged && !isinf (fixed_force))
+  if (ragged && !std::isinf (fixed_force))
     {
       // We need to tell the spacer it isn't ragged.  Otherwise, it will
       // refuse to stretch.
@@ -733,9 +735,10 @@ Page_layout_problem::solve_rod_spring_problem (bool ragged, Real fixed_force)
                        overflow));
           force_ = -infinity_f;
           vsize space_count = solution_.size ();
-          Real spacing_increment = overflow / (space_count - 2);
+          Real spacing_increment
+              = overflow / static_cast<Real> (space_count - 2);
           for (vsize i = 2; i < space_count; i++)
-            solution_[i] -= (i - 1) * spacing_increment;
+            solution_[i] -= static_cast<Real> (i - 1) * spacing_increment;
         }
     }
 }
@@ -1094,7 +1097,9 @@ Page_layout_problem::read_spacing_spec (SCM spec, Real *dest, SCM sym)
 // If after is spaceable, it is the (spaceable_index + 1)th spaceable grob in
 // its alignment.
 Real
-Page_layout_problem::get_fixed_spacing (Grob *before, Grob *after, int spaceable_index, bool pure, int start, int end)
+Page_layout_problem::get_fixed_spacing (Grob *before, Grob *after,
+                                        int spaceable_index, bool pure,
+                                        vsize start, vsize end)
 {
   Spanner *after_sp = dynamic_cast<Spanner *> (after);
   SCM cache_symbol = (is_spaceable (before) && is_spaceable (after))
@@ -1124,7 +1129,7 @@ Page_layout_problem::get_fixed_spacing (Grob *before, Grob *after, int spaceable
         {
           SCM forced = robust_list_ref (spaceable_index - 1, manual_dists);
           if (scm_is_number (forced))
-            ret = max (ret, scm_to_double (forced));
+            ret = std::max (ret, scm_to_double (forced));
         }
     }
 
@@ -1154,7 +1159,8 @@ const double HUGE_STRETCH = 10e7;
 
 // Returns the spacing spec connecting BEFORE to AFTER.
 SCM
-Page_layout_problem::get_spacing_spec (Grob *before, Grob *after, bool pure, int start, int end)
+Page_layout_problem::get_spacing_spec (Grob *before, Grob *after, bool pure,
+                                       vsize start, vsize end)
 {
   // If there are no spacing wishes, return a very flexible spring.
   // This will occur, for example, if there are lyrics at the bottom of

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include "grid-line-interface.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 class Grid_line_span_engraver : public Engraver
 {
@@ -44,17 +46,13 @@ Grid_line_span_engraver::Grid_line_span_engraver (Context *c)
 void
 Grid_line_span_engraver::acknowledge_grid_point (Grob_info i)
 {
-  int depth = i.origin_contexts (this).size ();
-  if (depth)
-    {
-      Item *it = dynamic_cast<Item *> (i.grob ());
-      lines_.push_back (it);
+  Item *it = dynamic_cast<Item *> (i.grob ());
+  lines_.push_back (it);
 
-      if (lines_.size () >= 2 && !spanline_)
-        {
-          spanline_ = make_item ("GridLine", SCM_EOL);
-          spanline_->set_parent (lines_[0], X_AXIS);
-        }
+  if (lines_.size () >= 2 && !spanline_)
+    {
+      spanline_ = make_item ("GridLine", SCM_EOL);
+      spanline_->set_parent (lines_[0], X_AXIS);
     }
 }
 

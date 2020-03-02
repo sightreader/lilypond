@@ -7,13 +7,15 @@
 #include "yaffut.hh"
 #include "config.hh"
 
+using std::string;
+
 TEST (File_path, Find)
 {
   char const *extensions[] = {"ly", "", 0};
   string file = "init";
   if (get_working_directory().empty())
     {
-      cerr << "Could not get current work directory\n";
+      std::cerr << "Could not get current work directory\n";
       exit (1);
     }
   string ly_dir = string (getenv ("top-src-dir")) + "/ly";

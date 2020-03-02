@@ -1,4 +1,5 @@
 #!@PYTHON@
+import codecs
 import os
 import sys
 import getopt
@@ -6,8 +7,8 @@ import tempfile
 
 # usage:
 def usage ():
-    print 'usage: bib2texi.py [-s style] [-o <outfile>] [-q] BIBFILES...'
-    print '-q suppresses most output'
+    print('usage: bib2texi.py [-s style] [-o <outfile>] [-q] BIBFILES...')
+    print('-q suppresses most output')
 
 (options, files) = getopt.getopt (sys.argv[1:], 's:o:hq', [])
 
@@ -77,19 +78,19 @@ if (show_output):
     sys.stdout.write (cmd)
 #And invoke it
 stat = os.system (cmd)
-if stat <> 0:
+if stat != 0:
     sys.stderr.write ("Bibtex exited with nonzero exit status!")
     sys.exit (1)
 
 #TODO: do tex -> itexi on output
 # Following lines copy tmpfile.bbl to the desired output file
-bbl = open (tmpfile + '.bbl').read ()
+bbl = codecs.open (tmpfile + '.bbl', 'r', 'utf-8').read ()
 
 if bbl.strip () == '':
     sys.stderr.write ("Bibtex generated an empty file!")
     sys.exit (1)
 
-fout = open (output, 'w')
+fout = codecs.open (output, 'w', 'utf-8')
 fout.write (marker)
 fout.write (bbl)
 fout.close ()

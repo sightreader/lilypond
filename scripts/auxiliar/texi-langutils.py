@@ -11,11 +11,11 @@ import os
 import langdefs
 
 def read_pipe (command):
-    print command
+    print(command)
     pipe = os.popen (command)
     output = pipe.read ()
     if pipe.close ():
-        print "pipe failed: %(command)s" % locals ()
+        print("pipe failed: %(command)s" % locals ())
     return output
 
 
@@ -50,7 +50,7 @@ for x in optlist:
     if x[0] == '-o': # -o NAME   set PO output file name to NAME
         output_name = x[1]
     elif x[0] == '-d': # -d DIR    set working directory to DIR
-        print 'FIXME: this is evil.  use cd DIR && texi-langutils ...'
+        print('FIXME: this is evil.  use cd DIR && texi-langutils ...')
         # even better, add a sane -o option
         os.chdir (x[1])
     elif x[0] == '-b': # -b BLURB  set blurb written at each node to BLURB
@@ -162,7 +162,8 @@ def process_texi (texifilename, i_blurb, n_blurb, write_skeleton, topfile,
             for item in includes:
                 process_texi (os.path.join (dir, item.strip ()), i_blurb, n_blurb,
                               write_skeleton, topfile, output_file, scan_ly, inclusion_level + 1)
-    except IOError, (errno, strerror):
+    except IOError as xxx_todo_changeme:
+        (errno, strerror) = xxx_todo_changeme.args
         sys.stderr.write ("I/O error(%s): %s: %s\n" % (errno, texifilename, strerror))
 
 
@@ -178,7 +179,6 @@ if make_gettext:
         # Urgly: scan ly comments and variable names only in English doco
         is_english_doc = (
             True
-            and not 'Documentation/ca/' in texi_file
             and not 'Documentation/cs/' in texi_file
             and not 'Documentation/de/' in texi_file
             and not 'Documentation/es/' in texi_file
@@ -188,7 +188,6 @@ if make_gettext:
             and not 'Documentation/it/' in texi_file
             and not 'Documentation/nl/' in texi_file
             and not 'Documentation/po/' in texi_file
-            and not 'Documentation/pt/' in texi_file
             and not 'Documentation/zh/' in texi_file
             )
         process_texi (texi_file, intro_blurb, node_blurb, make_skeleton,

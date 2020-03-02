@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include "moment.hh"
 #include "lily-guile.hh"
 
-struct Music_sequence
+class Music_sequence
 {
 public:
   DECLARE_SCHEME_CALLBACK (cumulative_length_callback, (SCM));
@@ -46,6 +46,6 @@ public:
 SCM ly_transpose_key_alist (SCM l, SCM pit);
 Pitch music_list_to_relative (SCM l, Pitch p, bool ret_first);
 void transpose_music_list (SCM, Pitch);
-void compress_music_list (SCM, Moment);
+void compress_music_list (SCM, Rational);
 
 #endif

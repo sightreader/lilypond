@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 
 #include "translator.icc"
 
+using std::map;
+
 class Note_spacing_engraver : public Engraver
 {
   typedef map <Context *, Grob *> Last_spacing_map;
@@ -43,8 +45,8 @@ protected:
   void acknowledge_rhythmic_grob (Grob_info);
   void acknowledge_note_column (Grob_info);
   void stop_translation_timestep ();
-  virtual void finalize ();
-  virtual void derived_mark () const;
+  void finalize () override;
+  void derived_mark () const override;
 };
 
 void

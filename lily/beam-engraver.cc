@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ protected:
   Moment last_stem_added_at_;
   void stop_translation_timestep ();
   void start_translation_timestep ();
-  virtual void finalize ();
+  void finalize () override;
 
   void process_music ();
 
@@ -305,7 +305,7 @@ Beam_engraver::acknowledge_stem (Grob_info info)
   stem->set_property ("duration-log", scm_from_int (durlog));
   Moment stem_location = now - beam_start_mom_ + beam_start_location_;
   beam_info_->add_stem (stem_location,
-                        max (durlog - 2, 0),
+                        std::max (durlog - 2, 0),
                         Stem::is_invisible (stem),
                         stem_duration->factor (),
                         (to_boolean (stem->get_property ("tuplet-start"))));
@@ -346,8 +346,8 @@ public:
   TRANSLATOR_INHERIT (Beam_engraver);
 
 protected:
-  virtual bool valid_start_point ();
-  virtual bool valid_end_point ();
+  bool valid_start_point () override;
+  bool valid_end_point () override;
 };
 
 Grace_beam_engraver::Grace_beam_engraver (Context *c)

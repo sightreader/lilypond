@@ -1,14 +1,9 @@
 /* @AUTOGENERATE@ */
 
-#define PACKAGE "@package@"
-
 /* datadir */
 #define DATADIR "@DATADIR@"
 
-#define PACKAGE_DATADIR DATADIR "/" PACKAGE
-
-/* dynamic relocation? */
-#define ARGV0_RELOCATION 0
+#define PACKAGE_DATADIR DATADIR "/lilypond"
 
 /* default lilypond locale dir */
 #define LOCALEDIR "@LOCALEDIR@"
@@ -16,44 +11,14 @@
 /* define if you have chroot */
 #define HAVE_CHROOT 0
 
-/* define if you have fopencookie */
-#define HAVE_FOPENCOOKIE 0
-
 /* define if you have gettext */
 #define HAVE_GETTEXT 0
-
-/* define if you have isinf */
-#define HAVE_ISINF 0
-
-/* define if you have lrint */
-#define HAVE_LRINT 0
-
-/* define if you have memmem */
-#define HAVE_MEMMEM 0
-
-/* define if you have snprintf */
-#define HAVE_SNPRINTF 0
-
-/* define if you have lrint */
-#define HAVE_LRINT 0
-
-/* define if you have stl data () method */
-#define HAVE_STL_DATA_METHOD 0
-
-/* define if you have vsnprintf */
-#define HAVE_VSNPRINTF 0
-
-/* define if you have yyFlexLexer.yy_current_buffer */
-#undef HAVE_FLEXLEXER_YY_CURRENT_BUFFER
 
 /* define if you have grp header */
 #define HAVE_GRP_H 0
 
 /* define if you have pwd header */
 #define HAVE_PWD_H 0
-
-/* define if explicit instantiation is needed */
-#undef NEED_EXPLICIT_INSTANTIATION
 
 /* define directory and path separators */
 #define DIRSEP '@DIRSEP@'
@@ -74,19 +39,13 @@
 /* define if you have sys/stat.h */
 #define STAT_MACROS_BROKEN 0
 
-/* define if you have sstream */
-#define HAVE_SSTREAM 0
-
 /* define if you have fontconfig */
 #define HAVE_FONTCONFIG 0
-
-/* define if you have pango FT2 binding */
-#define HAVE_PANGO_FT2 0
 
 /* define if you have pango FT2 binding with OpenType font feature */
 #define HAVE_PANGO_FT2_WITH_OTF_FEATURE 0
 
-/* define if Guile has types scm_t_hash_fold_fn and scm_t_hash_handle_fn */
+/* define if Guile has type scm_t_hash_fold_fn */
 #define HAVE_GUILE_HASH_FUNC 0
 
 /* define if Guile has type scm_t_subr */
@@ -96,5 +55,25 @@
 #define HAVE_LIBGUILE18_H 0
 
 /* define if cxxabi.h has workable demangler */
-
 #define HAVE_CXA_DEMANGLE 0
+
+/* define if enable extensions on GNU/Linux */
+#undef _GNU_SOURCE
+
+/* define if enable general extensions on Solaris */
+#undef __EXTENSIONS__
+
+/* define if enable threading extensions on Solaris */
+#undef _POSIX_PTHREAD_SEMANTICS
+
+/* define if enable extensions for the HP NonStop platform */
+#undef _TANDEM_SOURCE
+
+/* define if enable extensions for AIX 3, and for Interix */
+#undef _ALL_SOURCE
+
+/* define if enable Posix functions for Minix */
+#undef _POSIX_SOURCE
+
+/* define if enable additional Posix functions for Minix */
+#undef _POSIX_1_SOURCE

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "matrix.hh"
 #include "prob.hh"
 
+class Paper_column;
+
 /*
  * Begin/rest-of-line hack.  This geometrical shape is a crude approximation
  * of Skyline, but it is better than a rectangle.
@@ -42,13 +44,13 @@ struct Line_shape
 
 struct Line_details
 {
-  Grob *last_column_;
+  Paper_column *last_column_;
   Real force_;
   Line_shape shape_;
-  vector<Real> footnote_heights_; /* The footnotes at the bottom of the
+  std::vector<Real> footnote_heights_; /* The footnotes at the bottom of the
                                    page, where each stencil represents
                                    a different footnote. */
-  vector<Real> in_note_heights_; /* The in-notes under a system,
+  std::vector<Real> in_note_heights_; /* The in-notes under a system,
                                    where each stencil represents
                                    a different in-note. */
   Interval refpoint_extent_; /* The refpoints of the first and last
@@ -129,7 +131,7 @@ struct Constrained_break_node
 {
   /* the number of bars in all the systems before this one
   */
-  int prev_;
+  vsize prev_;
 
   /* unlike the Gourlay breaker, this is the sum of all demerits up to,
    * and including, this line */
@@ -138,13 +140,13 @@ struct Constrained_break_node
 
   Constrained_break_node ()
   {
-    prev_ = -1;
+    prev_ = VPOS;
     demerits_ = infinity_f;
   }
 
   void print () const
   {
-    printf ("prev break %d, demerits %f\n", prev_, demerits_);
+    printf ("prev break %zu, demerits %f\n", prev_, demerits_);
   }
 };
 
@@ -154,15 +156,15 @@ struct Constrained_break_node
 class Constrained_breaking
 {
 public:
-  vector<Column_x_positions> solve (vsize start, vsize end, vsize sys_count);
-  vector<Column_x_positions> best_solution (vsize start, vsize end);
-  vector<Line_details> line_details (vsize start, vsize end, vsize sys_count);
+  std::vector<Column_x_positions> solve (vsize start, vsize end, vsize sys_count);
+  std::vector<Column_x_positions> best_solution (vsize start, vsize end);
+  std::vector<Line_details> line_details (vsize start, vsize end, vsize sys_count);
 
   Constrained_breaking (Paper_score *ps);
-  Constrained_breaking (Paper_score *ps, vector<vsize> const &start_col_posns);
+  Constrained_breaking (Paper_score *ps, std::vector<vsize> const &start_col_posns);
 
-  int max_system_count (vsize start, vsize end);
-  int min_system_count (vsize start, vsize end);
+  vsize max_system_count (vsize start, vsize end);
+  vsize min_system_count (vsize start, vsize end);
 
 private:
   Paper_score *pscore_;
@@ -186,13 +188,13 @@ private:
 
   /* the [i](j,k)th entry is the score for fitting the first k bars onto the
     first j systems, starting at the i'th allowed starting column */
-  vector<Matrix<Constrained_break_node> > state_;
+  std::vector<Matrix<Constrained_break_node> > state_;
 
-  vector<vsize> start_;         /* the columns at which we might be asked to start breaking */
-  vector<vsize> starting_breakpoints_; /* the corresponding index in breaks_ */
+  std::vector<vsize> start_;         /* the columns at which we might be asked to start breaking */
+  std::vector<vsize> starting_breakpoints_; /* the corresponding index in breaks_ */
 
-  vector<Grob *> all_;
-  vector<vsize> breaks_;
+  std::vector<Paper_column *> all_;
+  std::vector<vsize> breaks_;
 
   void initialize (Paper_score *);
   void resize (vsize systems);

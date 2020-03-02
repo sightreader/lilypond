@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Stem_engraver : public Engraver
 {
   Grob *stem_;
@@ -52,7 +54,7 @@ protected:
   void listen_tuplet_span (Stream_event *);
   void acknowledge_rhythmic_head (Grob_info);
   void stop_translation_timestep ();
-  void finalize ();
+  void finalize () override;
   void kill_unused_flags ();
 };
 

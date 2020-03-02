@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 struct Finger_tuple
 {
@@ -65,6 +67,7 @@ class New_fingering_engraver : public Engraver
   vector<Grob *> heads_;
   vector<Grob *> accidentals_;
   Grob *stem_;
+  Grob *note_column_;
 
   void position_all ();
 public:
@@ -74,11 +77,11 @@ protected:
   void acknowledge_rhythmic_head (Grob_info);
   void acknowledge_inline_accidental (Grob_info);
   void acknowledge_stem (Grob_info);
+  void acknowledge_note_column (Grob_info);
   void add_fingering (Grob *, SCM,
                       vector<Finger_tuple> *,
                       Stream_event *, Stream_event *);
   void add_script (Grob *, Stream_event *, Stream_event *);
-  void add_string (Grob *, Stream_event *, Stream_event *);
   void position_scripts (SCM orientations, vector<Finger_tuple> *);
 };
 
@@ -145,6 +148,12 @@ void
 New_fingering_engraver::acknowledge_stem (Grob_info inf)
 {
   stem_ = inf.grob ();
+}
+
+void
+New_fingering_engraver::acknowledge_note_column (Grob_info inf)
+{
+  note_column_ = inf.grob ();
 }
 
 void
@@ -226,7 +235,7 @@ New_fingering_engraver::position_scripts (SCM orientations,
         }
     }
 
-  vector_sort (*scripts, less<Finger_tuple> ());
+  vector_sort (*scripts, std::less<Finger_tuple> ());
 
   bool up_p = scm_is_true (scm_c_memq (ly_symbol2scm ("up"), orientations));
   bool down_p = scm_is_true (scm_c_memq (ly_symbol2scm ("down"), orientations));
@@ -251,7 +260,7 @@ New_fingering_engraver::position_scripts (SCM orientations,
     }
   else if (up_p && down_p)
     {
-      int center = scripts->size () / 2;
+      vsize center = scripts->size () / 2;
       down.insert (down.end (), scripts->begin (), scripts->begin () + center);
       up.insert (up.end (), scripts->begin () + center, scripts->end ());
     }
@@ -282,11 +291,27 @@ New_fingering_engraver::position_scripts (SCM orientations,
           && unsmob<Grob> (ft.head_->get_object ("accidental-grob")))
         Side_position_interface::add_support (f,
                                               unsmob<Grob> (ft.head_->get_object ("accidental-grob")));
-      else if (unsmob<Grob> (ft.head_->get_object ("dot")))
-        Side_position_interface::add_support (f,
-                                              unsmob<Grob> (ft.head_->get_object ("dot")));
+      else if (Rhythmic_head::dot_count (ft.head_))
+        for (vsize j = 0; j < heads_.size (); j++)
+           if (Grob *d = unsmob<Grob> (heads_[j]->get_object ("dot")))
+             Side_position_interface::add_support (f, d);
 
-      Self_alignment_interface::set_aligned_on_parent (f, Y_AXIS);
+      if (horiz.size () > 1)  /* -> FingeringColumn */
+        {
+          Stencil *fs = f->get_stencil ();
+          fs->align_to (Y_AXIS, CENTER);
+        }
+      else
+        {
+          SCM self_align_y =
+                Self_alignment_interface::aligned_on_parent (f, Y_AXIS);
+          SCM yoff= f->get_property ("Y-offset");
+          if (scm_is_number (yoff))
+            self_align_y = scm_from_double (scm_to_double (self_align_y)
+                                          + scm_to_double (yoff));
+          f->set_property ("Y-offset", self_align_y);
+        }
+
       Side_position_interface::set_axis (f, X_AXIS);
 
       f->set_property ("direction", scm_from_int (hordir));
@@ -300,7 +325,18 @@ New_fingering_engraver::position_scripts (SCM orientations,
           Finger_tuple ft = vertical[d][i];
           Grob *f = ft.script_;
           int finger_prio = robust_scm2int (f->get_property ("script-priority"), 200);
-          f->set_parent (ft.head_, X_AXIS);
+
+          if (heads_.size () > 1 &&
+              to_boolean (f->get_property ("X-align-on-main-noteheads")))
+            f->set_parent (note_column_, X_AXIS);
+          else
+            {
+              f->set_parent (ft.head_, X_AXIS);
+              if (heads_.size () > 1)
+                for (vsize j = 0; j < accidentals_.size (); j++)
+                  Side_position_interface::add_support (f, accidentals_[j]);
+            }
+
           f->set_property ("script-priority",
                            scm_from_int (finger_prio + d * ft.position_));
 
@@ -317,7 +353,9 @@ New_fingering_engraver::stop_translation_timestep ()
 {
   position_all ();
   stem_ = 0;
+  note_column_ = 0;
   heads_.clear ();
+  accidentals_.clear ();
 }
 
 void
@@ -347,7 +385,6 @@ New_fingering_engraver::position_all ()
   for (vsize i = articulations_.size (); i--;)
     {
       Grob *script = articulations_[i].script_;
-
       for (vsize j = 0; j < accidentals_.size (); j++)
         Side_position_interface::add_support (script, accidentals_[j]);
 
@@ -377,6 +414,7 @@ New_fingering_engraver::boot ()
   ADD_ACKNOWLEDGER (New_fingering_engraver, rhythmic_head);
   ADD_ACKNOWLEDGER (New_fingering_engraver, inline_accidental);
   ADD_ACKNOWLEDGER (New_fingering_engraver, stem);
+  ADD_ACKNOWLEDGER (New_fingering_engraver, note_column);
 }
 
 ADD_TRANSLATOR (New_fingering_engraver,

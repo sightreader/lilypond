@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 class Stem
 {
 public:
-  static vector<int> note_head_positions (Grob *, bool filter = false);
+  static std::vector<int> note_head_positions (Grob *, bool filter = false);
   static int duration_log (Grob *);
   static void set_beaming (Grob *, int, Direction d);
   static int get_beaming (Grob *, Direction d);
@@ -46,7 +46,7 @@ public:
   static Direction get_default_dir (Grob *);
   static Real thickness (Grob *);
   static Real beam_end_corrective (Grob *);
-  static int head_count (Grob *);
+  static vsize head_count (Grob *);
   static bool is_invisible (Grob *);
   static bool is_normal_stem (Grob *);
   static bool is_cross_staff (Grob *);

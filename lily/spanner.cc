@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,11 +26,7 @@
 #include "system.hh"
 #include "warn.hh"
 
-Grob *
-Spanner::clone () const
-{
-  return new Spanner (*this);
-}
+using std::vector;
 
 void
 Spanner::do_break_processing ()
@@ -57,7 +53,7 @@ Spanner::do_break_processing ()
             programming_error ("no broken bound");
           else if (bound->get_system ())
             {
-              Spanner *span = dynamic_cast<Spanner *> (clone ());
+              Spanner *span = clone ();
               span->set_bound (LEFT, bound);
               span->set_bound (RIGHT, bound);
 
@@ -116,7 +112,7 @@ Spanner::do_break_processing ()
               continue;
             }
 
-          Spanner *span = dynamic_cast<Spanner *> (clone ());
+          Spanner *span = clone ();
           span->set_bound (LEFT, bounds[LEFT]);
           span->set_bound (RIGHT, bounds[RIGHT]);
 
@@ -151,7 +147,7 @@ Spanner::set_my_columns ()
   for (LEFT_and_RIGHT (d))
     {
       if (!spanned_drul_[d]->get_system ())
-        set_bound (d, spanned_drul_[d]->find_prebroken_piece ((Direction) - d));
+        set_bound (d, spanned_drul_[d]->find_prebroken_piece (-d));
     }
 }
 
@@ -174,12 +170,6 @@ Spanner::spanned_time () const
                                 spanned_drul_[RIGHT]);
 }
 
-Item *
-Spanner::get_bound (Direction d) const
-{
-  return spanned_drul_[d];
-}
-
 /*
   Set the items that this spanner spans. If D == LEFT, we also set the
   X-axis parent of THIS to S.
@@ -189,16 +179,20 @@ Spanner::get_bound (Direction d) const
   original NoteColumn, but rather to the PaperColumn after the break.
 */
 void
-Spanner::set_bound (Direction d, Grob *s)
+Spanner::set_bound (Direction d, Grob *g)
 {
-  Item *i = dynamic_cast<Item *> (s);
-  if (!i)
+  // Whether an Item and a Spanner can be linked depends on the specific type
+  // of each.  We handle this with two virtual function calls.  This call to
+  // the Grob calls back to the most specific Spanner::accepts_as_bound_...()
+  // that fits the type of the Grob.
+  if (!g->internal_set_as_bound_of_spanner (this, d))
     {
-      programming_error ("must have Item for spanner bound of " + name ());
+      programming_error (to_string ("cannot set %s as bound of %s",
+                                    g->name ().c_str (), name ().c_str ()));
       return;
     }
 
-  spanned_drul_[d] = i;
+  spanned_drul_[d] = static_cast<Item *> (g);
 
   /**
      We check for System to prevent the column -> line_of_score
@@ -211,17 +205,20 @@ Spanner::set_bound (Direction d, Grob *s)
       This happens e.g. for MultiMeasureRestNumbers and PercentRepeatCounters.
     */
     if (!dynamic_cast <Spanner *> (get_parent (X_AXIS)))
-      set_parent (i, X_AXIS);
+      set_parent (g, X_AXIS);
+}
 
-  /*
-    Signal that this column needs to be kept alive. They need to be
-    kept alive to have meaningful position and linebreaking.
+bool
+Spanner::accepts_as_bound_item (const Item *) const
+{
+  return true;
+}
 
-    [maybe we should try keeping all columns alive?, and perhaps
-    inherit position from their (non-)musical brother]
-  */
-  if (dynamic_cast<Paper_column *> (i))
-    Pointer_group_interface::add_grob (i, ly_symbol2scm ("bounded-by-me"), this);
+bool
+Spanner::accepts_as_bound_paper_column (const Paper_column *col) const
+{
+  // Spanners in general don't treat Paper_columns specially.
+  return Spanner::accepts_as_bound_item (col);
 }
 
 Preinit_Spanner::Preinit_Spanner ()
@@ -292,7 +289,7 @@ Spanner::get_system () const
   return spanned_drul_[LEFT]->get_system ();
 }
 
-Grob *
+Spanner *
 Spanner::find_broken_piece (System *l) const
 {
   vsize idx = binary_search (broken_intos_, (Spanner *) l, Spanner::less);
@@ -314,12 +311,6 @@ Spanner::broken_neighbor (Direction d) const
     return 0;
 
   return orig->broken_intos_[j];
-}
-
-int
-Spanner::compare (Spanner *const &p1, Spanner *const &p2)
-{
-  return p1->get_system ()->get_rank () - p2->get_system ()->get_rank ();
 }
 
 bool
@@ -446,7 +437,7 @@ Spanner::calc_normalized_endpoints (SCM smob)
   Spanner *me = unsmob<Spanner> (smob);
   SCM result = SCM_EOL;
 
-  Spanner *orig = dynamic_cast<Spanner *> (me->original ());
+  Spanner *orig = me->original ();
 
   orig = orig ? orig : me;
 
@@ -530,27 +521,35 @@ Spanner::kill_zero_spanned_time (SCM grob)
   return SCM_UNSPECIFIED;
 }
 
-SCM
-Spanner::get_cached_pure_property (SCM sym, int start, int end)
+// The pure property cache is indexed by (name start . end), where name is
+// a symbol, and start and end are numbers referring to the starting and
+// ending column ranks of the current line.
+static SCM
+make_pure_property_cache_key (SCM sym, vsize start, vsize end)
 {
-  // The pure property cache is indexed by (name start . end), where name is
-  // a symbol, and start and end are numbers referring to the starting and
-  // ending column ranks of the current line.
-  if (scm_is_false (scm_hash_table_p (pure_property_cache_)))
+  return scm_cons2 (sym, scm_from_size_t (start), scm_from_size_t (end));
+}
+
+SCM
+Spanner::get_cached_pure_property (SCM sym, vsize start, vsize end)
+{
+  if (SCM_UNBNDP (pure_property_cache_))
     return SCM_UNDEFINED;
 
-  SCM key = scm_cons (sym, scm_cons (scm_from_int (start), scm_from_int (end)));
-  return scm_hash_ref (pure_property_cache_, key, SCM_UNDEFINED);
+  return scm_hash_ref (pure_property_cache_,
+                       make_pure_property_cache_key(sym, start, end),
+                       SCM_UNDEFINED);
 }
 
 void
-Spanner::cache_pure_property (SCM sym, int start, int end, SCM val)
+Spanner::cache_pure_property (SCM sym, vsize start, vsize end, SCM val)
 {
-  if (scm_is_false (scm_hash_table_p (pure_property_cache_)))
+  if (SCM_UNBNDP (pure_property_cache_))
     pure_property_cache_ = scm_c_make_hash_table (17);
 
-  SCM key = scm_cons (sym, scm_cons (scm_from_int (start), scm_from_int (end)));
-  scm_hash_set_x (pure_property_cache_, key, val);
+  scm_hash_set_x (pure_property_cache_,
+                  make_pure_property_cache_key(sym, start, end),
+                  val);
 }
 
 ADD_INTERFACE (Spanner,

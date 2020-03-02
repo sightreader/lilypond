@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -35,6 +35,8 @@
 #include "warn.hh"
 #include "lily-imports.hh"
 
+using std::string;
+
 static void
 replace_special_characters (string &str, SCM props)
 {
@@ -45,7 +47,7 @@ replace_special_characters (string &str, SCM props)
   int max_length = 0;
   for (SCM s = replacement_alist; scm_is_pair (s); s = scm_cdr (s))
     {
-      max_length = max (max_length, scm_to_int
+      max_length = std::max (max_length, scm_to_int
                         (scm_string_length (scm_caar (s))));
     }
 
@@ -173,7 +175,7 @@ Text_interface::interpret_markup (SCM layout_smob, SCM props, SCM markup)
           scm_dynwind_end ();
           string name = ly_symbol2string (scm_procedure_name (func));
           // TODO: Also print the arguments of the markup!
-          non_fatal_error (_f ("Markup depth exceeds maximal value of %d; "
+          non_fatal_error (_f ("Markup depth exceeds maximal value of %zu; "
                                "Markup: %s", max_depth, name.c_str ()));
           return Stencil ().smobbed_copy ();
         }

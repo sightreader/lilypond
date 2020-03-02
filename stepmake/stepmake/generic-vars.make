@@ -60,7 +60,7 @@ endif
 
 
 # no locale settings in the build process.
-LANG=
+LANG=C
 export LANG
 
 
@@ -83,7 +83,16 @@ STRIPDEBUG=true
 STRIP=strip --strip-debug
 DO_STRIP=true
 
-LOOP=+$(foreach i, $(SUBDIRS), $(MAKE) PACKAGE=$(PACKAGE) package=$(package) -C $(i) $@ &&) true
+# Create a command to make targets in subdirectories.
+# $(1) is a subset of $(SUBDIRS)
+# $(2) is a list of targets
+define make_subdirs
+#       enforce order to avoid surprises due to implicit dependencies
+	[ "$(1)" = "$(filter $(1),$(SUBDIRS))" ] || (echo "*** {$(1)} is not a subset of ordered set {$(SUBDIRS)}" 1>&2 && false)
+	+$(foreach d, $(1), $(MAKE) -C $(d) $(2) &&) true
+endef
+
+LOOP=+$(foreach i, $(SUBDIRS), $(MAKE) -C $(i) $@ &&) true
 
 ETAGS_FLAGS =
 CTAGS_FLAGS =

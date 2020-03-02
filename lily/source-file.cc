@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -28,72 +28,69 @@
 #include "config.hh"
 
 #include <cstdio>
-
-#if HAVE_SSTREAM
 #include <sstream>
-#else
-#include <strstream>
-#define istringstream(x) istrstream (x, length ())
-#endif
-using namespace std;
+
 
 #include "file-name-map.hh"
 #include "international.hh"
 #include "misc.hh"
 #include "warn.hh"
+#include "lily-imports.hh"
+
+using std::istream;
+using std::istringstream;
+using std::string;
+using std::vector;
 
 void
 Source_file::load_stdin ()
 {
-  characters_.clear ();
+  data_.clear ();
   int c;
   while ((c = fgetc (stdin)) != EOF)
-    characters_.push_back ((char)c);
+    data_.push_back ((char)c);
 }
 
 /*
-  return contents of FILENAME. *Not 0-terminated!*
+  return contents of FILENAME.
  */
-vector<char>
-gulp_file (const string &filename, int desired_size)
+string
+gulp_file (const string &filename, size_t desired_size)
 {
   /* "b" must ensure to open literally, avoiding text (CR/LF)
      conversions.  */
-  FILE *f = fopen (filename.c_str (), "rb");
+  FILE *f = fopen (filename.c_str (), "rb"); // TODO: RAII
   if (!f)
     {
       warning (_f ("cannot open file: `%s'", filename.c_str ()));
-
-      vector<char> cxx_arr;
-      return cxx_arr;
+      return {};
     }
 
   fseek (f, 0, SEEK_END);
-  int real_size = ftell (f);
-  int read_count = real_size;
+  const auto real_size = ftell (f);
+  if (real_size < 0)
+    {
+      warning (_f ("failed to get file size: `%s'", filename.c_str ()));
+      fclose (f);
+      return {};
+    }
+  size_t read_count = real_size;
 
   if (desired_size > 0)
-    read_count = min (read_count, desired_size);
+    read_count = std::min (read_count, desired_size);
 
   rewind (f);
 
-  char *str = new char[read_count + 1];
-  str[read_count] = 0;
-
-  int bytes_read = fread (str, sizeof (char), read_count, f);
-  if (bytes_read != read_count)
-    warning (_f ("expected to read %d characters, got %d", bytes_read,
-                 read_count));
+  string dest (read_count, 0);
+  size_t bytes_read = fread (&dest[0], sizeof (char), read_count, f);
+  if (bytes_read < read_count)
+    {
+      warning (_f ("expected to read %zu characters, got %zu", read_count,
+                   bytes_read));
+      dest.resize (bytes_read);
+    }
   fclose (f);
-  int filesize = bytes_read;
-
-  vector<char> cxx_arr;
-  cxx_arr.resize (filesize);
-
-  copy (str, str + filesize, cxx_arr.begin ());
-
-  delete[] str;
-  return cxx_arr;
+  return dest;
 }
 
 void
@@ -101,7 +98,6 @@ Source_file::init ()
 {
   istream_ = 0;
   line_offset_ = 0;
-  str_port_ = SCM_EOL;
   smobify_self ();
 }
 
@@ -111,16 +107,17 @@ Source_file::Source_file (const string &filename, const string &data)
 
   name_ = filename;
 
-  characters_.resize (data.length ());
-  copy (data.begin (), data.end (), characters_.begin ());
+  data_ = data;
 
-  characters_.push_back (0);
+  init_newlines ();
+}
 
-  init_port ();
-
-  for (vsize i = 0; i < characters_.size (); i++)
-    if (characters_[i] == '\n')
-      newline_locations_.push_back (&characters_[0] + i);
+void
+Source_file::init_newlines ()
+{
+  for (vsize i = 0; i < data_.size (); i++)
+    if (data_[i] == '\n')
+      newline_locations_.push_back (&data_[0] + i);
 }
 
 Source_file::Source_file (const string &filename_string)
@@ -132,28 +129,9 @@ Source_file::Source_file (const string &filename_string)
   if (filename_string == "-")
     load_stdin ();
   else
-    {
-      characters_ = gulp_file (filename_string, -1);
-    }
+    data_ = gulp_file (filename_string, -1);
 
-  characters_.push_back (0);
-
-  init_port ();
-
-  for (vsize i = 0; i < characters_.size (); i++)
-    if (characters_[i] == '\n')
-      newline_locations_.push_back (&characters_[0] + i);
-}
-
-void
-Source_file::init_port ()
-{
-  // This is somewhat icky: the string will in general be in utf8, but
-  // we do our own utf8 encoding and verification in the parser, so we
-  // use the no-conversion equivalent of latin1
-  SCM str = scm_from_latin1_string (c_str ());
-  str_port_ = scm_mkstrport (SCM_INUM0, str, SCM_OPN | SCM_RDNG, __FUNCTION__);
-  scm_set_port_filename_x (str_port_, ly_string2scm (name_));
+  init_newlines ();
 }
 
 istream *
@@ -166,8 +144,8 @@ Source_file::get_istream ()
       else
         {
           istream_ = new istringstream ("");
-          istream_->setstate (ios::eofbit);
-          //      istream_->set (ios::eofbit);
+          istream_->setstate (std::ios::eofbit);
+          //      istream_->set (std::ios::eofbit);
         }
     }
   return istream_;
@@ -180,11 +158,11 @@ Source_file::file_line_column_string (char const *context_str0) const
     return " (" + _ ("position unknown") + ")";
   else
     {
-      int l, ch, col, offset;
+      ssize_t l, ch, col, offset;
       get_counts (context_str0, &l, &ch, &col, &offset);
 
-      return name_string () + ":" + ::to_string (l)
-             + ":" + ::to_string (col + 1);
+      return name_string () + ":" + std::to_string (l)
+             + ":" + std::to_string (col + 1);
     }
 }
 
@@ -194,13 +172,14 @@ Source_file::quote_input (char const *pos_str0) const
   if (!contains (pos_str0))
     return " (" + _ ("position unknown") + ")";
 
-  int l, ch, col, offset;
+  ssize_t l, ch, col, offset;
   get_counts (pos_str0, &l, &ch, &col, &offset);
   string line = line_string (pos_str0);
-  string context = line.substr (0, offset)
-                   + ::to_string ('\n')
-                   + ::to_string (' ', col)
-                   + line.substr (offset, line.length () - offset);
+  string context = line.substr (0, offset);
+  context += '\n';
+  if (col > 0)
+    context += string (col, ' ');
+  context += line.substr (offset, line.length () - offset);
   return context;
 }
 
@@ -257,17 +236,15 @@ Source_file::line_string (char const *pos_str0) const
 }
 
 void
-Source_file::get_counts (char const *pos_str0,
-                         int *line_number,
-                         int *line_char,
-                         int *column,
-                         int *byte_offset) const
+Source_file::get_counts (char const *pos_str0, ssize_t *line_number,
+                         ssize_t *line_char, ssize_t *column,
+                         ssize_t *line_byte_offset) const
 {
   // Initialize arguments to defaults, needed if pos_str0 is not in source
   *line_number = 0;
   *line_char = 0;
   *column = 0;
-  *byte_offset = 0;
+  *line_byte_offset = 0;
 
   if (!contains (pos_str0))
     return;
@@ -279,8 +256,9 @@ Source_file::get_counts (char const *pos_str0,
   char const *line_start = (char const *)data + line[LEFT];
 
   ssize left = (char const *) pos_str0 - line_start;
-  *byte_offset = left;
+  *line_byte_offset = left;
 
+  // TODO: copying into line_begin looks pointless and wasteful
   string line_begin (line_start, left);
   char const *line_chars = line_begin.c_str ();
 
@@ -309,7 +287,7 @@ Source_file::contains (char const *pos_str0) const
   return (pos_str0 && (pos_str0 >= c_str ()) && (pos_str0 <= c_str () + length ()));
 }
 
-int
+ssize_t
 Source_file::get_line (char const *pos_str0) const
 {
   if (!contains (pos_str0))
@@ -321,18 +299,18 @@ Source_file::get_line (char const *pos_str0) const
   /* this will find the '\n' character at the end of our line */
   vsize lo = lower_bound (newline_locations_,
                           pos_str0,
-                          less<char const *> ());
+                          std::less<char const *> ());
 
   /* the return value will be indexed from 1 */
   return lo + 1 + line_offset_;
 }
 
 void
-Source_file::set_line (char const *pos_str0, int line)
+Source_file::set_line (char const *pos_str0, ssize_t line)
 {
   if (pos_str0)
     {
-      int current_line = get_line (pos_str0);
+      auto current_line = get_line (pos_str0);
       line_offset_ += line - current_line;
 
       assert (line == get_line (pos_str0));
@@ -341,34 +319,22 @@ Source_file::set_line (char const *pos_str0, int line)
     line_offset_ = line;
 }
 
-int
+size_t
 Source_file::length () const
 {
-  return characters_.size ();
+  return data_.size ();
 }
 
 char const *
 Source_file::c_str () const
 {
-  return &characters_[0];
-}
-
-SCM
-Source_file::get_port () const
-{
-  return str_port_;
+  return data_.c_str ();
 }
 
 /****************************************************************/
 
 
 const char * const Source_file::type_p_name_ = "ly:source-file?";
-
-SCM
-Source_file::mark_smob () const
-{
-  return str_port_;
-}
 
 int
 Source_file::print_smob (SCM port, scm_print_state *) const

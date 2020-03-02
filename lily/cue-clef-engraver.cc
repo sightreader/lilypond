@@ -1,9 +1,9 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
                            Mats Bengtsson <matsb@s3.kth.se>
-  Copyright (C) 2010--2015 Reinhold Kainhofer <reinhold@kainhofer.com>
+  Copyright (C) 2010--2020 Reinhold Kainhofer <reinhold@kainhofer.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 */
 
 #include <cctype>
-using namespace std;
 
 #include "item.hh"
 #include "context.hh"
@@ -43,7 +42,7 @@ protected:
   void process_music ();
   void acknowledge_bar_line (Grob_info);
 
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 private:
   Item *clef_;
   Item *modifier_;
@@ -95,7 +94,7 @@ Cue_clef_engraver::set_glyph ()
 void
 Cue_clef_engraver::acknowledge_bar_line (Grob_info info)
 {
-  Item *item = info.item ();
+  Item *item = dynamic_cast<Item *> (info.grob ());
   if (item && scm_is_string (get_property ("cueClefGlyph")))
     create_clef ();
 }

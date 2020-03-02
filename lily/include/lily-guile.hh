@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -49,16 +49,16 @@
     A ly_B2A (B b);  */
 
 SCM ly_last (SCM list);
-string ly_scm_write_string (SCM s);
+std::string ly_scm_write_string (SCM s);
 SCM ly_deep_copy (SCM);
 SCM ly_truncate_list (int k, SCM lst);
 
-string gulp_file_to_string (const string &fn, bool must_exist, int size);
+std::string gulp_file_to_string (const std::string &fn, bool must_exist, int size);
 
-SCM ly_string2scm (string const &s);
-string ly_scm2string (SCM s);
-string ly_symbol2string (SCM);
-string robust_symbol2string (SCM, const string&);
+SCM ly_string2scm (std::string const &s);
+std::string ly_scm2string (SCM s);
+std::string ly_symbol2string (SCM);
+std::string robust_symbol2string (SCM, const std::string&);
 Rational ly_scm2rational (SCM);
 SCM ly_rational2scm (Rational);
 SCM ly_offset2scm (Offset);
@@ -82,14 +82,14 @@ Drul_array<Real> robust_scm2drul (SCM, Drul_array<Real>);
 Drul_array<bool> robust_scm2booldrul (SCM, Drul_array<bool>);
 Interval robust_scm2interval (SCM, Drul_array<Real>);
 Offset robust_scm2offset (SCM, Offset);
-string robust_scm2string (SCM, const string&);
+std::string robust_scm2string (SCM, const std::string&);
 Rational robust_scm2rational (SCM, Rational);
-vector<Real> ly_scm2floatvector (SCM);
-SCM ly_floatvector2scm (vector<Real> v);
+std::vector<Real> ly_scm2floatvector (SCM);
+SCM ly_floatvector2scm (std::vector<Real> v);
 
 SCM ly_quote_scm (SCM s);
 bool type_check_assignment (SCM val, SCM sym, SCM type_symbol);
-string print_scm_val (SCM val);
+std::string print_scm_val (SCM val);
 SCM ly_number2string (SCM s);
 
 SCM parse_symbol_list (char const *);
@@ -144,7 +144,7 @@ extern "C" {
   void ly_display_scm (SCM s);
 }
 
-void read_lily_scm_file (string);
+void read_lily_scm_file (std::string);
 void ly_c_init_guile ();
 
 bool is_direction (SCM s);
@@ -160,7 +160,6 @@ Direction to_dir (SCM s);
 bool to_boolean (SCM s);
 
 void init_ly_protection ();
-unsigned int ly_scm_hash (SCM s);
 
 SCM index_get_cell (SCM cell, Direction d);
 SCM index_set_cell (SCM cell, Direction d, SCM val);
@@ -176,22 +175,6 @@ SCM ly_output_formats ();
   snarfing.
 */
 void add_scm_init_func (void ( *) ());
-
-extern "C" {
-  typedef SCM (*Scheme_function_unknown) (GUILE_ELLIPSIS);
-}
-
-#if __GNUC__ > 2 || __GNUC_MINOR__ >= 96
-typedef SCM (*Scheme_function_0) ();
-typedef SCM (*Scheme_function_1) (SCM);
-typedef SCM (*Scheme_function_2) (SCM, SCM);
-typedef SCM (*Scheme_function_3) (SCM, SCM, SCM);
-#else
-typedef SCM (*Scheme_function_0) (GUILE_ELLIPSIS);
-typedef SCM (*Scheme_function_1) (GUILE_ELLIPSIS);
-typedef SCM (*Scheme_function_2) (GUILE_ELLIPSIS);
-typedef SCM (*Scheme_function_3) (GUILE_ELLIPSIS);
-#endif
 
 /*
   Inline these for performance reasons.
@@ -209,7 +192,7 @@ inline bool ly_is_pair (SCM x) { return SCM_I_CONSP (x); }
 
 template<class T>
 SCM
-ly_cxx_vector_to_list (vector<T> const &src)
+ly_cxx_vector_to_list (std::vector<T> const &src)
 {
   SCM l = SCM_EOL;
   for (vsize i = src.size (); i--;)
@@ -218,13 +201,12 @@ ly_cxx_vector_to_list (vector<T> const &src)
   return l;
 }
 
-SCM ly_offsets2scm (vector<Offset> os);
-vector<Offset> ly_scm2offsets (SCM s);
+SCM ly_offsets2scm (std::vector<Offset> os);
+std::vector<Offset> ly_scm2offsets (SCM s);
 
 /* For backward compatability with Guile 1.8 */
 #if !HAVE_GUILE_HASH_FUNC
 typedef SCM (*scm_t_hash_fold_fn) (GUILE_ELLIPSIS);
-typedef SCM (*scm_t_hash_handle_fn) (GUILE_ELLIPSIS);
 #endif
 
 #endif /* LILY_GUILE_HH */

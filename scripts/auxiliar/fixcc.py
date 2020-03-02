@@ -28,7 +28,6 @@ import __main__
 import getopt
 import os
 import re
-import string
 import sys
 import time
 import subprocess
@@ -202,7 +201,7 @@ class Snippet (Chunk):
         return self.match.group (s)
 
     def __repr__ (self):
-        return `self.__class__` + ' type = ' + self.type
+        return repr(self.__class__) + ' type = ' + self.type
 
 class Multiline_comment (Snippet):
     def __init__ (self, source, match, format):
@@ -242,8 +241,8 @@ def find_toplevel_snippets (s, types):
     ##                      types))
     ## urg python2.1
     found = {}
-    map (lambda x, f = found: f.setdefault (x, None),
-      types)
+    list(map (lambda x, f = found: f.setdefault (x, None),
+      types))
 
     # We want to search for multiple regexes, without searching
     # the string multiple times for one regex.
@@ -265,7 +264,7 @@ def find_toplevel_snippets (s, types):
                     continue
 
                 cl = Snippet
-                if snippet_type_to_class.has_key (type):
+                if type in snippet_type_to_class:
                     cl = snippet_type_to_class[type]
                 snip = cl (type, m, format)
                 start = index + m.start ('match')
@@ -323,7 +322,7 @@ def nitpick_file (outdir, file):
     #code = filter (lambda x: is_derived_class (x.__class__, Substring),
     #               chunks)
 
-    t = string.join (map (lambda x: x.filter_text (), chunks), '')
+    t = ''.join ([x.filter_text () for x in chunks])
     fixt = file
     if s != t:
         if not outdir:
@@ -371,14 +370,14 @@ Options:
 
 Typical use with LilyPond:
 
- fixcc $(find flower lily -name '*cc' -o -name '*hh' | grep -v /out)
+ scripts/auxiliar/fixcc.py $(git ls-files '*.cc' '*.hh')
 
 ''')
 
 def do_options ():
-    global indent_p, outdir, verbose_p
+    global indent_p, outdir, verbose_p, PREFERRED_ASTYLE_VERSION
     (options, files) = getopt.getopt (sys.argv[1:], '',
-                     ['help', 'lazy', 'outdir=',
+                     ['help', 'lazy', 'outdir=', 'sloppy',
                      'test', 'verbose'])
     for (o, a) in options:
         if o == '--help':
@@ -404,11 +403,11 @@ def do_options ():
 
 def check_astyle_version():
     cmd = "astyle --version"
-    process = subprocess.Popen(cmd, shell=True, stderr=subprocess.PIPE)
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
-    if PREFERRED_ASTYLE_VERSION in stderr:
-        return True
-    return False
+    return (PREFERRED_ASTYLE_VERSION in stderr) \
+        or (PREFERRED_ASTYLE_VERSION in stdout)
 
 
 outdir = 0
@@ -419,10 +418,10 @@ socketname = 'fixcc%d' % os.getpid ()
 def main ():
     files = do_options ()
     if not check_astyle_version():
-        print "Warning: try to use %s." % PREFERRED_ASTYLE_VERSION
-        print "Please limit use of this version to files with changed code."
+        print("Warning: try to use %s." % PREFERRED_ASTYLE_VERSION)
+        print("Please limit use of this version to files with changed code.")
         if len(files) > 4:
-            print "Too many files with this version.  See `astyle --help`"
+            print("Too many files with this version.  See `astyle --help`")
             sys.exit(1)
     if outdir and not os.path.isdir (outdir):
         os.makedirs (outdir)
@@ -459,7 +458,7 @@ typedef struct _t_ligature
 typedef std::map < AFM_Ligature const *, int > Bar;
 
  /**
- Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@cs.uu.nl>
+ Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@cs.uu.nl>
  */
  
 /*      ||

@@ -22,6 +22,7 @@
        (cons input-str result-str))))
 
 #(read-hash-extend #\[ parse-lily-and-compute-lily-string) %{ ] %}
+#(ly:set-option 'warning-as-error #t)
 
 test =
 #(define-void-function (harmless strings)
@@ -226,10 +227,10 @@ stderr of this run."
 \test ##[ \revert StaffGrouper.staff-staff-spacing.basic-distance #]    % nested properties
 
 %% \applyOutput
-\test ##[ \applyOutput Foo #(lambda (arg) (list)) #]
-\test ##[ \applyOutput Foo.NoteHead #(lambda (arg) (list)) #]
+\test ##[ \applyOutput Foo #identity #]
+\test ##[ \applyOutput Foo.NoteHead #identity #]
 %% \applyContext
-\test ##[ \applyContext #(lambda (arg) (list)) #]
+\test ##[ \applyContext #identity #]
 
 %% \partial
 \test ##[ \partial 2 #]

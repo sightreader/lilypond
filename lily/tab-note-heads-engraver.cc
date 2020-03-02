@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Han-Wen Nienhuys, Jean-Baptiste Lamy <jiba@tuxfamily.org>,
+  Copyright (C) 2002--2020 Han-Wen Nienhuys, Jean-Baptiste Lamy <jiba@tuxfamily.org>,
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 
 #include "engraver.hh"
 
-using namespace std;
 
 #include "articulations.hh"
 #include "duration.hh"
@@ -35,6 +34,8 @@ using namespace std;
 #include "context.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    make (guitar-like) tablature note
@@ -112,7 +113,7 @@ Tab_note_heads_engraver::process_music ()
   if (!scm_is_null (string_fret_finger))
     for (vsize i = 0; i < fret_count; i++)
       {
-        note_entry = scm_list_ref (string_fret_finger, scm_from_int (i));
+        note_entry = scm_list_ref (string_fret_finger, scm_from_size_t (i));
         string_number = scm_car (note_entry);
         if (scm_is_true (string_number))
           {

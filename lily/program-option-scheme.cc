@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2001--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2001--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include <cstdio>
 #include <cstring>
-using namespace std;
 
 #include "profile.hh"
 #include "international.hh"
@@ -31,6 +30,9 @@ using namespace std;
 #include "warn.hh"
 #include "lily-imports.hh"
 #include "protected-scm.hh"
+
+using std::string;
+using std::vector;
 
 bool debug_skylines;
 bool debug_property_callbacks;
@@ -145,17 +147,16 @@ get_help_string ()
     {
       SCM sym = scm_caar (s);
       SCM val = scm_cdar (s);
-      string opt_spec = String_convert::char_string (' ', INDENT)
+      string opt_spec = string (INDENT, ' ')
                         + ly_symbol2string (sym)
                         + " ("
                         + ly_scm2string (Lily::scm_to_string (val))
                         + ")";
 
       if (opt_spec.length () + SEPARATION > HELP_INDENT)
-        opt_spec += "\n" + String_convert::char_string (' ', HELP_INDENT);
+        opt_spec += '\n' + string (HELP_INDENT, ' ');
       else
-        opt_spec += String_convert::char_string (' ', HELP_INDENT
-                                                 - opt_spec.length ());
+        opt_spec += string (HELP_INDENT - opt_spec.length (), ' ');
 
       SCM opt_help_scm
         = scm_object_property (sym,
@@ -163,14 +164,13 @@ get_help_string ()
       string opt_help = ly_scm2string (opt_help_scm);
       replace_all (&opt_help,
                    string ("\n"),
-                   string ("\n")
-                   + String_convert::char_string (' ', HELP_INDENT));
+                   string ("\n") + string (HELP_INDENT, ' '));
 
       opts.push_back (opt_spec + opt_help + "\n");
     }
 
   string help ("Options supported by `ly:set-option':\n\n");
-  vector_sort (opts, less<string> ());
+  vector_sort (opts, std::less<string> ());
   for (vsize i = 0; i < opts.size (); i++)
     help += opts[i];
   return help;

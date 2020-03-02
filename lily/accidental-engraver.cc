@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Modified 2001--2002 by Rune Zedeler <rz@daimi.au.dk>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -36,6 +36,8 @@
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 class Accidental_entry
 {
@@ -82,8 +84,8 @@ protected:
   void stop_translation_timestep ();
   void process_acknowledged ();
 
-  virtual void finalize ();
-  virtual void derived_mark () const;
+  void finalize () override;
+  void derived_mark () const override;
 
 public:
   SCM last_keysig_;
@@ -163,8 +165,8 @@ struct Accidental_result
 
   int score () const
   {
-    return need_acc ? 1 : 0
-           + need_restore ? 1 : 0;
+    return (need_acc ? 1 : 0)
+           + (need_restore ? 1 : 0);
   }
 };
 
@@ -276,9 +278,11 @@ Accidental_engraver::create_accidental (Accidental_entry *entry,
 {
   Stream_event *note = entry->melodic_;
   Grob *support = entry->head_;
-  bool as_suggestion = to_boolean (entry->origin_->get_property ("suggestAccidentals"));
+  SCM suggest = entry->origin_->get_property ("suggestAccidentals");
+  bool bsuggest = to_boolean (suggest);
   Grob *a = 0;
-  if (as_suggestion)
+  if (bsuggest
+      || (cautionary && scm_is_eq (suggest, ly_symbol2scm ("cautionary"))))
     a = make_suggested_accidental (note, support, entry->origin_engraver_);
   else
     a = make_standard_accidental (note, support, entry->origin_engraver_, cautionary);
@@ -370,8 +374,8 @@ Accidental_engraver::stop_translation_timestep ()
         {
           // Don't mark accidentals as "tied" when the pitch is not
           // actually the same.  This is relevant for enharmonic ties.
-          Stream_event *le = unsmob<Stream_event> (l->get_property ("cause"));
-          Stream_event *re = unsmob<Stream_event> (r->get_property ("cause"));
+          Stream_event *le = l->event_cause ();
+          Stream_event *re = r->event_cause ();
           if (le && re
               && !ly_is_equal (le->get_property ("pitch"), re->get_property ("pitch")))
             continue;

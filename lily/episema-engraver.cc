@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2010--2015 Neil Puttock <n.puttock@gmail.com>
+  Copyright (C) 2010--2020 Neil Puttock <n.puttock@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,12 +27,14 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Episema_engraver : public Engraver
 {
 public:
   TRANSLATOR_DECLARATIONS (Episema_engraver);
 protected:
-  virtual void finalize ();
+  void finalize () override;
   void listen_episema (Stream_event *);
   void acknowledge_note_column (Grob_info);
   void acknowledge_note_head (Grob_info);

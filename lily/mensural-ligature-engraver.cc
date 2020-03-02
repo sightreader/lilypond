@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Juergen Reuter <reuter@ipd.uka.de>,
+  Copyright (C) 2002--2020 Juergen Reuter <reuter@ipd.uka.de>,
   Pal Benko <benkop@freestart.hu>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -35,6 +35,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 /*
  * TODO: accidentals are aligned with the first note;
  * they must appear ahead.
@@ -56,9 +58,9 @@ class Mensural_ligature_engraver : public Coherent_ligature_engraver
 {
 
 protected:
-  virtual Spanner *create_ligature_spanner ();
-  virtual void build_ligature (Spanner *ligature,
-                               vector<Grob_info> const &primitives);
+  Spanner *create_ligature_spanner () override;
+  void build_ligature (Spanner *ligature,
+                       vector<Grob_info> const &primitives) override;
 
 public:
   TRANSLATOR_DECLARATIONS (Mensural_ligature_engraver);
@@ -458,7 +460,7 @@ Mensural_ligature_engraver::fold_up_primitives (vector<Grob_info> const &primiti
                 vert_shift -= delta * staff_space;
             }
           else
-            min_length += head_width * dot_count;
+            min_length += head_width * static_cast<Real> (dot_count);
 
           dot_gr->translate_axis (vert_shift, Y_AXIS);
 

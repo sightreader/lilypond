@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ protected:
 
   void acknowledge_bar_line (Grob_info);
 
-  virtual void derived_mark () const;
+  void derived_mark () const override;
   void stop_translation_timestep ();
   void process_music ();
 
@@ -150,10 +150,11 @@ Volta_engraver::process_music ()
 void
 Volta_engraver::acknowledge_bar_line (Grob_info i)
 {
+  Item *item = dynamic_cast<Item *> (i.grob ());
   if (volta_bracket_)
-    Volta_bracket_interface::add_bar (volta_bracket_, i.item ());
+    Volta_bracket_interface::add_bar (volta_bracket_, item);
   if (end_volta_bracket_)
-    Volta_bracket_interface::add_bar (end_volta_bracket_, i.item ());
+    Volta_bracket_interface::add_bar (end_volta_bracket_, item);
 
   if (volta_spanner_)
     Side_position_interface::add_support (volta_spanner_, i.grob ());

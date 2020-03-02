@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "moment.hh"
 
 #include "warn.hh"
+
+using std::string;
 
 Moment::Moment ()
 {
@@ -56,16 +58,6 @@ Moment::print_smob (SCM port, scm_print_state *) const
   scm_puts (">", port);
 
   return 1;
-}
-
-SCM
-Moment::as_scheme () const
-{
-  return scm_list_5 (ly_symbol2scm ("ly:make-moment"),
-                     scm_from_int64 (main_part_.num ()),
-                     scm_from_int64 (main_part_.den ()),
-                     scm_from_int64 (grace_part_.num ()),
-                     scm_from_int64 (grace_part_.den ()));
 }
 
 SCM

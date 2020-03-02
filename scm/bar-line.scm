@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2009--2015 Marc Hohl <marc@hohlart.de>
+;;;; Copyright (C) 2009--2020 Marc Hohl <marc@hohlart.de>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -514,7 +514,7 @@ opening bracket will be drawn, for @code{RIGHT} we get the closing bracket."
 
     (if (eqv? dir LEFT)
         stencil
-        (ly:stencil-scale stencil -1 1))))
+        (flip-stencil X stencil))))
 
 (define ((make-spacer-bar-line glyph) grob extent)
   "Draw an invisible bar line which has the same dimensions as the one

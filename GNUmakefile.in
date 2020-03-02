@@ -60,11 +60,13 @@ dist: local-dist $(GENERATED_BUILD_FILES) top-doc refresh-release-files .gitfile
 
 ifneq ($(shell find $(top-src-dir) -name .git),)
 .gitfilelist: $(top-src-dir)/.git/index
+	$(call ly_progress,Making,$@,)
 	cd $(top-src-dir) && git ls-files >$(top-build-dir)/$@
 local-clean-filelist:
 	rm -f .gitfilelist
 else
 .gitfilelist: $(src-dir)/.gitfilelist
+	$(call ly_progress,Making,$@,(copy))
 	cp $< $@
 local-clean-filelist:
 endif
@@ -72,13 +74,16 @@ endif
 all: $(outdir)/VERSION
 
 $(outdir)/VERSION: $(config_make) VERSION
+	$(call ly_progress,Making,$@,)
 	-mkdir -p $(outdir)
 	echo $(TOPLEVEL_VERSION) > $@
 
 $(outdir)/ChangeLog: $(outdir)/VERSION
+	$(call ly_progress,Making,$@,)
 	@echo 'See http://git.savannah.gnu.org/gitweb/?p=lilypond.git;a=log;h=refs/tags/release/$(TOPLEVEL_VERSION)-1' > $@
 
 $(outdir)/RELEASE-COMMIT: # FIXME: any file in $(top-src-dir)/.git/ we can depend on and be sure RELEASE-COMMIT is up to date?
+	$(call ly_progress,Making,$@,)
 	git --git-dir=$(top-src-dir)/.git show HEAD | head -100 > $@
 
 # junk me as soon as RELEASE-COMMIT FIXME: has been addressed
@@ -126,7 +131,6 @@ ifeq ($(out),www)
 install-WWW:
 	-$(INSTALL) -m 755 -d $(DESTDIR)$(webdir)
 	rsync -rl --exclude='*.signature' $(outdir)/offline-root/ $(DESTDIR)$(webdir)
-	$(MAKE) -C Documentation omf-local-install
 
 install-info-WWW:
 	$(foreach d, $(INFO_DIRECTORIES),$(MAKE) -C $(d) install-info && ) true
@@ -156,13 +160,20 @@ WWW-post: $(top-build-dir)/.htaccess $(WEB_ROOT_FILES)
 
 # need UTF8 setting in case this is hosted on a website.
 $(top-build-dir)/.htaccess:
-	echo -e 'AddDefaultCharset utf-8\nAddCharset utf-8 .html\nAddCharset utf-8 .en\nAddCharset utf-8 .nl\nAddCharset utf-8 .txt\n' > $(top-build-dir)/.htaccess
+	$(call ly_progress,Making,$@,)
+	( echo 'AddDefaultCharset utf-8' ; \
+	  echo 'AddCharset utf-8 .html' ; \
+	  echo 'AddCharset utf-8 .en' ; \
+	  echo 'AddCharset utf-8 .nl' ; \
+	  echo 'AddCharset utf-8 .txt' ) > $@
 
 $(outdir)/offline-root/index.html: $(WEB_TRACKED_FILES)
+	$(call ly_progress,Making,$@,)
 	$(buildscript-dir)/www_post $(PACKAGE_NAME) $(TOPLEVEL_VERSION) $(outdir) offline
 	find $(outdir)/offline-root -type l | xargs rm -f
 
 $(outdir)/online-root/index.html: $(WEB_TRACKED_FILES)
+	$(call ly_progress,Making,$@,)
 	$(buildscript-dir)/www_post $(PACKAGE_NAME) $(TOPLEVEL_VERSION) $(outdir) online
 endif # ifeq ($(out),www)
 
@@ -205,6 +216,7 @@ CATALOGS = $(HELP_CATALOGS:lilypond=)
 link-tree: $(tree-share-prefix)/lilypond-force
 
 $(tree-share-prefix)/lilypond-force: GNUmakefile $(outdir)/VERSION
+	$(call ly_progress,Making,$@,)
 	cd $(top-build-dir)/$(outbase) && rm -rf bin lib share
 	mkdir -p $(tree-bin)
 	mkdir -p $(tree-share-prefix)
@@ -250,6 +262,7 @@ $(tree-share-prefix)/lilypond-force: GNUmakefile $(outdir)/VERSION
 link-mf-tree: $(tree-share-prefix)/mf-link-tree
 
 $(tree-share-prefix)/mf-link-tree: $(tree-share-prefix)/lilypond-force
+	$(call ly_progress,Making,$@,)
 	-rm -f $(tree-share-prefix)/fonts/otf/* &&  \
 	rm -f $(tree-share-prefix)/fonts/svg/* &&  \
 	rm -f $(tree-share-prefix)/fonts/fonts.conf &&  \
@@ -278,6 +291,7 @@ $(tree-share-prefix)/mf-link-tree: $(tree-share-prefix)/lilypond-force
 	touch $(tree-share-prefix)/mf-link-tree
 
 TAGS.make: dummy
+	$(call ly_progress,Making,$@,)
 	etags -o $@ $(find $(top-src-dir) -name 'GNUmakefile*' -o -name '*.make')
 
 $(config_h): config.hh.in
@@ -301,55 +315,95 @@ grand-replace:
 ################################################################
 # testing
 
+BASELINE_STAMP:=$(top-build-dir)/out-baseline/.test-baseline-done
 RESULT_DIR=$(top-build-dir)/out/test-results
 
+test-pre: $(tree-share-prefix)/lilypond-force
+	$(call make_subdirs,python scripts flower lily mf,all)
 
-test:
-	@echo 'For tracking crashes: use'
+test: test-pre
+	@echo 'To begin investigating regression-test crashes, use'
 	@echo
-	@echo '        grep sourcefilename `grep -L systems.texi out/lybook-testdb/*/*log|sed s/log/ly/g`'
+	@echo '    grep sourcefilename `grep -L systems.texi out/lybook-testdb/*/*log|sed s/log/ly/g`'
 	@echo
-	$(MAKE) -C input/regression out=test local-test
-	$(MAKE) -C input/regression/midi out=test local-test
-	$(MAKE) -C input/regression/musicxml out=test local-test
-	$(MAKE) -C input/regression/abc2ly out=test local-test
+	$(MAKE) -C input/regression out=test lysdoc-gittxt lysdoc-test
+	$(MAKE) -C input/regression/midi out=test lysdoc-test
+	$(MAKE) -C input/regression/musicxml out=test lysdoc-test
+	$(MAKE) -C input/regression/abc2ly out=test lysdoc-test
 	$(MAKE) -C input/regression/lilypond-book out=test local-test
 
-test-baseline:
-	@cd $(top-src-dir) && \
+test-baseline-pre:
+	cd $(top-src-dir) && \
 		if test -d .git ; then \
 			if ! git diff --exit-code > /dev/null ; then \
 				echo "*** commit before base lining" 1>&2; \
 				exit 1; \
 			fi \
 		fi
-	$(MAKE)
+	$(MAKE) test-clean
 	$(MAKE) test
+
+test-baseline: test-baseline-pre
+	rm -f $(BASELINE_STAMP)
+#       Make a copy of the fonts that all subdir baselines can share.
+	$(call ly_progress,Synching,out-baseline/share/lilypond/current/fonts,from out)
+	mkdir -p $(top-build-dir)/out-baseline/share/lilypond/current
+	rsync -L -a -q --delete --exclude source \
+		$(top-build-dir)/out/share/lilypond/current/fonts \
+		$(top-build-dir)/out-baseline/share/lilypond/current
 	$(MAKE) out=test -C input/regression local-test-baseline
 	$(MAKE) out=test -C input/regression/midi local-test-baseline
 	$(MAKE) out=test -C input/regression/musicxml local-test-baseline
 	$(MAKE) out=test -C input/regression/abc2ly local-test-baseline
 	$(MAKE) out=test -C input/regression/lilypond-book local-test-baseline
 	$(MAKE) test-snippets-clean
+	touch $(BASELINE_STAMP)
 
+local-check-pre:
+#       The condition involving X accepts a baseline created before we
+#       started marking completion with $(BASELINE_STAMP). (share is a
+#       symlink now.)  We should be able to remove this condition once
+#       developers have moved to newer baselines.
+	( export X=$(top-build-dir)/input/regression/out-test-baseline/share ; \
+	  ( [ -d $$X ] && [ ! -L $$X ] ) || \
+	  [ -f $(BASELINE_STAMP) ] || \
+	  ( echo "*** no baseline for comparison" 1>&2 && false ) )
+	$(MAKE) test-clean-changed
+	$(MAKE) test
 
-local-check: test
+local-check: local-check-pre
 	rm -rf $(RESULT_DIR)
 	mkdir -p $(RESULT_DIR)
-	$(buildscript-dir)/output-distance --local-datadir --create-images --output-dir $(RESULT_DIR) \
+	$(buildscript-dir)/output-distance $(if $(VERBOSE),-v) \
+		--local-datadir --create-images --output-dir $(RESULT_DIR) \
 		input/regression/out-test-baseline input/regression/out-test \
-		input/regression/midi/out-test-baseline input/regression/midi/out-test 
+		input/regression/midi/out-test-baseline input/regression/midi/out-test
+ifneq ($(TIDY),false)
+	find $(RESULT_DIR) -name '*.html' | while read f ; do \
+		echo "Validating $$f" ; \
+		$(TIDY) -q -o /dev/null "$$f" || exit 1 ; \
+	done
+endif
 	@find input ly -name '*.ly' -print |grep -v 'out.*/' | xargs grep '\\version' -L | grep -v "standard input" |sed 's/^/**** Missing version: /g'
 
-
-test-redo:
-	for a in `cat $(RESULT_DIR)/changed.txt` ; do \
-		echo removing $$a* ; \
-		rm -f $$a* ;\
-	done
-	$(MAKE) check
+# Remove the results of test cases that have changed, so that they are
+# retested.  changed.txt remains intact so that we can repeat this if
+# necessary.
+#
+# Test cases in input/regression/midi end in "-midi", but we want to
+# remove other related files too, so we strip that suffix.
+test-clean-changed:
+	if [ -s $(RESULT_DIR)/changed.txt ] ; then \
+		echo "Removing results of changed test cases:" ; \
+		while read a ; do \
+			a=$${a%-midi} ; \
+			echo "- $$a*" ; \
+			rm -f $$a* ; \
+		done < $(RESULT_DIR)/changed.txt ; \
+	fi
 
 test-clean: test-snippets-clean
+	rm -rf $(RESULT_DIR)
 	$(MAKE) -C input/regression out=test clean
 
 snippets-clean:
@@ -364,4 +418,3 @@ website:
 		top-src-dir=$(top-src-dir) \
 		-f $(top-src-dir)/make/website.make \
 		website
-

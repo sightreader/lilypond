@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,24 +29,24 @@ class Performance : public Music_output
 public:
   Performance (bool ports = false);
   ~Performance ();
-  DECLARE_CLASSNAME (Performance);
+  OVERRIDE_CLASS_NAME (Performance);
 
   SCM get_header () const;
   void set_header (SCM header);
 
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 
   void add_element (Audio_element *p);
-  virtual void process ();
+  void process () override;
   void remap_grace_durations ();
-  void output (Midi_stream &midi_stream, const string &performance_name) const;
+  void output (Midi_stream &midi_stream, const std::string &performance_name) const;
   void output_header_track (Midi_stream &midi_stream) const;
 
   void print () const;
-  void write_output (string filename, const string &performance_name) const;
+  void write_output (std::string filename, const std::string &performance_name) const;
 
-  vector<Audio_staff *> audio_staffs_;
-  vector<Audio_element *> audio_elements_;
+  std::vector<Audio_staff *> audio_staffs_;
+  std::vector<Audio_element *> audio_elements_;
   Output_def *midi_;
   bool ports_;
   SCM header_;

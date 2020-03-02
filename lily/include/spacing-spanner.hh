@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,17 +35,17 @@ private:
                                      Paper_column *nextr,
                                      Spacing_options const *options);
   static Real default_bar_spacing (Grob *, Grob *, Grob *, Moment);
-  static Rational effective_shortest_duration (Grob *me, vector<Grob *> const &all);
+  static Rational effective_shortest_duration (Grob *me, std::vector<Grob *> const &all);
   static void breakable_column_spacing (Grob *, Item *l, Item *r, Spacing_options const *);
-  static void prune_loose_columns (Grob *, vector<Grob *> *cols, Spacing_options *);
-  static void set_explicit_neighbor_columns (vector<Grob *> const &cols);
-  static void set_implicit_neighbor_columns (vector<Grob *> const &cols);
-  static void generate_springs (Grob *me, vector<Grob *> const &cols, Spacing_options const *);
-  static void musical_column_spacing (Grob *, Item *, Item *, Spacing_options const *);
+  static void prune_loose_columns (Grob *, std::vector<Paper_column *> *cols, Spacing_options *);
+  static void set_explicit_neighbor_columns (std::vector<Paper_column *> const &cols);
+  static void set_implicit_neighbor_columns (std::vector<Paper_column *> const &cols);
+  static void generate_springs (Grob *me, std::vector<Paper_column *> const &cols, Spacing_options const *);
+  static void musical_column_spacing (Grob *, Paper_column *, Paper_column *, Spacing_options const *);
   static bool fills_measure (Grob *, Item *, Item *);
 public:
-  static vector<Grob *> get_columns (Grob *me);
-  static Spring note_spacing (Grob *, Grob *, Grob *, Spacing_options const *);
+  static std::vector<Paper_column *> get_columns (Spanner *me);
+  static Spring note_spacing (Grob *, Paper_column *, Paper_column *, Spacing_options const *);
   static Spring standard_breakable_column_spacing (Grob *me, Item *l, Item *r, Spacing_options const *);
 
   DECLARE_SCHEME_CALLBACK (set_springs, (SCM));

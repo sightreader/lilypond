@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2003--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2003--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include "output-def.hh"
 #include "staff-symbol-referencer.hh"
 #include "warn.hh"
+
+using std::string;
 
 Stencil
 vaticana_brew_cauda (Grob *me,
@@ -106,7 +108,7 @@ vaticana_brew_flexa (Grob *me,
    */
   Real left_height
     = right_height
-      + min (0.12 * abs (interval), 0.3) * staff_space;
+      + std::min (0.12 * abs (interval), 0.3) * staff_space;
 
   /*
    * Compensate optical illusion regarding vertical position of left

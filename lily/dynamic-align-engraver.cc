@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2008--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2008--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -30,6 +30,9 @@
 #include "stream-event.hh"
 
 #include "translator.icc"
+
+using std::set;
+using std::vector;
 
 class Dynamic_align_engraver : public Engraver
 {
@@ -76,15 +79,21 @@ Dynamic_align_engraver::create_line_spanner (Grob *cause)
 void
 Dynamic_align_engraver::acknowledge_end_dynamic (Grob_info info)
 {
-  if (has_interface<Spanner> (info.grob ()))
-    ended_.push_back (info.spanner ());
+  Spanner *sp = dynamic_cast<Spanner *> (info.grob ());
+  if (!sp)
+    return;
+
+  ended_.push_back (sp);
+
+  if (!line_)
+    return;
 
   /* If the break flag is set, store the current spanner and let new dynamics
    * create a new spanner
    */
-  bool spanner_broken = current_dynamic_spanner_ == info.spanner ()
-                        && to_boolean (current_dynamic_spanner_->get_property ("spanner-broken"));
-  if (spanner_broken && line_)
+  bool spanner_broken = (current_dynamic_spanner_ == sp)
+                        && to_boolean (sp->get_property ("spanner-broken"));
+  if (spanner_broken)
     {
       if (ended_line_)
         programming_error ("already have a force-ended DynamicLineSpanner.");
@@ -137,13 +146,13 @@ Dynamic_align_engraver::acknowledge_dynamic (Grob_info info)
     }
 
   create_line_spanner (info.grob ());
-  if (has_interface<Spanner> (info.grob ()))
+  if (Spanner *sp = dynamic_cast<Spanner *> (info.grob ()))
     {
-      started_.push_back (info.spanner ());
-      current_dynamic_spanner_ = info.spanner ();
+      started_.push_back (sp);
+      current_dynamic_spanner_ = sp;
     }
-  else if (info.item ())
-    scripts_.push_back (info.item ());
+  else if (Item *item = dynamic_cast<Item *> (info.grob ()))
+    scripts_.push_back (item);
   else
     info.grob ()->programming_error ("unknown dynamic grob");
 

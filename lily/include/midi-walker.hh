@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys  <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys  <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -25,8 +25,9 @@
 #include "lily-proto.hh"
 #include "moment.hh"
 
-struct Midi_note_event : PQueue_ent<int, Midi_note *>
+class Midi_note_event : public PQueue_ent<int, Midi_note *>
 {
+public:
   bool ignore_;
   Midi_note_event ();
 };
@@ -56,11 +57,11 @@ private:
   bool percussion_;
   bool merge_unisons_;
   vsize index_;
-  vector<Audio_item *> items_;
+  std::vector<Audio_item *> items_;
   PQueue<Midi_note_event> stop_note_queue;
   int last_tick_;
 
-  vector<Midi_item *> midi_events_;
+  std::vector<Midi_item *> midi_events_;
 };
 
 #endif // MIDI_WALKER_HH

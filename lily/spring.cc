@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2007--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@
 */
 
 #include "spring.hh"
+
+using std::vector;
 
 Spring::Spring ()
 {
@@ -84,8 +86,8 @@ Spring::update_blocking_force ()
 void
 Spring::operator *= (Real r)
 {
-  distance_ = max (min_distance_, distance_ * r);
-  inverse_compress_strength_ = max (0.0, distance_ - min_distance_);
+  distance_ = std::max (min_distance_, distance_ * r);
+  inverse_compress_strength_ = std::max (0.0, distance_ - min_distance_);
   inverse_stretch_strength_ *= r;
   update_blocking_force ();
 }
@@ -111,13 +113,13 @@ merge_springs (vector<Spring> const &springs)
       avg_distance += springs[i].distance ();
       avg_stretch += springs[i].inverse_stretch_strength ();
       avg_compress += 1 / springs[i].inverse_compress_strength ();
-      min_distance = max (springs[i].min_distance (), min_distance);
+      min_distance = std::max (springs[i].min_distance (), min_distance);
     }
 
-  avg_stretch /= Real (springs.size ());
-  avg_compress /= Real (springs.size ());
-  avg_distance /= Real (springs.size ());
-  avg_distance = max (min_distance + 0.3, avg_distance);
+  avg_stretch /= static_cast<Real> (springs.size ());
+  avg_compress /= static_cast<Real> (springs.size ());
+  avg_distance /= static_cast<Real> (springs.size ());
+  avg_distance = std::max (min_distance + 0.3, avg_distance);
 
   Spring ret = Spring (avg_distance, min_distance);
   ret.set_inverse_stretch_strength (avg_stretch);
@@ -129,7 +131,7 @@ merge_springs (vector<Spring> const &springs)
 void
 Spring::set_distance (Real d)
 {
-  if (d < 0 || isinf (d) || isnan (d))
+  if (d < 0 || !std::isfinite (d))
     programming_error ("insane spring distance requested, ignoring it");
   else
     {
@@ -141,7 +143,7 @@ Spring::set_distance (Real d)
 void
 Spring::set_min_distance (Real d)
 {
-  if (d < 0 || isinf (d) || isnan (d))
+  if (d < 0 || !std::isfinite (d))
     programming_error ("insane spring min_distance requested, ignoring it");
   else
     {
@@ -153,13 +155,13 @@ Spring::set_min_distance (Real d)
 void
 Spring::ensure_min_distance (Real d)
 {
-  set_min_distance (max (d, min_distance_));
+  set_min_distance (std::max (d, min_distance_));
 }
 
 void
 Spring::set_inverse_stretch_strength (Real f)
 {
-  if (isinf (f) || isnan (f) || f < 0)
+  if (!std::isfinite (f) || f < 0)
     programming_error ("insane spring constant");
   else
     inverse_stretch_strength_ = f;
@@ -170,7 +172,7 @@ Spring::set_inverse_stretch_strength (Real f)
 void
 Spring::set_inverse_compress_strength (Real f)
 {
-  if (isinf (f) || isnan (f) || f < 0)
+  if (!std::isfinite (f) || f < 0)
     programming_error ("insane spring constant");
   else
     inverse_compress_strength_ = f;
@@ -181,7 +183,7 @@ Spring::set_inverse_compress_strength (Real f)
 void
 Spring::set_blocking_force (Real f)
 {
-  if (isinf (f) || isnan (f))
+  if (!std::isfinite (f))
     {
       programming_error ("insane blocking force");
       return;
@@ -215,10 +217,10 @@ Spring::set_default_stretch_strength ()
 Real
 Spring::length (Real f) const
 {
-  Real force = max (f, blocking_force_);
+  Real force = std::max (f, blocking_force_);
   Real inv_k = force < 0.0 ? inverse_compress_strength_ : inverse_stretch_strength_;
 
-  if (isinf (force))
+  if (std::isinf (force))
     {
       programming_error ("cruelty to springs");
       force = 0.0;
@@ -227,6 +229,5 @@ Spring::length (Real f) const
   // There is a corner case here: if min_distance_ is larger than
   // distance_ but the spring is fixed, then inv_k will be zero
   // and we need to make sure that we return min_distance_.
-  return max (min_distance_, distance_ + force * inv_k);
+  return std::max (min_distance_, distance_ + force * inv_k);
 }
-

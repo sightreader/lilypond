@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,33 +32,39 @@ struct Preinit_Global_context
 class Global_context : Preinit_Global_context, public Context
 {
   PQueue<Moment> extra_mom_pq_;
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 
-  DECLARE_CLASSNAME (Global_context);
+  OVERRIDE_CLASS_NAME (Global_context);
 
   friend class Output_def;
 public:
   Global_context (Output_def *);
-  int get_moments_left () const;
+  vsize get_moments_left () const;
   Moment sneaky_insert_extra_moment (Moment);
   void add_moment_to_process (Moment);
   void run_iterator_on_me (Music_iterator *);
-  virtual Context *get_score_context () const;
+
+  bool is_accessible_to_user () const override { return false; }
+  Context *get_score_context () const;
 
   void apply_finalizations ();
   void add_finalization (SCM);
 
   void prepare (SCM);
   virtual SCM get_output ();
-  virtual Output_def *get_output_def () const;
-  virtual Moment now_mom () const;
-  virtual Context *get_default_interpreter (const string &context_id = "");
+  Output_def *get_output_def () const override;
+  Moment now_mom () const override;
 
   Moment previous_moment () const;
 protected:
   Moment prev_mom_;
   Moment now_mom_;
 };
+
+// If the given context is null, return null.  Otherwise, starting from the
+// given context, find the top context, expecting it to be a Global_context.
+// If it is not a Global_context, abort the program.
+Global_context *find_global_context (Context *where);
 
 SCM ly_format_output (SCM);
 

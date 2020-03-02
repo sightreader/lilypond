@@ -1,4 +1,4 @@
-\version "2.19.21"
+\version "2.21.0"
 
 \header {
   texidoc = "@code{\\quoteDuring} and @code{\\cueDuring} shall properly quote

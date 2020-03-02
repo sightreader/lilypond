@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,12 +28,6 @@
 #include "pointer-group-interface.hh"
 
 #include "moment.hh"
-
-Grob *
-Item::clone () const
-{
-  return new Item (*this);
-}
 
 Item::Item (SCM s)
   : Grob (s)
@@ -74,18 +68,32 @@ Item::get_system () const
 }
 
 void
-Item::copy_breakable_items ()
+Item::break_breakable_item (System *sys)
 {
-  Drul_array<Item *> new_copies;
-  for (LEFT_and_RIGHT (d))
+  if (is_broken ())
     {
-      Grob *dolly = clone ();
-      Item *item = dynamic_cast<Item *> (dolly);
-      get_root_system (this)->typeset_grob (item);
-      new_copies[d] = item;
+      programming_error ("item is already broken");
+      return;
     }
 
-  broken_to_drul_ = new_copies;
+  if (original ())
+    {
+      programming_error ("item is a clone; refusing to break");
+      return;
+    }
+
+  if (Item::is_non_musical (this))
+    {
+      Drul_array<Item *> new_copies;
+      for (LEFT_and_RIGHT (d))
+        {
+          Item *item = clone ();
+          sys->typeset_grob (item);
+          new_copies[d] = item;
+        }
+
+      broken_to_drul_ = new_copies;
+    }
 }
 
 bool
@@ -94,28 +102,15 @@ Item::is_broken () const
   return broken_to_drul_[LEFT] || broken_to_drul_[RIGHT];
 }
 
-/*
-  Generate items for begin and end-of line.
-*/
-void
-Item::discretionary_processing ()
-{
-  if (is_broken () || original ())
-    return;
-
-  if (Item::is_non_musical (this))
-    copy_breakable_items ();
-}
-
-Grob *
+Item *
 Item::find_broken_piece (System *l) const
 {
   if (get_system () == l)
-    return (Item *) (this);
+    return const_cast<Item *> (this);
 
   for (LEFT_and_RIGHT (d))
     {
-      Grob *s = broken_to_drul_[d];
+      Item *s = broken_to_drul_[d];
       if (s && s->get_system () == l)
         return s;
     }
@@ -123,22 +118,11 @@ Item::find_broken_piece (System *l) const
   return 0;
 }
 
-Item *
-Item::find_prebroken_piece (Direction d) const
-{
-  Item *me = (Item *) (this);
-  if (!d)
-    return me;
-  return dynamic_cast<Item *> (broken_to_drul_[d]);
-}
-
 Direction
 Item::break_status_dir () const
 {
-  if (original ())
+  if (Item *i = original ())
     {
-      Item *i = dynamic_cast<Item *> (original ());
-
       return (i->broken_to_drul_[LEFT] == this) ? LEFT : RIGHT;
     }
   else
@@ -169,20 +153,26 @@ Item::break_visible (Grob *g)
 }
 
 bool
-Item::pure_is_visible (int start, int end) const
+Item::pure_is_visible (vsize start, vsize end) const
 {
   SCM vis = get_property ("break-visibility");
   if (scm_is_vector (vis))
     {
-      int pos = 1;
-      int pc_rank = Paper_column::get_rank (get_column ());
+      vsize pos = 1;
+      vsize pc_rank = get_column ()->get_rank ();
       if (pc_rank == start)
         pos = 2;
       else if (pc_rank == end)
         pos = 0;
-      return to_boolean (scm_vector_ref (vis, scm_from_int (pos)));
+      return to_boolean (scm_c_vector_ref (vis, pos));
     }
-  return true;
+  return Grob::pure_is_visible (start, end);
+}
+
+bool
+Item::internal_set_as_bound_of_spanner (Spanner *s, Direction)
+{
+  return s->accepts_as_bound_item (this);
 }
 
 Interval_t<int>
@@ -224,7 +214,7 @@ Item::derived_mark () const
 }
 
 Interval
-Item::pure_y_extent (Grob *g, int start, int end)
+Item::pure_y_extent (Grob *g, vsize start, vsize end)
 {
   if (cached_pure_height_valid_)
     return cached_pure_height_ + pure_relative_y_coordinate (g, start, end);

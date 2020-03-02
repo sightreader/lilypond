@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 #include <set>
 #include <map>
 
-using namespace std;
 
 #include "accidental-interface.hh"
 #include "accidental-placement.hh"
@@ -40,6 +39,7 @@ using namespace std;
 #include "note-column.hh"
 #include "pointer-group-interface.hh"
 #include "skyline-pair.hh"
+#include "staff-grouper-interface.hh"
 #include "staff-symbol-referencer.hh"
 #include "staff-symbol.hh"
 #include "stem.hh"
@@ -47,6 +47,10 @@ using namespace std;
 #include "system.hh"
 #include "warn.hh"
 #include "unpure-pure-container.hh"
+
+using std::set;
+using std::string;
+using std::vector;
 
 void
 Side_position_interface::add_support (Grob *me, Grob *e)
@@ -344,7 +348,7 @@ Side_position_interface::aligned_side (Grob *me, Axis a, bool pure, int start, i
 
   Real ss = Staff_symbol_referencer::staff_space (me);
   Real dist = dim.distance (my_dim, robust_scm2double (me->get_maybe_pure_property ("horizon-padding", pure, start, end), 0.0));
-  Real total_off = !isinf (dist) ? dir * dist : 0.0;
+  Real total_off = !std::isinf (dist) ? dir * dist : 0.0;
 
   total_off += dir * ss * robust_scm2double (me->get_maybe_pure_property ("padding", pure, start, end), 0.0);
 
@@ -356,7 +360,7 @@ Side_position_interface::aligned_side (Grob *me, Axis a, bool pure, int start, i
     total_off = minimum_space * dir;
 
   if (current_off)
-    total_off = dir * max (dir * total_off,
+    total_off = dir * std::max (dir * total_off,
                            dir * (*current_off));
 
   /* FIXME: 1000 should relate to paper size.  */
@@ -415,7 +419,7 @@ Side_position_interface::aligned_side (Grob *me, Axis a, bool pure, int start, i
           Real diff = (dir * staff_extent[dir] + staff_padding
                        - dir * total_off
                        + dir * (staff_position - parent_position));
-          total_off += dir * max (diff, 0.0);
+          total_off += dir * std::max (diff, 0.0);
         }
     }
   return scm_from_double (total_off);
@@ -451,24 +455,35 @@ MAKE_SCHEME_CALLBACK (Side_position_interface, move_to_extremal_staff, 1);
 SCM
 Side_position_interface::move_to_extremal_staff (SCM smob)
 {
-  Grob *me = unsmob<Grob> (smob);
-  System *sys = dynamic_cast<System *> (me->get_system ());
+  Grob *const me = LY_ASSERT_SMOB (Grob, smob, 1);
+  if (!me)
+    return SCM_BOOL_F;
+
   Direction dir = get_grob_direction (me);
   if (dir != DOWN)
     dir = UP;
 
+  System *sys = me->get_system ();
   Interval iv = me->extent (sys, X_AXIS);
   iv.widen (1.0);
-  Grob *top_staff = sys->get_extremal_staff (dir, iv);
 
-  if (!top_staff)
+  Grob *grouper = me->get_parent (Y_AXIS);
+  if (has_interface<Staff_grouper_interface> (grouper))
+    ; // find the extremal staff of this group
+  else if (grouper == sys)
+    {
+      // find the extremal staff of the whole system
+      grouper = unsmob<Grob> (sys->get_object ("vertical-alignment"));
+      if (!grouper)
+        return SCM_BOOL_F;
+    }
+  else // do not move marks from other staves to the top staff
     return SCM_BOOL_F;
 
-  // Only move this grob if it is a direct child of the system.  We
-  // are not interested in moving marks from other staves to the top
-  // staff; we only want to move marks from the system to the top
-  // staff.
-  if (sys != me->get_parent (Y_AXIS))
+  // N.B. It's ugly to pass a VerticalAlignment to this staff-grouper function.
+  // Read the comments in the function for more detail.
+  Grob *top_staff = Staff_grouper_interface::get_extremal_staff (grouper, sys, dir, iv);
+  if (!top_staff)
     return SCM_BOOL_F;
 
   me->set_parent (top_staff, Y_AXIS);

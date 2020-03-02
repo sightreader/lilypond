@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include <cstdio>
 
-using namespace std;
 
 #include "book.hh"
 #include "cpu-timer.hh"
@@ -122,9 +121,9 @@ Score::book_rendering (Output_def *layoutbook,
 
   SCM outputs = SCM_EOL;
 
-  int outdef_count = defs_.size ();
+  vsize outdef_count = defs_.size ();
 
-  for (int i = 0; !i || i < outdef_count; i++)
+  for (vsize i = 0; !i || i < outdef_count; i++)
     {
       Output_def *def = outdef_count ? defs_[i] : default_def;
       SCM scaled = def->self_scm ();

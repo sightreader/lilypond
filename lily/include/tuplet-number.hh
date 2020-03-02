@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ struct Tuplet_number
 
   static Real calc_offset (Spanner *me, Axis a); // not used
 
-  static Grob *select_reference_stem (Grob *me, vector<Grob *> const &cols);
+  static Grob *select_reference_stem (Grob *me, std::vector<Grob *> const &cols);
   static Drul_array<Grob *> adjacent_note_columns (Grob *me, Grob *ref_stem);
   static bool knee_position_against_beam (Grob *me, Grob *ref_stem);
 };

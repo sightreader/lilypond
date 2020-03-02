@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2004--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@
 #include "ly-module.hh"
 #include "lily-imports.hh"
 
+using std::string;
+using std::vector;
 
 Paper_book::Paper_book ()
 {
@@ -344,10 +346,10 @@ set_page_permission (SCM sys, SCM symbol, SCM permission)
 {
   if (Paper_score *ps = unsmob<Paper_score> (sys))
     {
-      vector<Grob *> cols = ps->get_columns ();
+      vector<Paper_column *> const &cols = ps->get_columns ();
       if (cols.size ())
         {
-          Paper_column *col = dynamic_cast<Paper_column *> (cols.back ());
+          Paper_column *col = cols.back ();
           col->set_property (symbol, permission);
           col->find_prebroken_piece (LEFT)->set_property (symbol, permission);
         }
@@ -388,15 +390,14 @@ set_labels (SCM sys, SCM labels)
 {
   if (Paper_score *ps = unsmob<Paper_score> (sys))
     {
-      vector<Grob *> cols = ps->get_columns ();
+      vector<Paper_column *> const &cols = ps->get_columns ();
       if (cols.size ())
         {
-          Paper_column *col = dynamic_cast<Paper_column *> (cols[0]);
+          Paper_column *col = cols[0];
           col->set_property ("labels",
                              scm_append_x (scm_list_2 (col->get_property ("labels"),
                                                        labels)));
-          Paper_column *col_right
-            = dynamic_cast<Paper_column *> (col->find_prebroken_piece (RIGHT));
+          Paper_column *col_right = col->find_prebroken_piece (RIGHT);
           col_right->set_property ("labels",
                                    scm_append_x (scm_list_2 (col_right->get_property ("labels"),
                                                              labels)));

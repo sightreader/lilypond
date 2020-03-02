@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2002--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ class Ligature_engraver : public Engraver
 protected:
   Ligature_engraver (Context *c);
   void stop_translation_timestep ();
-  virtual void finalize ();
+  void finalize () override;
 
   void acknowledge_rest (Grob_info);
   void acknowledge_ligature_head (Grob_info);
@@ -36,7 +36,7 @@ protected:
   void process_music ();
   virtual Spanner *create_ligature_spanner () = 0;
   virtual void typeset_ligature (Spanner *ligature,
-                                 vector<Grob_info> const &primitives) = 0;
+                                 std::vector<Grob_info> const &primitives) = 0;
   virtual Spanner *current_ligature ();
   SCM brew_ligature_primitive_proc;
 
@@ -49,10 +49,10 @@ private:
   Drul_array<Stream_event *> events_drul_;
 
   Spanner *ligature_;
-  vector<Grob_info> primitives_;
+  std::vector<Grob_info> primitives_;
 
   Spanner *finished_ligature_;
-  vector<Grob_info> finished_primitives_;
+  std::vector<Grob_info> finished_primitives_;
 
   Stream_event *prev_start_event_;
 

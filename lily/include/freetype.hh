@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 void init_freetype ();
 extern FT_Library freetype2_library;
 
-string freetype_error_string (FT_Error code);
+std::string freetype_error_string (FT_Error code);
 
 SCM box_to_scheme_lines (Box b);
 Box ly_FT_get_unscaled_indexed_char_dimensions (FT_Face const &face, size_t signed_idx);

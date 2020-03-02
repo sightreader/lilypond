@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2011--2015 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2011--2020 Mike Solomon <mike@mikesolomon.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Concurrent_hairpin_engraver : public Engraver
 {
 public:
@@ -38,7 +40,7 @@ protected:
   void acknowledge_end_hairpin (Grob_info);
 
   void stop_translation_timestep ();
-  void finalize ();
+  void finalize () override;
 
 private:
   vector<Grob *> arriving_hairpins_;

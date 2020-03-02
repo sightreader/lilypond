@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "global-context.hh"
 
 #include <cstdio>
-using namespace std;
 
 #include "context-def.hh"
 #include "dispatcher.hh"
@@ -29,6 +28,8 @@ using namespace std;
 #include "music.hh"
 #include "output-def.hh"
 #include "warn.hh"
+
+using std::string;
 
 Preinit_Global_context::Preinit_Global_context ()
 {
@@ -57,8 +58,7 @@ Global_context::Global_context (Output_def *o)
   else
     globaldef->apply_default_property_operations (this);
 
-  default_child_ = ly_symbol2scm ("Score");
-  accepts_list_ = scm_list_1 (default_child_);
+  acceptance_.accept_default (ly_symbol2scm ("Score"));
 }
 
 void
@@ -94,7 +94,7 @@ Global_context::sneaky_insert_extra_moment (Moment w)
   return w;
 }
 
-int
+vsize
 Global_context::get_moments_left () const
 {
   return extra_mom_pq_.size ();
@@ -210,11 +210,13 @@ Global_context::previous_moment () const
   return prev_mom_;
 }
 
-Context *
-Global_context::get_default_interpreter (const string &/* context_id */)
+Global_context *
+find_global_context (Context *where)
 {
-  if (get_score_context ())
-    return get_score_context ()->get_default_interpreter ();
-  else
-    return Context::get_default_interpreter ();
+  if (!where)
+    return nullptr;
+  if (auto g = dynamic_cast<Global_context *> (find_top_context (where)))
+    return g;
+  programming_error ("no global context");
+  abort ();
 }

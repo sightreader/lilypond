@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 #include "multi-measure-rest.hh"
 #include "paper-column.hh"
 #include "engraver-group.hh"
+#include "script-interface.hh"
 #include "side-position-interface.hh"
 #include "staff-symbol-referencer.hh"
 #include "stream-event.hh"
@@ -28,6 +29,8 @@
 #include "spanner.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    The name says it all: make multi measure rests
@@ -42,6 +45,7 @@ protected:
   void start_translation_timestep ();
   void listen_multi_measure_rest (Stream_event *);
   void listen_multi_measure_text (Stream_event *);
+  void listen_multi_measure_articulation (Stream_event *);
 
 private:
   void add_bound_item_to_grobs (Item *);
@@ -53,8 +57,10 @@ private:
 
 private:
   vector<Stream_event *> text_events_;
+  vector<Stream_event *> articulation_events_;
   // text_[0] is a MultiMeasureRestNumber grob
-  // the rest are optional MultiMeasureRestText grobs
+  // the rest are optional MultiMeasureRestText and MultiMeasureRestScript
+  // grobs
   vector<Spanner *> text_;
   Stream_event *rest_ev_;
   Spanner *mmrest_;
@@ -63,6 +69,7 @@ private:
   // Ugh, this is a kludge - need this for multi-measure-rest-grace.ly
   Item *last_command_item_;
   bool first_time_;
+  int number_threshold_;
 };
 
 Multi_measure_rest_engraver::Multi_measure_rest_engraver (Context *c)
@@ -98,6 +105,12 @@ Multi_measure_rest_engraver::listen_multi_measure_text (Stream_event *ev)
 }
 
 void
+Multi_measure_rest_engraver::listen_multi_measure_articulation (Stream_event *ev)
+{
+  articulation_events_.push_back (ev);
+}
+
+void
 Multi_measure_rest_engraver::add_bound_item_to_grobs (Item *item)
 {
   add_bound_item (mmrest_, item);
@@ -112,6 +125,7 @@ Multi_measure_rest_engraver::clear_lapsed_events (const Moment &now)
     {
       rest_ev_ = 0;
       text_events_.clear ();
+      articulation_events_.clear ();
     }
 }
 
@@ -121,6 +135,24 @@ Multi_measure_rest_engraver::initialize_grobs ()
   mmrest_ = make_spanner ("MultiMeasureRest", rest_ev_->self_scm ());
   text_.push_back (make_spanner ("MultiMeasureRestNumber",
                                  mmrest_->self_scm ()));
+
+  if (articulation_events_.size ())
+    {
+      for (vsize i = 0; i < articulation_events_.size (); i++)
+        {
+          Stream_event *e = articulation_events_[i];
+          Spanner *sp = make_spanner ("MultiMeasureRestScript", e->self_scm ());
+          make_script_from_event (sp, context (),
+                                  e->get_property ("articulation-type"),
+                                  i);
+          SCM dir = e->get_property ("direction");
+          if (is_direction (dir))
+            sp->set_property ("direction", dir);
+
+          text_.push_back (sp);
+        }
+
+    }
 
   if (text_events_.size ())
     {
@@ -137,21 +169,22 @@ Multi_measure_rest_engraver::initialize_grobs ()
           text_.push_back (sp);
         }
 
-      /*
-        Stack different scripts.
-      */
-      for (DOWN_and_UP (d))
+    }
+
+  /*
+    Stack different scripts.
+  */
+  for (DOWN_and_UP (d))
+    {
+      SCM dir = scm_from_int (d);
+      Grob *last = 0;
+      for (vsize i = 0; i < text_.size (); i++)
         {
-          SCM dir = scm_from_int (d);
-          Grob *last = 0;
-          for (vsize i = 0; i < text_.size (); i++)
+          if (ly_is_equal (dir, text_[i]->get_property ("direction")))
             {
-              if (ly_is_equal (dir, text_[i]->get_property ("direction")))
-                {
-                  if (last)
-                    Side_position_interface::add_support (text_[i], last);
-                  last = text_[i];
-                }
+              if (last)
+                Side_position_interface::add_support (text_[i], last);
+              last = text_[i];
             }
         }
     }
@@ -182,12 +215,7 @@ Multi_measure_rest_engraver::set_measure_count (int n)
   assert (g);
   if (scm_is_null (g->get_property ("text")))
     {
-      SCM thres = get_property ("restNumberThreshold");
-      int t = 1;
-      if (scm_is_number (thres))
-        t = scm_to_int (thres);
-
-      if (n <= t)
+      if (n <= number_threshold_)
         g->suicide ();
       else
         {
@@ -216,6 +244,8 @@ Multi_measure_rest_engraver::process_music ()
           set_measure_count (curr_measure - start_measure_);
           if (last_command_item_)
             add_bound_item_to_grobs (last_command_item_);
+
+          announce_end_grob(mmrest_, SCM_EOL);
           reset_grobs ();
         }
     }
@@ -225,6 +255,7 @@ Multi_measure_rest_engraver::process_music ()
     {
       initialize_grobs ();
       text_events_.clear ();
+      articulation_events_.clear ();
 
       if (last_command_item_)
         {
@@ -233,6 +264,7 @@ Multi_measure_rest_engraver::process_music ()
         }
 
       start_measure_ = scm_to_int (get_property ("internalBarNumber"));
+      number_threshold_ = robust_scm2int (get_property ("restNumberThreshold"), 1);
     }
 
   first_time_ = false;
@@ -249,6 +281,7 @@ Multi_measure_rest_engraver::boot ()
 {
   ADD_LISTENER (Multi_measure_rest_engraver, multi_measure_rest);
   ADD_LISTENER (Multi_measure_rest_engraver, multi_measure_text);
+  ADD_LISTENER (Multi_measure_rest_engraver, multi_measure_articulation);
 }
 
 ADD_TRANSLATOR (Multi_measure_rest_engraver,
@@ -261,7 +294,8 @@ ADD_TRANSLATOR (Multi_measure_rest_engraver,
                 /* create */
                 "MultiMeasureRest "
                 "MultiMeasureRestNumber "
-                "MultiMeasureRestText ",
+                "MultiMeasureRestText "
+                "MultiMeasureRestScript ",
 
                 /* read */
                 "internalBarNumber "

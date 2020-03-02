@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #define PAPER_COLUMN_HH
 
 #include "item.hh"
+#include "moment.hh"
 #include "rod.hh"
 
 class Paper_column : public Item
@@ -33,16 +34,29 @@ public:
   Paper_column (SCM);
   Paper_column (Paper_column const &);
 
-  virtual Grob *clone () const;
-  virtual void do_break_processing ();
-  virtual Paper_column *get_column () const;
-  virtual System *get_system () const;
-  void set_system (System *);
+  Paper_column *clone () const override { return new Paper_column (*this); }
+  Paper_column *original () const
+  {
+    // safe: if there is an original, it is because this was cloned from it
+    return static_cast<Paper_column *> (Item::original ());
+  }
 
-  static int compare (Grob *const &a,
-                      Grob *const &b);
-  static bool less_than (Grob *const &a,
-                         Grob *const &b);
+  Paper_column *get_column () const override;
+  System *get_system () const override;
+  void set_system (System *);
+  bool internal_set_as_bound_of_spanner (Spanner *, Direction) override;
+
+  Paper_column *find_prebroken_piece (Direction d) const
+  {
+    // This is safe because pieces are clones of the original.
+    return static_cast<Paper_column *> (Item::find_prebroken_piece (d));
+  }
+
+  // n.b. pointers must not be null
+  static bool rank_less (Paper_column *const &a, Paper_column *const &b)
+  {
+    return a->rank_ < b->rank_;
+  }
 
   int get_rank () const { return rank_; }
   void set_rank (int);
@@ -50,7 +64,6 @@ public:
   DECLARE_SCHEME_CALLBACK (print, (SCM));
   DECLARE_SCHEME_CALLBACK (before_line_breaking, (SCM));
 
-  static int get_rank (Grob const *);
   static bool is_musical (Grob *);
   static Moment when_mom (Grob *);
   static bool is_used (Grob *);

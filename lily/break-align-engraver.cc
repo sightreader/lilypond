@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class Break_align_engraver : public Engraver
   void create_alignment (Grob_info);
 protected:
   void stop_translation_timestep ();
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 public:
   TRANSLATOR_DECLARATIONS (Break_align_engraver);
   void acknowledge_break_aligned (Grob_info);
@@ -74,7 +74,7 @@ Break_align_engraver::acknowledge_break_alignable (Grob_info inf)
     Special case for MetronomeMark: filter out items which will be aligned
     on note heads rather than prefatory material
   */
-  if (!Item::is_non_musical (inf.item ()))
+  if (!Item::is_non_musical (dynamic_cast<Item *> (inf.grob ())))
     return;
 
   if (!align_)
@@ -116,15 +116,15 @@ Break_align_engraver::create_alignment (Grob_info inf)
 {
   align_ = make_item ("BreakAlignment", SCM_EOL);
 
-  Context *origin = inf.origin_contexts (this)[0];
-
-  Translator_group *tg = origin->implementation ();
-  Engraver *random_source = unsmob<Engraver> (scm_car (tg->get_simple_trans_list ()));
+  Engraver *random_source = dynamic_cast<Engraver *> (inf.origin_translator ());
   if (!random_source)
-    random_source = this;
+    {
+      programming_error ("BreakAlignment from non-Engraver");
+      random_source = this;
+    }
 
   /*
-    Make left edge appear to come from same context as clef/bar-line etc.
+    Make left edge appear to come from same engraver as clef/bar-line etc.
   */
   left_edge_ = random_source->make_item ("LeftEdge", SCM_EOL);
   add_to_group (left_edge_->get_property ("break-align-symbol"),

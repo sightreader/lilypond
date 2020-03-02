@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,21 +18,7 @@
 */
 
 #include "grob-array.hh"
-#include "item.hh"
-#include "spanner.hh"
-
-
-Item *
-Grob_array::item (vsize i)
-{
-  return dynamic_cast<Item *> (grobs_.at (i));
-}
-
-Spanner *
-Grob_array::spanner (vsize i)
-{
-  return dynamic_cast<Spanner *> (grobs_.at (i));
-}
+#include "grob.hh"
 
 Grob_array::Grob_array ()
 {
@@ -42,10 +28,7 @@ Grob_array::Grob_array ()
 SCM
 Grob_array::mark_smob () const
 {
-#if 0  /* see System::derived_mark () const */
-  for (vsize i = 0; i < grobs_.size (); i++)
-    scm_gc_mark (grobs_[i]->self_scm ());
-#endif
+  /* no marking; see System::derived_mark () const */
   return SCM_UNDEFINED;
 }
 
@@ -85,7 +68,7 @@ Grob_array::filter (bool (*predicate) (const Grob *))
     if (predicate (grobs_[i]))
       grobs_[new_size++] = grobs_[i];
   grobs_.resize (new_size);
-  // could call grobs_.shrink_to_fit () with C++11
+  grobs_.shrink_to_fit ();
 }
 
 void
@@ -96,7 +79,7 @@ Grob_array::filter_map (Grob * (*map_fun) (Grob *))
     if (Grob *grob = map_fun (grobs_[i]))
       grobs_[new_size++] = grob;
   grobs_.resize (new_size);
-  // could call grobs_.shrink_to_fit () with C++11
+  grobs_.shrink_to_fit ();
 }
 
 void
@@ -105,12 +88,12 @@ Grob_array::filter_map_assign (const Grob_array &src,
 {
   if (&src != this)
     {
-      grobs_.resize (0);
+      grobs_.clear ();
       grobs_.reserve (src.grobs_.size ());
       for (vsize i = 0; i < src.grobs_.size (); i++)
         if (Grob *grob = map_fun (src.grobs_[i]))
           grobs_.push_back (grob);
-      // could call grobs_.shrink_to_fit () with C++11
+      grobs_.shrink_to_fit ();
     }
   else
     filter_map (map_fun);

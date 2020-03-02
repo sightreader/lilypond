@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2016 by Heikki Tauriainen <g034737@welho.com>.
+  Copyright (C) 2016--2020 by Heikki Tauriainen <g034737@welho.com>.
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ public:
 private:
   virtual SCM get_property_value (const char *property_name) = 0;
   virtual void do_announce (Audio_control_change *item) = 0;
-  void warn (const string &message);
+  void warn (const std::string &message);
 
   Input *origin_;
 

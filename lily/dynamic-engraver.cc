@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2008--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2008--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 
 #include "translator.icc"
 
+using std::string;
+
 class Dynamic_engraver : public Engraver
 {
   TRANSLATOR_DECLARATIONS (Dynamic_engraver);
@@ -41,7 +43,7 @@ class Dynamic_engraver : public Engraver
 protected:
   virtual void process_music ();
   virtual void stop_translation_timestep ();
-  virtual void finalize ();
+  void finalize () override;
 
 private:
   SCM get_property_setting (Stream_event *evt, char const *evprop,

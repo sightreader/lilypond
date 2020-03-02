@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #include "skyline-pair.hh"
 #include "system.hh"
 #include "warn.hh"
+
+using std::vector;
 
 MAKE_SCHEME_CALLBACK (Align_interface, align_to_minimum_distances, 1);
 SCM
@@ -70,7 +72,7 @@ static Skyline_pair
 get_skylines (Grob *g,
               Axis a,
               Grob *other_common,
-              bool pure, int start, int end)
+              bool pure, vsize start, vsize end)
 {
   Skyline_pair skylines;
 
@@ -141,7 +143,7 @@ Align_interface::get_minimum_translations (Grob *me,
 vector<Real>
 Align_interface::get_pure_minimum_translations (Grob *me,
                                                 vector<Grob *> const &all_grobs,
-                                                Axis a, int start, int end)
+                                                Axis a, vsize start, vsize end)
 {
   return internal_get_minimum_translations (me, all_grobs, a, true, true, start, end);
 }
@@ -168,7 +170,7 @@ Align_interface::internal_get_minimum_translations (Grob *me,
                                                     vector<Grob *> const &elems,
                                                     Axis a,
                                                     bool include_fixed_spacing,
-                                                    bool pure, int start, int end)
+                                                    bool pure, vsize start, vsize end)
 {
   if (!pure && a == Y_AXIS && dynamic_cast<Spanner *> (me) && !me->get_system ())
     me->programming_error ("vertical alignment called before line-breaking");
@@ -176,7 +178,8 @@ Align_interface::internal_get_minimum_translations (Grob *me,
   // check the cache
   if (pure)
     {
-      SCM fv = ly_assoc_get (scm_cons (scm_from_int (start), scm_from_int (end)),
+      SCM fv = ly_assoc_get (scm_cons (scm_from_size_t (start),
+                                       scm_from_size_t (end)),
                              me->get_property ("minimum-translations-alist"),
                              SCM_EOL);
       if (!scm_is_null (fv))
@@ -232,11 +235,11 @@ Align_interface::internal_get_minimum_translations (Grob *me,
 
           Real spec_distance = 0;
           if (Page_layout_problem::read_spacing_spec (spec, &spec_distance, ly_symbol2scm ("minimum-distance")))
-            dy = max (dy, spec_distance);
+            dy = std::max (dy, spec_distance);
           // Consider the likely final spacing when estimating distance between staves of the full score
           if (INT_MAX == end && 0 == start
               && Page_layout_problem::read_spacing_spec (spec, &spec_distance, ly_symbol2scm ("basic-distance")))
-            dy = max (dy, spec_distance);
+            dy = std::max (dy, spec_distance);
 
           if (include_fixed_spacing && Page_layout_problem::is_spaceable (elems[j]) && last_spaceable_element)
             {
@@ -248,21 +251,21 @@ Align_interface::internal_get_minimum_translations (Grob *me,
               Page_layout_problem::read_spacing_spec (spec,
                                                       &spaceable_padding,
                                                       ly_symbol2scm ("padding"));
-              dy = max (dy, (last_spaceable_skyline.distance (skyline[-stacking_dir])
+              dy = std::max (dy, (last_spaceable_skyline.distance (skyline[-stacking_dir])
                              + stacking_dir * (last_spaceable_element_pos - where) + spaceable_padding));
 
               Real spaceable_min_distance = 0;
               if (Page_layout_problem::read_spacing_spec (spec,
                                                           &spaceable_min_distance,
                                                           ly_symbol2scm ("minimum-distance")))
-                dy = max (dy, spaceable_min_distance + stacking_dir * (last_spaceable_element_pos - where));
+                dy = std::max (dy, spaceable_min_distance + stacking_dir * (last_spaceable_element_pos - where));
 
-              dy = max (dy, Page_layout_problem::get_fixed_spacing (last_spaceable_element, elems[j], spaceable_count,
+              dy = std::max (dy, Page_layout_problem::get_fixed_spacing (last_spaceable_element, elems[j], spaceable_count,
                                                                     pure, start, end));
             }
         }
 
-      dy = max (0.0, dy);
+      dy = std::max (0.0, dy);
       down_skyline.raise (-stacking_dir * dy);
       down_skyline.merge (skyline[stacking_dir]);
       where += stacking_dir * dy;
@@ -281,7 +284,8 @@ Align_interface::internal_get_minimum_translations (Grob *me,
   if (pure)
     {
       SCM mta = me->get_property ("minimum-translations-alist");
-      mta = scm_cons (scm_cons (scm_cons (scm_from_int (start), scm_from_int (end)),
+      mta = scm_cons (scm_cons (scm_cons (scm_from_size_t (start),
+                                          scm_from_size_t (end)),
                                 ly_floatvector2scm (translates)),
                       mta);
       me->set_property ("minimum-translations-alist", mta);
@@ -314,7 +318,7 @@ Align_interface::align_elements_to_minimum_distances (Grob *me, Axis a)
 }
 
 Real
-Align_interface::get_pure_child_y_translation (Grob *me, Grob *ch, int start, int end)
+Align_interface::get_pure_child_y_translation (Grob *me, Grob *ch, vsize start, vsize end)
 {
   extract_grob_set (me, "elements", all_grobs);
   vector<Real> translates = get_pure_minimum_translations (me, all_grobs, Y_AXIS, start, end);

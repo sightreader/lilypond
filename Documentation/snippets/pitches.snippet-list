@@ -1,5 +1,6 @@
 adding-ambitus-per-voice.ly
 adding-an-ottava-marking-to-a-single-voice.ly
+aiken-head-thin-variant-noteheads.ly
 altering-the-length-of-beamed-stems.ly
 ambitus-with-multiple-voices.ly
 ambitus.ly
@@ -12,6 +13,7 @@ clefs-can-be-transposed-by-arbitrary-amounts.ly
 coloring-notes-depending-on-their-pitch.ly
 creating-a-sequence-of-notes-on-various-pitches.ly
 creating-custom-key-signatures.ly
+force-a-cancellation-natural-before-accidentals.ly
 forcing-a-clef-symbol-to-be-displayed.ly
 generating-random-notes.ly
 hiding-accidentals-on-tied-notes-at-the-start-of-a-new-system.ly
@@ -27,5 +29,6 @@ preventing-natural-signs-from-being-printed-when-the-key-signature-changes.ly
 quoting-another-voice-with-transposition.ly
 separating-key-cancellations-from-key-signature-changes.ly
 transposing-pitches-with-minimum-accidentals-smart-transpose.ly
+turkish-makam-example.ly
 tweaking-clef-properties.ly
 using-autochange-with-more-than-one-voice.ly

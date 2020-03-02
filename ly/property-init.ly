@@ -29,6 +29,25 @@ piano styles, which use @samp{GrandStaff} as a context." )
       (*location*))
      (make-music 'Music))))
 
+%% ambitus
+
+ambitusAfter =
+#(define-music-function (target) (symbol?)
+  (_i "Move the ambitus after the break-align symbol @var{target}.")
+  (make-apply-context
+   (lambda (context)
+     (define (move-ambitus order)
+       (let* ((without-ambitus (delq 'ambitus order))
+              (target-index (list-index (lambda (x) (eq? x target)) without-ambitus))
+              (head (take without-ambitus (1+ target-index)))
+              (tail (drop without-ambitus (1+ target-index))))
+           (append head '(ambitus) tail)))
+     (let* ((score (ly:context-find context 'Score))
+            (grob-def (ly:context-grob-definition score 'BreakAlignment))
+            (orders (vector->list (ly:assoc-get 'break-align-orders grob-def)))
+            (new-orders (list->vector (map move-ambitus orders))))
+       (ly:context-pushpop-property score 'BreakAlignment 'break-align-orders new-orders)))))
+
 %% arpeggios
 
 % For drawing vertical chord brackets with \arpeggio
@@ -146,10 +165,6 @@ italianChords = {
   \set chordRootNamer = #(chord-name->italian-markup #f)
   \set chordPrefixSpacer = #0.4
 }
-powerChords = {
-  \set chordNameExceptions = #powerChordExceptions
-}
-
 
 %% compressFullBarRests
 
@@ -193,15 +208,6 @@ easyHeadsOff = {
   \revert NoteHead.font-series
 }
 
-
-%% fermata markup
-
-fermataMarkup =
-#(make-music 'MultiMeasureTextEvent
-             ;; Set the 'text based on the 'direction
-             'text (make-fermata-markup)
-             'tweaks '((outside-staff-priority . 40)
-                       (outside-staff-padding . 0)))
 
 %% font sizes
 
@@ -404,18 +410,18 @@ palmMute =
 
 %% part combiner
 
-partcombineForce =
+partCombineForce =
 #(define-music-function (type) ((symbol?))
    (_i "Override the part-combiner.")
    (if type (propertySet 'partCombineForced type)
        (propertyUnset 'partCombineForced)))
 
-partcombineApart = \partCombineForce #'apart
-partcombineChords = \partCombineForce #'chords
-partcombineUnisono = \partCombineForce #'unisono
-partcombineSoloI = \partCombineForce #'solo1
-partcombineSoloII = \partCombineForce #'solo2
-partcombineAutomatic = \partCombineForce \default
+partCombineApart = \partCombineForce #'apart
+partCombineChords = \partCombineForce #'chords
+partCombineUnisono = \partCombineForce #'unisono
+partCombineSoloI = \partCombineForce #'solo1
+partCombineSoloII = \partCombineForce #'solo2
+partCombineAutomatic = \partCombineForce \default
 
 
 %% phrasing slurs
@@ -481,6 +487,10 @@ predefinedFretboardsOn =
 
 aikenHeads      = \set shapeNoteStyles = ##(do re miMirror fa sol la ti)
 aikenHeadsMinor = \set shapeNoteStyles = ##(la ti do re miMirror fa sol)
+aikenThinHeads =
+  \set shapeNoteStyles = ##(doThin reThin miThin faThin sol laThin tiThin)
+aikenThinHeadsMinor =
+  \set shapeNoteStyles = ##(laThin tiThin doThin reThin miThin faThin sol)
 funkHeads =
   \set shapeNoteStyles = ##(doFunk reFunk miFunk faFunk solFunk laFunk tiFunk)
 funkHeadsMinor =
@@ -600,6 +610,7 @@ tabFullNotation = {
   \revert TabStaff.Rest.stencil
   \revert TabStaff.MultiMeasureRest.stencil
   \revert TabStaff.MultiMeasureRestNumber.stencil
+  \revert TabStaff.MultiMeasureRestScript.stencil
   \revert TabStaff.MultiMeasureRestText.stencil
   % markups etc.
   \revert TabStaff.Glissando.stencil

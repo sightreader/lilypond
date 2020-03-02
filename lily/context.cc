@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,6 +31,9 @@
 #include "translator-group.hh"
 #include "warn.hh"
 #include "lily-imports.hh"
+
+using std::string;
+using std::vector;
 
 bool
 Context::is_removable () const
@@ -84,8 +87,6 @@ Context::Context ()
   client_count_ = 0;
   implementation_ = 0;
   properties_scm_ = SCM_EOL;
-  accepts_list_ = SCM_EOL;
-  default_child_ = SCM_EOL;
   context_list_ = SCM_EOL;
   definition_ = SCM_EOL;
   definition_mods_ = SCM_EOL;
@@ -101,139 +102,181 @@ Context::Context ()
   events_below_->unprotect ();
 }
 
-/* TODO:  this shares code with find_create_context ().  */
-Context *
-Context::create_unique_context (SCM name, const string &id, SCM operations)
+// True if this context has the given type and id.
+// These values function as wildcards: type=SCM_EOL, id="".
+bool
+Context::matches (SCM type, const string &id) const
 {
-  /*
-    Don't create multiple score contexts.
-  */
-  Global_context *gthis = dynamic_cast<Global_context *> (this);
-  if (gthis && gthis->get_score_context ())
-    return gthis->get_score_context ()->create_unique_context (name, id, operations);
+  if (!id.empty () && (id_string () != id))
+    return false;
 
-  vector<Context_def *> path = path_to_acceptable_context (name);
-  if (path.size ())
+  if (!scm_is_null (type) && !is_alias (type))
+    return false;
+
+  return true;
+}
+
+// This recursive find-or-create traversal is the core part of \context and
+// \new, but it is not the complete search.  See find ().
+//
+// If dir is UP, do not descend.  If dir is DOWN, do not ascend.  If dir is
+// CENTER, do not limit the walk.
+//
+// n is a symbol: the name of the context to find or create.  In FIND_ONLY
+// mode, it may also be SCM_EOL to act as a wild card.
+Context *
+Context::core_find (FindMode mode, Direction dir,
+                    SCM n, const string &id, SCM ops)
+{
+  const bool allow_create = (mode != FIND_ONLY);
+  const bool allow_find = (mode != CREATE_ONLY);
+  const bool walk_down = (dir != UP);
+  const bool walk_up = (dir != DOWN);
+
+  if (allow_find && matches (n, id))
+    return this;
+
+  if (walk_down && allow_find)
     {
-      Context *current = this;
-
-      // Iterate through the path and create all of the implicit contexts.
-      for (vsize i = 0; i < path.size (); i++)
+      // Searching below in recursive calls can find contexts beyond those that
+      // are visible when looking just down and up from the starting point.
+      // The regression test lyric-combine-polyphonic.ly has a reasonably
+      // simple example of how this can be useful.
+      for (SCM s = children_contexts (); scm_is_pair (s); s = scm_cdr (s))
         {
-          SCM ops = SCM_EOL;
-          string id_str = "\\new";
-          if (i == path.size () - 1)
+          if (Context *c = unsmob<Context> (scm_car (s)))
             {
-              ops = operations;
-              id_str = id;
+              c = c->core_find (FIND_ONLY, DOWN, n, id, SCM_EOL);
+              if (c)
+                return c;
             }
-          current = current->create_context (path[i],
-                                             id_str,
-                                             ops);
         }
-
-      return current;
     }
 
-  /*
-    Don't go up to Global_context, because global goes down to the
-    Score context
-  */
-  Context *ret = 0;
-  if (daddy_context_ && !dynamic_cast<Global_context *> (daddy_context_))
-    ret = daddy_context_->create_unique_context (name, id, operations);
-  else
+  if (walk_down && allow_create)
     {
-      warning (_f ("cannot find or create new `%s'",
-                   ly_symbol2string (name).c_str ()));
-      ret = 0;
+      vector<Context_def *> path = path_to_acceptable_context (n);
+      if (!path.empty ())
+        {
+          // TODO: Would it be OK to use one intermediate ID for all cases?  It
+          // changes the output of ly->midi->ly regression tests such as
+          // lyrics-addlyrics-midi.ly, but are the differences important?
+          const char *intermediate_id = allow_find ? "" : "\\new";
+          return create_hierarchy (path, intermediate_id, id, ops);
+        }
     }
-  return ret;
+
+  if (walk_up && daddy_context_)
+    return daddy_context_->core_find (mode, dir, n, id, ops);
+
+  return nullptr;
+}
+
+// This implements all the logic of find () except a final check that the found
+// context is accessible to the user.
+Context *
+Context::unchecked_find (FindMode mode, Direction dir,
+                         SCM n, const string &id, SCM ops)
+{
+  const bool allow_create = (mode != FIND_ONLY);
+  const bool allow_find = (mode != CREATE_ONLY);
+
+  if (allow_find && (dir == CENTER))
+    {
+      // Search everything in and below the scope of the current context first.
+      // Here is an example that depends on finding a context below.
+      //
+      //   \new PianoStaff <<
+      //     \new Staff = "RH" { ... }
+      //     \new Staff = "LH" { ... }
+      //     \context Staff = "RH" { ... }
+      //   >>
+      //
+      if (Context *c = core_find (FIND_ONLY, DOWN, n, id, SCM_EOL))
+        return c;
+
+      // Search the path to the top before considering more distantly related
+      // contexts.
+      if (Context *c = core_find (FIND_ONLY, UP, n, id, SCM_EOL))
+        return c;
+    }
+
+  if (allow_create && scm_is_symbol (n))
+    {
+      if (Context *c = core_find (mode, dir, n, id, ops))
+        return c;
+    }
+  else if (allow_find)
+    {
+      if (Context *c = core_find (FIND_ONLY, dir, n, id, SCM_EOL))
+        return c;
+    }
+
+  return nullptr;
 }
 
 Context *
-Context::find_create_context (SCM n, const string &id, SCM operations)
+Context::find (FindMode mode, Direction dir, SCM n, const string &id, SCM ops)
 {
-  /*
-    Don't create multiple score contexts.
-  */
-  Global_context *gthis = dynamic_cast<Global_context *> (this);
-  if (gthis)
+  if (Context *c = unchecked_find (mode, dir, n, id, ops))
     {
-      if (gthis->get_score_context ())
-        return gthis->get_score_context ()->find_create_context (n, id, operations);
-
-      // Special case: If we use \set Timing.xxx = whatever before
-      // Score is established, the alias of Score to Timing will not
-      // be taken into account.  We check for this particular case
-      // here.  Aliases apart from Score-level ones don't warrant
-      // context creation as they could create unwanted contexts, like
-      // RhythmicVoice instead of Voice.  Creating a Score context,
-      // however, can't really do anything wrong.
-
-      SCM score_name = default_child_context_name ();
-      SCM score_def = find_context_def (get_output_def (), score_name);
-
-      if (Context_def *cd = unsmob<Context_def> (score_def))
-        {
-          if (cd->is_alias (n))
-            return create_context (cd, id, operations);
-        }
+      if (c->is_accessible_to_user ())
+        return c;
     }
 
+  return nullptr;
+}
 
-  if (Context *existing = find_context_below (this, n, id))
-    return existing;
+Context *
+Context::create_unique_context (Direction dir,
+                                SCM name, const string &id,
+                                SCM ops)
+{
+  return find (CREATE_ONLY, dir, name, id, ops);
+}
 
-  if (scm_is_eq (n, ly_symbol2scm ("Bottom")))
-    {
-      Context *tg = get_default_interpreter (id);
-      return tg;
-    }
+Context *
+Context::find_context (Direction dir, SCM name, const string &id)
+{
+  return find (FIND_ONLY, dir, name, id, SCM_EOL);
+}
 
-  vector<Context_def *> path = path_to_acceptable_context (n);
-
-  if (path.size ())
-    {
-      Context *current = this;
-
-      // start at 1.  The first one (index 0) will be us.
-      for (vsize i = 0; i < path.size (); i++)
-        {
-          SCM ops = (i == path.size () - 1) ? operations : SCM_EOL;
-
-          string this_id = "";
-          if (i == path.size () - 1)
-            this_id = id;
-
-          current = current->create_context (path[i],
-                                             this_id,
-                                             ops);
-        }
-
-      return current;
-    }
-
-  /*
-    Don't go up to Global_context, because global goes down to the
-    Score context
-  */
-  Context *ret = 0;
-  if (daddy_context_ && !dynamic_cast<Global_context *> (daddy_context_))
-    ret = daddy_context_->find_create_context (n, id, operations);
-  else
-    {
-      warning (_f ("cannot find or create `%s' called `%s'",
-                   ly_symbol2string (n).c_str (), id));
-      ret = 0;
-    }
-  return ret;
+Context *
+Context::find_create_context (Direction dir,
+                              SCM name, const string &id,
+                              SCM ops)
+{
+  return find (FIND_CREATE, dir, name, id, ops);
 }
 
 void
 Context::acknowledge_infant (SCM sev)
 {
   infant_event_ = unsmob<Stream_event> (sev);
+}
+
+// Make a finalization to set (or unset) the current value of the given
+// property.
+SCM
+Context::make_revert_finalization (SCM sym)
+{
+  SCM val = SCM_UNDEFINED;
+  if (here_defined (sym, &val))
+    {
+      return scm_list_4 (ly_context_set_property_x_proc,
+                         self_scm (), sym, val);
+    }
+  else
+    {
+      return scm_list_3 (ly_context_unset_property_proc,
+                         self_scm (), sym);
+    }
+}
+
+void
+Context::add_global_finalization (SCM x)
+{
+  find_global_context (this)->add_finalization (x);
 }
 
 void
@@ -245,33 +288,13 @@ Context::set_property_from_event (SCM sev)
   if (scm_is_symbol (sym))
     {
       SCM val = ev->get_property ("value");
-
-      if (SCM_UNBNDP (val)) {
-        unset_property (sym);
-        return;
-      }
-
       bool ok = true;
       ok = type_check_assignment (sym, val, ly_symbol2scm ("translation-type?"));
 
       if (ok)
         {
           if (to_boolean (ev->get_property ("once")))
-            {
-              if (Global_context *g = get_global_context ())
-                {
-                  SCM old_val = SCM_UNDEFINED;
-                  if (here_defined (sym, &old_val))
-                    g->add_finalization (scm_list_4 (ly_context_set_property_x_proc,
-                                                     self_scm (),
-                                                     sym,
-                                                     old_val));
-                  else
-                    g->add_finalization (scm_list_3 (ly_context_unset_property_proc,
-                                                     self_scm (),
-                                                     sym));
-                }
-            }
+            add_global_finalization (make_revert_finalization (sym));
           set_property (sym, val);
         }
     }
@@ -288,21 +311,7 @@ Context::unset_property_from_event (SCM sev)
   if (ok)
     {
       if (to_boolean (ev->get_property ("once")))
-        {
-          if (Global_context *g = get_global_context ())
-            {
-              SCM old_val = SCM_UNDEFINED;
-              if (here_defined (sym, &old_val))
-                g->add_finalization (scm_list_4 (ly_context_set_property_x_proc,
-                                                 self_scm (),
-                                                 sym,
-                                                 old_val));
-              else
-                g->add_finalization (scm_list_3 (ly_context_unset_property_proc,
-                                                 self_scm (),
-                                                 sym));
-            }
-        }
+        add_global_finalization (make_revert_finalization (sym));
       unset_property (sym);
     }
 }
@@ -375,20 +384,16 @@ Context::create_context_from_event (SCM sev)
 vector<Context_def *>
 Context::path_to_acceptable_context (SCM name) const
 {
-  // The 'accepts elements in definition_mods_ is a list of ('accepts string),
-  // but the Context_def expects to see elements of the form ('accepts symbol).
-  SCM accepts = SCM_EOL;
-  for (SCM s = definition_mods_; scm_is_pair (s); s = scm_cdr (s))
-    if (scm_is_eq (scm_caar (s), ly_symbol2scm ("accepts")))
-      {
-        SCM elt = scm_list_2 (scm_caar (s), scm_string_to_symbol (scm_cadar (s)));
-        accepts = scm_cons (elt, accepts);
-      }
+  Output_def *odef = get_output_def ();
 
-  return unsmob<Context_def> (definition_)->path_to_acceptable_context (name,
-         get_output_def (),
-         scm_reverse_x (accepts, SCM_EOL));
+  if (scm_is_eq (name, ly_symbol2scm ("Bottom")))
+    {
+      return Context_def::path_to_bottom_context (odef,
+                                                  acceptance_.get_default ());
+    }
 
+  return unsmob<Context_def> (definition_)->
+    path_to_acceptable_context (name, odef, acceptance_.get_list ());
 }
 
 Context *
@@ -426,51 +431,101 @@ Context::create_context (Context_def *cdef,
   return infant;
 }
 
-/*
-  Default child context as a SCM string, or something else if there is
-  none.
-*/
-SCM
-Context::default_child_context_name () const
+// Create a new context at the end of a given path below this context, using
+// leaf_id and leaf_operations for it.
+//
+// Intermediate contexts in the path are reused or created.  Contexts
+// configured to "adopt" new descendants are considered for reuse.  When
+// necessary, contexts are created using intermediate_id and no operations.
+//
+// If the desired leaf context is successfully created, return it.  If the path
+// is empty, return this context.
+//
+// On failure to create any context, stop and return null.  Contexts created to
+// that point will continue to exist.
+Context *
+Context::create_hierarchy (const std::vector<Context_def *> &path,
+                           const std::string &intermediate_id,
+                           const std::string &leaf_id,
+                           SCM leaf_operations)
 {
-  return default_child_;
+  Context *leaf = this;
+
+  if (!path.empty ())
+    {
+      // choose or create the intermediate contexts
+      for (vsize i = 0; i < path.size () - 1; ++i)
+        {
+          SCM child_name = path[i]->get_context_name ();
+          SCM grandchild_name = path[i + 1]->get_context_name ();
+          Context *c = leaf->find_child_to_adopt_grandchild (child_name,
+                                                             grandchild_name);
+          if (c)
+            leaf = c;
+          else
+            {
+              leaf = leaf->create_context (path[i], intermediate_id, SCM_EOL);
+              if (!leaf)
+                return 0; // expect that create_context logged failure
+            }
+        }
+
+      leaf = leaf->create_context (path.back(), leaf_id, leaf_operations);
+      if (!leaf)
+        return 0; // expect that create_context logged failure
+    }
+
+  return leaf;
+}
+
+// Find an existing child of the exact given type (not an alias), which will
+// adopt the given type of grandchild.
+Context *
+Context::find_child_to_adopt_grandchild (SCM child_name, SCM grandchild_name)
+{
+  for (SCM s = context_list_; scm_is_pair (s); s = scm_cdr (s))
+    {
+      Context *c = unsmob<Context> (scm_car (s));
+      if (c->adopts_ &&
+          scm_is_eq (c->context_name_symbol (), child_name) &&
+          // Is this way of checking acceptance too heavy?
+          (c->path_to_acceptable_context (grandchild_name).size () == 1))
+        {
+          return c;
+        }
+    }
+
+  return nullptr;
 }
 
 bool
 Context::is_bottom_context () const
 {
-  return !scm_is_symbol (default_child_context_name ());
+  return !acceptance_.has_default ();
 }
 
 Context *
-Context::get_default_interpreter (const string &context_id)
+Context::get_default_interpreter (const string &id)
 {
-  if (!is_bottom_context ())
+  if (is_bottom_context ())
     {
-      SCM nm = default_child_context_name ();
-      SCM st = find_context_def (get_output_def (), nm);
+      if (id.empty () || (id == id_string ()))
+        return this; // this is where we want to be
+    }
 
-      string name = ly_symbol2string (nm);
-      Context_def *t = unsmob<Context_def> (st);
-      if (!t)
-        {
-          warning (_f ("cannot find or create: `%s'", name.c_str ()));
-          t = unsmob<Context_def> (definition_);
-        }
-      if (scm_is_symbol (t->get_default_child (SCM_EOL)))
-        {
-          Context *tg = create_context (t, "\\new", SCM_EOL);
-          return tg->get_default_interpreter (context_id);
-        }
-      return create_context (t, context_id, SCM_EOL);
-    }
-  else if (!context_id.empty () && context_id != id_string ())
-    {
-      if (daddy_context_ && !dynamic_cast<Global_context *> (daddy_context_))
-        return daddy_context_->get_default_interpreter (context_id);
-      warning (_f ("cannot find or create new Bottom = \"%s\"",
-                   context_id.c_str ()));
-    }
+  // It's interesting that this goes straight to creating a new hierarchy even
+  // if there might be an existing partial (or even full?) path to a bottom
+  // context.  This deserves an explanation.
+  SCM name = ly_symbol2scm ("Bottom");
+  if (Context *c = create_unique_context (CENTER, name, id, SCM_EOL))
+    return c;
+
+  // TODO: Avoiding a null return means the caller does not detect this
+  // failure, so we have to log here if we want to log at all.  It would be
+  // more flexible to return null and let the caller decide whether to warn in
+  // its situation.  The caller might know a useful source location too.
+  warning (_f ("cannot find or create context: %s",
+               diagnostic_id (name, id).c_str ()));
   return this;
 }
 
@@ -663,15 +718,6 @@ Context::disconnect_from_parent ()
 }
 
 Context *
-find_context_above (Context *where, SCM type)
-{
-  while (where && !where->is_alias (type))
-    where = where->get_parent_context ();
-
-  return where;
-}
-
-Context *
 find_context_above_by_parent_type (Context *where, SCM parent_type)
 {
   while (Context *parent = where->get_parent_context ())
@@ -680,42 +726,6 @@ find_context_above_by_parent_type (Context *where, SCM parent_type)
         return where;
       where = parent;
     }
-  return 0;
-}
-
-Context *
-find_context_below (Context *where,
-                    SCM type, const string &id)
-{
-  if (where->is_alias (type))
-    {
-      if (id == "" || where->id_string () == id)
-        return where;
-    }
-
-  Context *found = 0;
-  for (SCM s = where->children_contexts ();
-       !found && scm_is_pair (s); s = scm_cdr (s))
-    {
-      Context *tr = unsmob<Context> (scm_car (s));
-
-      found = find_context_below (tr, type, id);
-    }
-
-  return found;
-}
-
-Context *
-find_context_near (Context *where,
-                   SCM type, const string &id)
-{
-  for ( ; where; where = where->get_parent_context ())
-    {
-      Context *found = find_context_below (where, type, id);
-      if (found)
-        return found;
-    }
-
   return 0;
 }
 
@@ -747,13 +757,18 @@ Context::context_name () const
   return ly_symbol2string (context_name_symbol ());
 }
 
-Context *
-Context::get_score_context () const
+string
+Context::diagnostic_id (SCM name, const string& id)
 {
-  if (daddy_context_)
-    return daddy_context_->get_score_context ();
-  else
-    return 0;
+  // For robustness when this static method is called directly (e.g. after a
+  // failure to create a context), we do not assume that name is a symbol.
+  string result (ly_scm_write_string (name));
+  if (!id.empty ())
+    {
+      result += " = ";
+      result += id;
+    }
+  return result;
 }
 
 Output_def *
@@ -814,8 +829,7 @@ Context::mark_smob () const
   scm_gc_mark (definition_);
   scm_gc_mark (definition_mods_);
   scm_gc_mark (properties_scm_);
-  scm_gc_mark (accepts_list_);
-  scm_gc_mark (default_child_);
+  acceptance_.gc_mark ();
 
   if (implementation_)
     scm_gc_mark (implementation_->self_scm ());
@@ -832,19 +846,6 @@ Context::mark_smob () const
 }
 
 const char * const Context::type_p_name_ = "ly:context?";
-
-Global_context *
-Context::get_global_context () const
-{
-  if (dynamic_cast<Global_context *> ((Context *) this))
-    return dynamic_cast<Global_context *> ((Context *) this);
-
-  if (daddy_context_)
-    return daddy_context_->get_global_context ();
-
-  programming_error ("no Global context");
-  return 0;
-}
 
 Context *
 Context::get_parent_context () const

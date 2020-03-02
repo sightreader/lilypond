@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,23 +20,36 @@
 #ifndef SLUR_SCORING_HH
 #define SLUR_SCORING_HH
 
+#include <memory>
+
 #include "box.hh"
 #include "std-vector.hh"
 #include "lily-guile.hh"
 #include "slur-score-parameters.hh"
 
+/* potential collisions with non-notes.
+ */
 struct Extra_collision_info
 {
+  // The place within X extents that we care about here, from -1..1
   Real idx_;
   Box extents_;
+
+  // configurable penalty, so accidentals can be treated specially.
   Real penalty_;
+
+  // the grob for the collision
   Grob *grob_;
+
+  // How collisions should be resolved. See #'avoid-slur grob property.
   SCM type_;
 
   Extra_collision_info (Grob *g, Real idx, Interval x, Interval y, Real p);
   Extra_collision_info ();
 };
 
+/* The notes that the slur covers. This is the note head most close to
+   the slur, and possibly a stem. */
 struct Encompass_info
 {
   Real x_;
@@ -57,6 +70,7 @@ struct Encompass_info
   }
 };
 
+/* The objects that are at the begin and end of a slur */
 struct Bound_info
 {
   Box stem_extent_;
@@ -80,8 +94,10 @@ struct Bound_info
   }
 };
 
-struct Slur_score_state
+/* Input data and scoring state for a single slur formatting problem. */
+class Slur_score_state
 {
+public:
   Spanner *slur_;
   Grob *common_[NO_AXES];
   bool valid_;
@@ -90,15 +106,15 @@ struct Slur_score_state
   bool has_same_beam_;
 
   Real musical_dy_;
-  vector<Grob *> columns_;
-  vector<Encompass_info> encompass_infos_;
-  vector<Extra_collision_info> extra_encompass_infos_;
+  std::vector<Grob *> note_columns_;
+  std::vector<Encompass_info> encompass_infos_;
+  std::vector<Extra_collision_info> extra_encompass_infos_;
 
   Direction dir_;
   Slur_score_parameters parameters_;
   Drul_array<Bound_info> extremes_;
   Drul_array<Offset> base_attachments_;
-  vector<Slur_configuration *> configurations_;
+  std::vector<std::unique_ptr<Slur_configuration>> configurations_;
   Real staff_space_;
   Real line_thickness_;
   Real thickness_;
@@ -111,14 +127,15 @@ struct Slur_score_state
   void fill (Grob *);
   Direction slur_direction () const;
 
-  vector<Offset> generate_avoid_offsets () const;
+  std::vector<Offset> generate_avoid_offsets () const;
   Drul_array<Bound_info> get_bound_info () const;
   void generate_curves () const;
-  vector<Slur_configuration *> enumerate_attachments (Drul_array<Real> end_ys) const;
+  std::vector<std::unique_ptr<Slur_configuration>>
+  enumerate_attachments (Drul_array<Real> end_ys) const;
   Drul_array<Offset> get_base_attachments () const;
   Drul_array<Real> get_y_attachment_range () const;
   Encompass_info get_encompass_info (Grob *col) const;
-  vector<Extra_collision_info> get_extra_encompass_infos () const;
+  std::vector<Extra_collision_info> get_extra_encompass_infos () const;
   Real move_away_from_staffline (Real y, Grob *on_staff) const;
 
   Interval breakable_bound_extent (Direction) const;

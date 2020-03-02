@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -21,9 +21,9 @@
 #include "beam-scoring-problem.hh"
 
 #include <algorithm>
+#include <memory>
 #include <queue>
 #include <set>
-using namespace std;
 
 #include "align-interface.hh"
 #include "beam.hh"
@@ -46,6 +46,11 @@ using namespace std;
 #include "stem.hh"
 #include "warn.hh"
 #include "string-convert.hh"
+
+using std::set;
+using std::string;
+using std::unique_ptr;
+using std::vector;
 
 Real
 get_detail (SCM alist, SCM sym, Real def)
@@ -125,10 +130,11 @@ void Beam_configuration::add (Real demerit, const string &reason)
 #endif
 }
 
-Beam_configuration *Beam_configuration::new_config (Interval start,
-                                                    Interval offset)
+unique_ptr<Beam_configuration>
+Beam_configuration::new_config (Interval start,
+                                Interval offset)
 {
-  Beam_configuration *qs = new Beam_configuration;
+  unique_ptr<Beam_configuration> qs (new Beam_configuration);
   qs->y = Interval (int (start[LEFT]) + offset[LEFT],
                     int (start[RIGHT]) + offset[RIGHT]);
 
@@ -205,7 +211,7 @@ void Beam_scoring_problem::init_instance_variables (Grob *me, Drul_array<Real> y
   */
   do_initial_slope_calculations_ = false;
   for (LEFT_and_RIGHT (d))
-    do_initial_slope_calculations_ |= isinf (unquanted_y_[d]) || isnan (unquanted_y_[d]);
+    do_initial_slope_calculations_ |= !std::isfinite (unquanted_y_[d]);
 
   /*
     Calculations are relative to a unit-scaled staff, i.e. the quants are
@@ -222,7 +228,7 @@ void Beam_scoring_problem::init_instance_variables (Grob *me, Drul_array<Real> y
   align_broken_intos_ = align_broken_intos;
   if (align_broken_intos_)
     {
-      Spanner *orig = dynamic_cast<Spanner *> (beam_->original ());
+      Spanner *orig = beam_->original ();
       if (!orig)
         align_broken_intos_ = false;
       else if (!orig->broken_intos_.size ())
@@ -410,9 +416,9 @@ Beam_scoring_problem::Beam_scoring_problem (Grob *me, Drul_array<Real> ys, bool 
 static Real
 point_in_interval (Interval v, Real dist)
 {
-  if (isinf (v[DOWN]))
+  if (std::isinf (v[DOWN]))
     return v[UP] - dist;
-  else if (isinf (v[UP]))
+  else if (std::isinf (v[UP]))
     return v[DOWN] + dist;
   else
     return v.center ();
@@ -445,8 +451,8 @@ set_minimum_dy (Grob *me, Real *dy)
       Real inter = 0.5;
       Real hang = 1.0 - (beam_thickness - slt) / 2;
 
-      *dy = sign (*dy) * max (fabs (*dy),
-                              min (min (sit, inter), hang));
+      *dy = sign (*dy) * std::max (fabs (*dy),
+                              std::min (std::min (sit, inter), hang));
     }
 }
 
@@ -610,7 +616,7 @@ is_concave_single_notes (vector<int> const &positions, Direction beam_dir)
     note is reached in the opposite direction as the last-first dy
   */
   int dy = positions.back () - positions[0];
-  int closest = max (beam_dir * positions.back (), beam_dir * positions[0]);
+  int closest = std::max (beam_dir * positions.back (), beam_dir * positions[0]);
   for (vsize i = 2; !concave && i + 1 < positions.size (); i++)
     {
       int inner_dy = positions[i] - positions[i - 1];
@@ -635,16 +641,15 @@ Real
 calc_positions_concaveness (vector<int> const &positions, Direction beam_dir)
 {
   Real dy = positions.back () - positions[0];
-  Real slope = dy / Real (positions.size () - 1);
+  Real slope = dy / static_cast<Real> (positions.size () - 1);
   Real concaveness = 0.0;
   for (vsize i = 1; i + 1 < positions.size (); i++)
     {
-      Real line_y = slope * i + positions[0];
-
-      concaveness += max (beam_dir * (positions[i] - line_y), 0.0);
+      Real line_y = slope * static_cast<Real> (i) + positions[0];
+      concaveness += std::max (beam_dir * (positions[i] - line_y), 0.0);
     }
 
-  concaveness /= positions.size ();
+  concaveness /= static_cast<Real> (positions.size ());
 
   /*
     Normalize. For dy = 0, the slope ends up as 0 anyway, so the
@@ -854,7 +859,7 @@ Beam_scoring_problem::shift_region_to_valid ()
 }
 
 void
-Beam_scoring_problem::generate_quants (vector<Beam_configuration *> *scores) const
+Beam_scoring_problem::generate_quants (vector<unique_ptr<Beam_configuration>> *scores) const
 {
   int region_size = (int) parameters_.REGION_SIZE;
 
@@ -884,7 +889,7 @@ Beam_scoring_problem::generate_quants (vector<Beam_configuration *> *scores) con
   for (vsize i = 0; i < unshifted_quants.size (); i++)
     for (vsize j = 0; j < unshifted_quants.size (); j++)
       {
-        Beam_configuration *c
+        auto c
           = Beam_configuration::new_config (unquanted_y_,
                                             Interval (unshifted_quants[i],
                                                       unshifted_quants[j]));
@@ -893,13 +898,12 @@ Beam_scoring_problem::generate_quants (vector<Beam_configuration *> *scores) con
           {
             if (!quant_range_[d].contains (c->y[d]))
               {
-                delete c;
-                c = NULL;
+                c.reset ();
                 break;
               }
           }
         if (c)
-          scores->push_back (c);
+          scores->push_back (std::move (c));
       }
 
 }
@@ -940,7 +944,8 @@ void Beam_scoring_problem::one_scorer (Beam_configuration *config) const
 }
 
 Beam_configuration *
-Beam_scoring_problem::force_score (SCM inspect_quants, const vector<Beam_configuration *> &configs) const
+Beam_scoring_problem::force_score (SCM inspect_quants,
+                                   const vector<unique_ptr<Beam_configuration>> &configs) const
 {
   Drul_array<Real> ins = ly_scm2interval (inspect_quants);
   Real mindist = 1e6;
@@ -950,7 +955,7 @@ Beam_scoring_problem::force_score (SCM inspect_quants, const vector<Beam_configu
       Real d = fabs (configs[i]->y[LEFT] - ins[LEFT]) + fabs (configs[i]->y[RIGHT] - ins[RIGHT]);
       if (d < mindist)
         {
-          best = configs[i];
+          best = configs[i].get ();
           mindist = d;
         }
     }
@@ -966,7 +971,7 @@ Beam_scoring_problem::force_score (SCM inspect_quants, const vector<Beam_configu
 Drul_array<Real>
 Beam_scoring_problem::solve () const
 {
-  vector<Beam_configuration *> configs;
+  vector<unique_ptr<Beam_configuration>> configs;
   generate_quants (&configs);
 
   if (configs.empty ())
@@ -993,7 +998,7 @@ Beam_scoring_problem::solve () const
       std::priority_queue < Beam_configuration *, std::vector<Beam_configuration *>,
           Beam_configuration_less > queue;
       for (vsize i = 0; i < configs.size (); i++)
-        queue.push (configs[i]);
+        queue.push (configs[i].get ());
 
       /*
         TODO
@@ -1036,12 +1041,12 @@ Beam_scoring_problem::solve () const
             completed++;
         }
 
-      string card = best->score_card_ + to_string (" c%d/%d", completed, configs.size ());
+      string card = best->score_card_ + to_string (" c%d/%zu", completed, configs.size ());
       beam_->set_property ("annotation", ly_string2scm (card));
     }
 #endif
 
-  junk_pointers (configs);
+  configs.clear ();
   if (align_broken_intos_)
     {
       Interval normalized_endpoints = robust_scm2interval (beam_->get_property ("normalized-endpoints"), Interval (0, 1));
@@ -1077,7 +1082,7 @@ Beam_scoring_problem::score_stem_lengths (Beam_configuration *config) const
       Stem_info info = stem_infos_[i];
       Direction d = info.dir_;
 
-      score[d] += limit_penalty * max (0.0, (d * (info.shortest_y_ - current_y)));
+      score[d] += limit_penalty * std::max (0.0, (d * (info.shortest_y_ - current_y)));
 
       Real ideal_diff = d * (current_y - info.ideal_y_);
       Real ideal_score = shrink_extra_weight (ideal_diff, 1.5);
@@ -1094,7 +1099,7 @@ Beam_scoring_problem::score_stem_lengths (Beam_configuration *config) const
 
   /* Divide by number of stems, to make the measure scale-free. */
   for (DOWN_and_UP (d))
-    score[d] /= max (count[d], 1);
+    score[d] /= std::max (count[d], 1);
 
   /*
     sometimes, two perfectly symmetric kneed beams will have the same score
@@ -1144,7 +1149,7 @@ Beam_scoring_problem::score_slope_musical (Beam_configuration *config) const
 {
   Real dy = config->y.delta ();
   Real dem = parameters_.MUSICAL_DIRECTION_FACTOR
-             * max (0.0, (fabs (dy) - fabs (musical_dy_)));
+             * std::max (0.0, (fabs (dy) - fabs (musical_dy_)));
   config->add (dem, "Sm");
 }
 
@@ -1203,7 +1208,7 @@ Beam_scoring_problem::score_forbidden_quants (Beam_configuration *config) const
 
   Real extra_demerit =
     parameters_.SECONDARY_BEAM_DEMERIT
-    / max (edge_beam_counts_[LEFT], edge_beam_counts_[RIGHT]);
+    / std::max (edge_beam_counts_[LEFT], edge_beam_counts_[RIGHT]);
   
   Real dem = 0.0;
   Real eps = parameters_.BEAM_EPS;
@@ -1233,7 +1238,7 @@ Beam_scoring_problem::score_forbidden_quants (Beam_configuration *config) const
                k <= staff_radius_ + eps; k += 1.0)
             if (gap.contains (k))
               {
-                Real dist = min (fabs (gap[UP] - k), fabs (gap[DOWN] - k));
+                Real dist = std::min (fabs (gap[UP] - k), fabs (gap[DOWN] - k));
 
                 /*
                   this parameter is tuned to grace-stem-length.ly
@@ -1256,7 +1261,7 @@ Beam_scoring_problem::score_forbidden_quants (Beam_configuration *config) const
 
   config->add (dem, "Fl");
   dem = 0.0;
-  if (max (edge_beam_counts_[LEFT], edge_beam_counts_[RIGHT]) >= 2)
+  if (std::max (edge_beam_counts_[LEFT], edge_beam_counts_[RIGHT]) >= 2)
     {
       Real straddle = 0.0;
       Real sit = (beam_thickness_ - line_thickness_) / 2;
@@ -1312,12 +1317,12 @@ Beam_scoring_problem::score_collisions (Beam_configuration *config) const
       if (!intersection (beam_y, collision_y).is_empty ())
         dist = 0.0;
       else 
-        dist = min (beam_y.distance (collision_y[DOWN]),
+        dist = std::min (beam_y.distance (collision_y[DOWN]),
                     beam_y.distance (collision_y[UP]));
 
       
       Real scale_free
-        = max (parameters_.COLLISION_PADDING - dist, 0.0)
+        = std::max (parameters_.COLLISION_PADDING - dist, 0.0)
           / parameters_.COLLISION_PADDING;
       Real collision_demerit = collisions_[i].base_penalty_ *
          pow (scale_free, 3) * parameters_.COLLISION_PENALTY;

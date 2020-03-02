@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2010--2015 Carl Sorensen <c_sorensen@byu.edu>
+  Copyright (C) 2010--2020 Carl Sorensen <c_sorensen@byu.edu>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 #include "lily-guile.hh"
 #include "stream-event.hh"
 
-SCM articulation_list (vector<Stream_event *> notes,
-                       vector<Stream_event *> articulations,
+SCM articulation_list (std::vector<Stream_event *> notes,
+                       std::vector<Stream_event *> articulations,
                        char const *articulation_name);
 
 #endif /* ARTICULATIONS_HH */

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -45,6 +45,10 @@
 #include "stem.hh"
 #include "warn.hh"
 
+using std::string;
+using std::unique_ptr;
+using std::vector;
+
 /*
   TODO:
 
@@ -63,7 +67,7 @@
 
   - optimize.
 */
-struct Slur_score_state;
+class Slur_score_state;
 
 Slur_score_state::Slur_score_state ()
 {
@@ -80,7 +84,6 @@ Slur_score_state::Slur_score_state ()
 
 Slur_score_state::~Slur_score_state ()
 {
-  junk_pointers (configurations_);
 }
 
 /*
@@ -105,37 +108,37 @@ Slur_score_state::slur_direction () const
 }
 
 Encompass_info
-Slur_score_state::get_encompass_info (Grob *col) const
+Slur_score_state::get_encompass_info (Grob *notecol) const
 {
-  Grob *stem = unsmob<Grob> (col->get_object ("stem"));
+  Grob *stem = unsmob<Grob> (notecol->get_object ("stem"));
   Encompass_info ei;
 
   if (!stem)
     {
       programming_error ("no stem for note column");
-      ei.x_ = col->relative_coordinate (common_[X_AXIS], X_AXIS);
-      ei.head_ = ei.stem_ = col->extent (common_[Y_AXIS],
+      ei.x_ = notecol->relative_coordinate (common_[X_AXIS], X_AXIS);
+      ei.head_ = ei.stem_ = notecol->extent (common_[Y_AXIS],
                                          Y_AXIS)[dir_];
       return ei;
     }
   Direction stem_dir = get_grob_direction (stem);
 
-  if (Grob *head = Note_column::first_head (col))
+  if (Grob *head = Note_column::first_head (notecol))
     {
-      Interval hex = head->extent (common_[X_AXIS], X_AXIS);
+      Interval head_ext = head->extent (common_[X_AXIS], X_AXIS);
       // FIXME: Is there a better option than setting to 0?
-      if (hex.is_empty ())
+      if (head_ext.is_empty ())
         ei.x_ = 0;
       else
-        ei.x_ = hex.center ();
+        ei.x_ = head_ext.center ();
     }
   else
-    ei.x_ = col->extent (common_[X_AXIS], X_AXIS).center ();
+    ei.x_ = notecol->extent (common_[X_AXIS], X_AXIS).center ();
 
   Grob *h = Stem::extremal_heads (stem)[Direction (dir_)];
   if (!h)
     {
-      ei.head_ = ei.stem_ = col->extent (common_[Y_AXIS], Y_AXIS)[dir_];
+      ei.head_ = ei.stem_ = notecol->extent (common_[Y_AXIS], Y_AXIS)[dir_];
       return ei;
     }
 
@@ -225,10 +228,10 @@ void
 Slur_score_state::fill (Grob *me)
 {
   slur_ = dynamic_cast<Spanner *> (me);
-  columns_
+  note_columns_
     = internal_extract_grob_array (me, ly_symbol2scm ("note-columns"));
 
-  if (columns_.empty ())
+  if (note_columns_.empty ())
     {
       me->suicide ();
       return;
@@ -316,8 +319,8 @@ Slur_score_state::fill (Grob *me)
     end_ys[d] += additional_ys[d];
 
   configurations_ = enumerate_attachments (end_ys);
-  for (vsize i = 0; i < columns_.size (); i++)
-    encompass_infos_.push_back (get_encompass_info (columns_[i]));
+  for (vsize i = 0; i < note_columns_.size (); i++)
+    encompass_infos_.push_back (get_encompass_info (note_columns_[i]));
 
   valid_ = true;
 
@@ -406,7 +409,7 @@ Slur_score_state::get_forced_configuration (Interval ys) const
                + fabs (configurations_[i]->attachment_[RIGHT][Y_AXIS] - ys[RIGHT]);
       if (d < mindist)
         {
-          best = configurations_[i];
+          best = configurations_[i].get ();
           mindist = d;
         }
     }
@@ -426,7 +429,7 @@ Slur_score_state::get_best_curve () const
   std::priority_queue < Slur_configuration *, std::vector<Slur_configuration *>,
       Slur_configuration_less > queue;
   for (vsize i = 0; i < configurations_.size (); i++)
-    queue.push (configurations_[i]);
+    queue.push (configurations_[i].get ());
 
   Slur_configuration *best = NULL;
   while (true)
@@ -446,7 +449,7 @@ Slur_score_state::get_best_curve () const
 Interval
 Slur_score_state::breakable_bound_extent (Direction d) const
 {
-  Grob *col = slur_->get_bound (d)->get_column ();
+  Grob *paper_col = slur_->get_bound (d)->get_column ();
   Interval ret;
   ret.set_empty ();
 
@@ -455,7 +458,7 @@ Slur_score_state::breakable_bound_extent (Direction d) const
   for (vsize i = 0; i < extra_encompasses.size (); i++)
     {
       Item *item = dynamic_cast<Item *> (extra_encompasses[i]);
-      if (item && col == item->get_column ())
+      if (item && paper_col == item->get_column ())
         ret.unite (robust_relative_extent (item, common_[X_AXIS], X_AXIS));
     }
 
@@ -481,7 +484,7 @@ Slur_score_state::get_y_attachment_range () const
             slur_->warning ("slur trying to encompass an empty note column.");
           else
             end_ys[d] = dir_
-                        * max (max (dir_ * (base_attachments_[d][Y_AXIS]
+                        * std::max (std::max (dir_ * (base_attachments_[d][Y_AXIS]
                                             + parameters_.region_size_ * dir_),
                                     dir_ * (dir_ + nc_extent[dir_])),
                                dir_ * base_attachments_[-d][Y_AXIS]);
@@ -548,10 +551,10 @@ Slur_score_state::get_base_attachments () const
             = (fh ? fh->extent (common_[X_AXIS], X_AXIS)
                : extremes_[d].bound_->extent (common_[X_AXIS], X_AXIS))
               .linear_combination (CENTER);
-          if (!isfinite (x))
+          if (!std::isfinite (x))
             x = extremes_[d].note_column_->extent (common_[X_AXIS], X_AXIS)
               .linear_combination (CENTER);
-          if (!isfinite (y))
+          if (!std::isfinite (y))
             y = extremes_[d].note_column_->extent (common_[Y_AXIS], Y_AXIS)
               .linear_combination (CENTER);
         }
@@ -582,7 +585,7 @@ Slur_score_state::get_base_attachments () const
                                         common_[X_AXIS], X_AXIS);
           x = ext[-d];
 
-          Grob *col = (d == LEFT) ? columns_[0] : columns_.back ();
+          Grob *col = (d == LEFT) ? note_columns_[0] : note_columns_.back ();
 
           if (extremes_[-d].bound_ != col)
             {
@@ -609,7 +612,7 @@ Slur_score_state::get_base_attachments () const
         {
           Real &b = base_attachment[d][Axis (a)];
 
-          if (!isfinite (b))
+          if (!std::isfinite (b))
             {
               programming_error ("slur attachment is inf/nan");
               b = 0.0;
@@ -647,7 +650,7 @@ vector<Offset>
 Slur_score_state::generate_avoid_offsets () const
 {
   vector<Offset> avoid;
-  vector<Grob *> encompasses = columns_;
+  vector<Grob *> encompasses = note_columns_;
 
   for (vsize i = 0; i < encompasses.size (); i++)
     {
@@ -656,7 +659,7 @@ Slur_score_state::generate_avoid_offsets () const
         continue;
 
       Encompass_info inf (get_encompass_info (encompasses[i]));
-      Real y = dir_ * (max (dir_ * inf.head_, dir_ * inf.stem_));
+      Real y = dir_ * (std::max (dir_ * inf.head_, dir_ * inf.stem_));
 
       avoid.push_back (Offset (inf.x_, y + dir_ * parameters_.free_head_distance_));
     }
@@ -702,10 +705,10 @@ Slur_score_state::generate_curves () const
     configurations_[i]->generate_curve (*this, r_0, h_inf, avoid);
 }
 
-vector<Slur_configuration *>
+vector<unique_ptr<Slur_configuration>>
 Slur_score_state::enumerate_attachments (Drul_array<Real> end_ys) const
 {
-  vector<Slur_configuration *> scores;
+  vector<unique_ptr<Slur_configuration>> scores;
 
   Drul_array<Offset> os;
   os[LEFT] = base_attachments_[LEFT];
@@ -848,7 +851,6 @@ Slur_score_state::get_extra_encompass_infos () const
                   && !to_boolean (g->get_property ("parenthesized"))
                   && !to_boolean (g->get_property ("restore-first")))
                 {
-                  /* End copy accidental.cc */
                   if (alt == FLAT_ALTERATION
                       || alt == DOUBLE_FLAT_ALTERATION)
                     xp = LEFT;

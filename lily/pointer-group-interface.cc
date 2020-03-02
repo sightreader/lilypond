@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,8 +21,11 @@
 
 #include "grob-array.hh"
 #include "grob.hh"
+#include "item.hh"
 
-int
+using std::vector;
+
+vsize
 Pointer_group_interface::count (Grob *me, SCM sym)
 {
   Grob_array *arr = unsmob<Grob_array> (me->internal_get_object (sym));
@@ -57,7 +60,7 @@ Pointer_group_interface::get_grob_array (Grob *me, SCM sym)
 }
 
 Grob *
-Pointer_group_interface::find_grob (Grob *me, SCM sym, bool (*pred) (Grob *))
+Pointer_group_interface::find_grob (Grob *me, SCM sym, bool (*pred) (Grob const *))
 {
   Grob_array *arr = get_grob_array (me, sym);
 
@@ -106,7 +109,7 @@ internal_extract_item_array (Grob const *elt, SCM symbol)
   Grob_array *arr = unsmob<Grob_array> (elt->internal_get_object (symbol));
   vector<Item *> items;
   for (vsize i = 0; arr && i < arr->size (); i++)
-    items.push_back (arr->item (i));
+    items.push_back (dynamic_cast<Item *> (arr->grob (i)));
 
   return items;
 }

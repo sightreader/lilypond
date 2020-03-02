@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2011--2015 Neil Puttock <n.puttock@gmail.com>
+  Copyright (C) 2011--2020 Neil Puttock <n.puttock@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ Double_percent_repeat_engraver::listen_double_percent (Stream_event *ev)
       Moment meas_len (robust_scm2moment (get_property ("measureLength"),
                                           Moment (1)));
       start_mom_ = now_mom () + meas_len;
-      get_global_context ()->add_moment_to_process (start_mom_);
+      find_global_context ()->add_moment_to_process (start_mom_);
       percent_event_ = ev;
     }
   else
@@ -89,8 +89,7 @@ Double_percent_repeat_engraver::process_music ()
           double_percent_counter->set_parent (double_percent, X_AXIS);
         }
       // forbid breaks on a % line
-      context ()->get_score_context ()->set_property ("forbidBreak",
-                                                      SCM_BOOL_T);
+      find_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
       percent_event_ = 0;
     }
 }

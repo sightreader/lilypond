@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys
+  Copyright (C) 2004--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,15 +33,15 @@ public:
 
   DECLARE_SCHEME_CALLBACK (constructor, ());
 protected:
-  virtual void derived_substitute (Context *f, Context *t);
-  virtual void derived_mark () const;
+  void derived_substitute (Context *f, Context *t) override;
+  void derived_mark () const override;
 
-  virtual void construct_children ();
-  virtual Moment pending_moment () const;
-  virtual void do_quit ();
-  virtual void process (Moment);
+  void construct_children () override;
+  Moment pending_moment () const override;
+  void do_quit () override;
+  void process (Moment) override;
 
-  virtual bool ok () const;
+  bool ok () const override;
 
 private:
   static const size_t NUM_PARTS = 2;
@@ -99,7 +99,7 @@ Part_combine_iterator::pending_moment () const
 
   for (size_t i = 0; i < NUM_PARTS; i++)
     if (iterators_[i]->ok ())
-      p = min (p, iterators_[i]->pending_moment ());
+      p = std::min (p, iterators_[i]->pending_moment ());
 
   return p;
 }

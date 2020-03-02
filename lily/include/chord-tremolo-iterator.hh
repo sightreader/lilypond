@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,10 +27,10 @@ class Chord_tremolo_iterator : public Sequential_iterator
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
   /* construction */
-  DECLARE_CLASSNAME (Chord_tremolo_iterator);
+  OVERRIDE_CLASS_NAME (Chord_tremolo_iterator);
   Chord_tremolo_iterator ();
 protected:
-  virtual SCM get_music_list () const;
+  SCM get_music_list () const override;
 private:
 };
 

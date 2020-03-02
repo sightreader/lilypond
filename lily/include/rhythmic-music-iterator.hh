@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2012 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2012--2020 Mike Solomon <mike@mikesolomon.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 class Rhythmic_music_iterator : public Simple_music_iterator
 {
 protected:
-  DECLARE_CLASSNAME (Rhythmic_music_iterator);
+  OVERRIDE_CLASS_NAME (Rhythmic_music_iterator);
 
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
@@ -36,8 +36,8 @@ public:
   Rhythmic_music_iterator (Rhythmic_music_iterator const &);
 
 protected:
-  virtual void process (Moment);
-  virtual void construct_children ();
+  void process (Moment) override;
+  void construct_children () override;
 };
 
 #endif /* RHYTHMIC_MUSIC_ITERATOR_HH */

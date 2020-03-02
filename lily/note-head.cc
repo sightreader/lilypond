@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #include <cctype>
 #include <algorithm>            //  min, max
 
-using namespace std;
 
 #include "directional-element-interface.hh"
 #include "font-interface.hh"
@@ -33,12 +32,14 @@ using namespace std;
 #include "staff-symbol-referencer.hh"
 #include "warn.hh"
 
+using std::string;
+
 static Stencil
 internal_print (Grob *me, string *font_char)
 {
   string style = robust_symbol2string (me->get_property ("style"), "default");
 
-  string suffix = ::to_string (min (robust_scm2int (me->get_property ("duration-log"), 2), 2));
+  string suffix = std::to_string (std::min (robust_scm2int (me->get_property ("duration-log"), 2), 2));
   if (style != "default")
     suffix = robust_scm2string (me->get_property ("glyph-name"), "");
 
@@ -144,8 +145,8 @@ Note_head::include_ledger_line_height (SCM smob)
       // The +1 and -1 come from the fact that we only want to add
       // the interval between the note and the first ledger line, not
       // the whole interval between the note and the staff.
-      Interval iv (min (0.0, lines[UP] - my_ext[DOWN] + 1),
-                   max (0.0, lines[DOWN] - my_ext[UP] - 1));
+      Interval iv (std::min (0.0, lines[UP] - my_ext[DOWN] + 1),
+                   std::max (0.0, lines[DOWN] - my_ext[UP] - 1));
       return ly_interval2scm (iv);
     }
 
@@ -166,8 +167,8 @@ Note_head::get_stem_attachment (Font_metric *fm, const string &key)
 {
   Offset att;
 
-  int k = fm->name_to_index (key);
-  if (k >= 0)
+  size_t k = fm->name_to_index (key);
+  if (k != GLYPH_INDEX_INVALID)
     {
       Box b = fm->get_indexed_char_dimensions (k);
       Offset wxwy = fm->attachment_point (key);

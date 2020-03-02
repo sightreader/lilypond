@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -26,6 +26,8 @@
 #include "international.hh"
 
 #include "translator.icc"
+
+using std::string;
 
 /**
    Generate texts for lyric syllables.  We only do one lyric at a time.
@@ -144,7 +146,7 @@ get_current_note_head (Context *voice)
       // It's a bit irritating that we just have the length and
       // duration of the Grob.
       Moment end_from_now =
-        get_event_length (unsmob<Stream_event> (g->get_property ("cause")), now)
+        get_event_length (g->event_cause (), now)
         + now;
       // We cannot actually include more than a single grace note
       // using busyGrobs on ungraced lyrics since a grob ending on

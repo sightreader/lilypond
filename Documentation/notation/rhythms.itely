@@ -52,7 +52,7 @@ The durations of notes are entered using numbers and dots.  The number
 entered is based on the reciprocal value of the length of the note.  For
 example, a quarter note is designated using the numerical value of
 @code{4} as it is a 1/4 note, a half note using @code{2}, an eighth
-using @code{8} and so on.  Durations as short as @code{128} notes can be
+using @code{8} and so on.  Durations as short as @code{1024} notes can be
 entered but shorter values, while possible, can only be entered as
 beamed notes.  Also see @ref{Beams}.
 
@@ -199,7 +199,7 @@ Internals Reference:
 @c Deliberately duplicated in Durations and Rests.  -gp
 While there is no fundamental limit to rest durations (longest or
 shortest), there is a limit to the number of glyphs possible so only
-rests between @code{128} and @code{\maxima} may be printed.
+rests between @code{1024} and @code{\maxima} may be printed.
 
 
 @node Tuplets
@@ -348,9 +348,15 @@ Internals Reference:
 @cindex scaling duration
 @cindex duration, scaling
 
-The duration of single notes, rests or chords may be multiplied by a
-fraction @code{N/M} by appending @code{*N/M} (or @code{*N} if @code{M}
-is 1) to the duration.  This will not affect the appearance of the
+The duration of single notes, rests or chords may be multiplied by
+a fraction @code{N/M} by appending @code{*N/M} (or @code{*N} if
+@code{M} is 1) to the duration.  Factors may also be added by
+using Scheme expressions evaluating to a number or musical length
+like @code{*#(ly:music-length @var{music})}.  This is convenient
+for scaling a duration of @samp{1} to let a note or multi-measure
+rest stretch to a length derived from a music variable.
+
+Adding a factor will not affect the appearance of the
 notes or rests produced, but the altered duration will be used in
 calculating the position within the measure and setting the duration
 in the MIDI output.  Multiplying factors may be combined like
@@ -387,9 +393,9 @@ a multiplier.  This is useful for skipping many measures, e.g.,
 Longer stretches of music may be compressed by a fraction in the
 same way, as if every note, chord or rest had the fraction as a
 multiplier.  This leaves the appearance of the music unchanged but
-the internal duration of the notes will be multiplied by the
-fraction @emph{num}/@emph{den}.  Here is an example showing how music
-can be compressed and expanded:
+the internal duration of the notes will be multiplied by the given
+scale factor, usually @emph{num}/@emph{den}.  Here is an example
+showing how music can be compressed and expanded:
 
 @lilypond[quote,verbatim]
 \relative {
@@ -401,7 +407,7 @@ can be compressed and expanded:
     <c a f>4. c8 a f
   }
   % Scale music by *2
-  \scaleDurations 2/1 {
+  \scaleDurations 2 {
     <c' a>4 c8 b
   }
 }
@@ -751,7 +757,7 @@ Internals Reference:
 @c Deliberately duplicated in Durations and Rests.  -gp
 There is no fundamental limit to rest durations (both in terms of
 longest and shortest), but the number of glyphs is limited: there
-are rests from 128th to maxima (8× whole).
+are rests from 1024th to maxima (8× whole).
 
 
 @node Invisible rests
@@ -933,33 +939,36 @@ R2.*2 |
 @cindex markup, on multi-measure rest
 @cindex multi-measure rest, with markup
 
-@funindex \fermata
 @funindex MultiMeasureRestText
+@funindex MultiMeasureRestScript
 
 Markups can be added to multi-measure rests.
-The predefined command @code{\fermata}
-is provided for adding fermatas.
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermata
 }
 @end lilypond
 
-@warning{Markups attached to a multi-measure rest are objects of type
-@code{MultiMeasureRestText}, not @code{TextScript}.  Overrides must
+@warning{Markups and articulations attached to a multi-measure rest
+are objects of types @code{MultiMeasureRestText} and
+@code{MultiMeasureRestScript}, not @code{TextScript} and
+@code{Script}.  Overrides must
 be directed to the correct object, or they will be ignored.  See the
 following example:}
 
 @lilypond[quote,verbatim,fragment]
 % This fails, as the wrong object name is specified
 \override TextScript.padding = #5
+\override Script.color = #blue
 R1^"wrong"
+R1\fermata
 % This is the correct object name to be specified
 \override MultiMeasureRestText.padding = #5
+\override MultiMeasureRestScript.color = #blue
 R1^"right"
+R1\fermata
 @end lilypond
 
 When a multi-measure rest immediately follows a @code{\partial}
@@ -968,33 +977,34 @@ setting, resulting bar-check warnings may not be displayed.
 
 @funindex \textLengthOn
 @funindex \textLengthOff
-@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermata},
 @code{\compressMMRests}.
 @endpredefined
 
 
 @snippets
 
-@cindex church rest
-@cindex rest, church
-@cindex kirchenpausen
-
+@cindex multi-measure rest, length
+@cindex length of multi-measure rest
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {multi-measure-rest-length-control.ly}
 
 @cindex multi-measure rest, numbering
 @funindex restNumberThreshold
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
-{changing-form-of-multi-measure-rests.ly}
+{numbering-single-measure-rests.ly}
 
-@cindex multi-measure rests, positioning
-@cindex positioning multi-measure rests
+@cindex church rest
+@cindex rest, church
+@cindex kirchenpause
+@cindex multi-measure rest, style
+@cindex style, multi-measure rests
+@lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
+{changing-form-of-multi-measure-rests.ly}
 
 @cindex multi-measure rest, positioning
 @cindex position, multi-measure rest
@@ -1025,6 +1035,7 @@ Snippets:
 Internals Reference:
 @rinternals{MultiMeasureRest},
 @rinternals{MultiMeasureRestNumber},
+@rinternals{MultiMeasureRestScript},
 @rinternals{MultiMeasureRestText}.
 
 @cindex fingering, and multi-measure rest
@@ -2102,7 +2113,7 @@ If automatic beaming is not required, it may be turned off with
 
 @warning{If beams are used to indicate melismata in songs, then
 automatic beaming should be switched off with @code{@bs{}autoBeamOff}
-and the beams indicated manually.  Using @code{@bs{}partcombine} with
+and the beams indicated manually.  Using @code{@bs{}partCombine} with
 @code{@bs{}autoBeamOff} can produce unintended results.  See the
 snippets for more information.}
 

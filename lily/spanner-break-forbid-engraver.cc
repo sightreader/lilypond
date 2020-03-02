@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2007--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Spanner_break_forbid_engraver : public Engraver
 {
   TRANSLATOR_DECLARATIONS (Spanner_break_forbid_engraver);
@@ -41,16 +43,14 @@ void
 Spanner_break_forbid_engraver::process_music ()
 {
   if (running_spanners_.size ())
-    {
-      context ()->get_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
-    }
+    find_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
 }
 
 void
 Spanner_break_forbid_engraver::acknowledge_end_unbreakable_spanner (Grob_info gi)
 {
   vector<Spanner *>::iterator i = find (running_spanners_.begin (), running_spanners_.end (),
-                                        gi.spanner ());
+                                        dynamic_cast<Spanner *> (gi.grob ()));
   if (i != running_spanners_.end ())
     running_spanners_.erase (i);
 }
@@ -59,7 +59,7 @@ void
 Spanner_break_forbid_engraver::acknowledge_unbreakable_spanner (Grob_info gi)
 {
   if (!to_boolean (gi.grob ()->get_property ("breakable")))
-    running_spanners_.push_back (gi.spanner ());
+    running_spanners_.push_back (dynamic_cast<Spanner *> (gi.grob ()));
 }
 
 Spanner_break_forbid_engraver::Spanner_break_forbid_engraver (Context *c)

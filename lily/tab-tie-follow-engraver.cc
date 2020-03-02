@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2010--2015 Carl D. Sorensen
+  Copyright (C) 2010--2020 Carl D. Sorensen
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,13 +22,14 @@
 
 #include "engraver.hh"
 
-using namespace std;
 
 #include "context.hh"
 #include "item.hh"
 #include "spanner.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /*
    Change tab-note-head properties when a tie is followed by a
@@ -59,19 +60,19 @@ Tab_tie_follow_engraver::Tab_tie_follow_engraver (Context *c)
 void
 Tab_tie_follow_engraver::acknowledge_glissando (Grob_info info)
 {
-  glissandi_.push_back (info.spanner ());
+  glissandi_.push_back (dynamic_cast<Spanner *> (info.grob ()));
 }
 
 void
 Tab_tie_follow_engraver::acknowledge_tab_note_head (Grob_info info)
 {
-  note_heads_.push_back (info.item ());
+  note_heads_.push_back (dynamic_cast<Item *> (info.grob ()));
 }
 
 void
 Tab_tie_follow_engraver::acknowledge_slur (Grob_info info)
 {
-  slurs_.push_back (info.spanner ());
+  slurs_.push_back (dynamic_cast<Spanner *> (info.grob ()));
 }
 
 void

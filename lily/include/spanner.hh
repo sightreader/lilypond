@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ class Spanner : Preinit_Spanner, public Grob
 {
   vsize break_index_;
 
-  DECLARE_CLASSNAME (Spanner);
+  OVERRIDE_CLASS_NAME (Spanner);
 
 public:
   DECLARE_SCHEME_CALLBACK (set_spacing_rods, (SCM));
@@ -59,7 +59,7 @@ public:
   DECLARE_SCHEME_CALLBACK (bounds_width, (SCM));
   DECLARE_SCHEME_CALLBACK (kill_zero_spanned_time, (SCM));
 
-  vector<Spanner *> broken_intos_;
+  std::vector<Spanner *> broken_intos_;
 
   vsize get_break_index () const;
   Spanner *broken_neighbor (Direction d) const;
@@ -69,29 +69,37 @@ public:
   void substitute_one_mutable_property (SCM sym, SCM val);
 
   Interval_t<Moment> spanned_time () const;
-  virtual Interval_t<int> spanned_rank_interval () const;
+  Interval_t<int> spanned_rank_interval () const override;
+
   void set_bound (Direction d, Grob *);
-  Item *get_bound (Direction d) const;
+  // accepts_as_bound_...() are used in the implementation of set_bound ().
+  virtual bool accepts_as_bound_item (const Item *) const;
+  virtual bool accepts_as_bound_paper_column (const Paper_column *) const;
+  Item *get_bound (Direction d) const { return spanned_drul_[d]; }
 
   Spanner (SCM);
   Spanner (Spanner const &);
+  Spanner *original () const
+  {
+    // safe: if there is an original, it is because this was cloned from it
+    return static_cast<Spanner *> (Grob::original ());
+  }
   bool is_broken () const;
   void do_break ();
   Real spanner_length () const;
 
-  static int compare (Spanner *const &, Spanner *const &);
   static bool less (Spanner *const &, Spanner *const &);
-  virtual Grob *find_broken_piece (System *) const;
-  virtual void derived_mark () const;
-  virtual System *get_system () const;
+  Spanner *find_broken_piece (System *) const override;
+  void derived_mark () const override;
+  System *get_system () const override;
 
-  SCM get_cached_pure_property (SCM sym, int start, int end);
-  void cache_pure_property (SCM sym, int start, int end, SCM value);
+  SCM get_cached_pure_property (SCM sym, vsize start, vsize end);
+  void cache_pure_property (SCM sym, vsize start, vsize end, SCM value);
 
 protected:
   void set_my_columns ();
-  virtual Grob *clone () const;
-  virtual void do_break_processing ();
+  Spanner *clone () const override { return new Spanner (*this); }
+  void do_break_processing () override;
   bool fast_substitute_grob_array (SCM sym, Grob_array *);
 };
 

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,23 +21,23 @@
 #define MIDI_STREAM_HH
 
 #include <cstdio>
-using namespace std;
 
 #include <string.h>
 #include "std-string.hh"
 #include "lily-proto.hh"
 
-struct Midi_stream
+class Midi_stream
 {
-  Midi_stream (const string &file_name_string);
+public:
+  Midi_stream (const std::string &file_name_string);
   ~Midi_stream ();
 
-  void write (const string&);
+  void write (const std::string&);
   void write (Midi_chunk const &);
   void open ();
 
   FILE *out_file_;
-  string file_name_string_;
+  std::string file_name_string_;
 };
 
 #endif // MIDI_STREAM_HH

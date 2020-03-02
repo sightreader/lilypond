@@ -1494,8 +1494,7 @@ caso è preferibile usare la sintassi più semplice spiegata in
 \markup {
   \column {
     \line {
-      \override #'(font-shape . italic)
-      \override #'(font-size . 4)
+      \override #'((font-shape . italic) (font-size . 4))
       Idomeneo,
     }
     \line {

@@ -6,7 +6,6 @@
 
 #include <cstring>
 #include <cstdlib>
-using namespace std;
 
 /* for qsort */
 bool tab_less (Keyword_ent const &p1, Keyword_ent const &p2)
@@ -22,7 +21,7 @@ Keyword_table::Keyword_table (Keyword_ent *tab)
   vector_sort (table_, tab_less);
 }
 
-vsize
+int
 Keyword_table::lookup (char const *s) const
 {
   Keyword_ent e;
@@ -30,5 +29,5 @@ Keyword_table::lookup (char const *s) const
   vsize idx = binary_search (table_, e, tab_less);
   if (idx != VPOS)
     return table_[idx].tokcode_;
-  return VPOS;
+  return -1;
 }

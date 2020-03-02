@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ public:
 };
 
 void make_script_from_event (Grob *p, Context *tg,
-                             SCM type, int index);
+                             SCM type, size_t index);
 
 #endif /* SCRIPT_INTERFACE_HH */
 

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,20 +32,20 @@
 #include "tie-formatting-problem.hh"
 #include "tie-configuration.hh"
 
-using namespace std;
+using std::vector;
 
 void
 Tie_column::add_tie (Grob *tc, Spanner *tie)
 {
-  Spanner *me = dynamic_cast<Spanner *> (tc);
-
   if (tie->get_parent (Y_AXIS)
       && has_interface<Tie_column> (tie->get_parent (Y_AXIS)))
     return;
 
+  // TODO: Change to a Spanner in the function signature.
+  Spanner *me = dynamic_cast<Spanner *> (tc);
   if (!me->get_bound (LEFT)
-      || (Paper_column::get_rank (me->get_bound (LEFT)->get_column ())
-          > Paper_column::get_rank (dynamic_cast<Spanner *> (tie)->get_bound (LEFT)->get_column ())))
+      || (me->get_bound (LEFT)->get_column ()->get_rank ()
+          > tie->get_bound (LEFT)->get_column ()->get_rank ()))
     {
       me->set_bound (LEFT, Tie::head (tie, LEFT));
       me->set_bound (RIGHT, Tie::head (tie, RIGHT));

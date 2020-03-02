@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public:
   static Real stem_attachment_coordinate (Grob *, Axis a);
   static int get_balltype (Grob *);
 
-  static Offset get_stem_attachment (Font_metric *, const string&);
+  static Offset get_stem_attachment (Font_metric *, const std::string&);
 };
 #endif // NOTEHEAD_HH
 

@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;; Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -94,6 +94,10 @@
 
 (define out-port (open-output-file outname))
 
+;; Don't output Latin1.
+(if (guile-v2)
+    (set-port-encoding! out-port "UTF-8"))
+
 (writing-wip outname)
 
 (display
@@ -103,15 +107,6 @@
   "
 
 @include macros.itexi
-
-@ignore
-@omftitle LilyPond internals
-@omfcreator Han-Wen Nienhuys and Jan Nieuwenhuizen
-@omfdescription Programmer's reference of the LilyPond music engraving system
-@omftype user's guide
-@omflanguage English
-@omfcategory Applications|Publishing
-@end ignore
 
 @iftex
 @afourpaper
@@ -130,7 +125,7 @@
 @c author: Jan Nieuwenhuizen
 @c commit: 8ecd09ad7514d57630fb611d38c161f3c3c708db
 @c   file: scm/generate-documentation.scm
-Copyright @copyright{} 2000--2015 by the authors
+Copyright @copyright{} 2000--2020 by the authors
 
 @vskip 20pt
 

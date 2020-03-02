@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -48,12 +48,12 @@ public:
   bool accept_music_type (Stream_event *, bool is_cue = true) const;
 
 protected:
-  virtual void derived_mark () const;
-  virtual void construct_children ();
-  virtual Moment pending_moment () const;
-  virtual void process (Moment);
-  virtual void do_quit ();
-  virtual bool ok () const;
+  void derived_mark () const override;
+  void construct_children () override;
+  Moment pending_moment () const override;
+  void process (Moment) override;
+  void do_quit () override;
+  bool ok () const override;
 };
 
 void
@@ -125,19 +125,26 @@ Quote_iterator::construct_children ()
 {
   Music_wrapper_iterator::construct_children ();
 
-  SCM name = get_music ()->get_property ("quoted-context-type");
-  SCM id = get_music ()->get_property ("quoted-context-id");
+  Context *cue_context = 0;
 
+  SCM name = get_music ()->get_property ("quoted-context-type");
   if (scm_is_symbol (name))
     {
-      Context *cue_context =
-        get_outlet ()->find_create_context (name,
-                                            robust_scm2string (id, ""),
-                                            SCM_EOL);
-      quote_outlet_.set_context (cue_context);
+      SCM id = get_music ()->get_property ("quoted-context-id");
+      std::string c_id = robust_scm2string (id, "");
+      cue_context = get_outlet ()->find_create_context (CENTER,
+                                                        name, c_id, SCM_EOL);
+      if (!cue_context)
+        {
+          Input *origin = get_music ()->origin ();
+          origin->warning (_f ("cannot find or create context: %s",
+                               Context::diagnostic_id (name, c_id).c_str ()));
+        }
     }
-  else
-    quote_outlet_.set_context (get_outlet ()->get_default_interpreter ());
+
+  if (!cue_context)
+    cue_context = get_outlet ()->get_default_interpreter ();
+  quote_outlet_.set_context (cue_context);
 
   event_vector_ = get_music ()->get_property ("quoted-events");
 
@@ -178,14 +185,14 @@ Quote_iterator::pending_moment () const
   Moment m (infty);
 
   if (Music_wrapper_iterator::ok ())
-    m = min (m, Music_wrapper_iterator::pending_moment ());
+    m = std::min (m, Music_wrapper_iterator::pending_moment ());
 
   /*
     In case event_idx_ < 0, we're not initted yet, and the wrapped
     music expression determines the starting moment.
   */
   if (quote_ok ())
-    m = min (m, vector_moment (event_idx_) - start_moment_);
+    m = std::min (m, vector_moment (event_idx_) - start_moment_);
 
   return m;
 }

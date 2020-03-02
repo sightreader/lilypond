@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,11 +23,11 @@
 
 class Phrasing_slur_engraver : public Slur_engraver
 {
-  virtual SCM event_symbol () const;
-  virtual bool double_property () const;
-  virtual SCM grob_symbol () const;
-  virtual const char* object_name () const;
-  virtual void set_melisma (bool);
+  SCM event_symbol () const override;
+  bool double_property () const override;
+  SCM grob_symbol () const override;
+  const char* object_name () const override;
+  void set_melisma (bool) override;
 
 public:
   TRANSLATOR_DECLARATIONS (Phrasing_slur_engraver);

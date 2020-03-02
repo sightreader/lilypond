@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Juergen Reuter <reuter@ipd.uka.de>,
+  Copyright (C) 2002--2020 Juergen Reuter <reuter@ipd.uka.de>,
   Pal Benko <benkop@freestart.hu>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -29,6 +29,8 @@
 #include "output-def.hh"
 #include "staff-symbol-referencer.hh"
 #include "warn.hh"
+
+using std::string;
 
 /*
   draws one half a flexa, i.e. a portion corresponding to a single note.
@@ -170,7 +172,7 @@ internal_brew_primitive (Grob *me)
       // fallthrough
     case MLP_BREVIS:
       duration_log--;
-      suffix = ::to_string (duration_log) + color
+      suffix = std::to_string (duration_log) + color
                + (duration_log < -1 ? "lig" : "") + "mensural";
       index = prefix + "s";
       out = fm->find_by_name (index + "r" + suffix);

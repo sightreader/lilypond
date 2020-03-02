@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ Optimal_page_breaking::solve ()
 {
   vsize end = last_break_position ();
   vsize max_sys_count = max_system_count (0, end);
-  vsize first_page_num = robust_scm2int (book_->paper_->c_variable ("first-page-number"), 1);
+  int first_page_num = robust_scm2int (book_->paper_->c_variable ("first-page-number"), 1);
 
   set_to_ideal_line_configuration (0, end);
 

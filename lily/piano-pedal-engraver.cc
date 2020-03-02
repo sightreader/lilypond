@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Jan Nieuwenhuizen <janneke@gnu.org>,
+  Copyright (C) 2000--2020 Jan Nieuwenhuizen <janneke@gnu.org>,
                  Erik Sandberg <mandolaerik@gmail.com>
 
   Chris Jackson <chris@fluffhouse.org.uk> - extended to support
@@ -39,7 +39,7 @@
 
 #include "translator.icc"
 
-#include <string.h>
+using std::string;
 
 /*
   TODO:
@@ -66,19 +66,11 @@ enum Pedal_type
 struct Pedal_type_info
 {
   string base_name_;
-  SCM event_class_sym_;
-  SCM style_sym_;
-  SCM strings_sym_;
+  SCM event_class_sym_ = SCM_EOL;
+  SCM style_sym_ = SCM_EOL;
+  SCM strings_sym_ = SCM_EOL;
+  string pedal_str_;
 
-  const char *pedal_c_str_;
-
-  Pedal_type_info ()
-  {
-    event_class_sym_ = SCM_EOL;
-    style_sym_ = SCM_EOL;
-    strings_sym_ = SCM_EOL;
-    pedal_c_str_ = 0;
-  }
   void protect ()
   {
     scm_gc_protect_object (event_class_sym_);
@@ -121,8 +113,8 @@ public:
   TRANSLATOR_DECLARATIONS (Piano_pedal_engraver);
 
 protected:
-  virtual void initialize ();
-  virtual void finalize ();
+  void initialize () override;
+  void finalize () override;
   void listen_sustain (Stream_event *);
   void listen_una_corda (Stream_event *);
   void listen_sostenuto (Stream_event *);
@@ -171,7 +163,7 @@ init_pedal_types ()
       info.strings_sym_ = scm_from_ascii_symbol (("pedal" + base_name + "Strings").c_str ());
 
       info.base_name_ = name;
-      info.pedal_c_str_ = strdup ((base_name + "Pedal").c_str ());
+      info.pedal_str_ = base_name + "Pedal";
 
       info.protect ();
 
@@ -314,11 +306,10 @@ Piano_pedal_engraver::create_text_grobs (Pedal_info *p, bool mixed)
 
   if (scm_is_string (s))
     {
-      const char *propname = p->type_->pedal_c_str_;
-
-      p->item_ = make_item (propname, (p->event_drul_[START]
-                                       ? p->event_drul_[START]
-                                       : p->event_drul_[STOP])->self_scm ());
+      p->item_ = make_item (p->type_->pedal_str_.c_str (),
+                            (p->event_drul_[START]
+                             ? p->event_drul_[START]
+                             : p->event_drul_[STOP])->self_scm ());
 
       p->item_->set_property ("text", s);
     }

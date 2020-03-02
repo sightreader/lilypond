@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -120,6 +120,7 @@
     (if in-layout?
         (ly:warning (_ "set-global-staff-size: not in toplevel scope")))
 
+    (ly:reset-all-fonts)
     (layout-set-absolute-staff-size-in-module new-scope
                                               (* sz (eval 'pt new-scope)))
     (module-define! current-mod '$defaultpaper new-paper)))

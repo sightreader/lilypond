@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; (c) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; (c) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;                 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -15,7 +15,6 @@
 ;;;;
 ;;;; You should have received a copy of the GNU General Public License
 ;;;; along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; clefs
@@ -84,46 +83,78 @@ way the transposition number is displayed."
             (make-line-markup (list (make-concat-markup note-markup)))
             (make-null-markup)))))
 
-(define-public (format-mark-alphabet mark context)
-  (make-bold-markup (make-markalphabet-markup (1- mark))))
+(define (select-option options available)
+  (let ((o (find (lambda (x) (memq x available))
+                 options)))
+    (if o o (car available))))
 
-(define-public (format-mark-box-alphabet mark context)
-  (make-bold-markup (make-box-markup (make-markalphabet-markup (1- mark)))))
+(define-public (format-mark-generic options)
+  ; Select “alphabet”, frame, font-series, letter-case and double letter behaviour
+  ; from options list; if none is given, default to first available.
+  (let ((ab (select-option options '(alphabet-omit-i alphabet alphabet-omit-j barnumbers numbers roman)))
+        (fr (select-option options '(noframe box circle oval)))
+        (fs (select-option options '(bold medium)))
+        (lc (select-option options '(uppercase lowercase mixedcase)))
+        (dl (select-option options '(combine repeat))))
+    (lambda (number context)
+      (let* ((the-string
+               (case ab
+                 ((barnumbers) (number->string (ly:context-property context 'currentBarNumber)))
+                 ((numbers) (number->string number))
+                 ((roman) (fancy-format #f "~@r" number))
+                 (else (markgeneric-string number ab dl))))
+             (the-cased-string
+               (case lc
+                 ; both roman numbers and alphabet-based marks are
+                 ; already uppercase, (bar)numbers aren’t affected
+                 ((uppercase)                    the-string)
+                 ((mixedcase) (string-capitalize the-string))
+                 ((lowercase) (string-downcase   the-string))))
+             (the-framed-string
+               (case fr
+                 ((box)    (make-box-markup    the-cased-string))
+                 ((circle) (make-circle-markup the-cased-string))
+                 ((oval)   (make-oval-markup   the-cased-string))
+                 ((noframe)                    the-cased-string))))
+        (case fs
+          ((bold) (make-bold-markup the-framed-string))
+          ((medium)                 the-framed-string))))))
 
-(define-public (format-mark-circle-alphabet mark context)
-  (make-bold-markup (make-circle-markup (make-markalphabet-markup (1- mark)))))
+(define-public format-mark-alphabet
+  (format-mark-generic '(alphabet)))
 
-(define-public (format-mark-letters mark context)
-  (make-bold-markup (make-markletter-markup (1- mark))))
+(define-public format-mark-box-alphabet
+  (format-mark-generic '(alphabet box)))
 
-(define-public (format-mark-numbers mark context)
-  (make-bold-markup (number->string mark)))
+(define-public format-mark-circle-alphabet
+  (format-mark-generic '(alphabet circle)))
 
-(define-public (format-mark-barnumbers mark context)
-  (make-bold-markup (number->string (ly:context-property context
-                                                         'currentBarNumber))))
+(define-public format-mark-letters
+  (format-mark-generic '()))
 
-(define-public (format-mark-box-letters mark context)
-  (make-bold-markup (make-box-markup (make-markletter-markup (1- mark)))))
+(define-public format-mark-numbers
+  (format-mark-generic '(numbers)))
 
-(define-public (format-mark-circle-letters mark context)
-  (make-bold-markup (make-circle-markup (make-markletter-markup (1- mark)))))
+(define-public format-mark-barnumbers
+  (format-mark-generic '(barnumbers)))
 
-(define-public (format-mark-box-numbers mark context)
-  (make-bold-markup (make-box-markup (number->string mark))))
+(define-public format-mark-box-letters
+  (format-mark-generic '(box)))
 
-(define-public (format-mark-circle-numbers mark context)
-  (make-bold-markup (make-circle-markup (number->string mark))))
+(define-public format-mark-circle-letters
+  (format-mark-generic '(circle)))
 
-(define-public (format-mark-box-barnumbers mark context)
-  (make-bold-markup (make-box-markup
-                     (number->string (ly:context-property context
-                                                          'currentBarNumber)))))
+(define-public format-mark-box-numbers
+  (format-mark-generic '(numbers box)))
 
-(define-public (format-mark-circle-barnumbers mark context)
-  (make-bold-markup (make-circle-markup
-                     (number->string (ly:context-property context
-                                                          'currentBarNumber)))))
+(define-public format-mark-circle-numbers
+  (format-mark-generic '(numbers circle)))
+
+(define-public format-mark-box-barnumbers
+  (format-mark-generic '(barnumbers box)))
+
+(define-public format-mark-circle-barnumbers
+  (format-mark-generic '(barnumbers circle)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -241,14 +272,51 @@ If the context-property @code{supportNonIntegerFret} is set @code{#t},
 micro-tones are supported for TabStaff, but not not for FretBoards."
 
   ;;  helper functions
+  (define (barre-list string-frets)
+    "Create a barre-list that reflects the string, fret, and finger
+entries in @var{string-frets}."
+    (let* ((finger-range '(0  4)) ; range of possible finger numbers
+           (barre-elements 4) ; 4 elements per barre entry:
+                              ; 'barre
+                              ; highest string number
+                              ; lowest string number
+                              ; finger (seems redundant, but makes it
+                              ;  easy to convert from array to list
+           (barres (make-array 0 finger-range barre-elements))
+           (add-string-fret
+             (lambda(sf)
+               (let ((string (car sf))
+                     (fret (cadr sf))
+                     (finger (if (null? (caddr sf)) 0 (caddr sf))))
+                   (if (and (not (= fret 0)) (not (= finger 0)))
+                       (begin
+                         (array-set! barres 'barre finger 0)
+                         (array-set! barres fret finger 3)
+                         (if (or (< (array-ref barres finger 1) string)
+                                 (= 0 (array-ref barres finger 1)))
+                             (array-set! barres string finger 1))
+                         (if (or (> (array-ref barres finger 2) string)
+                                 (= 0 (array-ref barres finger 2)))
+                             (array-set! barres string finger 2)))))))
+           (barre-list (begin
+                        (map add-string-fret string-frets)
+                        (array->list barres))))
+         (filter (lambda(l) (and (eq? (car l) 'barre)
+                               (not (= (fourth l) 0))
+                               (> (second l) (third l))))
+               barre-list)))
+
 
   (define (string-frets->placement-list string-frets string-count)
     "Convert @var{string-frets} to @code{fret-diagram-verbose}
 dot placement entries."
     (let* ((placements (list->vector
                         (map (lambda (x) (list 'mute  x))
-                             (iota string-count 1)))))
-
+                             (iota string-count 1))))
+           (no-fingers (null? (filter (lambda (sf)
+                                          (not (null? (caddr sf))))
+                                        string-frets)))
+           (b-list (barre-list string-frets)))
       (for-each (lambda (sf)
                   (let* ((string (car sf))
                          (fret (cadr sf))
@@ -258,11 +326,13 @@ dot placement entries."
                      (1- string)
                      (if (= 0 fret)
                          (list 'open string)
-                         (if finger
-                             (list 'place-fret string fret finger)
-                             (list 'place-fret string fret))))))
+                         (if (null? finger)
+                             (list 'place-fret string fret)
+                             (list 'place-fret string fret finger))))))
                 string-frets)
-      (vector->list placements)))
+      (if (or (null? b-list) no-fingers)
+          (vector->list placements)
+          (append (vector->list placements) b-list))))
 
   (define (placement-list->string-frets placement-list)
     "Convert @var{placement-list} to string-fret list."
@@ -372,6 +442,11 @@ the current tuning?"
                   (not (ly:context-property context 'supportNonIntegerFret #f)))
                 (ly:warning (_ "Missing fret for pitch ~a on string ~a")
                             (car pitch-entry) string)))
+        (if (and (= this-fret 0)
+                 (and finger
+                      (not (null? finger))))
+            (ly:warning (_ "Open fret on string ~a has finger of ~a")
+                        string finger))
         (delete-free-string string)
         (set! specified-frets (cons this-fret specified-frets))
         (list-set! string-fret-fingers
@@ -793,3 +868,73 @@ original @var{semitone->pitch} function."
                       key))
 
 (export shift-semitone->pitch)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; NoteNames
+
+(define-public (note-name-markup pitch context)
+  (let* ((markuplist '())
+         (oct-style (ly:context-property context 'printOctaveNames))
+         (acc-style (ly:context-property context 'printAccidentalNames))
+         (lang (ly:context-property context 'printNotesLanguage))
+         (lily-str (symbol->string (note-name->lily-string pitch)))
+         (basic-str (if (not (null? lang))
+                        (note-name->string pitch (string->symbol lang))
+                        (note-name->string pitch))))
+    (set! markuplist
+          (append markuplist
+            (if acc-style
+                (if (eq? acc-style 'lily)
+                    (list lily-str)
+                    (list basic-str
+                      (accidental->markup (ly:pitch-alteration pitch))))
+                (list basic-str))))
+    (if oct-style
+        (set! markuplist
+              (append markuplist
+                (list
+                 (if (eq? oct-style 'scientific)
+                     (make-sub-markup
+                      (number->string
+                       (+ 4 (ly:pitch-octave pitch))))
+                     (octave->lily-string pitch))))))
+    (make-concat-markup markuplist)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; markups for OttavaBrackets
+
+(define-public ottavation-numbers
+  '((4 . "29")
+    (3 . "22")
+    (2 . "15")
+    (1 . "8")
+    (-1 . "8")
+    (-2 . "15")
+    (-3 . "22")
+    (-4 . "29")))
+
+(define-public ottavation-ordinals
+  `((4 . ,(markup #:concat (#:general-align Y UP "29"
+                             #:general-align Y UP #:tiny "ma")))
+    (3 . ,(markup #:concat (#:general-align Y UP "22"
+                             #:general-align Y UP #:tiny "ma")))
+    (2 . ,(markup #:concat (#:general-align Y UP "15"
+                             #:general-align Y UP #:tiny "ma")))
+    (1 . ,(markup #:concat (#:general-align Y UP "8"
+                             #:general-align Y UP #:tiny "va")))
+    (-1 . ,(markup #:concat ("8" #:tiny "va")))
+    (-2 . ,(markup #:concat ("15" #:tiny "ma")))
+    (-3 . ,(markup #:concat ("22" #:tiny "ma")))
+    (-4 . ,(markup #:concat ("29" #:tiny "ma")))))
+
+; former default
+(define-public ottavation-simple-ordinals
+  '((4 . "29ma")
+    (3 . "22ma")
+    (2 . "15ma")
+    (1 . "8va")
+    (-1 . "8vb")
+    (-2 . "15mb")
+    (-3 . "22mb")
+    (-4 . "29mb")))

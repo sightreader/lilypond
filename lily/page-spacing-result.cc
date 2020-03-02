@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2007--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ Page_spacing_result::average_force () const
   for (vsize i = 0; i < page_count (); i++)
     average_force += force_[i];
 
-  average_force /= page_count ();
+  average_force /= static_cast<Real> (page_count ());
   return average_force;
 }
 

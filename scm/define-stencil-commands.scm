@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@ are used internally in @file{lily/@/stencil-interpret.cc}."
     rotate-stencil
     scale-stencil
     translate-stencil
-    transparent-stencil
     with-outline
     ))
 

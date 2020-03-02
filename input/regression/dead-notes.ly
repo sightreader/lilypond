@@ -1,4 +1,4 @@
-\version "2.19.46"
+\version "2.21.0"
 
 \header{ texidoc = "Muted notes (also called dead notes) are supported
                     within normal staves and tablature.  They are printed

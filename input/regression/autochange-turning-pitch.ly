@@ -2,7 +2,7 @@
 \version "2.21.0"
 
 \header {
-  texidoc=" Other turning points for the autochanger are possible."
+  texidoc=" Other turning points for the autoChanger are possible."
 }
 
 \layout { ragged-right= ##t }

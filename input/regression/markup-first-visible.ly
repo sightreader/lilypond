@@ -1,4 +1,4 @@
-\version "2.19.80"
+\version "2.21.0"
 
 \header {
   texidoc = "The markup command @code{\\first-visible} uses the first argument that produces a non-empty stencil and ignores the rest.

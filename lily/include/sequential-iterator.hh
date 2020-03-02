@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2002--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,21 +30,21 @@ class Sequential_iterator : public Music_iterator
 {
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
-  DECLARE_CLASSNAME (Sequential_iterator);
+  OVERRIDE_CLASS_NAME (Sequential_iterator);
   Sequential_iterator ();
   Sequential_iterator (Sequential_iterator const &);
-  virtual void derived_substitute (Context *f, Context *t);
+  void derived_substitute (Context *f, Context *t) override;
 
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 
-  virtual void construct_children ();
-  virtual Moment pending_moment () const;
-  virtual void do_quit ();
-  virtual bool ok () const;
+  void construct_children () override;
+  Moment pending_moment () const override;
+  void do_quit () override;
+  bool ok () const override;
 
 protected:
-  virtual void process (Moment);
-  virtual bool run_always () const;
+  void process (Moment) override;
+  bool run_always () const override;
 
 protected:
   Music_iterator *iter_;

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,12 +33,12 @@ struct Drul_array
   T &at (Direction d)
   {
     assert (d == 1 || d == -1);
-    return array_[ (d + 1) / 2];
+    return array_[d > 0];
   }
   T const &at (Direction d) const
   {
     assert (d == 1 || d == -1);
-    return array_[ (d + 1) / 2];
+    return array_[d > 0];
   }
   T &operator [] (Direction d)
   {
@@ -73,8 +73,8 @@ scale_drul (Drul_array<T> *dr, T x)
 inline Real
 linear_combination (Drul_array<Real> const &d, Real x)
 {
-  return ((1.0 - x) * Real (d.at (LEFT))
-          + (x + 1.0) * Real (d.at (RIGHT))) * 0.5;
+  return ((1.0 - x) * static_cast<Real> (d.at (LEFT))
+          + (x + 1.0) * static_cast<Real> (d.at (RIGHT))) * 0.5;
 }
 
 #endif /* DRUL_ARRAY_HH */

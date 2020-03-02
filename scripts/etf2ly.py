@@ -63,7 +63,6 @@ if version == '@' + 'TOPLEVEL_VERSION' + '@':
 ################################################################
 
 import lilylib as ly
-_ = ly._
  
 finale_clefs= ['treble', 'alto', 'tenor', 'bass', 'percussion', 'treble_8', 'bass_8', 'baritone']
 
@@ -134,17 +133,17 @@ have the correct number of accidentals
 
 # should cache this.
 def find_scale (keysig):
-    cscale = map (lambda x: (x,0), range (0,7))
+    cscale = [(x,0) for x in range (0,7)]
 #        print "cscale: ", cscale
-    ascale = map (lambda x: (x,0), range (-2,5))
+    ascale = [(x,0) for x in range (-2,5)]
 #        print "ascale: ", ascale
     transposition = keysig.pitch
     if keysig.sig_type == 1:
         transposition = transpose(transposition, (2, -1))
         transposition = (transposition[0] % 7, transposition[1])
-        trscale = map(lambda x, k=transposition: transpose(x, k), ascale)
+        trscale = list(map(lambda x, k=transposition: transpose(x, k), ascale))
     else:
-        trscale = map(lambda x, k=transposition: transpose(x, k), cscale)
+        trscale = list(map(lambda x, k=transposition: transpose(x, k), cscale))
 #        print "trscale: ", trscale
     return trscale
 
@@ -172,9 +171,9 @@ def rational_to_lily_skip (rat):
         d = d >> 1
 
     str = 's%d' % basedur
-    if n <> 1:
+    if n != 1:
         str = str + '*%d' % n
-    if d <> 1:
+    if d != 1:
         str = str + '/%d' % d
 
     return str
@@ -262,7 +261,7 @@ class Tuplet:
                 edu_left = edu_left - c.EDU_duration ()
             if edu_left == 0:
                 c.chord_suffix = c.chord_suffix+ self.dump_end ()
-            c = c.next
+            c = c.__next__
 
         if edu_left:
             sys.stderr.write ("\nHuh? Tuplet starting at entry %d was too short." % self.start_note)
@@ -304,7 +303,7 @@ class Global_measure:
         self.finale = []
 
     def __str__ (self):
-        return `self.finale `
+        return repr(self.finale)
     
     def set_timesig (self, finale):
         (beats, fdur) = finale
@@ -315,7 +314,7 @@ class Global_measure:
             log = log * 2
             dots = 0
 
-        if dots <> 0:
+        if dots != 0:
             sys.stderr.write ("\nHuh? Beat duration has  dots? (EDU Duration = %d)" % fdur) 
         self.timesig = (beats, log)
 
@@ -571,7 +570,7 @@ class Staff:
                                  g.key_signature.signature_type())
                     
                     last_key = g.key_signature
-                if last_time <> g.timesig :
+                if last_time != g.timesig :
                     e = e + "\\time %d/%d " % g.timesig
                     last_time = g.timesig
 
@@ -596,11 +595,11 @@ class Staff:
                 if g.force_break:
                     e = e + ' \\break '  
             
-            if last_clef <> m.clef :
+            if last_clef != m.clef :
                 e = e + '\\clef "%s"' % lily_clef (m.clef)
                 last_clef = m.clef
             if e:
-                if gap <> (0,1):
+                if gap != (0,1):
                     k = k +' ' + rational_to_lily_skip (gap) + '\n'
                 gap = (0,1)
                 k = k + e
@@ -636,7 +635,7 @@ class Staff:
                     laystr = laystr + "%% non existent frame %d (skipped)\n" % x
                 if fr:
                     first_frame = fr
-                    if gap <> (0,1):
+                    if gap != (0,1):
                         laystr = laystr +'} %s {\n ' % rational_to_lily_skip (gap)
                         gap = (0,1)
                     laystr = laystr + fr.dump ()
@@ -754,9 +753,9 @@ class Chord:
         if tiestart :
             self.chord_suffix = self.chord_suffix + ' ~ '
         
-    REST_MASK = 0x40000000L
-    TIE_START_MASK = 0x40000000L
-    GRACE_MASK = 0x00800000L
+    REST_MASK = 0x40000000
+    TIE_START_MASK = 0x40000000
+    GRACE_MASK = 0x00800000
     
     def ly_string (self):
         s = ''
@@ -828,11 +827,11 @@ Return: (value, rest-of-STR)
             str = str[1:]
 
         
-        return (long (hex, 16), str)
+        return (int (hex, 16), str)
     elif str[0] == '"':
         str = str[1:]
         s = ''
-        while str and str[0] <> '"':
+        while str and str[0] != '"':
             s = s + str[0]
             str = str[1:]
 
@@ -874,7 +873,7 @@ def parse_etf_file (fn, tag_dict):
 
     for l in  ls:
         m = re.match ('^([a-zA-Z0-9&]+)\(([^)]+)\)', l)
-        if m and tag_dict.has_key (m.group (1)):
+        if m and m.group (1) in tag_dict:
             tag = m.group (1)
 
             indices = tuple ([int (s) for s in m.group (2).split (',')])
@@ -882,7 +881,7 @@ def parse_etf_file (fn, tag_dict):
 
 
             tdict = etf_file_dict[tag]
-            if not tdict.has_key (indices):
+            if indices not in tdict:
                 tdict[indices] = []
 
 
@@ -895,7 +894,7 @@ def parse_etf_file (fn, tag_dict):
             else:
                 while content:
                     (v, content) = read_finale_value (content)
-                    if v <> None:
+                    if v != None:
                         parsed.append (v)
 
             tdict [indices].extend (parsed)
@@ -957,7 +956,7 @@ class Etf_file:
     def try_TP(self,  indices, contents):
         (nil, num) = indices
 
-        if self.tuplets[-1] == None or num <> self.tuplets[-1].start_note:
+        if self.tuplets[-1] == None or num != self.tuplets[-1].start_note:
             self.tuplets.append (Tuplet (num))
 
         self.tuplets[-1].append_finale (contents)
@@ -1054,8 +1053,8 @@ class Etf_file:
         sys.stderr.write ('reconstructing ...')
         sys.stderr.flush ()
 
-        for (tag,routine) in Etf_file.routine_dict.items ():
-            ks = etf_dict[tag].keys ()
+        for (tag,routine) in list(Etf_file.routine_dict.items ()):
+            ks = list(etf_dict[tag].keys ())
             ks.sort ()
             for k in ks:
                 routine (self, k, etf_dict[tag][k])
@@ -1130,10 +1129,10 @@ class Etf_file:
             return []
 
         
-        while c and c.number <> endno:
+        while c and c.number != endno:
             d = c # hack to avoid problem with scripts/build/grand-replace.py
             thread.append (d)
-            c = c.next
+            c = c.__next__
 
         if c: 
             d = c # hack to avoid problem with scripts/build/grand-replace.py
@@ -1188,7 +1187,7 @@ def warranty ():
 
 %s
 %s
-''' % ( _ ('Copyright (c) %s by') % '2001--2015',
+''' % ( _ ('Copyright (c) %s by') % '2001--2020',
         '\n  '.join (authors),
         _ ('Distributed under terms of the GNU General Public License.'),
         _ ('It comes with NO WARRANTY.')))

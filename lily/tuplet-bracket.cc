@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -60,6 +60,9 @@
 #include "lookup.hh"
 #include "paper-column.hh"
 #include "moment.hh"
+#include "bezier.hh"
+
+using std::vector;
 
 static Item *
 get_x_bound_item (Grob *me_grob, Direction hdir, Direction my_dir)
@@ -69,7 +72,12 @@ get_x_bound_item (Grob *me_grob, Direction hdir, Direction my_dir)
   if (has_interface<Note_column> (g)
       && Note_column::get_stem (g)
       && Note_column::dir (g) == my_dir)
-    g = Note_column::get_stem (g);
+    {
+      Item *s = Note_column::get_stem (g);
+      if (!Stem::is_invisible (s)
+          && unsmob<Stencil> (s->get_property ("stencil")))
+        g = s;
+    }
 
   return g;
 }
@@ -145,7 +153,7 @@ Tuplet_bracket::calc_connect_to_neighbors (SCM smob)
   for (LEFT_and_RIGHT (d))
     {
       Direction break_dir = bounds[d]->break_status_dir ();
-      Spanner *orig_spanner = dynamic_cast<Spanner *> (me->original ());
+      Spanner *orig_spanner = me->original ();
       vsize neighbor_idx = me->get_break_index () - break_dir;
       if (break_dir
           && d == RIGHT
@@ -238,13 +246,56 @@ Tuplet_bracket::calc_x_positions (SCM smob)
           if (to_boolean (me->get_property ("full-length-to-extent")))
             coord = robust_relative_extent (bounds[d], commonx, X_AXIS)[LEFT];
 
-          coord = max (coord, x_span[LEFT]);
+          coord = std::max (coord, x_span[LEFT]);
 
           x_span[d] = coord - padding;
         }
     }
 
   return ly_interval2scm (x_span - me->get_bound (LEFT)->relative_coordinate (commonx, X_AXIS));
+}
+
+Stencil
+make_tuplet_slur (Grob *me, Offset left_cp, Offset right_cp,
+                  Drul_array<Real> shorten)
+{
+  Offset dz = right_cp - left_cp;
+  Real length = dz.length ();
+
+  left_cp += shorten[LEFT] / length * dz;
+  right_cp -= shorten[RIGHT] / length * dz;
+
+  Offset shortened_dz = right_cp - left_cp;
+  Real shortened_length = shortened_dz.length ();
+
+  // First, get a horizontal curve.  Will point upwards.
+  Real height_limit = 1.5;
+  Real ratio = .33;
+  Bezier curve = slur_shape (shortened_length, height_limit, ratio);
+
+  // Flip curve if needed.
+  Direction dir = get_grob_direction (me);
+  curve.scale (1, dir);
+
+  // Rotate curve to proper incline.
+  Real height = right_cp[Y_AXIS] - left_cp[Y_AXIS];
+  Real slope = height / shortened_length;
+  curve.rotate (atan (slope) * 180 / M_PI);
+
+  // Move rotated curve to correct starting point.
+  curve.translate (left_cp - curve.control_[0]);
+
+  SCM dash_definition = me->get_property ("dash-definition");
+  Real lt = me->layout ()->get_dimension (ly_symbol2scm ("line-thickness"));
+  Stencil mol (Lookup::slur (curve, lt, lt, dash_definition));
+
+  Grob *number_grob = unsmob<Grob> (me->get_object ("tuplet-number"));
+  if (number_grob) {
+    Real padding = robust_scm2double (number_grob->get_property ("padding"), 0.3);
+    mol.translate_axis (padding * dir, Y_AXIS);
+  }
+
+  return mol;
 }
 
 /*
@@ -259,6 +310,8 @@ Tuplet_bracket::print (SCM smob)
 {
   Spanner *me = unsmob<Spanner> (smob);
   Stencil mol;
+
+  bool tuplet_slur = ly_scm2bool (me->get_property ("tuplet-slur"));
 
   extract_grob_set (me, "note-columns", columns);
   bool equally_long = false;
@@ -327,56 +380,72 @@ Tuplet_bracket::print (SCM smob)
   if (bracket_visibility)
     {
       Drul_array<Real> zero (0, 0);
-      Real ss = Staff_symbol_referencer::staff_space (me);
-      Drul_array<Real> height
-        = robust_scm2drul (me->get_property ("edge-height"), zero);
-      Drul_array<Real> flare
-        = robust_scm2drul (me->get_property ("bracket-flare"), zero);
+
       Drul_array<Real> shorten
         = robust_scm2drul (me->get_property ("shorten-pair"), zero);
-      Drul_array<Stencil> edge_stencils;
 
-      Direction dir = get_grob_direction (me);
-
-      scale_drul (&height, -ss * dir);
-      scale_drul (&flare, ss);
+      Real ss = Staff_symbol_referencer::staff_space (me);
       scale_drul (&shorten, ss);
 
-      Drul_array<bool> connect_to_other
-        = robust_scm2booldrul (me->get_property ("connect-to-neighbor"),
-                               Drul_array<bool> (false, false));
+      Stencil brack;
 
-      for (LEFT_and_RIGHT (d))
+      if (tuplet_slur)
         {
-          if (connect_to_other[d])
+          brack = make_tuplet_slur (me, points[LEFT], points[RIGHT], shorten);
+          mol.add_stencil (brack);
+        }
+      else
+        {
+          Drul_array<Stencil> edge_stencils;
+
+          Drul_array<Real> height
+            = robust_scm2drul (me->get_property ("edge-height"), zero);
+          Drul_array<Real> flare
+            = robust_scm2drul (me->get_property ("bracket-flare"), zero);
+
+          Direction dir = get_grob_direction (me);
+
+          scale_drul (&height, -ss * dir);
+          scale_drul (&flare, ss);
+
+          Drul_array<bool> connect_to_other
+            = robust_scm2booldrul (me->get_property ("connect-to-neighbor"),
+                                   Drul_array<bool> (false, false));
+
+          for (LEFT_and_RIGHT (d))
             {
-              height[d] = 0.0;
-              flare[d] = 0.0;
-              shorten[d] = 0.0;
-
-              SCM edge_text = me->get_property ("edge-text");
-
-              if (scm_is_pair (edge_text))
+              if (connect_to_other[d])
                 {
-                  SCM properties = Font_interface::text_font_alist_chain (me);
-                  SCM text = index_get_cell (edge_text, d);
-                  if (Text_interface::is_markup (text))
-                    {
-                      SCM t
-                        = Text_interface::interpret_markup (pap->self_scm (),
-                                                            properties, text);
+                  height[d] = 0.0;
+                  flare[d] = 0.0;
+                  shorten[d] = 0.0;
 
-                      Stencil *edge_text = unsmob<Stencil> (t);
-                      edge_text->translate_axis (x_span[d] - x_span[LEFT],
-                                                 X_AXIS);
-                      edge_stencils[d] = *edge_text;
+                  SCM edge_text = me->get_property ("edge-text");
+
+                  if (scm_is_pair (edge_text))
+                    {
+                      SCM properties = Font_interface::text_font_alist_chain (me);
+                      SCM text = index_get_cell (edge_text, d);
+                      if (Text_interface::is_markup (text))
+                        {
+                          SCM t
+                          = Text_interface::interpret_markup (pap->self_scm (),
+                                                              properties, text);
+
+                          Stencil *edge_text = unsmob<Stencil> (t);
+                          edge_text->translate_axis (x_span[d] - x_span[LEFT],
+                                                     X_AXIS);
+                          edge_stencils[d] = *edge_text;
+                        }
                     }
                 }
             }
-        }
 
-      Stencil brack =
-        Bracket::make_bracket (
+      Stencil brack;
+      if (tuplet_slur)
+        brack = make_tuplet_slur (me, points[LEFT], points[RIGHT], shorten);
+      else
+        brack = Bracket::make_bracket (
           me, Y_AXIS, points[RIGHT] - points[LEFT], height,
           /*
             0.1 = more space at right due to italics
@@ -392,9 +461,9 @@ Tuplet_bracket::print (SCM smob)
         }
 
       mol.add_stencil (brack);
+      mol.translate (points[LEFT]);
     }
-
-  mol.translate (points[LEFT]);
+  }
   return mol.smobbed_copy ();
 }
 
@@ -776,6 +845,7 @@ ADD_INTERFACE (Tuplet_bracket,
                "bracket-visibility "
                "break-overshoot "
                "connect-to-neighbor "
+               "dashed-edge "
                "direction "
                "edge-height "
                "edge-text "
@@ -791,5 +861,6 @@ ADD_INTERFACE (Tuplet_bracket,
                "staff-padding "
                "thickness "
                "tuplets "
+               "tuplet-slur "
                "X-positions "
               );

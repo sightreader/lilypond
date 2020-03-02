@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ LY_DEFINE (ly_grob_array_length, "ly:grob-array-length",
   LY_ASSERT_SMOB (Grob_array, grob_arr, 1);
 
   Grob_array *me = unsmob<Grob_array> (grob_arr);
-  return scm_from_int (me->size ());
+  return scm_from_size_t (me->size ());
 }
 
 LY_DEFINE (ly_grob_array_ref, "ly:grob-array-ref",

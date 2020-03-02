@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2002--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #include "directional-element-interface.hh"
 #include "spanner.hh"
 #include "item.hh"
+
+using std::vector;
 
 MAKE_SCHEME_CALLBACK (Horizontal_bracket, print, 1);
 SCM
@@ -59,6 +61,7 @@ ADD_INTERFACE (Horizontal_bracket,
                "bracket-flare "
                "bracket-text "
                "columns "
+               "dashed-edge "
                "edge-height "
                "shorten-pair "
                "connect-to-neighbor "

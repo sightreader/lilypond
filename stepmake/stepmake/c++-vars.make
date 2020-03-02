@@ -1,13 +1,21 @@
+ARFLAGS = ru
 
-include $(stepdir)/compile-vars.make
+ALL_LDFLAGS = $(LDFLAGS) $(CONFIG_LDFLAGS) $(MODULE_LDFLAGS) $(CONFIG_LDFLAGS)
 
-EXTRA_CXXFLAGS = -W -Wall -Wconversion
-#ifeq ($(MY_PATCH_LEVEL),)
-#EXTRA_CXXFLAGS += -Werror
-#endif
+ifeq ($(MINGW_BUILD),)
+ifeq ($(CYGWIN_BUILD),)
+PIC_FLAGS = -fpic -fPIC
+endif
+endif
+
+EXTRA_CXXFLAGS = -std=c++11 -fno-exceptions -W -Wall -Wconversion -Woverloaded-virtual
+
+o-dep-out = $(outdir)/$(subst .o,.dep,$(notdir $@))#
+EXTRA_CXXFLAGS += -MMD -MP -MF $(o-dep-out) -MT $(outdir)/$(notdir $@)
 
 ALL_CXXPPFLAGS = $(CPPFLAGS) $(CONFIG_CPPFLAGS) $(DEFINES) $(INCLUDES:%=-I%)
-ALL_CXXFLAGS = $(CXXFLAGS) $(ALL_CXXPPFLAGS) $($(PACKAGE)_CXXFLAGS) $(CONFIG_CXXFLAGS) $(MODULE_CXXFLAGS) $(EXTRA_CXXFLAGS)
+# note: CXXFLAGS last allows user override of prior flags
+ALL_CXXFLAGS = $(ALL_CXXPPFLAGS) $(CONFIG_CXXFLAGS) $(MODULE_CXXFLAGS) $(EXTRA_CXXFLAGS) $(CXXFLAGS)
 
 TCC_FILES := $(call src-wildcard,*.tcc)
 HH_FILES := $(call src-wildcard,*.hh)

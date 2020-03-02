@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,12 +22,14 @@
 
 #include "std-string.hh"
 
-void read_relocation_dir (const string &dirname);
-void read_relocation_file (const string &filename);
-string expand_environment_variables (const string &orig);
+void read_relocation_dir (const std::string &dirname);
+void read_relocation_file (const std::string &filename);
+std::string expand_environment_variables (const std::string &orig);
 
-int sane_putenv (char const *key, const string &value, bool overwrite);
+int sane_putenv (char const *key,
+                 const std::string &value,
+                 bool overwrite,
+                 bool indent = false);
 void setup_paths (char const *argv0);
-extern bool relocate_binary;
 
 #endif /* RELOCATE_HH */

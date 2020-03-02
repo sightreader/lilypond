@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+;;;; Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;; Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -55,6 +55,8 @@
 (defmacro-public with-location (loc . body)
   `(with-fluids ((,%location ,loc)) ,@body))
 
+(define-public _ gettext)
+
 ;; It would be nice to convert occurences of parser/location to
 ;; (*parser*)/(*location*) using the syncase module but it is utterly
 ;; broken in GUILE 1 and would require changing a lot of unrelated
@@ -103,6 +105,12 @@
     (variable-set! var value)
     var))
 
+(define (define-session-internal name value)
+  ;; work function for define-session
+  (set! lilypond-declarations
+        (cons (make-session-variable name value) lilypond-declarations)))
+
+
 (defmacro define-session (name value)
   "This defines a variable @var{name} with the starting value
 @var{value} that is reinitialized at the start of each session.
@@ -116,23 +124,22 @@ this manner should be changed within a session only be adding material
 to their front or replacing them altogether, not by modifying parts of
 them.  It is an error to call @code{define-session} after the first
 session has started."
-  (define (add-session-variable name value)
-    (set! lilypond-declarations
-          (cons (make-session-variable name value) lilypond-declarations)))
-  `(,add-session-variable ',name ,value))
+  `(define-session-internal ',name ,value))
+
+(define (define-session-public-internal name value)
+  ;; work function for define-session-public
+  (set! lilypond-exports
+        (acons name (make-session-variable name value) lilypond-exports)))
 
 (defmacro define-session-public (name value)
   "Like @code{define-session}, but also exports @var{name} into parser modules."
-  (define (add-session-variable name value)
-    (set! lilypond-exports
-          (acons name (make-session-variable name value) lilypond-exports)))
   `(begin
      ;; this is a bit icky: we place the variable right into every
      ;; parser module so that both set! and define will affect the
      ;; original variable in the (lily) module.  However, we _also_
      ;; export it normally from (lily) for the sake of other modules
      ;; not sharing the name space of the parser.
-     (,add-session-variable ',name ,value)
+     (define-session-public-internal ',name ,value)
      (export ,name)))
 
 (define (session-terminate)
@@ -396,14 +403,6 @@ PDF previews.")
     (svg-woff
      #f
      "Use woff font files in SVG backend.")
-    (trace-memory-frequency
-     #f
-     "Record Scheme cell usage this many times per
-second.  Dump results to `FILE.stacks' and
-`FILE.graph'.")
-    (trace-scheme-coverage
-     #f
-     "Record coverage of Scheme files in `FILE.cov'.")
     (verbose ,(ly:verbose-output?)
              "Verbose output, i.e. loglevel at least DEBUG (read-only).")
     (warning-as-error
@@ -440,11 +439,8 @@ messages into errors.")
              (srfi srfi-13)
              (srfi srfi-14)
              (scm clip-region)
-             (scm memory-trace)
-             (scm coverage)
              (scm safe-utility-defs))
 
-(define-public _ gettext)
 ;;; There are new modules defined in Guile V2.0 which we need to use.
 ;;
 ;;  Modules and scheme files loaded by lily.scm use currying
@@ -492,16 +488,11 @@ messages into errors.")
 ;;; default.
 
 
-(if (or (ly:get-option 'verbose)
-        (ly:get-option 'trace-memory-frequency)
-        (ly:get-option 'trace-scheme-coverage))
+(if (or (ly:get-option 'verbose))
     (begin
       (ly:set-option 'protected-scheme-parsing #f)
       (debug-enable 'backtrace)
       (read-enable 'positions)))
-
-(if (ly:get-option 'trace-scheme-coverage)
-    (coverage:enable))
 
 (define music-string-to-path-backends
   '(svg))
@@ -607,7 +598,6 @@ messages into errors.")
     "define-markup-commands.scm"
     "stencil.scm"
     "modal-transforms.scm"
-    "chord-generic-names.scm"
     "chord-ignatzek-names.scm"
     "music-functions.scm"
     "part-combiner.scm"
@@ -647,7 +637,7 @@ messages into errors.")
 
     "paper.scm"
     "backend-library.scm"
-    "x11-color.scm"))
+    "color.scm"))
 ;;  - Files to be loaded last
 (define init-scheme-files-tail
   ;;  - must be after everything has been defined
@@ -714,6 +704,7 @@ messages into errors.")
     (,fraction? . "fraction, as pair")
     (,grob-list? . "list of grobs")
     (,index? . "non-negative integer")
+    (,integer-or-markup? . "integer or markup")
     (,key? . "index or symbol")
     (,key-list? . "list of indexes or symbols")
     (,key-list-or-music? . "key list or music")
@@ -724,13 +715,13 @@ messages into errors.")
     (,moment-pair? . "pair of moment objects")
     (,number-list? . "number list")
     (,number-or-grob? . "number or grob")
-    (,number-or-markup? . "number or markup")
     (,number-or-pair? . "number or pair")
     (,number-or-string? . "number or string")
     (,number-pair? . "pair of numbers")
     (,number-pair-list? . "list of number pairs")
     (,rational-or-procedure? . "an exact rational or procedure")
     (,rhythmic-location? . "rhythmic location")
+    (,scale? . "non-negative rational, fraction, or moment")
     (,scheme? . "any type")
     (,string-or-pair? . "string or pair")
     (,string-or-music? . "string or music")
@@ -1029,10 +1020,6 @@ PIDs or the number of the process."
   (if (string-or-symbol? (ly:get-option 'log-file))
       (ly:stderr-redirect (format #f "~a.log" (ly:get-option 'log-file)) "w"))
   (let ((failed (lilypond-all files)))
-    (if (ly:get-option 'trace-scheme-coverage)
-        (begin
-          (coverage:show-all (lambda (f)
-                               (string-contains f "lilypond")))))
     (if (pair? failed)
         (begin (ly:error (_ "failed files: ~S") (string-join failed))
                (ly:exit 1 #f))
@@ -1064,16 +1051,11 @@ PIDs or the number of the process."
              (ly:stderr-redirect (format #f "~a.log" base) "w"))
          (if ping-log
              (format ping-log "Processing ~a\n" base))
-         (if (ly:get-option 'trace-memory-frequency)
-             (mtrace:start-trace  (ly:get-option 'trace-memory-frequency)))
          (lilypond-file handler x)
          (ly:check-expected-warnings)
          (session-terminate)
          (if start-measurements
              (dump-profile x start-measurements (profile-measurements)))
-         (if (ly:get-option 'trace-memory-frequency)
-             (begin (mtrace:stop-trace)
-                    (mtrace:dump-results base)))
          (for-each (lambda (s)
                      (ly:set-option (car s) (cdr s)))
                    all-settings)

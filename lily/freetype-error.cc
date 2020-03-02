@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2007--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -36,6 +36,8 @@ const struct Freetype_error_message
   ;
 
 #include <string>
+
+using std::string;
 
 string
 freetype_error_string (FT_Error code)

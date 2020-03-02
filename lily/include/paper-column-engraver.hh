@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ protected:
   void start_translation_timestep ();
   void process_music ();
   void handle_manual_breaks (bool);
-  virtual void initialize ();
-  virtual void finalize ();
+  void initialize () override;
+  void finalize () override;
 
   void listen_break (Stream_event *);
   void listen_label (Stream_event *);
@@ -50,12 +50,12 @@ protected:
   void acknowledge_staff_spacing (Grob_info);
 
   System *system_;
-  vector<Stream_event *> break_events_;
-  vector<Stream_event *> label_events_;
+  std::vector<Stream_event *> break_events_;
+  std::vector<Stream_event *> label_events_;
   int breaks_;                  // used for stat printing
   Paper_column *command_column_;
   Paper_column *musical_column_;
-  vector<Item *> items_;
+  std::vector<Item *> items_;
   bool first_;
   bool made_columns_;
   Moment last_moment_;

@@ -1,7 +1,7 @@
 %% Translation of GIT committish: 17ffa111f7411b2feb67fa2883ea622c07e613a6
   texidoces = "
 La herramienta de combinación de partes (instrucción
-@code{\\partcombine}) permite la combinación de varias partes
+@code{\\partCombine}) permite la combinación de varias partes
 diferentes sobre el mismo pentagrama.  Las indicaciones textuales
 tales como @qq{solo} o @qq{a2} se añaden de forma predeterminada; para
 quitarlas, sencillamente establezca la propiedad
@@ -13,7 +13,7 @@ casos podría ser preferible la notación polifónica estándar.
 
 Este fragmento de código presenta las tres formas en que se pueden
 imprimir dos partes sobre un solo pentagrama: polifonía estándar,
-@code{\\partcombine} sin textos, y @code{\\partcombine} con
+@code{\\partCombine} sin textos, y @code{\\partCombine} con
 textos.
 
 "

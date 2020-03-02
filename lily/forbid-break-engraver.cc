@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--_2005 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2002--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ Forbid_line_break_engraver::start_translation_timestep ()
     {
       Grob *g = unsmob<Grob> (scm_cdar (busy));
       if (g->internal_has_interface (ly_symbol2scm ("rhythmic-grob-interface")))
-        context ()->get_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
+        find_score_context ()->set_property ("forbidBreak", SCM_BOOL_T);
       busy = scm_cdr (busy);
     }
 }

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,6 +32,10 @@
 
 #include "translator.icc"
 
+using std::deque;
+using std::map;
+using std::string;
+
 /* Perform a staff. Individual notes should have their instrument
   (staff-wide) set, so we override play_element ()
 */
@@ -42,9 +46,9 @@ public:
   ~Staff_performer ();
 
 protected:
-  virtual void acknowledge_audio_element (Audio_element_info info);
-  virtual void finalize ();
-  virtual void initialize ();
+  void acknowledge_audio_element (Audio_element_info info) override;
+  void finalize () override;
+  void initialize () override;
   void process_music ();
   void stop_translation_timestep ();
 
@@ -63,8 +67,8 @@ private:
                               Audio_staff *audio_staff,
                               int channel);
 
-    SCM get_property_value (const char *property_name);
-    void do_announce (Audio_control_change *item);
+    SCM get_property_value (const char *property_name) override;
+    void do_announce (Audio_control_change *item) override;
 
   private:
     Staff_performer *performer_;
@@ -263,19 +267,30 @@ Staff_performer::get_channel (const string &instrument)
   if (i != channel_map.end ())
     return i->second;
 
-  int channel = (scm_is_eq (channel_mapping, ly_symbol2scm ("staff")))
-                ? channel_count_++
-                : channel_map.size ();
+  auto channel = (scm_is_eq (channel_mapping, ly_symbol2scm ("staff")))
+                 ? channel_count_++
+                 : static_cast<int> (channel_map.size ());
 
   /* MIDI players tend to ignore instrument settings on channel
      10, the percussion channel.  */
   if (channel % 16 == 9)
     {
+      // TODO: Shouldn't this assign 9 rather than channel++?
+      //
+      // TODO: A hard-coded percussion entry ought to be created at the
+      // beginning, otherwise an early lookup of the key might cause it to be
+      // allocated an unexpected value.  Fixing this requires decoupling the
+      // next channel number from the map size.
+      //
+      // TODO: Should this entry really be created for any case of channel
+      // mapping, or perhaps only for the per-instrument case?
       channel_map["percussion"] = channel++;
+      // TODO: Above, channel_count_ is incremented in the per-staff case only;
+      // should that be considered here as well?
       channel_count_++;
     }
 
-  if (channel > 15)
+  if (channel > 15) // TODO: warn the first time only, maybe
     {
       warning (_ ("MIDI channel wrapped around"));
       warning (_ ("remapping modulo 16"));

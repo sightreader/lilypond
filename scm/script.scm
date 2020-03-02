@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -117,6 +117,26 @@
         (script-stencil . (feta . ("halfopenvertical" . "halfopenvertical")))
         (direction . ,UP)))
 
+    ("haydnturn"
+     . (
+        (script-stencil . (feta . ("haydnturn" . "haydnturn")))
+        (padding . 0.20)
+        (avoid-slur . inside)
+        (direction . ,UP)))
+
+    ("henzelongfermata"
+     . (
+        (script-stencil . (feta . ("dhenzelongfermata" . "uhenzelongfermata")))
+        (padding . 0.20)
+        (avoid-slur . around)
+        (direction . ,UP)))
+
+    ("henzeshortfermata"
+     . (
+        (script-stencil . (feta . ("dhenzeshortfermata" . "uhenzeshortfermata")))
+        (padding . 0.20)
+        (avoid-slur . around)
+        (direction . ,UP)))
 
     ("ictus"
      . (
@@ -264,6 +284,12 @@
         (padding . 0.20)
         (avoid-slur . outside)
         (direction . ,UP)))
+    ("slashturn"
+     . (
+        (script-stencil . (feta . ("slashturn" . "slashturn")))
+        (padding . 0.20)
+        (avoid-slur . inside)
+        (direction . ,UP)))
     ("snappizzicato"
      . (
         (script-stencil . (feta . ("snappizzicato" . "snappizzicato")))
@@ -358,6 +384,12 @@
     ("verylongfermata"
      . (
         (script-stencil . (feta . ("dverylongfermata" . "uverylongfermata")))
+        (padding . 0.20)
+        (avoid-slur . around)
+        (direction . ,UP)))
+    ("veryshortfermata"
+     . (
+        (script-stencil . (feta . ("dveryshortfermata" . "uveryshortfermata")))
         (padding . 0.20)
         (avoid-slur . around)
         (direction . ,UP)))

@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.21.0"
+@c \version "2.19.21"
 
 @node Expressive marks
 @section Expressive marks
@@ -56,6 +56,8 @@ Methods to create new dynamic markings are also discussed.
 @cindex stopped
 @cindex flageolet
 @cindex reverse turn
+@cindex slash turn
+@cindex haydn turn
 @cindex trill
 @cindex pralltriller
 @cindex mordent
@@ -98,6 +100,8 @@ Methods to create new dynamic markings are also discussed.
 @funindex \snappizzicato
 @funindex \turn
 @funindex \reverseturn
+@funindex \slashturn
+@funindex \haydnturn
 @funindex \trill
 @funindex \prall
 @funindex \mordent
@@ -111,11 +115,13 @@ Methods to create new dynamic markings are also discussed.
 @funindex \prallup
 @funindex \lineprall
 @funindex \signumcongruentiae
+@funindex \veryshortfermata
 @funindex \shortfermata
 @funindex \fermata
 @funindex \longfermata
 @funindex \verylongfermata
-@funindex \fermata
+@funindex \henzeshortfermata
+@funindex \henzelongfermata
 @funindex \segno
 @funindex \coda
 @funindex \varcoda
@@ -170,15 +176,13 @@ may be manually placed above or below the staff; see
 Articulations are @code{Script} objects.  Their properties are
 described more fully in @rinternals{Script}.
 
-Articulations can be attached to rests as well as notes but they
-cannot be attached to multi-measure rests.  A special predefined
-command, @code{\fermata}, is available for attaching a fermata
-to a multi-measure rest (and only a multi-measure rest).  This
-creates a @code{MultiMeasureRestText} object.
+Articulations can be attached to rests and multi-measure rests as
+well as notes.  Attaching an articulation to a multi-measure rest
+creates a @code{MultiMeasureRestScript} object.
 
 @lilypond[verbatim,quote,fragment]
 \override Script.color = #red
-\override MultiMeasureRestText.color = #blue
+\override MultiMeasureRestScript.color = #blue
 a'2\fermata r\fermata
 R1\fermata
 @end lilypond
@@ -270,14 +274,15 @@ Internals Reference:
 @funindex \spp
 @funindex \sfz
 @funindex \rfz
+@funindex \n
 
 Absolute dynamic marks are specified using a command after a note,
 such as @code{c4\ff}.  The available dynamic marks are
 @code{\ppppp}, @code{\pppp}, @code{\ppp}, @code{\pp}, @code{\p},
 @code{\mp}, @code{\mf}, @code{\f}, @code{\ff}, @code{\fff},
 @code{\ffff}, @code{\fffff}, @code{\fp}, @code{\sf}, @code{\sff},
-@code{\sp}, @code{\spp}, @code{\sfz}, and @code{\rfz}.  Dynamic
-marks may be manually placed above or below the staff; see
+@code{\sp}, @code{\spp}, @code{\sfz}, @code{\rfz}, and @code{\n}.
+Dynamic marks may be manually placed above or below the staff; see
 @ref{Direction and placement}.
 
 @lilypond[verbatim,quote]

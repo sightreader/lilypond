@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1996--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 class Note_performer : public Performer
 {

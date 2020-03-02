@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 */
 
 #include <cstring>
-using namespace std;
 
 #include "warn.hh"
 #include "font-interface.hh"
@@ -34,6 +33,8 @@ using namespace std;
 #include "bracket.hh"
 #include "lily-imports.hh"
 
+using std::string;
+
 /*
   this is too complicated. Yet another version of side-positioning,
   badly implemented.
@@ -48,13 +49,12 @@ SCM
 Volta_bracket_interface::print (SCM smob)
 {
   Spanner *me = unsmob<Spanner> (smob);
-  Spanner *orig_span = dynamic_cast<Spanner *> (me->original ());
-  bool broken_first_bracket = orig_span && (orig_span->broken_intos_[0]
-                                            == (Spanner *)me);
+  Spanner *orig_span = me->original ();
+  bool broken_first_bracket = orig_span && (orig_span->broken_intos_[0] == me);
 
   Output_def *layout = me->layout ();
 
-  Item *bound = dynamic_cast<Spanner *> (me)->get_bound (LEFT);
+  Item *bound = me->get_bound (LEFT);
 
   /*
     If the volta bracket appears after a line-break, make
@@ -88,7 +88,7 @@ Volta_bracket_interface::print (SCM smob)
   Drul_array<Real> shorten = robust_scm2interval (me->get_property ("shorten-pair"),
                                                   Interval (0, 0));
 
-  scale_drul (&edge_height, - Real (get_grob_direction (me)));
+  scale_drul (&edge_height, -static_cast<Real> (get_grob_direction (me)));
 
   Interval empty;
   Offset start;
@@ -118,10 +118,10 @@ Volta_bracket_interface::print (SCM smob)
 void
 Volta_bracket_interface::modify_edge_height (Spanner *me)
 {
-  Spanner *orig_span = dynamic_cast<Spanner *> (me->original ());
+  Spanner *orig_span = me->original ();
 
-  bool broken_first_bracket = orig_span && (orig_span->broken_intos_[0] == (Spanner *)me);
-  bool broken_last_bracket = orig_span && (orig_span->broken_intos_.back () == (Spanner *)me);
+  bool broken_first_bracket = orig_span && (orig_span->broken_intos_[0] == me);
+  bool broken_last_bracket = orig_span && (orig_span->broken_intos_.back () == me);
   bool no_vertical_start = orig_span && !broken_first_bracket;
   bool no_vertical_end = orig_span && !broken_last_bracket;
 
@@ -168,8 +168,8 @@ ADD_INTERFACE (Volta_bracket_interface,
 
                /* properties */
                "bars "
-               "thickness "
+               "dashed-edge "
                "height "
                "shorten-pair "
+               "thickness "
               );
-

@@ -7,7 +7,10 @@
 \version "2.19.22"
 
 #(if (guile-v2)
-  (use-modules (ice-9 curried-definitions)))
+  (begin
+   (use-modules (ice-9 curried-definitions))
+   (setlocale LC_ALL "")
+   (setlocale LC_NUMERIC "C")))
 
 #(session-initialize
   (lambda ()
@@ -79,3 +82,9 @@ $(if (ly:get-option 'include-settings)
   (ly:parser-clear-error)
   (if expect-error
    (ly:parser-error (_ "expected error, but none found"))))
+
+#(if (ly:get-option 'verbose)
+  (begin
+   (display "gc time taken: ")
+   (display (* 1.0 (/ (cdr (assoc 'gc-time-taken (gc-stats))) internal-time-units-per-second)))
+   (display "\n")))

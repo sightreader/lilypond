@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "least-squares.hh"
 
 #include "warn.hh"
+
+using std::vector;
 
 void
 minimise_least_squares (Real *coef, Real *offset,
@@ -40,7 +42,7 @@ minimise_least_squares (Real *coef, Real *offset,
       sxy += x * y;
     }
 
-  int count = input.size ();
+  const auto count = static_cast<Real> (input.size ());
 
   *coef = 0.0;
   *offset = 0.;

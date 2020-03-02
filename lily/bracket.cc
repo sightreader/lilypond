@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -29,6 +29,8 @@
  #include "spanner.hh"
  #include "item.hh"
  #include "line-interface.hh"
+
+using std::vector;
 
 /*
   should move to lookup?
@@ -77,8 +79,9 @@ Bracket::make_bracket (Grob *me, // for line properties.
     m.add_stencil (Line_interface::line (me, straight_corners[LEFT],
                                          straight_corners[RIGHT]));
 
-  if (scm_is_number (me->get_property ("dash-fraction")))
-    me->set_property ("dash-fraction", scm_from_double (1.0));
+  if (scm_is_eq (me->get_property ("style"), ly_symbol2scm ("dashed-line"))
+      && !to_boolean (me->get_property ("dashed-edge")))
+    me->set_property ("style", ly_symbol2scm ("line"));
   for (LEFT_and_RIGHT (d))
     m.add_stencil (Line_interface::line (me, straight_corners[d],
                                          flare_corners[d]));
@@ -86,11 +89,12 @@ Bracket::make_bracket (Grob *me, // for line properties.
 }
 
 /*
-  Return an ungapped bracket along either the X- or Y-axis.
+  Return a bracket oriented along either the X- or Y-axis.  Passing
+  Interval () for gap creates an unbroken bracket.
 */
 Stencil
 Bracket::make_axis_constrained_bracket (Grob *me, Real length, Axis a,
-                                        Direction dir)
+                                        Direction dir, Interval gap)
 {
   Drul_array<Real> edge_height = robust_scm2interval (me->get_property ("edge-height"),
                                                       Interval (1.0, 1.0));
@@ -100,7 +104,7 @@ Bracket::make_axis_constrained_bracket (Grob *me, Real length, Axis a,
                                                   Interval (0, 0));
 
   // Make sure that it points in the correct direction:
-  scale_drul (&edge_height, Real (-dir));
+  scale_drul (&edge_height, static_cast<Real> (-dir));
 
   Offset start;
   start[a] = length;
@@ -120,7 +124,7 @@ Bracket::make_axis_constrained_bracket (Grob *me, Real length, Axis a,
     }
 
   return make_bracket (me, other_axis (a), start, edge_height,
-                       Interval (), flare, shorten);
+                       gap, flare, shorten);
 }
 
 /*
@@ -143,9 +147,8 @@ Bracket::make_enclosing_bracket (Grob *me, Grob *refpoint,
     }
   else
     {
-      Stencil b = make_axis_constrained_bracket (me, ext.length (), a, dir);
+      Stencil b = make_axis_constrained_bracket (me, ext.length (), a, dir, Interval ());
       b.translate_axis (ext[LEFT] - refpoint->relative_coordinate (common, a), a);
-
       return b;
     }
 }

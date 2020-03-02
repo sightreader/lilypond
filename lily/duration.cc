@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include "misc.hh"
 #include "lily-proto.hh"
 
+using std::string;
 
 int
 Duration::compare (Duration const &left, Duration const &right)
@@ -133,11 +134,12 @@ Duration::to_string () const
   string s;
 
   if (durlog_ < 0)
-    s = "log = " + ::to_string (durlog_);
+    s = "log = " + std::to_string (durlog_);
   else
-    s = ::to_string (1 << durlog_);
+    s = std::to_string (1 << durlog_);
 
-  s += ::to_string ('.', dots_);
+  if (dots_ > 0)
+    s += string (dots_, '.');
   if (factor_ != Moment (Rational (1, 1)))
     s += "*" + factor_.to_string ();
   return s;

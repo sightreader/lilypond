@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2000--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ Line_spanner::calc_bound_info (SCM smob, Direction dir)
                       ? Axis_group_interface::generic_bound_extent (bound_grob, commonx, X_AXIS)
                       : robust_relative_extent (bound_grob, commonx, X_AXIS)).linear_combination (attach);
 
-      Grob *acc = unsmob<Grob> (bound_grob->get_object ("accidental-grob"));
+      Grob *acc = Note_column::accidentals (bound_grob->get_parent (X_AXIS));
       if (acc && to_boolean (ly_assoc_get (ly_symbol2scm ("end-on-accidental"), details, SCM_BOOL_F)))
         x_coord = robust_relative_extent (acc, commonx, X_AXIS).linear_combination (attach);
 
@@ -138,7 +138,7 @@ Line_spanner::calc_bound_info (SCM smob, Direction dir)
         {
           if (to_boolean (me->get_property ("simple-Y")))
             {
-              Spanner *orig = dynamic_cast<Spanner *>(me->original ());
+              Spanner *orig = me->original ();
               Spanner *extreme = dir == LEFT ? orig->broken_intos_.front () : orig->broken_intos_.back ();
               Grob *e_bound = extreme->get_bound (dir);
               Grob *e_common_y = extreme->common_refpoint (e_bound, Y_AXIS);

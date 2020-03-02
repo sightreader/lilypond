@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,29 +20,26 @@
 #ifndef VIRTUAL_METHODS_HH
 #define VIRTUAL_METHODS_HH
 
-#include <typeinfo>
-using namespace std;
+#include <type_traits>
 
-/*
-Virtual copy constructor.  Make up for C++'s lack of a standard
-factory or clone () function.  Usage:
-
-class Foo : Baseclass
-{
-VIRTUAL_COPY_CONSTRUCTOR (Baseclass, Foo);
-};
-*/
-
-#define DECLARE_CLASSNAME(name) \
+#define VIRTUAL_CLASS_NAME(name) \
   virtual const char *class_name () const {     \
+    /* It is annoying that we must repeat the class name for */ \
+    /* the preprocessor, but we can check that it is correct. */ \
+    typedef std::decay<decltype(*this)>::type self_type; \
+    static_assert (std::is_same<name, self_type>::value, ""); \
+    \
     return #name; \
-}
+  }
 
-#define VIRTUAL_COPY_CONSTRUCTOR(Base, name)    \
-  DECLARE_CLASSNAME(name);\
-  virtual Base *clone () const                  \
-  {                                             \
-    return new name (*this);                    \
+#define OVERRIDE_CLASS_NAME(name) \
+  const char *class_name () const override { \
+    /* It is annoying that we must repeat the class name for */ \
+    /* the preprocessor, but we can check that it is correct. */ \
+    typedef std::decay<decltype(*this)>::type self_type; \
+    static_assert (std::is_same<name, self_type>::value, ""); \
+    \
+    return #name; \
   }
 
 #endif /* VIRTUAL_METHODS_HH */

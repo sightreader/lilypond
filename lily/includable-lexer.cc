@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "includable-lexer.hh"
 
 #include <sstream>
-using namespace std;
 
 #include "config.hh"
 
@@ -32,6 +31,8 @@ using namespace std;
 #include "sources.hh"
 #include "warn.hh"
 
+using std::string;
+
 #ifndef YY_BUF_SIZE
 #define YY_BUF_SIZE 16384
 #endif
@@ -42,20 +43,7 @@ using namespace std;
 #define YYSTATE YY_START
 #endif
 
-/* Flex >= 2.5.29 has include stack; but we don't use that yet.  */
-#if !HAVE_FLEXLEXER_YY_CURRENT_BUFFER
-#define yy_current_buffer                                               \
-  (yy_buffer_stack != 0 ? yy_buffer_stack[yy_buffer_stack_top] : 0)
-#endif
-
 extern bool relative_includes;
-
-Includable_lexer::Includable_lexer ()
-{
-#if HAVE_FLEXLEXER_YY_CURRENT_BUFFER
-  yy_current_buffer = 0;
-#endif
-}
 
 /** Set the new input file to NAME, remember old file.  */
 void
@@ -71,26 +59,11 @@ Includable_lexer::new_input (const string &name, Sources *sources)
       string msg = _f ("cannot find file: `%s'", name);
       msg += "\n";
       msg += _f ("(search path: `%s')",
-                 (current_dir.length () ? (current_dir + PATHSEP) : "") + sources->path_->to_string ().c_str ());
+                 (current_dir.length () ? (current_dir + PATHSEP) : "") + sources->search_path ().c_str ());
       LexerError (msg.c_str ());
       return;
     }
-  file_name_strings_.push_back (file->name_string ());
-
-  char_count_stack_.push_back (0);
-  if (yy_current_buffer)
-    state_stack_.push_back (yy_current_buffer);
-
-  debug_output (string (state_stack_.size (), ' ') // indentation!
-                + string ("[") + file->name_string ());
-
-  include_stack_.push_back (file);
-
-  /* Ugh. We'd want to create a buffer from the bytes directly.
-
-  Whoops.  The size argument to yy_create_buffer is not the
-  filelength but a BUFFERSIZE.  Maybe this is why reading stdin fucks up.  */
-  yy_switch_to_buffer (yy_create_buffer (file->get_istream (), YY_BUF_SIZE));
+  new_input (file->name_string (), file);
 }
 
 void
@@ -98,42 +71,30 @@ Includable_lexer::new_input (const string &name, string data, Sources *sources)
 {
   Source_file *file = new Source_file (name, data);
   sources->add (file);
+  new_input (name, file);
+}
+
+void
+Includable_lexer::new_input (const string &name, Source_file *file)
+{
   file_name_strings_.push_back (name);
 
   char_count_stack_.push_back (0);
-  if (yy_current_buffer)
-    state_stack_.push_back (yy_current_buffer);
-
-  debug_output (string (state_stack_.size (), ' ') // indentation!
-                + string ("[") + name);
   include_stack_.push_back (file);
 
-  yy_switch_to_buffer (yy_create_buffer (file->get_istream (), YY_BUF_SIZE));
+  yypush_buffer_state (yy_create_buffer (file->get_istream (), YY_BUF_SIZE));
 }
 
 /** pop the inputstack.  conceptually this is a destructor, but it
     does not destruct the Source_file that Includable_lexer::new_input
     creates.  */
-bool
+void
 Includable_lexer::close_input ()
 {
   include_stack_.pop_back ();
   char_count_stack_.pop_back ();
   debug_output ("]", false);
-  yy_delete_buffer (yy_current_buffer);
-#if HAVE_FLEXLEXER_YY_CURRENT_BUFFER
-  yy_current_buffer = 0;
-#endif
-  if (state_stack_.empty ())
-    {
-#if HAVE_FLEXLEXER_YY_CURRENT_BUFFER
-      yy_current_buffer = 0;
-#endif
-      return false;
-    }
-  yy_switch_to_buffer (state_stack_.back ());
-  state_stack_.pop_back ();
-  return true;
+  yypop_buffer_state ();
 }
 
 char const *
@@ -156,4 +117,11 @@ Includable_lexer::get_source_file () const
   if (include_stack_.empty ())
     return 0;
   return include_stack_.back ();
+}
+
+void Includable_lexer::skip_chars (size_t count)
+{
+  for (size_t i = 0; i < count; ++i)
+    yyinput ();
+  char_count_stack_.back () += count;
 }

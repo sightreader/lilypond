@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -42,16 +42,16 @@ struct Preinit_Engraver_group
 class Engraver_group : Preinit_Engraver_group, public Translator_group
 {
 protected:
-  vector<Announce_grob_info> announce_infos_;
+  std::vector<Announce_grob_info> announce_infos_;
   void override (SCM);
   void revert (SCM);
 public:
-  DECLARE_CLASSNAME (Engraver_group);
+  OVERRIDE_CLASS_NAME (Engraver_group);
   Engraver_group ();
-  virtual void derived_mark () const;
+  void derived_mark () const override;
   void do_announces ();
-  virtual void connect_to_context (Context *c);
-  virtual void disconnect_from_context ();
+  void connect_to_context (Context *c) override;
+  void disconnect_from_context () override;
   virtual void announce_grob (Grob_info, Direction start_end,
                               Context *reroute_context = 0);
   bool pending_grobs () const;

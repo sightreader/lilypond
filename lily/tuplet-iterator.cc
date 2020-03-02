@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>,
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>,
                  Erik Sandberg <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -36,13 +36,13 @@ class Tuplet_iterator : public Music_wrapper_iterator
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
   /* construction */
-  DECLARE_CLASSNAME (Tuplet_iterator);
+  OVERRIDE_CLASS_NAME (Tuplet_iterator);
   Tuplet_iterator ();
 protected:
-  virtual void process (Moment m);
-  virtual void construct_children ();
-  virtual void derived_mark () const;
-  virtual Moment pending_moment () const;
+  void process (Moment m) override;
+  void construct_children () override;
+  void derived_mark () const override;
+  Moment pending_moment () const override;
 
   Music *create_event (Direction d);
 
@@ -92,7 +92,7 @@ Moment
 Tuplet_iterator::pending_moment () const
 {
   Moment next_mom = Music_wrapper_iterator::pending_moment ();
-  next_mom = min (next_mom, next_split_mom_);
+  next_mom = std::min (next_mom, next_split_mom_);
 
   return next_mom;
 }
@@ -110,7 +110,7 @@ Tuplet_iterator::process (Moment m)
       if (m.main_part_ < music_get_length ().main_part_)
         {
           spanner_duration_ =
-            min (music_get_length () - next_split_mom_, spanner_duration_);
+            std::min (music_get_length () - next_split_mom_, spanner_duration_);
           tuplet_handler_.set_context (get_outlet ());
           report_event (create_event (START));
 

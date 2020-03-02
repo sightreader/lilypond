@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2002--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include "context.hh"
 #include "lily-imports.hh"
 
+using std::string;
+
 class Volta_repeat_iterator : public Sequential_iterator
 {
 public:
@@ -30,11 +32,11 @@ public:
 
   void add_repeat_command (SCM);
 protected:
-  virtual SCM get_music_list () const;
-  virtual void next_element (bool);
-  virtual void construct_children ();
-  virtual void process (Moment);
-  virtual void derived_mark () const;
+  SCM get_music_list () const override;
+  void next_element (bool) override;
+  void construct_children () override;
+  void process (Moment) override;
+  void derived_mark () const override;
 
   bool first_time_;
   int alt_count_;
@@ -104,7 +106,7 @@ Volta_repeat_iterator::next_element (bool side_effect)
     {
       if (alt_count_)
         {
-          string repstr = ::to_string (rep_count_ - alt_count_ + done_count_) + ".";
+          string repstr = std::to_string (rep_count_ - alt_count_ + done_count_) + ".";
           if (done_count_ <= 1)
             {
               alt_restores_ = SCM_EOL;
@@ -163,7 +165,7 @@ Volta_repeat_iterator::next_element (bool side_effect)
             }
 
           if (done_count_ == 1 && alt_count_ < rep_count_)
-            repstr = "1.--" + ::to_string (rep_count_ - alt_count_ + done_count_) + ".";
+            repstr = "1.--" + std::to_string (rep_count_ - alt_count_ + done_count_) + ".";
 
           if (done_count_ <= alt_count_)
             add_repeat_command (scm_list_2 (ly_symbol2scm ("volta"),

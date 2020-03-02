@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2001--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2001--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +27,9 @@
 #include "stencil.hh"
 #include "system.hh"
 #include "skyline-pair.hh"
+
+using std::string;
+using std::vector;
 
 Stencil
 parenthesize (Grob *me, Stencil m)
@@ -56,10 +59,11 @@ Accidental_interface::horizontal_skylines (SCM smob)
   if (!my_stencil)
     return Skyline_pair ().smobbed_copy ();
 
+  SCM rot = me->get_property ("rotation");
   Skyline_pair *sky =
     unsmob<Skyline_pair>
       (Stencil::skylines_from_stencil
-        (my_stencil->smobbed_copy (), 0.0, Y_AXIS));
+        (my_stencil->smobbed_copy (), 0.0, rot, Y_AXIS));
 
   SCM alist = me->get_property ("glyph-name-alist");
   SCM alt = me->get_property ("alteration");

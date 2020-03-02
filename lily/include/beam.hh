@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ struct Beam_stem_segment
   Grob *stem_;
   Real width_;
   Real stem_x_;
-  int rank_;
+  vsize rank_;
   vsize stem_index_;
   bool gapped_;
   Direction dir_;
@@ -54,7 +54,7 @@ bool operator <(Beam_stem_segment const &a, Beam_stem_segment const &b);
 class Beam
 {
 public:
-  static int normal_stem_count (Grob *);
+  static vsize normal_stem_count (Grob *);
   static Grob *first_normal_stem (Grob *);
   static Grob *last_normal_stem (Grob *);
   static void add_stem (Grob *, Grob *);
@@ -66,7 +66,7 @@ public:
   static Real get_beam_translation (Grob *me);
   static Real get_beam_thickness (Grob *me);
   static void connect_beams (Grob *me);
-  static vector<Beam_segment> get_beam_segments (Grob *me_grob, Grob **common);
+  static std::vector<Beam_segment> get_beam_segments (Grob *me_grob, Grob **common);
 
   DECLARE_SCHEME_CALLBACK (rest_collision_callback, (SCM element, SCM prev_off));
   DECLARE_SCHEME_CALLBACK (pure_rest_collision_callback, (SCM element, SCM, SCM, SCM prev_off));
@@ -88,11 +88,11 @@ private:
   friend class Beam_scoring_problem;
 
   static Direction get_default_dir (Grob *);
-  static vector<Beam_segment> get_beam_segments (Grob *);
+  static std::vector<Beam_segment> get_beam_segments (Grob *);
   static void set_stem_directions (Grob *, Direction);
   static void consider_auto_knees (Grob *);
   static void set_stem_shorten (Grob *);
-  static int forced_stem_count (Grob *);
+  static vsize forced_stem_count (Grob *);
   static Real calc_stem_y (Grob *, Grob *s, Grob **c,
                            Real, Real, Direction,
                            Drul_array<Real> pos, bool french);

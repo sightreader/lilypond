@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1996--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,8 +25,9 @@
 #include "moment.hh"
 #include "audio-element.hh"
 
-struct Audio_staff : public Audio_element
+class Audio_staff : public Audio_element
 {
+public:
   void add_audio_item (Audio_item *ai);
   void output (Midi_stream &midi_stream_r, int track, bool port,
                Moment start_mom);
@@ -36,7 +37,7 @@ struct Audio_staff : public Audio_element
   Moment end_mom_;
   bool percussion_;
   bool merge_unisons_;
-  vector<Audio_item *> audio_items_;
+  std::vector<Audio_item *> audio_items_;
 };
 
 // Subtype to identify a staff that represents the "control track" of a MIDI

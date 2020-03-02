@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    Manufacture ties.  Acknowledge note heads, and put them into a
@@ -155,8 +157,8 @@ Tie_engraver::tie_notehead (Grob *h, bool enharmonic)
   for (vsize i = 0; i < heads_to_tie_.size (); i++)
     {
       Grob *th = heads_to_tie_[i].head_;
-      Stream_event *right_ev = unsmob<Stream_event> (h->get_property ("cause"));
-      Stream_event *left_ev = unsmob<Stream_event> (th->get_property ("cause"));
+      Stream_event *right_ev = h->event_cause ();
+      Stream_event *left_ev = th->event_cause ();
 
       /*
         maybe should check positions too.
@@ -280,8 +282,7 @@ Tie_engraver::process_acknowledged ()
   for (vsize i = 0; i < now_heads_.size (); i++)
     {
       Grob *head = now_heads_[i];
-      Stream_event *left_ev
-        = unsmob<Stream_event> (head->get_property ("cause"));
+      Stream_event *left_ev = head->event_cause ();
 
       if (!left_ev)
         {

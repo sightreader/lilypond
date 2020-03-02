@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
   along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <memory>
+
 #include "engraver.hh"
 #include "output-def.hh"
 #include "paper-column.hh"
@@ -27,6 +29,9 @@
 #include "system-start-delimiter.hh"
 
 #include "translator.icc"
+
+using std::unique_ptr;
+using std::vector;
 
 struct Bracket_nesting_node
 {
@@ -42,15 +47,15 @@ public:
 struct Bracket_nesting_group : public Bracket_nesting_node
 {
   Spanner *delimiter_;
-  vector<Bracket_nesting_node *> children_;
+  vector<unique_ptr<Bracket_nesting_node>> children_;
   SCM symbol_;
 
   void from_list (SCM);
-  virtual void add_support (Grob *grob);
-  virtual bool add_staff (Grob *grob);
-  virtual void set_nesting_support (Grob *);
-  virtual void set_bound (Direction, Grob *grob);
-  virtual void create_grobs (Engraver *, SCM);
+  void add_support (Grob *grob) override;
+  bool add_staff (Grob *grob) override;
+  void set_nesting_support (Grob *) override;
+  void set_bound (Direction, Grob *grob) override;
+  void create_grobs (Engraver *, SCM) override;
   ~Bracket_nesting_group ();
   Bracket_nesting_group ();
 };
@@ -60,7 +65,7 @@ struct Bracket_nesting_staff : public Bracket_nesting_node
   Grob *staff_;
 
   Bracket_nesting_staff (Grob *s) { staff_ = s; }
-  virtual bool add_staff (Grob *);
+  bool add_staff (Grob *) override;
 };
 
 Bracket_nesting_group::Bracket_nesting_group ()
@@ -101,7 +106,6 @@ Bracket_nesting_group::add_support (Grob *g)
 
 Bracket_nesting_group::~Bracket_nesting_group ()
 {
-  junk_pointers (children_);
 }
 
 void
@@ -130,9 +134,9 @@ Bracket_nesting_group::from_list (SCM x)
       SCM entry = scm_car (s);
       if (scm_is_pair (entry))
         {
-          Bracket_nesting_group *node = new Bracket_nesting_group;
+          unique_ptr<Bracket_nesting_group> node (new Bracket_nesting_group);
           node->from_list (entry);
-          children_.push_back (node);
+          children_.push_back (std::move (node));
         }
       else if (scm_is_eq (entry, ly_symbol2scm ("SystemStartBrace"))
                || scm_is_eq (entry, ly_symbol2scm ("SystemStartBracket"))
@@ -140,7 +144,10 @@ Bracket_nesting_group::from_list (SCM x)
                || scm_is_eq (entry, ly_symbol2scm ("SystemStartSquare")))
         symbol_ = entry;
       else
-        children_.push_back (new Bracket_nesting_staff (0));
+        {
+          children_.push_back (unique_ptr<Bracket_nesting_staff>
+                               (new Bracket_nesting_staff (0)));
+        }
     }
 }
 
@@ -173,7 +180,7 @@ protected:
   void acknowledge_staff_symbol (Grob_info);
 
   void process_music ();
-  virtual void finalize ();
+  void finalize () override;
 };
 
 System_start_delimiter_engraver::System_start_delimiter_engraver (Context *c)
@@ -219,7 +226,8 @@ System_start_delimiter_engraver::acknowledge_staff_symbol (Grob_info inf)
 
   if (!succ)
     {
-      nesting_->children_.push_back (new Bracket_nesting_staff (0));
+      nesting_->children_.push_back (unique_ptr<Bracket_nesting_staff>
+                                     (new Bracket_nesting_staff (0)));
       nesting_->add_staff (staff);
     }
 }

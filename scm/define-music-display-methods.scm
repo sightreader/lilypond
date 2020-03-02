@@ -1,7 +1,7 @@
 ;;; define-music-display-methods.scm -- data for displaying music
 ;;; expressions using LilyPond notation.
 ;;;
-;;; Copyright (C) 2005--2015 Nicolas Sceaux  <nicolas.sceaux@free.fr>
+;;; Copyright (C) 2005--2020 Nicolas Sceaux  <nicolas.sceaux@free.fr>
 ;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -74,14 +74,6 @@ expression."
 ;;;
 ;;; pitch names
 ;;;
-
-;; It is a pity that there is no rassoc in Scheme.
-(define* (rassoc item alist #:optional (test equal?))
-  (do ((alist alist (cdr alist))
-       (result #f result))
-      ((or result (null? alist)) result)
-    (if (and (car alist) (test item (cdar alist)))
-        (set! result (car alist)))))
 
 (define-public (note-name->lily-string ly-pitch)
   ;; here we define a custom pitch= function, since we do not want to
@@ -166,6 +158,23 @@ expression."
     (format #f ":~a" tremolo-type)))
 
 (define-display-method ArticulationEvent (event) #t
+  (let* ((articulation  (ly:music-property event 'articulation-type))
+         (shorthand
+          (case (string->symbol articulation)
+            ((marcato) "^")
+            ((stopped) "+")
+            ((tenuto)    "-")
+            ((staccatissimo) "!")
+            ((accent) ">")
+            ((staccato) ".")
+            ((portato) "_")
+            (else #f))))
+    (format #f "~a~:[\\~;~]~a"
+            (event-direction->lily-string event shorthand)
+            shorthand
+            (or shorthand articulation))))
+
+(define-display-method MultiMeasureArticulationEvent (event) #t
   (let* ((articulation  (ly:music-property event 'articulation-type))
          (shorthand
           (case (string->symbol articulation)
@@ -624,7 +633,7 @@ expression."
 ;;;
 
 (define-display-method AutoChangeMusic (m)
-  (format #f "\\autochange ~a"
+  (format #f "\\autoChange ~a"
           (music->lily-string
            (ly:music-property (ly:music-property m 'element) 'element))))
 
@@ -655,7 +664,8 @@ expression."
       result)))
 
 (define-display-method RelativeOctaveMusic (m)
-  (music->lily-string (ly:music-property m 'element)))
+  (format #f "\\absolute ~a"
+          (music->lily-string (ly:music-property m 'element))))
 
 (define-display-method TransposedMusic (m)
   (music->lily-string (ly:music-property m 'element)))
@@ -1012,10 +1022,10 @@ Otherwise, return #f."
                   (lambda ()
                     (pretty-print (procedure-source proc))))))))
 
-;;; \partcombine
+;;; \partCombine
 (define-display-method PartCombineMusic (expr)
   (let ((dir (ly:music-property expr 'direction)))
-    (format #f "\\partcombine~a ~a~a~a"
+    (format #f "\\partCombine~a ~a~a~a"
             (cond ((equal? dir UP) "Up")
                   ((equal? dir DOWN) "Down")
                   (else ""))
@@ -1029,7 +1039,7 @@ Otherwise, return #f."
                     (format #f "~a" (music->lily-string ?part))))
 
 (define-extra-display-method ContextSpeccedMusic (expr)
-  "If `expr' is a \\partcombine expression, return \"\\partcombine ...\".
+  "If `expr' is a \\partCombine expression, return \"\\partCombine ...\".
 Otherwise, return #f."
   (with-music-match
    (expr (music 'ContextSpeccedMusic
@@ -1068,11 +1078,11 @@ Otherwise, return #f."
                                quoted-context-id "cue"
                                quoted-context-type 'CueVoice
                                element ?music))
-                        (format #f "\\cueDuring #~s #~a ~a"
+                        (format #f "\\cueDuring ~s #~a ~a"
                                 ?quoted-music-name
                                 ?quoted-voice-direction
                                 (music->lily-string ?music)))
-      (format #f "\\quoteDuring #~s ~a"
+      (format #f "\\quoteDuring ~s ~a"
               (ly:music-property expr 'quoted-music-name)
               (music->lily-string (ly:music-property expr 'element)))))
 
@@ -1124,7 +1134,7 @@ Otherwise, return #f."
                          (*omit-duration* #t))
                         (music->lily-string (ly:music-property expr 'element)))))
 
-;; \autochange
+;; \autoChange
 (define-extra-display-method SimultaneousMusic (expr)
   (with-music-match (expr (music 'SimultaneousMusic
                                  elements ((music 'ContextSpeccedMusic

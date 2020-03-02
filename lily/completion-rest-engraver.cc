@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
                            Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -19,7 +19,6 @@
 */
 
 #include <cctype>
-using namespace std;
 
 #include "dot-column.hh"
 #include "dots.hh"
@@ -39,6 +38,8 @@ using namespace std;
 #include "misc.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /*
   How does this work?
@@ -72,7 +73,7 @@ public:
   TRANSLATOR_DECLARATIONS (Completion_rest_engraver);
 
 protected:
-  virtual void initialize ();
+  void initialize () override;
   void start_translation_timestep ();
   void process_music ();
   void stop_translation_timestep ();
@@ -94,7 +95,7 @@ Completion_rest_engraver::listen_rest (Stream_event *ev)
   Moment now = now_mom ();
   Moment musiclen = get_event_length (ev, now);
 
-  rest_end_mom_ = max (rest_end_mom_, (now + musiclen));
+  rest_end_mom_ = std::max (rest_end_mom_, (now + musiclen));
   do_nothing_until_ = Rational (0, 0);
 }
 
@@ -227,7 +228,7 @@ Completion_rest_engraver::process_music ()
 
   left_to_do_ -= rest_dur.get_length ();
   if (left_to_do_)
-    get_global_context ()->add_moment_to_process (now.main_part_ + rest_dur.get_length ());
+    find_global_context ()->add_moment_to_process (now.main_part_ + rest_dur.get_length ());
   /*
     don't do complicated arithmetic with grace rests.
   */

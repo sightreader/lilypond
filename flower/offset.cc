@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,13 +19,15 @@
 
 #include "offset.hh"
 
+using std::string;
+
 #ifndef STANDALONE
 string
 Offset::to_string () const
 {
   string s;
-  s = string (" (") + ::to_string (coordinate_a_[X_AXIS]) + ", "
-      + ::to_string (coordinate_a_[Y_AXIS]) + ")";
+  s = string (" (") + std::to_string (coordinate_a_[X_AXIS]) + ", "
+      + std::to_string (coordinate_a_[Y_AXIS]) + ")";
   return s;
 }
 #endif
@@ -38,7 +40,7 @@ Offset
 complex_multiply (Offset z1, Offset z2)
 {
   Offset z;
-  if (!isinf (z2[Y_AXIS]))
+  if (!std::isinf (z2[Y_AXIS]))
     {
       z[X_AXIS] = z1[X_AXIS] * z2[X_AXIS] - z1[Y_AXIS] * z2[Y_AXIS];
       z[Y_AXIS] = z1[X_AXIS] * z2[Y_AXIS] + z1[Y_AXIS] * z2[X_AXIS];
@@ -119,22 +121,22 @@ Offset::length () const
 bool
 Offset::is_sane () const
 {
-  return !isnan (coordinate_a_[X_AXIS])
-         && !isnan (coordinate_a_ [Y_AXIS])
-         && !isinf (coordinate_a_[X_AXIS])
-         && !isinf (coordinate_a_[Y_AXIS]);
+  return !std::isnan (coordinate_a_[X_AXIS])
+         && !std::isnan (coordinate_a_ [Y_AXIS])
+         && !std::isinf (coordinate_a_[X_AXIS])
+         && !std::isinf (coordinate_a_[Y_AXIS]);
 }
 
 Offset
 Offset::direction () const
 {
   Offset d = *this;
-  if (isinf (d[X_AXIS]))
+  if (std::isinf (d[X_AXIS]))
     {
-      if (!isinf (d[Y_AXIS]))
+      if (!std::isinf (d[Y_AXIS]))
         return Offset ((d[X_AXIS] > 0.0 ? 1.0 : -1.0), 0.0);
     }
-  else if (isinf (d[Y_AXIS]))
+  else if (std::isinf (d[Y_AXIS]))
     return Offset (0.0, (d[Y_AXIS] > 0.0 ? 1.0 : -1.0));
   else if (d[X_AXIS] == 0.0 && d[Y_AXIS] == 0.0)
     return d;

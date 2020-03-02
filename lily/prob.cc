@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2004--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "input.hh"
 #include "profile.hh"
 
+using std::string;
 
 const char * const Prob::type_p_name_ = "ly:prob?";
 

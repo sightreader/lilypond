@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,11 +37,11 @@
 class Note_collision_interface
 {
 public:
-  static SCM automatic_shift (Grob *, Drul_array<vector<Grob *> >);
+  static SCM automatic_shift (Grob *, Drul_array<std::vector<Grob *> >);
   static SCM forced_shift (Grob *);
 
-  static vector<int> note_head_positions (Grob *me);
-  static Drul_array<vector<Grob *> > get_clash_groups (Grob *me);
+  static std::vector<int> note_head_positions (Grob *me);
+  static Drul_array<std::vector<Grob *> > get_clash_groups (Grob *me);
   DECLARE_SCHEME_CALLBACK (calc_positioning_done, (SCM smob));
   static void add_column (Grob *me, Grob *ncol);
 };

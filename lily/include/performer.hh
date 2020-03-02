@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 class Performer : public Translator
 {
 public:
-  DECLARE_CLASSNAME (Performer);
+  OVERRIDE_CLASS_NAME (Performer);
   friend class Performer_group;
   Performer_group *get_daddy_performer () const;
   Performer (Context *c)

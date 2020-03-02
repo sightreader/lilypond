@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include <cctype>
 #include <sstream>
-using namespace std;
 
 #include "context.hh" // for nested_property_alist
 #include "international.hh"
@@ -36,6 +35,8 @@ using namespace std;
 #include "program-option.hh"
 #include "lily-parser.hh"
 #include "ly-module.hh"
+
+using std::string;
 
 static Keyword_ent the_key_tab[]
 =
@@ -235,12 +236,6 @@ Lily_lexer::start_main_input ()
   scm_module_define (scm_car (scopes_),
                      ly_symbol2scm ("input-file-name"),
                      ly_string2scm (main_input_name_));
-}
-
-void
-Lily_lexer::new_input (const string &str, string d, Sources *ss)
-{
-  Includable_lexer::new_input (str, d, ss);
 }
 
 void

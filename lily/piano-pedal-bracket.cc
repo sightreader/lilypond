@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2003--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2003--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ SCM
 Piano_pedal_bracket::print (SCM smob)
 {
   Spanner *me = unsmob<Spanner> (smob);
-  Spanner *orig = dynamic_cast<Spanner *> (me->original ());
+  Spanner *orig = me->original ();
 
   Drul_array<bool> broken (false, false);
   Drul_array<Real> height = robust_scm2drul
@@ -104,8 +104,9 @@ ADD_INTERFACE (Piano_pedal_bracket,
 
                /* properties */
                "bound-padding "
-               "edge-height "
-               "shorten-pair "
                "bracket-flare "
+               "dashed-edge "
+               "edge-height "
                "pedal-text "
+               "shorten-pair "
               );

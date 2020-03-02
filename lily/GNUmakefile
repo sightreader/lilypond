@@ -8,16 +8,13 @@ MODULE_INCLUDES= $(depth)/flower/include
 
 
 HELP2MAN_EXECS = lilypond
-STEPMAKE_TEMPLATES=c c++ executable po help2man
+STEPMAKE_TEMPLATES=c++ executable po help2man
 
 include $(depth)/make/stepmake.make
 
 ifeq ($(LINK_GXX_STATICALLY),yes)
 MODULE_LDFLAGS += -L$(outdir) -static-libgcc
 endif
-
-CXXFLAGS += -Woverloaded-virtual
-
 
 # for profiling, link guile statically:
 #
@@ -29,16 +26,20 @@ WINDRES_FLAGS += -DLilyPond=0 -DLY=1
 O_FILES += $(outdir)/lilypond.rc.o
 $(outdir)/lilypond: $(outdir)/lilypond.rc.o
 
-$(outdir)/lilypond.rc.o: $(outdir)/lilypond.ico $(outdir)/ly.ico
+$(outdir)/lilypond.rc.o: $(outdir)/lilypond.ico $(outdir)/ly.ico \
+	$(src-dir)/lilypond.manifest
 $(top-build-dir)/Documentation/logo/$(outbase)/lilypond.ico:
 	$(MAKE) -C $(top-build-dir)/Documentation/logo
 
 $(outdir)/lilypond.ico: $(top-build-dir)/Documentation/logo/$(outbase)/lilypond.ico
+	$(call ly_progress,Making,$@,(copy))
 	cp $< $@
+
 $(top-build-dir)/Documentation/logo/$(outbase)/ly.ico:
 	$(MAKE) -C $(top-build-dir)/Documentation/logo
 
 $(outdir)/ly.ico: $(top-build-dir)/Documentation/logo/$(outbase)/ly.ico
+	$(call ly_progress,Making,$@,(copy))
 	cp $< $@
 endif
 
@@ -49,6 +50,7 @@ default:
 
 
 $(outdir)/libstdc++.a:
+	$(call ly_progress,Making,$@,(symlink))
 	rm -f $@
 	ln -s `$(CXX) -print-file-name=libstdc++.a` $(outdir)
 
@@ -58,23 +60,19 @@ endif
 
 # force these: Make can't know these have to be generated in advance
 $(outdir)/lily-parser.o $(outdir)/parser.o: $(outdir)/parser.hh
-$(outdir)/lily-lexer.o: $(outdir)/parser.hh $(outdir)/FlexLexer.h
+$(outdir)/lily-lexer.o: $(outdir)/parser.hh $(FLEXLEXER_FILE) $(config_h)
 $(outdir)/lexer.o: $(outdir)/parser.hh $(outdir)/version.hh
 $(outdir)/lily-lexer-scheme.o \
   $(outdir)/lily-parser-scheme.o \
   $(outdir)/parse-scm.o \
   $(outdir)/sources.o: $(outdir)/parser.hh
 
-ifneq ($(FLEXLEXER_FILE),)
-$(outdir)/FlexLexer.h: $(FLEXLEXER_FILE) $(config_h)
-	cp $< $@
-endif
-
 $(outdir)/lexer.cc: $(config_h)
 $(outdir)/parser.cc: $(config_h)
 
 ifneq ($(LILYPOND_EXTERNAL_BINARY),)
 $(outdir)/lilypond.1: $(LILYPOND_EXTERNAL_BINARY) $(buildscript-dir)/help2man
+	$(call ly_progress,Making,$@,)
 	$(buildscript-dir)/help2man $(LILYPOND_EXTERNAL_BINARY) > $@
 endif
 

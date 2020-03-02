@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2011--2015 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2011--2020 Mike Solomon <mike@mikesolomon.org>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ public:
   void solve ();
 
 private:
-  vector<Interval> forbidden_intervals_;
+  std::vector<Interval> forbidden_intervals_;
   Interval feasible_placements_;
   Real bulk_;
 };

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2015 Daniel Eble <dan@faithful.be>
+  Copyright (C) 2015--2020 Daniel Eble <dan@faithful.be>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,12 +30,12 @@ public:
   Change_sequence_iterator ();
 
 protected:
-  virtual void construct_children ();
-  virtual void process (Moment);
+  void construct_children () override;
+  void process (Moment) override;
 
 private:
   // implement in derived class to effect a context change
-  virtual void change_to (const string &id) = 0;
+  virtual void change_to (const std::string &id) = 0;
 
 private:
   // There is no need to protect this in derived_mark() because it is protected

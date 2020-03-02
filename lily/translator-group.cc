@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>,
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>,
                  Erik Sandberg <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -34,6 +34,8 @@
 #include "scheme-engraver.hh"
 #include "scm-hash.hh"
 #include "warn.hh"
+
+using std::vector;
 
 void
 translator_each (SCM list, SCM method)

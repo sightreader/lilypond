@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2001--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2001--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,15 +19,21 @@
 
 #include <cstdio>
 #include <cstdlib>
-using namespace std;
 
 #include "item.hh"
 #include "system.hh"
 #include "grob-array.hh"
 
+using std::vector;
+
+// TODO: int is wider than necessary.  Consider changing it to
+// System::rank_type.  For now, the decision is not to introduce a new
+// instantiation of Interval_t<>.
+typedef Interval_t<int> System_range;
+
 static SCM break_criterion;
 void
-set_break_subsititution (SCM criterion)
+set_break_substitution (SCM criterion)
 {
   break_criterion = criterion;
 }
@@ -108,13 +114,12 @@ again:
     }
   else if (scm_is_vector (src))
     {
-      int len = scm_c_vector_length (src);
+      size_t len = scm_c_vector_length (src);
       SCM nv = scm_c_make_vector (len, SCM_UNDEFINED);
-      for (int i = 0; i < len; i++)
+      for (size_t i = 0; i < len; i++)
         {
-          SCM si = scm_from_int (i);
-          scm_vector_set_x (nv, si,
-                            do_break_substitution (scm_vector_ref (src, si)));
+          scm_c_vector_set_x (
+              nv, i, do_break_substitution (scm_c_vector_ref (src, i)));
         }
     }
   else if (scm_is_pair (src))
@@ -197,29 +202,32 @@ again:
   moz-k498-p1, before 24.10, after: 19.790s, Increase of 18%
 */
 
-Slice
+System_range
 spanner_system_range (Spanner *sp)
 {
-  Slice rv;
+  System_range rv;
 
   if (System *st = sp->get_system ())
-    rv = Slice (st->get_rank (), st->get_rank ());
+    rv = System_range (st->get_rank (), st->get_rank ());
   else
     {
-      if (sp->broken_intos_.size ())
-        rv = Slice (sp->broken_intos_[0]->get_system ()->get_rank (),
-                    sp->broken_intos_.back ()->get_system ()->get_rank ());
+      vector<Spanner *> const &bs = sp->broken_intos_;
+      if (!bs.empty ())
+        {
+          rv = System_range (bs.front ()->get_system ()->get_rank (),
+                             bs.back ()->get_system ()->get_rank ());
+        }
     }
   return rv;
 }
 
-Slice
+System_range
 item_system_range (Item *it)
 {
   if (System *st = it->get_system ())
-    return Slice (st->get_rank (), st->get_rank ());
+    return System_range (st->get_rank (), st->get_rank ());
 
-  Slice sr;
+  System_range sr;
   for (LEFT_and_RIGHT (d))
     {
       Item *bi = it->find_prebroken_piece (d);
@@ -230,26 +238,30 @@ item_system_range (Item *it)
   return sr;
 }
 
-Slice
+System_range
 grob_system_range (Grob *g)
 {
+  // ugh: looks like a job for a virtual method
   if (Spanner *s = dynamic_cast<Spanner *> (g))
     return spanner_system_range (s);
   else if (Item *it = dynamic_cast<Item *> (g))
     return item_system_range (it);
   else
-    return Slice ();
+    return System_range ();
 }
 
 struct Substitution_entry
 {
   Grob *grob_;
 
-  /* Assumption: we have less than 32k paper columns. */
-  short left_;
-  short right_;
+  /* The all-elements array inside the System is large. To save
+     memory, we assume there will not be more than 32k systems, and use
+     int16 for the indices, to save some space.
+  */
+  System::rank_type left_;
+  System::rank_type right_;
 
-  void set (Grob *g, Slice sr)
+  void set (Grob *g, System_range sr)
   {
     grob_ = g;
     /*
@@ -265,8 +277,8 @@ struct Substitution_entry
       }
     else
       {
-        left_ = (short) sr[LEFT];
-        right_ = (short) sr[RIGHT];
+        left_ = static_cast<System::rank_type> (sr[LEFT]);
+        right_ = static_cast<System::rank_type> (sr[RIGHT]);
       }
   }
   Substitution_entry ()
@@ -300,6 +312,8 @@ Spanner::fast_substitute_grob_array (SCM sym,
   if (grob_array->ordered ())
     return false;
 
+  // TODO: Was this chosen after profiling in 2005?  Maybe it should be
+  // revisited.
   if (len < 15)
     return false;
 
@@ -317,7 +331,7 @@ Spanner::fast_substitute_grob_array (SCM sym,
       vec_room = len;
     }
 
-  Slice system_range = spanner_system_range (this);
+  System_range system_range = spanner_system_range (this);
 
   int spanner_index = len;
   int item_index = 0;
@@ -326,9 +340,10 @@ Spanner::fast_substitute_grob_array (SCM sym,
     {
       Grob *g = grob_array->grob (i);
 
-      Slice sr = grob_system_range (g);
+      System_range sr = grob_system_range (g);
       sr.intersect (system_range);
 
+      // ugh: maybe a job for a virtual method
       int idx = 0;
       if (dynamic_cast<Spanner *> (g))
         idx = --spanner_index;
@@ -377,7 +392,7 @@ Spanner::fast_substitute_grob_array (SCM sym,
     {
       Grob *sc = broken_intos_[i];
       System *l = sc->get_system ();
-      set_break_subsititution (l ? l->self_scm () : SCM_UNDEFINED);
+      set_break_substitution (l ? l->self_scm () : SCM_UNDEFINED);
 
       SCM newval = sc->internal_get_object (sym);
       if (!unsmob<Grob_array> (newval))
@@ -463,45 +478,40 @@ substitute_object_alist (SCM alist, SCM dest)
 }
 
 void
-Spanner::substitute_one_mutable_property (SCM sym,
-                                          SCM val)
+Spanner::substitute_one_mutable_property (SCM sym, SCM val)
 {
-  Spanner *s = this;
-
-  bool fast_done = false;
   Grob_array *grob_array = unsmob<Grob_array> (val);
-  if (grob_array)
-    fast_done = s->fast_substitute_grob_array (sym, grob_array);
+  if (grob_array && fast_substitute_grob_array (sym, grob_array))
+    return;
 
-  if (!fast_done)
-    for (vsize i = 0; i < s->broken_intos_.size (); i++)
-      {
-        Grob *sc = s->broken_intos_[i];
-        System *l = sc->get_system ();
-        set_break_subsititution (l ? l->self_scm () : SCM_UNDEFINED);
+  for (vsize i = 0; i < broken_intos_.size (); i++)
+    {
+      Grob *sc = broken_intos_[i];
+      System *l = sc->get_system ();
+      set_break_substitution (l ? l->self_scm () : SCM_UNDEFINED);
 
-        if (grob_array)
-          {
-            SCM newval = sc->internal_get_object (sym);
-            if (!unsmob<Grob_array> (newval))
-              {
-                newval = Grob_array::make_array ();
-                sc->set_object (sym, newval);
-              }
-            Grob_array *new_arr = unsmob<Grob_array> (newval);
-            new_arr->filter_map_assign (*grob_array, substitute_grob);
-          }
-        else
-          {
-            SCM newval = do_break_substitution (val);
-            sc->set_object (sym, newval);
-          }
-      }
+      if (grob_array)
+        {
+          SCM newval = sc->internal_get_object (sym);
+          if (!unsmob<Grob_array> (newval))
+            {
+              newval = Grob_array::make_array ();
+              sc->set_object (sym, newval);
+            }
+          Grob_array *new_arr = unsmob<Grob_array> (newval);
+          new_arr->filter_map_assign (*grob_array, substitute_grob);
+        }
+      else
+        {
+          SCM newval = do_break_substitution (val);
+          sc->set_object (sym, newval);
+        }
+    }
 }
 
 void
 Grob::substitute_object_links (SCM crit, SCM orig)
 {
-  set_break_subsititution (crit);
+  set_break_substitution (crit);
   object_alist_ = substitute_object_alist (orig, object_alist_);
 }

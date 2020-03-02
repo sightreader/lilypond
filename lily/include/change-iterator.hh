@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,16 +26,16 @@ class Change_iterator : public Simple_music_iterator
 {
 public:
   /* constructor is public */
-  virtual void process (Moment);
+  void process (Moment) override;
   DECLARE_SCHEME_CALLBACK (constructor, ());
-  DECLARE_CLASSNAME (Change_iterator);
+  OVERRIDE_CLASS_NAME (Change_iterator);
 
   // returns an error message (empty on success)
-  static string change_to (Music_iterator &it,
-                           SCM to_type, const string &to_id);
+  static std::string change_to (Music_iterator &it,
+                           SCM to_type, const std::string &to_id);
 
 private:
-  void error (const string&);
+  void error (const std::string&);
 };
 
 #endif

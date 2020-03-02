@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 /**
    Put stuff in a Spanner with an Axis_group_interface.
    Use as last element of a context.
@@ -41,14 +43,14 @@ protected:
   SCM interesting_;
   vector<Grob *> elts_;
   void process_music ();
-  virtual void initialize ();
-  virtual void finalize ();
-  void acknowledge_grob (Grob_info);
+  void initialize () override;
+  void finalize () override;
+  void acknowledge_grob (Grob_info) override;
   void process_acknowledged ();
   virtual Spanner *get_spanner ();
   virtual void add_element (Grob *);
-  virtual bool must_be_last () const;
-  virtual void derived_mark () const;
+  bool must_be_last () const override;
+  void derived_mark () const override;
 
 public:
   TRANSLATOR_DECLARATIONS (Axis_group_engraver);

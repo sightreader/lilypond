@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2003--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2003--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ class Grob;
 class Gregorian_ligature
 {
 public:
-  static string prefixes_to_str (Grob *);
+  static std::string prefixes_to_str (Grob *);
 };
 
 /*

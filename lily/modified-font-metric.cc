@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
   along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include <cctype>
-using namespace std;
 
 #include "modified-font-metric.hh"
 #include "pango-font.hh"
@@ -25,6 +24,8 @@ using namespace std;
 #include "stencil.hh"
 #include "main.hh"
 #include "program-option.hh"
+
+using std::string;
 
 Preinit_Modified_font_metric::Preinit_Modified_font_metric ()
 {

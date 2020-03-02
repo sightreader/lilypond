@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2004--2015 Carl D. Sorensen <c_sorensen@byu.edu>
+;;;; Copyright (C) 2004--2020 Carl D. Sorensen <c_sorensen@byu.edu>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -307,8 +307,12 @@ with magnification @var{mag} of the string @var{text}."
          (details (merge-details 'fret-diagram-details props '()))
          (fret-distance
           (assoc-get 'fret-distance details 1.0))
-         (string-distance
+         (string-distance-from-details
           (assoc-get 'string-distance details 1.0))
+         ;; disable negative `string-distance'
+         ;; mmh -- should we print a message/warning?
+         (string-distance (abs string-distance-from-details))
+         (handedness (assoc-get 'handedness details RIGHT))
          (string-count
           (assoc-get 'string-count details 6)) ;; needed for everything
          (my-fret-count
@@ -361,13 +365,14 @@ with magnification @var{mag} of the string @var{text}."
       "Return a pair @code{(x-coordinate . y-coordinate)}
       in stencil coordinate system."
       (cond
-       ((eq? orientation 'landscape)
-        (cons fret-coordinate
-              (- string-coordinate (1- string-count))))
-       ((eq? orientation 'opposing-landscape)
-        (cons (- fret-coordinate) (- string-coordinate)))
-       (else
-        (cons string-coordinate (- fret-coordinate)))))
+          ((eq? orientation 'landscape)
+           (cons fret-coordinate
+                 (* handedness (- string-coordinate (1- string-count)))))
+          ((eq? orientation 'opposing-landscape)
+           (cons (- fret-coordinate) (* handedness (- string-coordinate))))
+          (else
+            (cons (* handedness string-coordinate) (- fret-coordinate)))))
+
 
     (define (stencil-coordinate-offset fret-offset string-offset)
       "Return a pair @code{(x-offset . y-offset)}

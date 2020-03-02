@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Ledger_line_engraver : public Engraver
 {
   Spanner *span_;
@@ -33,7 +35,7 @@ public:
   TRANSLATOR_DECLARATIONS (Ledger_line_engraver);
 
 protected:
-  virtual void finalize ();
+  void finalize () override;
   void process_music ();
 
   void acknowledge_ledgered (Grob_info);

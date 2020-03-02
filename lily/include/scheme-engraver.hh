@@ -3,7 +3,7 @@
 
   source file of the GNU LilyPond music typesetter
 
-  Copyright (c) 2009--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (c) 2009--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -46,14 +46,14 @@ public:
 protected:
   ~Scheme_engraver ();
 
-  virtual void initialize ();
-  virtual void finalize ();
-  virtual void derived_mark () const;
-  virtual SCM get_listener_list () const;
-  virtual bool must_be_last () const;
+  void initialize () override;
+  void finalize () override;
+  void derived_mark () const override;
+  SCM get_listener_list () const override;
+  bool must_be_last () const override;
 
 private:
-  virtual SCM get_acknowledger (SCM sym, Direction start_end)
+  SCM get_acknowledger (SCM sym, Direction start_end) override
   {
     return generic_get_acknowledger
       (sym, interface_acknowledger_hash_[start_end]);

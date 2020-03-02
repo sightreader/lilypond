@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2010--2015 Neil Puttock <n.puttock@gmail.com>
+  Copyright (C) 2010--2020 Neil Puttock <n.puttock@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
   DECLARE_SCHEME_CALLBACK (finalization, (SCM, SCM));
 protected:
-  virtual void process (Moment);
+  void process (Moment) override;
 };
 
 void
@@ -62,10 +62,10 @@ Partial_iterator::process (Moment m)
       else if (get_outlet ()->now_mom () > 0)
         {
           timing->set_property ("partialBusy", ly_bool2scm (true));
-          Global_context *tg = get_outlet ()->get_global_context ();
-          tg->add_finalization (scm_list_3 (finalization_proc,
-                                            get_outlet ()->self_scm (),
-                                            length.smobbed_copy ()));
+          Global_context *g = find_global_context (get_outlet ());
+          g->add_finalization (scm_list_3 (finalization_proc,
+                                           get_outlet ()->self_scm (),
+                                           length.smobbed_copy ()));
         }
       else
         {

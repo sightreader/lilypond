@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ class Rest
 public:
   DECLARE_SCHEME_CALLBACK (y_offset_callback, (SCM));
   DECLARE_SCHEME_CALLBACK (calc_cross_staff, (SCM));
-  static string glyph_name (Grob *, int durlog, const string &style, bool, Real);
+  static std::string glyph_name (Grob *, int durlog, const std::string &style, bool, Real);
   static Real staff_position_internal (Grob *, int /* duration_log */,
                                        int /* dir */);
   static SCM brew_internal_stencil (Grob *, bool);

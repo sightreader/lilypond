@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys
+  Copyright (C) 2006--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ public:
 
 protected:
   void listen_bend_after (Stream_event *);
-  void finalize ();
+  void finalize () override;
   void process_music ();
   void stop_translation_timestep ();
   void start_translation_timestep ();

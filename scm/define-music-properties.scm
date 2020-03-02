@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015  Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 1998--2020  Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;                 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -68,15 +68,13 @@ cautionary accidental.")
      (change-to-type ,symbol? "Type of the context to change to.")
      (class ,symbol? "The class name of an event class.")
      (context ,ly:context? "The context to which an event is sent.")
-     (context-change-list ,list? "Context changes for @code{\\autochange} or @code{\\partcombine}.")
+     (context-change-list ,list? "Context changes for @code{\\autoChange} or @code{\\partCombine}.")
      (context-id ,string? "Name of context.")
      (context-type ,symbol?  "Type of context.")
      (create-new ,boolean? "Create a fresh context.")
 
      (delta-step ,number? "How much should a fall change pitch?")
      (denominator ,integer? "Denominator in a time signature.")
-     (descend-only ,boolean? "If set, this @code{\\context} only descends
-in the context tree.")
      (digit ,integer? "Digit for fingering.")
      (diminished ,boolean? "This bass figure should be slashed.")
      (direction ,ly:dir? "Print this up or down?")
@@ -108,7 +106,7 @@ property, e.g., @code{(beamed-lengths details)}.")
      (iterator-ctor ,procedure? "Function to construct a
 @code{music-event-iterator} object for this music.")
 
-     (label ,number-or-markup? "Label of a mark.")
+     (label ,integer-or-markup? "Label of a mark.")
      (last-pitch ,ly:pitch? "The last pitch after relativization.")
      (length ,ly:moment? "The duration of this music.")
      (length-callback ,procedure? "How to compute the duration of this music.
@@ -176,6 +174,7 @@ or down-stem?")
 
      (repeat-count ,integer? "Do a @code{\\repeat} how often?")
 
+     (search-direction ,ly:dir? "Limits the scope of @code{\\context} searches.")
      (slash-count ,integer? "The number of slashes in a single-beat repeat.
 If zero, signals a beat containing varying durations.")
      (span-direction ,ly:dir? "Does this start or stop a spanner?")

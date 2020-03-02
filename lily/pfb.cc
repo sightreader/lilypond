@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,22 +22,24 @@
 #include <cstring>
 #include <iomanip>
 #include <sstream>
-using namespace std;
 
 #include "international.hh"
 #include "program-option.hh"
 #include "source-file.hh"
-#include "memory-stream.hh"
 #include "open-type-font.hh"
 #include "main.hh"
 #include "warn.hh"
 
-vector<char>
-pfb2pfa (const vector<char> &pfb)
-{
-  vector<char> out;
+using std::string;
+using std::stringstream;
+using std::vector;
 
-  vector<char>::const_iterator p = pfb.begin ();
+string
+pfb2pfa (const string &pfb)
+{
+  string out;
+
+  string::const_iterator p = pfb.begin ();
   while (p < pfb.end ())
     {
       if (static_cast<Byte>(*p++) != 128)
@@ -69,11 +71,11 @@ pfb2pfa (const vector<char> &pfb)
         {
           stringstream ss;
 
-          ss << hex << setfill ('0');
+          ss << std::hex << std::setfill ('0');
 
           for (size_t i = seglen; i > 0; --i)
             {
-              ss << setw (2) << static_cast<int>(static_cast<Byte>(*p++));
+              ss << std::setw (2) << static_cast<int>(static_cast<Byte>(*p++));
               if (! (i % 32))
                 ss << '\n';
             }

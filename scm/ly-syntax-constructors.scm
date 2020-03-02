@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2006--2015 Erik Sandberg <mandolaerik@gmail.com>
+;;;; Copyright (C) 2006--2020 Erik Sandberg <mandolaerik@gmail.com>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -114,17 +114,26 @@
          (ly:parser-error (_ "not an articulation") (*location*))
          *unspecified*)))
 
+;; We use define-syntax-function here with a slightly fishy "fallback
+;; return value" which is not actually music but #f.  The default
+;; expression of define-event-function would have a music fallback
+;; triggering "Parsed object should be dead" warnings for music
+;; objects outside of the current parser session/module.  The called
+;; functions always deliver music and are used from the parser in a
+;; manner where only the last argument is provided from outside the
+;; parser, and its predicate "scheme?" is always true.  So the
+;; fallback value will never get used and its improper type is no
+;; issue.
+
 (define-public create-script-function
-  (ly:make-music-function
-   (list (cons ly:event? #f) ly:dir? scheme?)
-   (lambda (dir item)
-     (let ((res (create-script item)))
-       (if (ly:event? res)
-           (begin
-             (if (not (zero? dir))
-                 (set! (ly:music-property res 'direction) dir))
-             res)
-           (make-music 'PostEvents))))))
+  (define-syntax-function ly:event? (dir item) (ly:dir? scheme?)
+    (let ((res (create-script item)))
+      (if (ly:event? res)
+          (begin
+            (if (not (zero? dir))
+                (set! (ly:music-property res 'direction) dir))
+            res)
+          (make-music 'PostEvents)))))
 
 (define-public (void-music)
   (ly:set-origin! (make-music 'Music)))
@@ -183,9 +192,12 @@
   "Extract @code{'direction} and @code{'text} from @var{music}, and transform
 into a @code{MultiMeasureTextEvent}."
 
-  (if (music-is-of-type? music 'script-event)
-      (make-music 'MultiMeasureTextEvent music)
-      music))
+  (cond
+    ((music-is-of-type? music 'text-script-event)
+     (make-music 'MultiMeasureTextEvent music))
+    ((music-is-of-type? music 'articulation-event)
+     (make-music 'MultiMeasureArticulationEvent music))
+    (else music)))
 
 (define-public (multi-measure-rest duration articulations)
   (ly:set-origin! (make-music 'MultiMeasureRestMusic
@@ -197,11 +209,13 @@ into a @code{MultiMeasureTextEvent}."
                               'duration duration
                               'elements articulations)))
 
-(define-public (context-specification type id ops create-new mus)
-  (let ((csm (context-spec-music mus type id)))
-    (set! (ly:music-property csm 'property-operations) ops)
-    (if create-new (set! (ly:music-property csm 'create-new) #t))
+(define-public (context-create type id ops mus)
+  (let ((csm (context-spec-music mus type id ops)))
+    (set! (ly:music-property csm 'create-new) #t)
     (ly:set-origin! csm)))
+
+(define-public (context-find-or-create type id ops mus)
+  (ly:set-origin! (context-spec-music mus type id ops)))
 
 (define-public (composed-markup-list commands markups)
   ;; `markups' being a list of markups, eg (markup1 markup2 markup3),
@@ -246,13 +260,17 @@ into a @code{MultiMeasureTextEvent}."
            (length (cdar commands))))
     chain))
 
-(define-public (property-set context property value)
-  (ly:set-origin! (context-spec-music
-                   (ly:set-origin!
-                    (make-music 'PropertySet
-                                'symbol property
-                                'value value))
-                   context)))
+;; See create-script-function for the rationale of using
+;; define-syntax-function instead of define-music-function here.
+(define-public property-set
+  (define-syntax-function ly:music?
+    (context property value) (symbol? symbol? scheme?)
+    (context-spec-music
+     (ly:set-origin!
+      (make-music 'PropertySet
+                  'symbol property
+                  'value value))
+     context)))
 
 (define-public (property-unset context property)
   (ly:set-origin! (context-spec-music
@@ -261,15 +279,17 @@ into a @code{MultiMeasureTextEvent}."
                                 'symbol property))
                    context)))
 
-(define-public (property-override context path value)
-  (ly:set-origin! (context-spec-music
-                   (ly:set-origin!
-                    (make-music 'OverrideProperty
-                                'symbol (car path)
-                                'grob-property-path (cdr path)
-                                'grob-value value
-                                'pop-first #t))
-                   context)))
+(define-public property-override
+  (define-syntax-function ly:music?
+    (context path value) (symbol? symbol-list? scheme?)
+    (context-spec-music
+     (ly:set-origin!
+      (make-music 'OverrideProperty
+                  'symbol (car path)
+                  'grob-property-path (cdr path)
+                  'grob-value value
+                  'pop-first #t))
+     context)))
 
 (define-public (property-revert context path)
   (ly:set-origin! (context-spec-music
@@ -278,25 +298,6 @@ into a @code{MultiMeasureTextEvent}."
                                 'symbol (car path)
                                 'grob-property-path (cdr path)))
                    context)))
-
-;; The signature here is slightly fishy since the "fallback return
-;; value" is not actually music but #f.  This used to be (void-music)
-;; but triggered "Parsed object should be dead" warnings for music
-;; objects outside of the current parser session/module.  The called
-;; functions always deliver music and are used from the parser in a
-;; manner where only the last argument is provided from outside the
-;; parser, and its predicate "scheme?" is always true.  So the
-;; fallback value will never get used and its improper type is no
-;; issue.
-(define-public property-override-function
-  (ly:make-music-function
-   (list (cons ly:music? #f) symbol? symbol-list? scheme?)
-   property-override))
-
-(define-public property-set-function
-  (ly:make-music-function
-   (list (cons ly:music? #f) symbol? symbol? scheme?)
-   property-set))
 
 (define (get-first-context-id! mus)
   "Find the name of a ContextSpeccedMusic, possibly naming it"

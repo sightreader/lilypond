@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,33 +31,43 @@ class Item : public Grob
 {
   Drul_array<Item *> broken_to_drul_;
 
-  DECLARE_CLASSNAME (Item);
+  OVERRIDE_CLASS_NAME (Item);
 public:
   Item (SCM);
   Item (Item const &);
 
-  virtual Grob *clone () const;
+  Item *clone () const override { return new Item (*this); }
+  Item *original () const
+  {
+    // safe: if there is an original, it is because this was cloned from it
+    return static_cast<Item *> (Grob::original ());
+  }
 
   static bool is_non_musical (Grob *);
   static bool break_visible (Grob *);
 
   bool is_broken () const;
-  virtual bool pure_is_visible (int start, int end) const;
+  bool pure_is_visible (vsize start, vsize end) const override;
 
   Direction break_status_dir () const;
 
-  Item *find_prebroken_piece (Direction) const;
-  Grob *find_broken_piece (System *) const;
-  virtual System *get_system () const;
+  Item *find_prebroken_piece (Direction d) const
+  {
+    return !d ? const_cast<Item *> (this) : broken_to_drul_[d];
+  }
+
+  Item *find_broken_piece (System *) const override;
+  System *get_system () const override;
   virtual Paper_column *get_column () const;
-  virtual void handle_prebroken_dependencies ();
-  virtual Interval_t<int> spanned_rank_interval () const;
-  virtual Interval pure_y_extent (Grob *ref, int start, int end);
+  void handle_prebroken_dependencies () override;
+  Interval_t<int> spanned_rank_interval () const override;
+  Interval pure_y_extent (Grob *ref, vsize start, vsize end) override;
   virtual void cache_pure_height (Interval height);
+  bool internal_set_as_bound_of_spanner (Spanner *, Direction) override;
 protected:
-  virtual void discretionary_processing ();
+  void break_breakable_item (System *) override;
   void copy_breakable_items ();
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 
   bool cached_pure_height_valid_;
   Interval cached_pure_height_;

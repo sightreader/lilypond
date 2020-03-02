@@ -1,4 +1,4 @@
-// Copyright 2006 Rutger E.W. van Beusekom.
+// Copyright 2006--2020 Rutger E.W. van Beusekom.
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -141,7 +141,7 @@ public:
               {
                 std::cout << std::endl << it->first << ' ' << std::flush;
                 {
-                  std::auto_ptr<ITest> test (it->second ());
+                  std::unique_ptr<ITest> test (it->second ());
                 }
                 std::cout << "[OK]" << std::flush;
                 ++m_pass;
@@ -233,7 +233,7 @@ public:
     failure_ = os.str ();
   }
   virtual ~failure () throw () {}
-  virtual const char *what () const throw () { return failure_.c_str (); }
+  const char *what () const throw () override { return failure_.c_str (); }
 };
 
 template <typename Suite, typename Case>

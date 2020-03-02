@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
 
 #include "file-path.hh"
 #include "main.hh"
+
+using std::string;
+using std::vector;
 
 /*
  * Global options that can be overridden through command line.
@@ -43,8 +46,6 @@ bool be_safe_global = false;
    This is where -e arguments are appended to.  */
 string init_scheme_code_global;
 string init_scheme_variables_global;
-
-bool relocate_binary = true;
 
 /*
  * Miscellaneous global stuff.

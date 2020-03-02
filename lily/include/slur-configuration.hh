@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,14 +20,17 @@
 #ifndef SLUR_CONFIGURATION_HH
 #define SLUR_CONFIGURATION_HH
 
+#include <memory>
+
 #include "bezier.hh"
 #include "lily-proto.hh"
 #include "std-vector.hh"
 
+/* A candidate position for a slur. */
 class Slur_configuration
 {
   Real score_;
-  string score_card_;
+  std::string score_card_;
 
 public:
   Drul_array<Offset> attachment_;
@@ -35,6 +38,8 @@ public:
   Real height_;
   int index_;
 
+  /* The different scoring functions we have, ordered by increasing
+     computational cost */
   enum Slur_scorers
   {
     INITIAL_SCORE,
@@ -50,14 +55,14 @@ public:
   Slur_configuration ();
 
   Real score () const { return score_; }
-  string card () const { return score_card_; }
-  void add_score (Real, const string&);
+  std::string card () const { return score_card_; }
+  void add_score (Real, const std::string&);
 
   void generate_curve (Slur_score_state const &state, Real r0, Real h_inf,
-                       vector<Offset> const &);
+                       std::vector<Offset> const &);
   void run_next_scorer (Slur_score_state const &);
   bool done () const;
-  static Slur_configuration *new_config (Drul_array<Offset> const &offs, int idx);
+  static std::unique_ptr<Slur_configuration> new_config (Drul_array<Offset> const &offs, int idx);
 
 protected:
   void score_extra_encompass (Slur_score_state const &);

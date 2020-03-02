@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2000--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
@@ -28,6 +28,8 @@
 #include "staff-symbol-referencer.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    Make arpeggios that span multiple staves.  Catch arpeggios, and span a
@@ -59,8 +61,7 @@ Span_arpeggio_engraver::Span_arpeggio_engraver (Context *c)
 void
 Span_arpeggio_engraver::acknowledge_arpeggio (Grob_info info)
 {
-  if (info.origin_contexts (this).size ()) // huh? what's this test for?
-    arpeggios_.push_back (info.grob ());
+  arpeggios_.push_back (info.grob ());
 }
 
 void

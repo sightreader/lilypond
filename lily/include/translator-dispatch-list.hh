@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 
 class Engraver_dispatch_list : public Simple_smob<Engraver_dispatch_list>
 {
-  vector<Method_instance> dispatch_entries_;
+  std::vector<Method_instance> dispatch_entries_;
 public:
   void apply (Grob_info);
   SCM static create (SCM trans_list,

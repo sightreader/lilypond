@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2009--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2009--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ class Staff_grouper_interface
 {
 public:
 
+  static Grob *get_extremal_staff (Grob *, Grob *refpoint, Direction dir, Interval const &iv);
   static bool maybe_pure_within_group (Grob *, Grob *child, bool, int, int);
 };
 

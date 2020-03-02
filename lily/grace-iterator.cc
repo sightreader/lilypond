@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,11 +29,12 @@ Grace_iterator::process (Moment m)
 
   // GraceChange is announced in order to make the Grace_engraver able
   // to distinguish \stemNeutral \grace { ... and \grace { \stemNeutral ...
-  if (in_grace_ != bool (m.grace_part_) && child_iter_ && child_iter_->get_outlet ())
+  const auto now_in_grace = static_cast<bool> (m.grace_part_);
+  if (in_grace_ != now_in_grace && child_iter_ && child_iter_->get_outlet ())
     {
       send_stream_event (child_iter_->get_outlet (), "GraceChange", get_music ()->origin ());
     }
-  in_grace_ = m.grace_part_;
+  in_grace_ = now_in_grace;
 
   Music_wrapper_iterator::process (main);
 

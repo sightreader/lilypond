@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -28,6 +28,8 @@
 #include "staff-symbol-referencer.hh"
 #include "item.hh"
 #include "tie-formatting-problem.hh"
+
+using std::vector;
 
 ADD_INTERFACE (Semi_tie_column,
                "The interface for a column of l.v. (laissez vibrer) ties.",

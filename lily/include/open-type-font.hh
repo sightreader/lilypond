@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,12 +38,12 @@ class Open_type_font : Preinit_Open_type_font, public Font_metric
 {
   /* handle to face object */
   FT_Face face_;
-  string postscript_name_;
+  std::string postscript_name_;
 
   Index_to_charcode_map index_to_charcode_map_;
   Open_type_font (FT_Face);
 
-  DECLARE_CLASSNAME (Open_type_font);
+  OVERRIDE_CLASS_NAME (Open_type_font);
 public:
   Real get_units_per_EM () const;
   SCM get_subfonts () const;
@@ -52,23 +52,23 @@ public:
   SCM glyph_list () const;
   SCM get_glyph_outline (size_t signed_idx) const;
   Box get_glyph_outline_bbox (size_t signed_idx) const;
-  string get_otf_table (const string &tag) const;
-  static SCM make_otf (const string&);
-  string font_name () const;
+  std::string get_otf_table (const std::string &tag) const;
+  static SCM make_otf (const std::string&);
+  std::string font_name () const override;
   ~Open_type_font ();
-  Offset attachment_point (const string&) const;
-  size_t count () const;
-  Box get_indexed_char_dimensions (size_t) const;
+  Offset attachment_point (const std::string&) const override;
+  size_t count () const override;
+  Box get_indexed_char_dimensions (size_t) const override;
   Box get_unscaled_indexed_char_dimensions (size_t) const;
-  size_t name_to_index (string) const;
-  size_t index_to_charcode (size_t) const;
-  void derived_mark () const;
-  SCM sub_fonts () const;
-  Real design_size () const;
+  size_t name_to_index (std::string) const override;
+  size_t index_to_charcode (size_t) const override;
+  void derived_mark () const override;
+  SCM sub_fonts () const override;
+  Real design_size () const override;
 };
 
-string get_otf_table (FT_Face face, const string &tag);
-FT_Face open_ft_face (const string&, FT_Long idx);
-string get_postscript_name (FT_Face face);
+std::string get_otf_table (FT_Face face, const std::string &tag);
+FT_Face open_ft_face (const std::string&, FT_Long idx);
+std::string get_postscript_name (FT_Face face);
 
 #endif /* OPEN_TYPE_FONT_HH */

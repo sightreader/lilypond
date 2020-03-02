@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2002--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ protected:
   Rational stop_grouping_mom_;
 
   void process_music ();
-  virtual void finalize ();
+  void finalize () override;
   void acknowledge_note_column (Grob_info);
 };
 
@@ -100,7 +100,7 @@ Measure_grouping_engraver::process_music ()
                   grouping_->set_bound (LEFT, unsmob<Grob> (get_property ("currentMusicalColumn")));
 
                   stop_grouping_mom_ = now.main_part_ + Rational (grouplen - 1) * base_moment;
-                  get_global_context ()->add_moment_to_process (Moment (stop_grouping_mom_));
+                  find_global_context ()->add_moment_to_process (Moment (stop_grouping_mom_));
 
                   if (grouplen == 3)
                     grouping_->set_property ("style", ly_symbol2scm ("triangle"));

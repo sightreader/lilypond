@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 
 #include <map>
 
+static const size_t GLYPH_INDEX_INVALID(-1);
+
 typedef std::map<FT_UInt, FT_ULong> Index_to_charcode_map;
 
 class Font_metric : public Smob<Font_metric>
@@ -38,28 +40,28 @@ public:
   static const char * const type_p_name_;
   virtual ~Font_metric ();
 private:
-  DECLARE_CLASSNAME (Font_metric);
+  VIRTUAL_CLASS_NAME (Font_metric);
 
 public:
   SCM description_;
-  string file_name_;
+  std::string file_name_;
 
-  // Return stencil for given string. output_state may be modified to
+  // Return stencil for given std::string. output_state may be modified to
   // record the font.
   virtual Stencil text_stencil (Output_def *output_state,
-                                const string &text,
+                                const std::string &text,
                                 bool music,
-                                const string &features_str) const;
+                                const std::string &features_str) const;
 
-  virtual string font_name () const;
+  virtual std::string font_name () const;
   virtual size_t count () const;
-  virtual Offset attachment_point (const string&) const;
+  virtual Offset attachment_point (const std::string&) const;
   virtual Offset get_indexed_wxwy (size_t) const;
   virtual Box get_indexed_char_dimensions (size_t index) const;
-  virtual size_t name_to_index (string) const=0;
+  virtual size_t name_to_index (std::string) const=0;
   virtual size_t index_to_charcode (size_t) const;
   virtual Real design_size () const;
-  virtual Stencil find_by_name (string) const;
+  virtual Stencil find_by_name (std::string) const;
   virtual SCM sub_fonts () const;
   virtual SCM font_file_name () const;
 
@@ -74,6 +76,6 @@ protected:
 };
 
 
-vector<char> pfb2pfa (const vector<char> &pfb);
+std::string pfb2pfa (const std::string &pfb);
 
 #endif /* FONT_METRIC_HH */

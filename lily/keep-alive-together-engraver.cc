@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2010--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2010--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Keep_alive_together_engraver: public Engraver
 {
   vector<Grob *> group_spanners_;
@@ -34,7 +36,7 @@ public:
   TRANSLATOR_DECLARATIONS (Keep_alive_together_engraver);
   void acknowledge_hara_kiri_group_spanner (Grob_info);
 
-  virtual void finalize ();
+  void finalize () override;
 };
 
 Keep_alive_together_engraver::Keep_alive_together_engraver (Context *c)

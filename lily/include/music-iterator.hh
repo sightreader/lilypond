@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -69,9 +69,10 @@ protected:
   Moment music_length_;
   Moment start_mom_;
 
-  DECLARE_CLASSNAME (Music_iterator);
+  VIRTUAL_CLASS_NAME (Music_iterator);
 private:
-  Music_iterator (Music_iterator const &); // Do not define!  Not copyable!
+  Music_iterator (Music_iterator const &) = delete;
+  Music_iterator& operator= (Music_iterator const &) = delete;
 
 public:
   Moment music_get_length () const;
@@ -114,7 +115,7 @@ bool is_child_context (Context *me, Context *child);
 
 #define IMPLEMENT_CTOR_CALLBACK(Class)                                  \
   LY_DEFINE_MEMBER_FUNCTION (Class, constructor, \
-                             mangle_cxx_identifier (string (#Class) + "::constructor").c_str(), \
+                             mangle_cxx_identifier (std::string (#Class) + "::constructor").c_str(), \
                              0, 0, 0,                                   \
                              (),                                        \
                              "")                                        \

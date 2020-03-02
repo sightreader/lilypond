@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,19 +27,52 @@
 */
 class Dimension_cache
 {
-  Interval *extent_;
-  Real *offset_;
+  // A value plus a validity flag.  The interface was chosen with the hope of
+  // replacing this with C++17 std::optional someday.  The implementation
+  // differs fundamentally from std::optional, but not in any way that matters
+  // for current uses in Dimension_cache.
+  template <class T>
+  class Optional
+  {
+  private:
+    bool has_value_;
+    T value_;
+
+  public:
+    Optional () : has_value_ (false), value_ () {}
+
+    Optional &operator = (const T &value)
+    {
+      has_value_ = true;
+      value_ = value;
+      return *this;
+    }
+
+    void reset () { has_value_ = false; }
+
+    explicit operator bool () const { return has_value_; }
+
+    T &operator * () { return value_; }
+    const T &operator * () const { return value_; }
+  };
+
+  Optional<Interval> extent_;
+  Optional<Real> offset_;
   Grob *parent_;
-  void init ();
-  void clear ();
 
   friend class Grob;
 
-  Dimension_cache (Dimension_cache const &);
-  Dimension_cache & operator = (Dimension_cache const &d);
-  ~Dimension_cache ();
-  Dimension_cache ();
+  Dimension_cache () : parent_ (0) {}
+
+  // The compiler-generated copy constructor, assignment operator, and
+  // destructor should be OK.
+
+  void clear ()
+  {
+    extent_.reset ();
+    offset_.reset ();
+    // note that parent_ is not nullified
+  }
 };
 
 #endif /* DIMENSION_CACHE_HH */
-

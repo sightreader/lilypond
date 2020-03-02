@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,8 +23,9 @@
 #include "std-vector.hh"
 
 /* for the keyword table */
-struct Keyword_ent
+class Keyword_ent
 {
+public:
   char const *name_;
   int tokcode_;
 };
@@ -32,12 +33,13 @@ struct Keyword_ent
 /*
   junkme, use  hash table.
 */
-struct Keyword_table
+class Keyword_table
 {
-  vector<Keyword_ent> table_;
+public:
+  std::vector<Keyword_ent> table_;
 
   Keyword_table (Keyword_ent *);
-  vsize lookup (char const *s) const;
+  int lookup (char const *s) const;
 };
 
 #endif // KEYWORD_HH

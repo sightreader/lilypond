@@ -1,4 +1,4 @@
-\version "2.17.6"
+\version "2.21.0"
 \header {
   texidoc = "The positioning of dots and slashes in percent repeat
 glyphs can be altered using @code{dot-negative-kern} and

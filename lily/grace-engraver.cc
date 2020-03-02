@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -32,10 +32,10 @@ class Grace_engraver : public Engraver
   SCM grace_settings_;
   void consider_change_grace_settings ();
 protected:
-  virtual void derived_mark () const;
+  void derived_mark () const override;
   virtual void process_music ();
   virtual void start_translation_timestep ();
-  virtual void finalize ();
+  void finalize () override;
 
   TRANSLATOR_DECLARATIONS (Grace_engraver);
   void grace_change (SCM);

@@ -1,4 +1,4 @@
-\version "2.19.84"
+\version "2.21.0"
 
 \header {
   texidoc = "Test for vertical positions of merged rests in magnified staves."

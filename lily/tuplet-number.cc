@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -34,6 +34,8 @@
 #include "stem.hh"
 #include "warn.hh"
 
+using std::vector;
+
 /*
   The reference stem is used to determine on which side of the beam to place
   the tuplet number when it is positioned independently of a bracket.  (The number
@@ -44,7 +46,7 @@ Tuplet_number::select_reference_stem (Grob *me_grob, vector<Grob *> const &cols)
 {
   Spanner *me = dynamic_cast<Spanner *> (me_grob);
 
-  int col_count = cols.size ();
+  vsize col_count = cols.size ();
 
   if (!col_count)
     return 0;
@@ -340,7 +342,7 @@ count_beams_not_touching_stem (SCM beaming)
         ++count;
     }
 
-  return max (0, count - 1);
+  return std::max (0, count - 1);
 }
 
 MAKE_SCHEME_CALLBACK (Tuplet_number, calc_y_offset, 1);
@@ -416,8 +418,8 @@ Tuplet_number::calc_y_offset (SCM smob)
                   : staff_ext_y[DOWN] > ref_stem_ext[UP];
       if (move)
         {
-          Interval ledger_domain = Interval (min (staff_ext_y[UP], ref_stem_ext[UP]),
-                                             max (staff_ext_y[DOWN], ref_stem_ext[DOWN]));
+          Interval ledger_domain = Interval (std::min (staff_ext_y[UP], ref_stem_ext[UP]),
+                                             std::max (staff_ext_y[DOWN], ref_stem_ext[DOWN]));
           Interval num_y (me->extent (commony, Y_AXIS));
           num_y.translate (y_offset);
           Interval num_ledger_overlap (num_y);

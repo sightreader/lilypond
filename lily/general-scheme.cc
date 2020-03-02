@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -24,7 +24,6 @@
 #include <ctype.h>
 #include <cstring>  /* memset */
 #include <glib.h>
-using namespace std;
 
 #include "dimensions.hh"
 #include "file-name.hh"
@@ -39,6 +38,9 @@ using namespace std;
 #include "string-convert.hh"
 #include "version.hh"
 #include "warn.hh"
+
+using std::string;
+using std::vector;
 
 /* Declaration of log function(s) */
 SCM ly_progress (SCM, SCM);
@@ -226,7 +228,7 @@ LY_DEFINE (ly_number_2_string, "ly:number->string",
   if (scm_is_false (scm_exact_p (s)))
     {
       Real r (scm_to_double (s));
-      if (isinf (r) || isnan (r))
+      if (!std::isfinite (r))
         {
           programming_error ("infinity or NaN encountered while converting Real number, "
                              "setting to zero");
@@ -258,7 +260,7 @@ LY_DEFINE (ly_unit, "ly:unit", 0, 0, 0, (),
 }
 
 LY_DEFINE (ly_dimension_p, "ly:dimension?", 1, 0, 0, (SCM d),
-           "Return @var{d} as a number.  Used to distinguish length"
+           "Is @var{d} a dimension?  Used to distinguish length"
            " variables from normal numbers.")
 {
   return scm_number_p (d);
@@ -275,7 +277,8 @@ LY_DEFINE (ly_protects, "ly:protects",
 #if SCM_MAJOR_VERSION < 2 || SCM_MAJOR_VERSION == 2 && SCM_MINOR_VERSION < 1
   return scm_protects;
 #else
-  return programming_error ("ly:protects is not supported in Guile 2.1");
+  programming_error ("ly:protects is not supported in Guile 2.1");
+  return SCM_EOL;
 #endif
 }
 
@@ -295,8 +298,8 @@ LY_DEFINE (ly_output_formats, "ly:output-formats",
   vector<string> output_formats = string_split (output_format_global, ',');
 
   SCM lst = SCM_EOL;
-  int output_formats_count = output_formats.size ();
-  for (int i = 0; i < output_formats_count; i++)
+  vsize output_formats_count = output_formats.size ();
+  for (vsize i = 0; i < output_formats_count; i++)
     lst = scm_cons (ly_string2scm (output_formats[i]), lst);
 
   return lst;
@@ -469,7 +472,7 @@ format_single_argument (SCM arg, int precision, bool escape = false)
     {
       Real val = scm_to_double (arg);
 
-      if (isnan (val) || isinf (val))
+      if (!std::isfinite (val))
         {
           warning (_ ("Found infinity or nan in output.  Substituting 0.0"));
           return ("0.0");
@@ -640,7 +643,7 @@ LY_DEFINE (ly_spawn, "ly:spawn",
 {
   LY_ASSERT_TYPE (scm_is_string, command, 1);
 
-  int argc = scm_is_pair (rest) ? scm_ilength (rest) : 0;
+  long argc = scm_is_pair (rest) ? scm_ilength (rest) : 0;
   char **argv = new char*[argc + 2];
 
   int n = 0;

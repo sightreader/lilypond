@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Tomohiro Tatejima, Yoshiki Sawada
 @c Translation status: post-GDP
@@ -4300,7 +4300,7 @@ B フラット メジャーへの明示的な変更の後に出現する調号�
 
 @lilypond[quote,fragment,verbatim]
 g4\< e' d'' f''\!
-\override Hairpin.rotation = #'(20 -1 0)
+\override Hairpin.rotation = #'(15 -1 0)
 g4\< e' d'' f''\!
 @end lilypond
 

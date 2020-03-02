@@ -1,6 +1,6 @@
 # This file is part of LilyPond, the GNU music typesetter.
 #
-# Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+# Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 #                Jan Nieuwenhuizen <janneke@gnu.org>
 #
 # LilyPond is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@
 # along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 
 import __main__
+import gettext
 import glob
 import os
 import re
@@ -25,47 +26,14 @@ import sys
 import optparse
 import time
 
-################################################################
-# Users of python modules should include this snippet
-# and customize variables below.
-
-
-# Python 2.5 only accepts strings with proper Python internal encoding
-# (i.e. ASCII or Unicode) when writing to stdout/stderr, so we must
-# use ugettext iso gettext, and encode the string when writing to
-# stdout/stderr
-
+# Load translation and install _() into Python's builtins namespace.
 localedir = '@localedir@'
-try:
-    import gettext
-    t = gettext.translation ('lilypond', localedir)
-    _ = t.ugettext
-    ungettext = t.ungettext
-except:
-    def _ (s):
-        return s
-    def ungettext (s, p, n):
-        if n == 1:
-            return s
-        return p
-underscore = _
+gettext.install ('lilypond', localedir)
 
-# Urg, Python 2.4 does not define stderr/stdout encoding
-# Maybe guess encoding from LANG/LC_ALL/LC_CTYPE?
-
-reload (sys)
-sys.setdefaultencoding ('utf-8')
 import codecs
-sys.stdout = codecs.getwriter ('utf8') (sys.stdout)
-sys.stderr = codecs.getwriter ('utf8') (sys.stderr)
-
-def encoded_write(f, s):
-    f.write (s.encode (f.encoding or 'utf-8', 'replace'))
-
-# ugh, Python 2.5 optparse requires Unicode strings in some argument
-# functions, and refuse them in some other places
-def display_encode (s):
-    return s.encode (sys.stderr.encoding or 'utf-8', 'replace')
+sys.stdin = codecs.getreader ('utf8') (sys.stdin.detach ())
+sys.stdout = codecs.getwriter ('utf8') (sys.stdout.detach ())
+sys.stderr = codecs.getwriter ('utf8') (sys.stderr.detach ())
 
 # Lilylib globals.
 program_version = '@TOPLEVEL_VERSION@'
@@ -78,7 +46,7 @@ program_name = os.path.basename (sys.argv[0])
 # makefiles and use its value.
 at_re = re.compile (r'@')
 if at_re.match (program_version):
-    if os.environ.has_key('LILYPOND_VERSION'):
+    if 'LILYPOND_VERSION' in os.environ:
         program_version = os.environ['LILYPOND_VERSION']
     else:
         program_version = "unknown"
@@ -118,7 +86,7 @@ def is_verbose ():
     return is_loglevel ("DEBUG")
 
 def stderr_write (s):
-    encoded_write (sys.stderr, s)
+    sys.stderr.write (s)
 
 def print_logmessage (level, s, fullmessage = True, newline = True):
     if (is_loglevel (level)):
@@ -145,14 +113,6 @@ def debug_output (s, fullmessage = False, newline = True):
     print_logmessage ("DEBUG", s, fullmessage, newline);
 
 
-
-def require_python_version ():
-    if sys.hexversion < 0x02040000:
-        error ("Python 2.4 or newer is required to run this program.\n\
-Please upgrade Python from http://python.org/download/, and if you use MacOS X,\n\
-please read 'Setup for MacOS X' in Application Usage.")
-        os.system ("open http://python.org/download/")
-        sys.exit (2)
 
 # A modified version of the commands.mkarg(x) that always uses
 # double quotes (since Windows can't handle the single quotes)
@@ -225,18 +185,18 @@ def subprocess_system (cmd,
             retval = proc.returncode
 
     if retval:
-        print >>sys.stderr, 'command failed:', cmd
+        print('command failed:', cmd, file=sys.stderr)
         if retval < 0:
-            print >>sys.stderr, "Child was terminated by signal", -retval
+            print("Child was terminated by signal", -retval, file=sys.stderr)
         elif retval > 0:
-            print >>sys.stderr, "Child returned", retval
+            print("Child returned", retval, file=sys.stderr)
 
         if ignore_error:
-            print >>sys.stderr, "Error ignored by lilylib"
+            print("Error ignored by lilylib", file=sys.stderr)
         else:
             if not show_progress:
-                print log[0]
-                print log[1]
+                print(log[0])
+                print(log[1])
             sys.exit (1)
 
     return abs (retval)
@@ -258,14 +218,14 @@ def ossystem_system (cmd,
 
     retval = os.system (cmd)
     if retval:
-        print >>sys.stderr, 'command failed:', cmd
+        print('command failed:', cmd, file=sys.stderr)
         if retval < 0:
-            print >>sys.stderr, "Child was terminated by signal", -retval
+            print("Child was terminated by signal", -retval, file=sys.stderr)
         elif retval > 0:
-            print >>sys.stderr, "Child returned", retval
+            print("Child returned", retval, file=sys.stderr)
 
         if ignore_error:
-            print >>sys.stderr, "Error ignored"
+            print("Error ignored", file=sys.stderr)
         else:
             sys.exit (1)
 
@@ -296,7 +256,7 @@ def search_exe_path (name):
 
 
 def print_environment ():
-    for (k,v) in os.environ.items ():
+    for (k,v) in list(os.environ.items ()):
         sys.stderr.write ("%s=\"%s\"\n" % (k, v))
 
 class NonDentedHeadingFormatter (optparse.IndentedHelpFormatter):
@@ -340,7 +300,7 @@ class NonEmptyOptionParser (optparse.OptionParser):
 
     def parse_args (self, args=None, values=None):
         options, args = optparse.OptionParser.parse_args (self, args, values)
-        return options, filter (None, args)
+        return options, [_f for _f in args if _f]
 
 def get_option_parser (*args, **kwargs):
     p = NonEmptyOptionParser (*args, **kwargs)

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@
 #include "paper-system.hh"
 #include "system.hh"
 #include "warn.hh"
+
+using std::string;
+using std::vector;
 
 template<typename T>
 static bool
@@ -62,7 +65,7 @@ Page_turn_page_breaking::Break_node
 Page_turn_page_breaking::put_systems_on_pages (vsize start,
                                                vsize end,
                                                vsize configuration,
-                                               vsize page_number)
+                                               int page_number)
 {
   vsize min_p_count = min_page_count (configuration, page_number);
   bool auto_first = to_boolean (book_->paper_->c_variable ("auto-first-page-number"));
@@ -94,7 +97,7 @@ Page_turn_page_breaking::put_systems_on_pages (vsize start,
       else
         result = space_systems_on_n_pages (configuration, min_p_count, page_number);
     }
-  else if (page_number % 2 == min_p_count % 2)
+  else if (((page_number % 2) == 0) == ((min_p_count % 2) == 0))
     result = space_systems_on_n_pages (configuration, min_p_count, page_number);
   else
     result = space_systems_on_n_or_one_more_pages (configuration, min_p_count, page_number, blank_page_penalty ());
@@ -104,8 +107,8 @@ Page_turn_page_breaking::put_systems_on_pages (vsize start,
   ret.break_pos_ = end;
   ret.page_count_ = result.force_.size ();
   ret.first_page_number_ = page_number;
-  if (auto_first && start == 0)
-    ret.first_page_number_ += 1 - (ret.page_count_ % 2);
+  if (auto_first && (start == 0) && ((ret.page_count_ % 2) == 0))
+    ret.first_page_number_ += 1;
 
   ret.div_ = current_configuration (configuration);
   ret.system_count_ = result.systems_per_page_;
@@ -155,7 +158,8 @@ Page_turn_page_breaking::calc_subproblem (vsize ending_breakpoint)
              should always be even (left hand page).
              TODO: are there different conventions in right-to-left languages?
           */
-          p_num = state_[start - 1].first_page_number_ + state_[start - 1].page_count_;
+          p_num = state_[start - 1].first_page_number_;
+          p_num += static_cast<int> (state_[start - 1].page_count_);
           p_num += p_num % 2;
         }
 
@@ -173,7 +177,7 @@ Page_turn_page_breaking::calc_subproblem (vsize ending_breakpoint)
 
       /* heuristic: we've just added a breakpoint, we'll need at least as
          many systems as before */
-      min_sys_count = max (min_sys_count, prev_best_system_count);
+      min_sys_count = std::max (min_sys_count, prev_best_system_count);
       for (vsize sys_count = min_sys_count; sys_count <= max_sys_count && ok_page; sys_count++)
         {
           set_current_breakpoints (start, end, sys_count, min_division, max_division);
@@ -183,9 +187,9 @@ Page_turn_page_breaking::calc_subproblem (vsize ending_breakpoint)
             {
               cur = put_systems_on_pages (start, end, i, p_num);
 
-              if (isinf (cur.demerits_)
+              if (std::isinf (cur.demerits_)
                   || (cur.page_count_ + (p_num % 2) > 2
-                      && (!isinf (this_start_best.demerits_))
+                      && (!std::isinf (this_start_best.demerits_))
                       && total_page_count (cur) > total_page_count (this_start_best)))
                 {
                   ok_page = false;
@@ -209,9 +213,9 @@ Page_turn_page_breaking::calc_subproblem (vsize ending_breakpoint)
           if (!found && this_start_best.too_many_lines_)
             break;
         }
-      if (isinf (this_start_best.demerits_))
+      if (std::isinf (this_start_best.demerits_))
         {
-          assert (!isinf (best.demerits_) && start < end - 1);
+          assert (!std::isinf (best.demerits_) && start < end - 1);
           break;
         }
 
@@ -236,16 +240,16 @@ Page_turn_page_breaking::solve ()
   for (vsize i = 0; i < last_break_position (); i++)
     {
       calc_subproblem (i);
-      progress_indication (string ("[") + ::to_string (i + 1) + "]");
+      progress_indication (string ("[") + std::to_string (i + 1) + "]");
     }
   progress_indication ("\n");
 
   vector<Break_node> breaking;
-  int i = state_.size () - 1;
+  int i = static_cast<int> (state_.size ()) - 1;
   while (i >= 0)
     {
       breaking.push_back (state_[i]);
-      i = state_[i].prev_;
+      i = static_cast<int> (state_[i].prev_);
     }
   reverse (breaking);
 
@@ -297,13 +301,13 @@ Page_turn_page_breaking::make_pages (vector<Break_node> const &soln, SCM systems
 void
 Page_turn_page_breaking::print_break_node (Break_node const &node)
 {
-  int system_count = 0;
+  vsize system_count = 0;
   for (vsize i = 0; i < node.system_count_.size (); i++)
     system_count += node.system_count_[i];
 
   message (_f ("break starting at page %d", (int) node.first_page_number_));
   message (_f ("\tdemerits: %f", node.demerits_));
-  message (_f ("\tsystem count: %d", system_count));
+  message (_f ("\tsystem count: %zu", system_count));
   message (_f ("\tpage count: %d", (int) node.page_count_));
   message (_f ("\tprevious break: %d", (int) node.prev_));
 }

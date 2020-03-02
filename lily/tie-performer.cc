@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "stream-event.hh"
 #include "translator.icc"
 #include <list>
+
+using std::list;
 
 struct Head_audio_event_tuple
 {
@@ -49,7 +51,7 @@ class Tie_performer : public Performer
 protected:
   void stop_translation_timestep ();
   void start_translation_timestep ();
-  virtual void acknowledge_audio_element (Audio_element_info);
+  void acknowledge_audio_element (Audio_element_info) override;
   void process_music ();
   void listen_tie (Stream_event *);
 public:

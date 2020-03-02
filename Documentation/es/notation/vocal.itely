@@ -1747,7 +1747,7 @@ debemos usar es el pasaje polifónico temporal, véase la sección
 @funindex NullVoice
 @cindex polifonía, letra compartida
 @cindex letra, compartida entre voces
-@cindex @code{\partCombine} and lyrics
+@cindex @code{\partCombine} y letra
 @funindex \partCombine
 
 Cuando dos voces cuyas notas tienen distintas duraciones comparten

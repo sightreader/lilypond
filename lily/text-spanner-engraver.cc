@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2000--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class Text_spanner_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Text_spanner_engraver);
 protected:
-  virtual void finalize ();
+  void finalize () override;
   void listen_text_span (Stream_event *);
   void acknowledge_note_column (Grob_info);
   void stop_translation_timestep ();

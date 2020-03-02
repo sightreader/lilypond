@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #include <map>
 #include <set>
 
-using namespace std;
 
 #include "axis-group-interface.hh"
 #include "directional-element-interface.hh"
@@ -38,6 +37,9 @@ using namespace std;
 #include "side-position-interface.hh"
 #include "staff-symbol-referencer.hh"
 #include "stem.hh"
+
+using std::set;
+using std::vector;
 
 MAKE_SCHEME_CALLBACK (Dot_column, calc_positioning_done, 1);
 SCM
@@ -168,11 +170,12 @@ Dot_column::calc_positioning_done (SCM smob)
       for (vsize j = 0; j < parent_stems.size (); j++)
         {
           Interval chord = Stem::head_positions (parent_stems[j]);
-          int total_room = ((int) chord.length () + 2
-                            + scm_to_int (chord_dots_limit)) / 2;
-          int total_dots = dots_each_stem[j].size ();
+          vsize total_room = (static_cast<size_t> (chord.length ()) + 2
+                              + scm_to_size_t (chord_dots_limit))
+                             / 2;
+          vsize total_dots = dots_each_stem[j].size ();
           // remove excessive dots from the ends of the stem
-          for (int first_dot = 0; total_dots > total_room; total_dots--)
+          for (vsize first_dot = 0; total_dots > total_room; total_dots--)
             if (0 == (total_dots - total_room) % 2)
               dots_each_stem[j][first_dot++]->suicide ();
             else
@@ -221,16 +224,8 @@ Dot_column::calc_positioning_done (SCM smob)
         cfg.remove_collision (p);
     }
 
-  problem.register_configuration (cfg);
-
-  for (Dot_configuration::const_iterator i (cfg.begin ());
-       i != cfg.end (); i++)
-    {
-      /*
-        Junkme?
-       */
-      Staff_symbol_referencer::pure_set_position (i->second.dot_, i->first);
-    }
+  for (const auto &ent : cfg) // Junkme?
+    Staff_symbol_referencer::pure_set_position (ent.second.dot_, ent.first);
 
   me->translate_axis (cfg.x_offset () - me->relative_coordinate (commonx, X_AXIS),
                       X_AXIS);

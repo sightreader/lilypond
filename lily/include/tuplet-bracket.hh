@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ public:
   static void add_column (Grob *me, Item *);
   static void add_script (Grob *me, Item *);
   static void add_beam (Grob *me, Grob *);
-  static Grob *parallel_beam (Grob *me, vector<Grob *> const &cols,
+  static Grob *parallel_beam (Grob *me, std::vector<Grob *> const &cols,
                               bool *equally_long);
   static void calc_position_and_height (Grob *, Real *, Real *dy);
   static Direction get_default_dir (Grob *);

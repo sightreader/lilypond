@@ -69,19 +69,14 @@ AC_DEFUN(STEPMAKE_ADD_ENTRY, [
 ])
 
 # Check if tested program ($2) was found ($1).
-# If not, add entry to missing-list ($3, one of 'OPTIONAL', 'REQUIRED').
-# We could abort here if a 'REQUIRED' program is not found
+# If not, add entry to missing-list ($3, one of 'OPTIONAL',
+# 'REQUIRED') and assign "false" to ($1).  "false" can be tested
+# clearly in makefiles and will surely fail if run unintentionally.
 AC_DEFUN(STEPMAKE_OPTIONAL_REQUIRED, [
     STEPMAKE_CHECK_SEARCH_RESULT($1)
     if test $? -ne 0; then
         STEPMAKE_ADD_ENTRY($3, $2)
-        if test "$3" = "REQUIRED"; then
-            command="echo ERROR: $2 not found"
-        # abort configure process here?
-        else
-            command="- echo $2 not found"
-        fi
-        eval "$1"='$command'
+        eval "$1"=false
         false
     else
         true
@@ -102,7 +97,6 @@ AC_DEFUN(STEPMAKE_CHECK_SEARCH_RESULT, [
         false
     fi
 ])
-
 
 # Check version of program ($1)
 # If version is smaller than requested ($3) or larger than requested
@@ -169,6 +163,7 @@ AC_DEFUN(STEPMAKE_COMPILE_BEFORE, [
     profile_b=no
     debug_b=yes
     pipe_b=yes
+    ubsan_b=no
 
     AC_ARG_ENABLE(debugging,
         [AS_HELP_STRING(
@@ -199,6 +194,12 @@ AC_DEFUN(STEPMAKE_COMPILE_BEFORE, [
             [--enable-pipe],
             [compile with -pipe.  Default: on])],
         [pipe_b=$enableval])
+
+    AC_ARG_ENABLE(ubsan,
+        [AS_HELP_STRING(
+            [--enable-ubsan],
+            [instrument with the Undefined Behavior Sanitizer.  Default: off])],
+        [ubsan_b=$enableval])
 
     if test "$optimise_b" = yes; then
         OPTIMIZE=" -O2 -finline-functions"
@@ -248,8 +249,29 @@ AC_DEFUN(STEPMAKE_COMPILE, [
         fi
     fi
 
-    CFLAGS="$CFLAGS $OPTIMIZE"
+    # If UBSan requested, test if it works and add to CFLAGS.
+    if test "$ubsan_b" = yes; then
+        save_cflags="$CFLAGS"
+        CFLAGS=" -fsanitize=undefined $CFLAGS";
+        AC_CACHE_CHECK([whether compiler understands -fsanitize=undefined],
+            [stepmake_cv_cflags_ubsan],
+            AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[/* UBSan test */]])],
+                [stepmake_cv_cflags_ubsan=yes],
+                [stepmake_cv_cflags_ubsan=no]))
+        CFLAGS=$save_cflags
+        if test $stepmake_cv_cflags_ubsan = yes; then
+            SANITIZE="$SANITIZE -fsanitize=undefined"
+        fi
+    fi
+
+    if test -n "$SANITIZE"; then
+        # "print a verbose error report and exit the program"
+        SANITIZE="$SANITIZE -fno-sanitize-recover"
+    fi
+
+    CFLAGS="$CFLAGS $OPTIMIZE $SANITIZE"
     CPPFLAGS=${CPPFLAGS-""}
+    LDFLAGS="$LDFLAGS $SANITIZE"
 
     AC_MSG_CHECKING([for IEEE-conformance compiler flags])
     save_cflags="$CFLAGS"
@@ -277,50 +299,9 @@ AC_DEFUN(STEPMAKE_CXX, [
     AC_PROG_CXX
     STEPMAKE_OPTIONAL_REQUIRED(CXX, c++, $1)
 
-    CXXFLAGS="$CXXFLAGS $OPTIMIZE"
+    CXXFLAGS="$CXXFLAGS $OPTIMIZE $SANITIZE"
 
     AC_SUBST(CXX)
-    AC_SUBST(CXXFLAGS)
-])
-
-
-AC_DEFUN(STEPMAKE_CXXTEMPLATE, [
-    AC_CACHE_CHECK([whether explicit instantiation is needed],
-        stepmake_cv_need_explicit_instantiation,
-        AC_LINK_IFELSE([
-            AC_LANG_PROGRAM([[
-
-template <class T> struct foo { static int baz; };
-template <class T> int foo<T>::baz = 1;
-
-                ]], [[
-
-return foo<int>::baz;
-
-                ]])],
-            [stepmake_cv_need_explicit_instantiation=no],
-            [stepmake_cv_need_explicit_instantiation=yes]))
-    if test x"$stepmake_cv_need_explicit_instantiation"x = x"yes"x; then
-        AC_DEFINE(NEED_EXPLICIT_INSTANTIATION)
-    fi
-])
-
-
-AC_DEFUN(STEPMAKE_GXXCODEGENBUG, [
-    AC_MSG_CHECKING([options for known g++ bugs])
-    case "$GXX:$CXX_VERSION" in
-    yes:400600[[0-2]])
-        AC_MSG_RESULT([-fno-optimize-sibling-calls (tail call bug)])
-        CXXFLAGS="$CXXFLAGS -fno-optimize-sibling-calls"
-        ;;
-    yes:400700?)
-        AC_MSG_RESULT([-fno-tree-vrp (comparison bug)])
-        CXXFLAGS="$CXXFLAGS -fno-tree-vrp"
-        ;;
-    *)
-        AC_MSG_RESULT([none])
-        ;;
-    esac
     AC_SUBST(CXXFLAGS)
 ])
 
@@ -331,7 +312,7 @@ AC_DEFUN(STEPMAKE_DATADIR, [
         presome=${ac_default_prefix}
     fi
 
-    build_package_datadir=$ugh_ugh_autoconf250_builddir/out$CONFIGSUFFIX/share/$package
+    build_package_datadir=$ac_pwd/out/share/$package
 
     DATADIR=`echo ${datadir} | sed "s!\\\${datarootdir}!${presome}/share!"`
     DATADIR=`echo ${DATADIR} | sed "s!\\\${prefix}!$presome!"`
@@ -355,7 +336,7 @@ AC_DEFUN(STEPMAKE_LIBDIR, [
         presome=${ac_default_prefix}
     fi
 
-    build_package_libdir=$ugh_ugh_autoconf250_builddir/out$CONFIGSUFFIX/lib/$package
+    build_package_libdir=$ac_pwd/out/lib/$package
 
     LIBDIR=`echo ${libdir} | sed "s!\\\${exec_prefix}!$presome!"`
     BUILD_PACKAGE_LIBDIR=`echo ${build_package_libdir} | sed "s!\\\${exec_prefix}!$presome!"`
@@ -395,7 +376,7 @@ AC_DEFUN(STEPMAKE_END, [
     AC_SUBST(OPTIONAL)
     AC_SUBST(REQUIRED)
 
-    AC_CONFIG_FILES([$CONFIGFILE.make:config.make.in])
+    AC_CONFIG_FILES([config.make:config.make.in])
     AC_OUTPUT
 
     if test -n "$OPTIONAL"; then
@@ -447,7 +428,9 @@ EOF
         abssrcdir="`cd $srcdir; pwd`"
         absbuilddir="`pwd`"
 
+        depth=""
         for d in 2 3 4 5 ; do
+            depth="$depth../"
             for mf in `cd $srcdir; \
                        find . -maxdepth $d -mindepth $d -name GNUmakefile`; do
                 case "$abssrcdir" in
@@ -463,11 +446,11 @@ EOF
                 esac
 
                 mkdir -p ${mf%/*}
-                cat <<EOF | $PYTHON -  > $mf
-print 'depth=' + ('../' * ( $d-1 ) )
-print 'include \$(depth)/config\$(if \$(conf),-\$(conf),).make'
-print 'include \$(configure-srcdir)/$mf'
-print 'MODULE_INCLUDES += \$(src-dir)/\$(outbase)'
+                cat <<EOF > $mf
+depth=$depth
+include \$(depth)/config.make
+include \$(configure-srcdir)/$mf
+MODULE_INCLUDES += \$(src-dir)/\$(outbase)
 EOF
             done
 
@@ -487,9 +470,9 @@ EOF
                 esac
 
                 mkdir -p ${mf%/*}
-                cat <<EOF | $PYTHON -  > $mf
-print 'include \$(depth)/config\$(if \$(conf),-\$(conf),).make'
-print 'include \$(configure-srcdir)/$mf'
+                cat <<EOF > $mf
+include \$(depth)/config.make
+include \$(configure-srcdir)/$mf
 EOF
             done
         done
@@ -497,7 +480,7 @@ EOF
         rm -f GNUmakefile
         cat <<EOF > GNUmakefile
 depth = .
-include config\$(if \$(conf),-\$(conf),).make
+include config.make
 include \$(configure-srcdir)/GNUmakefile.in
 EOF
         chmod 444 GNUmakefile
@@ -519,42 +502,49 @@ AC_DEFUN(STEPMAKE_FLEX, [
 
 
 AC_DEFUN(STEPMAKE_FLEXLEXER, [
+    save_CPPFLAGS="$CPPFLAGS"
+    if test -n "$FLEXLEXER_DIR"; then
+        CPPFLAGS="-I$FLEXLEXER_DIR $CPPFLAGS"
+    fi
     AC_CHECK_HEADERS([FlexLexer.h],[true],[false])
     if test $? -ne 0; then
         warn='FlexLexer.h (flex package)'
         STEPMAKE_ADD_ENTRY($1, $warn)
     fi
-    # check for yyFlexLexer.yy_current_buffer,
-    # in 2.5.4 <= flex < 2.5.29
-    AC_CACHE_CHECK([for yyFlexLexer.yy_current_buffer],
-        [stepmake_cv_flexlexer_yy_current_buffer],
+    # check for yyFlexLexer.yypop_buffer_state () since flex 2.5.29
+    AC_CACHE_CHECK([for yyFlexLexer.yypop_buffer_state ()],
+        [stepmake_cv_flexlexer_yypop_buffer_state],
         AC_COMPILE_IFELSE([
             AC_LANG_PROGRAM([[
-
-using namespace std;
 #include <FlexLexer.h>
 class yy_flex_lexer: public yyFlexLexer
 {
   public:
     yy_flex_lexer ()
     {
-      yy_current_buffer = 0;
+      yypop_buffer_state ();
     }
 };
 
             ]])],
-            [stepmake_cv_flexlexer_yy_current_buffer=yes],
-            [stepmake_cv_flexlexer_yy_current_buffer=no]))
+            [stepmake_cv_flexlexer_yypop_buffer_state=yes],
+            [stepmake_cv_flexlexer_yypop_buffer_state=no]))
 
-    if test $stepmake_cv_flexlexer_yy_current_buffer = yes; then
-        AC_DEFINE(HAVE_FLEXLEXER_YY_CURRENT_BUFFER, 1,
-                  [Define to 1 if yyFlexLexer has yy_current_buffer.])
+    if test $stepmake_cv_flexlexer_yypop_buffer_state = no; then
+        warn='FlexLexer.h with yypop_buffer_state (flex >= 2.5.29)'
+        STEPMAKE_ADD_ENTRY($1, $warn)
     fi
+    CPPFLAGS=$save_CPPFLAGS
 ])
 
 
 AC_DEFUN(STEPMAKE_FLEXLEXER_LOCATION, [
     AC_MSG_CHECKING([FlexLexer.h location])
+
+    save_CPPFLAGS="$CPPFLAGS"
+    if test -n "$FLEXLEXER_DIR"; then
+        CPPFLAGS="-I$FLEXLEXER_DIR $CPPFLAGS"
+    fi
 
     # ugh.
     cat <<EOF > conftest.cc
@@ -567,20 +557,20 @@ EOF
     rm conftest.cc
     AC_SUBST(FLEXLEXER_FILE)
     AC_MSG_RESULT($FLEXLEXER_FILE)
-])
-
-
-AC_DEFUN(STEPMAKE_GCC_OR_CLANG, [
-    STEPMAKE_HAS_CLANG()
-    if test "$HAS_CLANG" = "no"; then
-        if test "$GCC" = "yes"; then
-            STEPMAKE_CHECK_VERSION(CC, $1, $2)
-        else
-            warn="$CC (Please install *GNU* cc)"
-            STEPMAKE_ADD_ENTRY($1, $warn)
+    if test -n "$FLEXLEXER_DIR"; then
+        case $FLEXLEXER_FILE in
+        */*)
+            dir=${FLEXLEXER_FILE%/*}
+            ;;
+        *)
+            dir=.
+            ;;
+        esac
+        if test "x$dir" != "x$FLEXLEXER_DIR"; then
+            AC_MSG_ERROR([FlexLexer.h not located in directory given by --with-flexlexer-dir])
         fi
     fi
-    # no else, we're fine with any clang
+    CPPFLAGS=$save_CPPFLAGS
 ])
 
 
@@ -641,118 +631,29 @@ AC_DEFUN(STEPMAKE_GUILE, [
     STEPMAKE_PATH_PROG(GUILE, $GUILE)
 ])
 
-
-# STEPMAKE_GUILE_FLAGS --- set flags for compiling and linking with Guile
-#
-# This macro runs the guile-config script, installed with Guile,
-# to find out where Guile's header files and libraries are
-# installed.  It sets two variables, marked for substitution, as
-# by AC_SUBST.
-#
-#     GUILE_CFLAGS --- flags to pass to a C or C++ compiler to build
-#             code that uses Guile header files.  This is almost
-#             always just a -I flag.
-#
-#     GUILE_LDFLAGS --- flags to pass to the linker to link a
-#             program against Guile.  This includes -lguile for
-#             the Guile library itself, any libraries that Guile
-#             itself requires (like -lqthreads), and so on.  It may
-#             also include a -L flag to tell the compiler where to
-#             find the libraries.
-
-AC_DEFUN([STEPMAKE_GUILE_FLAGS], [
-    exe=`STEPMAKE_GET_EXECUTABLE($guile_config)`
-    if test -x $exe; then
-        AC_MSG_CHECKING([guile compile flags])
-        GUILE_CFLAGS="`$guile_config compile`"
-        AC_MSG_RESULT($GUILE_CFLAGS)
-        AC_MSG_CHECKING([guile link flags])
-        GUILE_LDFLAGS="`$guile_config link`"
-        AC_MSG_RESULT($GUILE_LDFLAGS)
-    fi
-    AC_SUBST(GUILE_CFLAGS)
-    AC_SUBST(GUILE_LDFLAGS)
-])
-
-
-# Check for guile-config, between minimum ($2) and maximum version ($3).
-# If missing, add entry to missing-list ($1, one of 'OPTIONAL', 'REQUIRED')
 AC_DEFUN(STEPMAKE_GUILE_DEVEL, [
-    ## First, let's just see if we can find Guile at all.
-    test -n "$target_alias" && target_guile_config=$target_alias-guile-config
-    test -n "$host_alias" && host_guile_config=$host_alias-guile-config
-    AC_MSG_CHECKING([for guile-config])
-    guile_config="guile-config"
-    found="no"
-    for r in $GUILE_CONFIG \
-             $target_guile_config $host_guile_config $build_guile_config \
-             guile-config \
-             guile2-config   guile-2-config   guile-config-2   guile-config2 \
-             guile2.2-config guile-2.2-config guile-config-2.2 guile-config2.2 \
-             guile2.0-config guile-2.0-config guile-config-2.0 guile-config2.0 \
-             guile1-config   guile-1-config   guile-config-1   guile-config1 \
-             guile1.9-config guile-1.9-config guile-config-1.9 guile-config1.9 \
-             guile1.8-config guile-1.8-config guile-config-1.8 guile-config1.8 \
-             guile18-config; do
-        exe=`STEPMAKE_GET_EXECUTABLE($r)`
-        if ! $exe --version > /dev/null 2>&1 ; then
-            continue
-        fi
-        ver=`STEPMAKE_GET_VERSION($exe)`
-        num=`STEPMAKE_NUMERIC_VERSION($ver)`
-        req=`STEPMAKE_NUMERIC_VERSION($2)`
-        sup=`STEPMAKE_NUMERIC_VERSION($3)`
-        if test -n "$2" -a "$num" -lt "$req"; then
-            guile_config=["$r >= $2 (installed: $ver)"]
-            continue
-        else
-            if test -n "$3" -a "$num" -ge "$sup"; then
-                guile_config=["$r < $3 (installed: $ver)"]
-                continue
-            else
-                guile_config=$r
-                found=$r
-                break
-            fi
-        fi
-    done
-    AC_MSG_RESULT([$found])
-    if test "$found" != "no"; then
-        AC_MSG_CHECKING([$guile_config version])
-        AC_MSG_RESULT([$ver])
-        GUILE_CONFIG=$found
+    if test -n "$GUILE_FLAVOR"; then
+        PKG_CHECK_MODULES([GUILE], [$GUILE_FLAVOR], true, [GUILE_FLAVOR=""])
     else
-        STEPMAKE_ADD_ENTRY($1,
-            "$guile_config (guile-devel, guile-dev or libguile-dev package)")
+        PKG_CHECK_MODULES([GUILE], [guile-1.8 >= 1.8.2], [GUILE_FLAVOR="guile-1.8"], [
+            PKG_CHECK_MODULES(
+                [GUILE], [guile-2.2 >= 2.2.0], [GUILE_FLAVOR="guile-2.2"], [
+                    PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.7], [GUILE_FLAVOR="guile-2.0"])
+                ])
+        ])
     fi
 
-    AC_SUBST(GUILE_CONFIG)
-
-    guile_version="$ver"
-    changequote(<<, >>)#dnl
-    GUILE_MAJOR_VERSION=`expr $guile_version : '\([0-9]*\)'`
-    GUILE_MINOR_VERSION=`expr $guile_version : '[0-9]*\.\([0-9]*\)'`
-    GUILE_PATCH_LEVEL=`expr $guile_version : '[0-9]*\.[0-9]*\.\([0-9]*\)'`
-    changequote([, ])#dnl
-    STEPMAKE_GUILE_FLAGS
-    save_CPPFLAGS="$CPPFLAGS"
-    save_LIBS="$LIBS"
-    CPPFLAGS="$GUILE_CFLAGS $CPPFLAGS"
-    LIBS="$GUILE_LDFLAGS $LIBS"
-    AC_CHECK_HEADERS([libguile.h libguile18.h])
-    AC_CHECK_LIB(guile, scm_boot_guile)
-    AC_CHECK_FUNCS(scm_boot_guile,,libguile_b=no)
-    if test "$libguile_b" = "no"; then
-        warn='libguile (libguile-dev, guile-devel or guile-dev package).'
-        STEPMAKE_ADD_ENTRY(REQUIRED, $warn)
-    fi
-    CPPFLAGS="$save_CPPFLAGS"
-    LIBS="$save_LIBS"
-    AC_DEFINE_UNQUOTED(GUILE_MAJOR_VERSION, $GUILE_MAJOR_VERSION)
-    AC_DEFINE_UNQUOTED(GUILE_MINOR_VERSION, $GUILE_MINOR_VERSION)
-    AC_DEFINE_UNQUOTED(GUILE_PATCH_LEVEL, $GUILE_PATCH_LEVEL)
+    case "$GUILE_FLAVOR" in
+        guile-2.0|guile-2.2|guile-3.0)
+            GUILEv2=yes
+            ;;
+        guile-1.8)
+            ;;
+        *)
+            STEPMAKE_ADD_ENTRY(REQUIRED, [guile-devel >= 1.8])
+            ;;
+    esac
 ])
-
 
 AC_DEFUN(STEPMAKE_DLOPEN, [
     AC_CHECK_LIB(dl, dlopen)
@@ -760,53 +661,15 @@ AC_DEFUN(STEPMAKE_DLOPEN, [
 ])
 
 
-AC_DEFUN(STEPMAKE_HAS_CLANG, [
-    AC_EGREP_CPP(yes,
-      [#ifdef __clang__
-       yes
-       #endif
-      ], HAS_CLANG=yes, HAS_CLANG=no)
-])
-
-
-AC_DEFUN(STEPMAKE_GXX_OR_CLANG, [
-    STEPMAKE_HAS_CLANG()
-    if test "$HAS_CLANG" = "no"; then
-        if test "$GXX" = "yes"; then
-            STEPMAKE_CHECK_VERSION(CXX, $1, $2)
-        else
-            warn="$CXX (Please install *GNU* c++)"
-            STEPMAKE_ADD_ENTRY($1, $warn)
-        fi
-    fi
-    # no else, we're fine with any clang
-])
-
-
 AC_DEFUN(STEPMAKE_INIT, [
     . $srcdir/VERSION
     FULL_VERSION=$MAJOR_VERSION.$MINOR_VERSION.$PATCH_LEVEL
-    MICRO_VERSION=$PATCH_LEVEL
     TOPLEVEL_VERSION=$FULL_VERSION
     if test x$MY_PATCH_LEVEL != x; then
         FULL_VERSION=$FULL_VERSION.$MY_PATCH_LEVEL
     fi
     VERSION=$FULL_VERSION
     export MAJOR_VERSION MINOR_VERSION PATCH_LEVEL
-    # urg: don't "fix" this: irix doesn't know about [:lower:] and [:upper:]
-    changequote(<<, >>)#dnl
-    PACKAGE=`echo $PACKAGE_NAME | tr '[a-z]' '[A-Z]'`
-    package=`echo $PACKAGE_NAME | tr '[A-Z]' '[a-z]'`
-    changequote([, ])#dnl
-
-    # No versioning on directory names of sub-packages
-    # urg, urg
-    stepmake=${datadir}/stepmake
-    presome=${prefix}
-    if test "$prefix" = "NONE"; then
-        presome=${ac_default_prefix}
-    fi
-    stepmake=`echo ${stepmake} | sed "s!\\\${prefix}!$presome!"`
 
     # urg, how is this supposed to work?
     if test "$program_prefix" = "NONE"; then
@@ -816,106 +679,23 @@ AC_DEFUN(STEPMAKE_INIT, [
         program_suffix=
     fi
 
-    AC_MSG_CHECKING(Package)
-    if test "$PACKAGE" = "STEPMAKE"; then
-        AC_MSG_RESULT(Stepmake package!)
-
-        AC_MSG_CHECKING(builddir)
-
-        ugh_ugh_autoconf250_builddir="`pwd`"
-
-        if test "$srcdir" = "."; then
-            srcdir_build=yes
-        else
-            srcdir_build=no
-            package_builddir="`dirname $ugh_ugh_autoconf250_builddir`"
-            package_srcdir="`dirname  $srcdir`"
-        fi
-        AC_MSG_RESULT($ugh_ugh_autoconf250_builddir)
-
-        (cd stepmake 2>/dev/null || mkdir stepmake)
-        (cd stepmake; rm -f bin; ln -s ../$srcdir/bin .)
-        stepmake=stepmake
+    # From configure: "When building in place, set srcdir=."
+    if test "$srcdir" = "."; then
+        srcdir_build=yes
     else
-        AC_MSG_RESULT($PACKAGE)
-
-        AC_MSG_CHECKING(builddir)
-        ugh_ugh_autoconf250_builddir="`pwd`"
-
-        here_dir=$(cd . && pwd)
-        full_src_dir=$(cd $srcdir && pwd)
-
-        if test "$full_src_dir" = "$here_dir"; then
-            srcdir_build=yes
-        else
-            srcdir_build=no
-        fi
-        AC_MSG_RESULT($ugh_ugh_autoconf250_builddir)
-
-        AC_MSG_CHECKING(for stepmake)
-        # Check for installed stepmake
-        if test -d $stepmake; then
-            AC_MSG_RESULT($stepmake)
-        else
-            stepmake="`cd $srcdir/stepmake; pwd`"
-            AC_MSG_RESULT([$srcdir/stepmake  ($datadir/stepmake not found)])
-        fi
+        srcdir_build=no
     fi
 
-    AC_SUBST(ugh_ugh_autoconf250_builddir)
-
-    # Use absolute directory for non-srcdir builds, so that build
-    # dir can be moved.
-    if test "$srcdir_build" = "no" ;  then
-        srcdir="`cd $srcdir; pwd`"
-    fi
-
-    AC_SUBST(srcdir)
-    AC_SUBST(stepmake)
-    AC_SUBST(package)
-    AC_SUBST(PACKAGE)
-    AC_SUBST(PACKAGE_NAME)
     AC_SUBST(VERSION)
     AC_SUBST(MAJOR_VERSION)
     AC_SUBST(MINOR_VERSION)
-    AC_SUBST(MICRO_VERSION)
 
     # stepmake nonstandard names
     AC_SUBST(PATCH_LEVEL)
     AC_SUBST(TOPLEVEL_VERSION)
 
-    # We don't need the upper case variant,
-    # so stick to macros are uppercase convention.
-    # AC_DEFINE_UNQUOTED(package, ["${package}"])
-    # AC_DEFINE_UNQUOTED(PACKAGE, ["${PACKAGE}"])
-    AC_DEFINE_UNQUOTED(PACKAGE, ["${package}"])
-    AC_DEFINE_UNQUOTED(PACKAGE_NAME, ["${PACKAGE_NAME}"])
-    AC_DEFINE_UNQUOTED(TOPLEVEL_VERSION, ["${FULL_VERSION}"])
-
-    if test -z "$package_depth"; then
-        package_depth="."
-    else
-        package_depth="../$package_depth"
-    fi
-    export package_depth
-    AC_SUBST(package_depth)
-
     AUTOGENERATE="This file was automatically generated by configure"
     AC_SUBST(AUTOGENERATE)
-
-    CONFIGSUFFIX=
-    AC_ARG_ENABLE(config,
-        [AS_HELP_STRING(
-            [--enable-config=CONF],
-            [put settings in config-CONF.make and config-CONF.h;
-             do `make conf=CONF' to get output in ./out-CONF])],
-        [CONFIGURATION=$enableval])
-
-    ##'`#
-
-    test -n "$CONFIGURATION" && CONFIGSUFFIX="-$CONFIGURATION"
-    CONFIGFILE=config$CONFIGSUFFIX
-    AC_SUBST(CONFIGSUFFIX)
 
     AC_CANONICAL_HOST
     STEPMAKE_PROGS(MAKE, gmake make, REQUIRED)
@@ -935,7 +715,7 @@ AC_DEFUN(STEPMAKE_INIT, [
     fi
     AC_SUBST(SHELL)
 
-    STEPMAKE_PYTHON(REQUIRED, 1.5, 3.0)
+    STEPMAKE_PYTHON(REQUIRED, 3.5, 3.99)
 
     if expr "$MAKE" : '.*\(echo\)' >/dev/null; then
         $MAKE -v 2> /dev/null | grep GNU > /dev/null
@@ -973,23 +753,6 @@ AC_DEFUN(STEPMAKE_LIB, [
     STEPMAKE_PROGS(AR, ar, $1)
     AC_PROG_RANLIB
     STEPMAKE_OPTIONAL_REQUIRED(RANLIB, ranlib, $1)
-])
-
-
-AC_DEFUN(STEPMAKE_LIBTOOL, [
-    # libtool.info ...
-    # **Never** try to set library version numbers so that they correspond
-    # to the release number of your package.  This is an abuse that only
-    # fosters misunderstanding of the purpose of library versions.
-
-    REVISION=$PATCH_LEVEL
-    # CURRENT=$MINOR_VERSION
-    CURRENT=`expr $MINOR_VERSION + 1`
-    # AGE=`expr $MAJOR_VERSION + 1`
-    AGE=$MAJOR_VERSION
-    AC_SUBST(CURRENT)
-    AC_SUBST(REVISION)
-    AC_SUBST(AGE)
 ])
 
 
@@ -1051,8 +814,9 @@ AC_DEFUN(STEPMAKE_MSGFMT, [
 ])
 
 
-# Check for program ($2), set full path result to ($1).
+# Check for program ($2).  If found, assign full path result to ($1).
 # If missing, add entry to missing-list ($3, one of 'OPTIONAL', 'REQUIRED')
+# and assign "false" to ($1).
 AC_DEFUN(STEPMAKE_PATH_PROG, [
     AC_CHECK_PROGS($1, $2, no)
     STEPMAKE_OPTIONAL_REQUIRED($1, $2, $3)
@@ -1065,8 +829,9 @@ AC_DEFUN(STEPMAKE_PATH_PROG, [
 ])
 
 
-# Check for program in a set of names ($2) and set result to ($1).
-# If missing, add entry to missing-list ($3, one of 'OPTIONAL', 'REQUIRED').
+# Check for program in a set of names ($2).  If found, assign result to ($1).
+# If missing, add entry to missing-list ($3, one of 'OPTIONAL', 'REQUIRED')
+# and assign "false" to ($1).
 # Otherwise, compare version to minimum version ($4, optional) and/or maximum
 # version ($5, optional).
 AC_DEFUN(STEPMAKE_PROGS, [
@@ -1091,9 +856,11 @@ AC_DEFUN(STEPMAKE_PYTHON, [
     AC_MSG_CHECKING([for python])
     python="python"
     found="no"
-    for r in $PYTHON python python3 python3.3 python3.2 python3.1 python3.0 \
-             python2 python2.7 python2.6 python2.5 python2.4 \
-             python2.3 python2.2 python2.1 python2.0; do
+    for r in $PYTHON python python3 \
+             python3.8 \
+             python3.7 \
+             python3.6 \
+             python3.5; do
         exe=`STEPMAKE_GET_EXECUTABLE($r)`
         if ! $exe -V > /dev/null 2>&1 ; then
             continue
@@ -1126,27 +893,6 @@ AC_DEFUN(STEPMAKE_PYTHON, [
     fi
     AC_PATH_PROG(PYTHON, $PYTHON)
     AC_SUBST(PYTHON)
-])
-
-
-AC_DEFUN(STEPMAKE_STL_DATA_METHOD, [
-    AC_CACHE_CHECK([for stl.data () method],
-        [stepmake_cv_stl_data_method],
-        AC_COMPILE_IFELSE([
-            AC_LANG_PROGRAM([[
-
-#include <vector>
-using namespace std;
-vector <int> v;
-void *p = v.data ();
-
-            ]])],
-            [stepmake_cv_stl_data_method=yes],
-            [stepmake_cv_stl_data_method=no]))
-    if test $stepmake_cv_stl_data_method = yes; then
-        AC_DEFINE(HAVE_STL_DATA_METHOD, 1,
-            [define if stl classes have data () method])
-    fi
 ])
 
 
@@ -1260,38 +1006,38 @@ AC_DEFUN(PKG_CHECK_MODULES, [
 AC_DEFUN(STEPMAKE_GLIB, [
     PKG_CHECK_MODULES(GLIB, $1 >= $3, have_glib=yes, true)
     if test "$have_glib" = yes; then
-	AC_DEFINE(HAVE_GLIB)
+        AC_DEFINE(HAVE_GLIB)
         save_CPPFLAGS="$CPPFLAGS"
         save_LIBS="$LIBS"
-	CPPFLAGS="$GLIB_CFLAGS $CPPFLAGS"
-	LIBS="$GLIB_LIBS $LIBS"
-	AC_SUBST(GLIB_CFLAGS)
-	AC_SUBST(GLIB_LIBS)
-	CPPFLAGS="$save_CPPFLAGS"
-	LIBS="$save_LIBS"
+        CPPFLAGS="$GLIB_CFLAGS $CPPFLAGS"
+        LIBS="$GLIB_LIBS $LIBS"
+        AC_SUBST(GLIB_CFLAGS)
+        AC_SUBST(GLIB_LIBS)
+        CPPFLAGS="$save_CPPFLAGS"
+        LIBS="$save_LIBS"
     else
-      r="libglib-dev or glib?-devel"
-      ver="`pkg-config --modversion $1`"
-      STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
+        r="libglib-dev or glib?-devel"
+        ver="`pkg-config --modversion $1`"
+        STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
     fi
 ])
 
 AC_DEFUN(STEPMAKE_GOBJECT, [
     PKG_CHECK_MODULES(GOBJECT, $1 >= $3, have_gobject=yes, true)
     if test "$have_gobject" = yes; then
-	AC_DEFINE(HAVE_GOBJECT)
+        AC_DEFINE(HAVE_GOBJECT)
         save_CPPFLAGS="$CPPFLAGS"
         save_LIBS="$LIBS"
-	CPPFLAGS="$GOBJECT_CFLAGS $CPPFLAGS"
-	LIBS="$GOBJECT_LIBS $LIBS"
-	AC_SUBST(GOBJECT_CFLAGS)
-	AC_SUBST(GOBJECT_LIBS)
-	CPPFLAGS="$save_CPPFLAGS"
-	LIBS="$save_LIBS"
+        CPPFLAGS="$GOBJECT_CFLAGS $CPPFLAGS"
+        LIBS="$GOBJECT_LIBS $LIBS"
+        AC_SUBST(GOBJECT_CFLAGS)
+        AC_SUBST(GOBJECT_LIBS)
+        CPPFLAGS="$save_CPPFLAGS"
+        LIBS="$save_LIBS"
     else
-      r="libgobject-dev or gobject?-devel"
-      ver="`pkg-config --modversion $1`"
-      STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
+        r="libgobject-dev or gobject?-devel"
+        ver="`pkg-config --modversion $1`"
+        STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
     fi
 ])
 
@@ -1309,7 +1055,7 @@ AC_DEFUN(STEPMAKE_FREETYPE2, [
         CPPFLAGS="$save_CPPFLAGS"
         LIBS="$save_LIBS"
     else
-        # UGR
+        # URG
         #r="lib$1-dev or $1-devel"
         r="libfreetype6-dev or freetype?-devel"
         ver="`pkg-config --modversion $1`"
@@ -1317,37 +1063,9 @@ AC_DEFUN(STEPMAKE_FREETYPE2, [
     fi
 ])
 
-
-AC_DEFUN(STEPMAKE_PANGO, [
-    PKG_CHECK_MODULES(PANGO, $1 >= $3, have_pango16=yes, true)
-    if test "$have_pango16" = yes ; then
-        AC_DEFINE(HAVE_PANGO16)
-        # Do not pollute user-CPPFLAGS with configure-CPPFLAGS
-        save_CPPFLAGS="$CPPFLAGS"
-        save_LIBS="$LIBS"
-        CPPFLAGS="$PANGO_CFLAGS $CPPFLAGS"
-        LIBS="$PANGO_LIBS $LIBS"
-        AC_CHECK_HEADERS([pango/pangofc-fontmap.h])
-        AC_CHECK_FUNCS([pango_fc_font_map_add_decoder_find_func])
-        AC_SUBST(PANGO_CFLAGS)
-        AC_SUBST(PANGO_LIBS)
-        CPPFLAGS="$save_CPPFLAGS"
-        LIBS="$save_LIBS"
-    else
-        # UGR
-        #r="lib$1-dev or $1-devel"
-        r="libpango1.0-dev or pango1.0-devel"
-        ver="`pkg-config --modversion $1`"
-        STEPMAKE_ADD_ENTRY($2, ["$r >= $3 (installed: $ver)"])
-    fi
-])
-
-
 AC_DEFUN(STEPMAKE_PANGO_FT2, [
     PKG_CHECK_MODULES(PANGO_FT2, $1 >= $3, have_pangoft2=yes, true)
     if test "$have_pangoft2" = yes ; then
-        AC_DEFINE(HAVE_PANGO16)
-        AC_DEFINE(HAVE_PANGO_FT2)
         # Do not pollute user-CPPFLAGS with configure-CPPFLAGS
         save_CPPFLAGS="$CPPFLAGS"
         save_LIBS="$LIBS"
@@ -1360,7 +1078,7 @@ AC_DEFUN(STEPMAKE_PANGO_FT2, [
         CPPFLAGS="$save_CPPFLAGS"
         LIBS="$save_LIBS"
     else
-        # UGR
+        # URG
         #r="lib$1-dev or $1-devel"e
         r="libpango1.0-dev or pango?-devel"
         ver="`pkg-config --modversion $1`"
@@ -1373,8 +1091,6 @@ AC_DEFUN(STEPMAKE_PANGO_FT2_WITH_OTF_FEATURE, [
     PKG_CHECK_MODULES(PANGO_FT2, $1 >= $3,
         have_pangoft2_with_otf_feature=yes, true)
     if test "$have_pangoft2_with_otf_feature" = yes; then
-        AC_DEFINE(HAVE_PANGO16)
-        AC_DEFINE(HAVE_PANGO_FT2)
         AC_DEFINE(HAVE_PANGO_FT2_WITH_OTF_FEATURE)
         # Do not pollute user-CPPFLAGS with configure-CPPFLAGS
         save_CPPFLAGS="$CPPFLAGS"
@@ -1388,7 +1104,7 @@ AC_DEFUN(STEPMAKE_PANGO_FT2_WITH_OTF_FEATURE, [
         CPPFLAGS="$save_CPPFLAGS"
         LIBS="$save_LIBS"
     else
-        # UGR
+        # URG
         #r="lib$1-dev or $1-devel"e
         r="libpango1.0-dev or pango?-devel"
         ver="`pkg-config --modversion $1`"

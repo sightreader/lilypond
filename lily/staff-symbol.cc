@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 #include "item.hh"
 #include "staff-symbol-referencer.hh"
 #include "spanner.hh"
+
+using std::vector;
 
 MAKE_SCHEME_CALLBACK (Staff_symbol, print, 1);
 
@@ -111,19 +113,11 @@ Staff_symbol::line_positions (Grob *me)
   SCM line_positions = me->get_property ("line-positions");
   if (scm_is_pair (line_positions))
     {
-      int line_count = scm_ilength (line_positions);
-      vector<Real> values (line_count);
-      int i = 0;
-      for (SCM s = line_positions; scm_is_pair (s);
-           s = scm_cdr (s))
-        {
-          values[i++] = scm_to_double (scm_car (s));
-        }
-      return values;
+      return ly_scm2floatvector (line_positions);
     }
   else
     {
-      int line_count = Staff_symbol::line_count (me);
+      int line_count = internal_line_count (me);
       Real height = line_count - 1;
       vector<Real> values (line_count);
       for (int i = 0; i < line_count; i++)
@@ -282,14 +276,12 @@ Staff_symbol::ledger_positions (Grob *me, int pos, Item const *head)
   return final_values;
 }
 
+// Get the line-count property directly.  This is for internal use when it is
+// known that the line-positions property is not relevant.
 int
-Staff_symbol::line_count (Grob *me)
+Staff_symbol::internal_line_count (Grob *me)
 {
-  SCM line_positions = me->get_property ("line-positions");
-  if (scm_is_pair (line_positions))
-    return scm_ilength (line_positions);
-  else
-    return robust_scm2int (me->get_property ("line-count"), 0);
+  return robust_scm2int (me->get_property ("line-count"), 0);
 }
 
 Real
@@ -322,26 +314,23 @@ SCM
 Staff_symbol::height (SCM smob)
 {
   Grob *me = unsmob<Grob> (smob);
-  Real t = me->layout ()->get_dimension (ly_symbol2scm ("line-thickness"));
-  t *= robust_scm2double (me->get_property ("thickness"), 1.0);
 
-  SCM line_positions = me->get_property ("line-positions");
-
-  Interval y_ext;
-  Real space = staff_space (me);
-  if (scm_is_pair (line_positions))
+  Interval y_ext = line_span (me); // units of staff position
+  if (!y_ext.is_empty ()) // line count > 0
     {
-      for (SCM s = line_positions; scm_is_pair (s);
-           s = scm_cdr (s))
-        y_ext.add_point (scm_to_double (scm_car (s)) * 0.5 * space);
+      // convert staff position to height
+      y_ext *= 0.5 * staff_space (me);
+
+      // account for top and bottom line thickness
+      Real t = me->layout ()->get_dimension (ly_symbol2scm ("line-thickness"));
+      t *= robust_scm2double (me->get_property ("thickness"), 1.0);
+      y_ext.widen (t / 2);
     }
   else
     {
-      int l = Staff_symbol::line_count (me);
-      Real height = (l - 1) * staff_space (me) / 2;
-      y_ext = Interval (-height, height);
+      y_ext = Interval (0, 0);
     }
-  y_ext.widen (t / 2);
+
   return ly_interval2scm (y_ext);
 }
 
@@ -352,7 +341,7 @@ Staff_symbol::on_line (Grob *me, int pos, bool allow_ledger)
   if (!scm_is_pair (me->get_property ("line-positions"))
       && !scm_is_pair (me->get_property ("ledger-positions")))
     {
-      int const line_cnt = line_count (me);
+      int const line_cnt = internal_line_count (me);
       bool result = abs (pos + line_cnt) % 2 == 1;
       if (result && !allow_ledger)
         {
@@ -401,7 +390,9 @@ Staff_symbol::line_span (Grob *me)
       iv.add_point (scm_to_double (scm_car (s)));
   else
     {
-      int count = line_count (me);
+      // Note: This yields an empty interval (start > end) when there are no
+      // staff lines.
+      int count = internal_line_count (me);
       return Interval (-count + 1, count - 1);
     }
 

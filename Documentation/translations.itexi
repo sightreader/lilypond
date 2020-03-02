@@ -16,31 +16,30 @@ td { border: 1px solid black; text-align: center; }
 
 @end html
 @end ifhtml
-@emph{Last updated sam. déc. 14 18:15:11 UTC 2019
+@emph{Last updated Sat Jun 24 12:50:41 UTC 2017
 }
-@multitable @columnfractions  0.2 0.2 0.2 0.2 0.2
+@multitable @columnfractions  0.25 0.25 0.25 0.25
 
 @headitem
 LilyPond Changes
 @tab es
 @tab fr
 @tab it
-@tab ja
 @item
 Section titles
 @*
-(3377)
+(2784)
 @tab Francisco Vila
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (1 %)</span>
+<span style="background-color: #1fff1f">translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (1 %)
+translated
 @end ifnothtml
 @*
 
@@ -97,29 +96,6 @@ translated
 up to date
 @end ifnothtml
 @tab Federico Bruni
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
-@end ifnothtml
-@tab Tomohiro Tatejima
 @*
 
 @ifhtml
@@ -213,29 +189,6 @@ translated
 up to date
 @end ifnothtml
 @tab Federico Bruni
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
-@end ifnothtml
-@tab Tomohiro Tatejima
 @*
 
 @ifhtml
@@ -1240,7 +1193,7 @@ up to date
 @item
 1 Scheme tutorial
 @*
-(6331)
+(6403)
 @tab Till Paala
 @*
 
@@ -1258,7 +1211,7 @@ partially translated (54 %)
 @ifhtml
 
 @html
-<span style="background-color: #76fe2a">partially up to date</span>
+<span style="background-color: #6fff29">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -1281,11 +1234,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Jean-Charles Malahieude
 @*
@@ -1304,16 +1257,16 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @item
 2 Interfaces for programmers
 @*
-(5769)
+(5752)
 @tab Till Paala
 @*
 
@@ -2396,7 +2349,7 @@ partially up to date
 @item
 2 Common notation
 @*
-(4458)
+(4421)
 @tab Walter Garcia-Fontes
 @*
 
@@ -2434,7 +2387,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #a5ff31">partially up to date</span>
+<span style="background-color: #9eff30">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2446,18 +2399,18 @@ partially up to date
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (38 %)</span>
+<span style="background-color: #dfef77">partially translated (37 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (38 %)
+partially translated (37 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #cdfe36">partially up to date</span>
+<span style="background-color: #c7ff35">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2482,7 +2435,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2646,9 +2599,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Masamichi Hosoda
+@tab Masamichi Hosoda
 @*
 Yoshiki Sawada
 @*
@@ -2667,11 +2618,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @tab Jan Nieuwenhuizen
 @*
@@ -2699,18 +2650,18 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (38 %)</span>
+<span style="background-color: #dfef77">partially translated (37 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (38 %)
+partially translated (37 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #cdfe36">partially up to date</span>
+<span style="background-color: #c7ff35">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2719,7 +2670,7 @@ partially up to date
 @item
 3 Fundamental concepts
 @*
-(11458)
+(11240)
 @tab Walter Garcia-Fontes
 @*
 
@@ -2746,18 +2697,18 @@ partially up to date
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (96 %)</span>
+<span style="background-color: #1fff1f">translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (96 %)
+translated
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #6fff29">partially up to date</span>
+<span style="background-color: #68ff28">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2769,18 +2720,18 @@ partially up to date
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (96 %)</span>
+<span style="background-color: #1fff1f">translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (96 %)
+translated
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #8aff2d">partially up to date</span>
+<span style="background-color: #83fe2c">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2796,18 +2747,18 @@ Michael Gerdau
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (96 %)</span>
+<span style="background-color: #1fff1f">translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (96 %)
+translated
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #39ff22">partially up to date</span>
+<span style="background-color: #33ff21">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2889,18 +2840,18 @@ Harmath Dénes
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (96 %)</span>
+<span style="background-color: #1fff1f">translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (96 %)
+translated
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #dbff38">partially up to date</span>
+<span style="background-color: #d4ff37">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -2949,9 +2900,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -2968,11 +2917,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #76fe2a">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @tab Jan Nieuwenhuizen
 @*
@@ -3000,11 +2949,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (96 %)</span>
+<span style="background-color: #1fff1f">translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (96 %)
+translated
 @end ifnothtml
 @*
 
@@ -3020,7 +2969,7 @@ partially up to date
 @item
 4 Tweaking output
 @*
-(16570)
+(16592)
 @tab Walter Garcia-Fontes
 @*
 
@@ -3070,11 +3019,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (50 %)</span>
+<span style="background-color: #dfef77">partially translated (51 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (50 %)
+partially translated (51 %)
 @end ifnothtml
 @*
 
@@ -3106,11 +3055,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Francisco Vila
 @*
@@ -3259,30 +3208,28 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (95 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (95 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #83fe2c">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @tab Jan Nieuwenhuizen
 @*
@@ -3357,22 +3304,22 @@ A Templates
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (97 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (97 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #ffdd42">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @tab Pavel Fric
 @*
@@ -3534,30 +3481,28 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (97 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (97 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #ffdd42">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @tab Jan Nieuwenhuizen
 @*
@@ -4039,8 +3984,6 @@ up to date
 @end ifnothtml
 @tab Yoshiki Sawada
 @*
-Tomohiro Tatejima
-@*
 
 @ifhtml
 
@@ -4056,11 +3999,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #40fe23">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 LilyPond --- \TITLE\
@@ -4204,8 +4147,6 @@ translated
 up to date
 @end ifnothtml
 @tab Yoshiki Sawada
-@*
-Tomohiro Tatejima
 @*
 
 @ifhtml
@@ -4395,7 +4336,7 @@ up to date
 @item
 1.1 Pitches
 @*
-(5425)
+(5413)
 @tab Walter Garcia-Fontes
 @*
 
@@ -4433,7 +4374,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #39ff22">partially up to date</span>
+<span style="background-color: #33ff21">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -4456,7 +4397,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #c0ff34">partially up to date</span>
+<span style="background-color: #b9ff33">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -4584,9 +4525,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -4603,16 +4542,16 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #a5ff31">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 1.2 Rhythms
 @*
-(6854)
+(6853)
 @tab Walter Garcia-Fontes
 @*
 
@@ -4650,7 +4589,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #39ff22">partially up to date</span>
+<span style="background-color: #2cff20">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -4673,7 +4612,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #e8fe39">partially up to date</span>
+<span style="background-color: #dbff38">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -4812,9 +4751,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -4831,11 +4768,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #dbff38">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 1.3 Expressive marks
@@ -5029,9 +4966,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -5048,11 +4983,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #97ff2f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 1.4 Repeats
@@ -5246,9 +5181,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -5265,11 +5198,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #d4ff37">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 1.5 Simultaneous notes
@@ -5358,11 +5291,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @tab Frédéric Chiasson
 @*
@@ -5459,15 +5392,13 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -5484,11 +5415,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #a5ff31">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 1.6 Staff notation
@@ -5531,7 +5462,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #33ff21">partially up to date</span>
+<span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -5554,7 +5485,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #cdfe36">partially up to date</span>
+<span style="background-color: #c7ff35">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -5577,11 +5508,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Valentin Villenave
 @*
@@ -5622,11 +5553,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Federico Bruni
 @*
@@ -5665,15 +5596,13 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -5690,7 +5619,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #b9ff33">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -5726,11 +5655,11 @@ partially up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -5855,9 +5784,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -5874,16 +5801,16 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #fff73e">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 1.8 Text
 @*
-(3256)
+(2754)
 @tab Walter Garcia-Fontes
 @*
 
@@ -5910,22 +5837,22 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #54ff26">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Till Paala
 @*
@@ -5944,7 +5871,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #c0ff34">partially up to date</span>
+<span style="background-color: #9eff30">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -6070,9 +5997,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Masamichi Hosoda
+@tab Masamichi Hosoda
 @*
 Yoshiki Sawada
 @*
@@ -6091,11 +6016,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #33ff21">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 2 Specialist notation
@@ -6103,6 +6028,8 @@ up to date
 (81)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -6127,11 +6054,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (2 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (2 %)
 @end ifnothtml
 @*
 
@@ -6238,9 +6165,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -6269,6 +6194,8 @@ up to date
 (4977)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -6293,11 +6220,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -6327,7 +6254,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #7dff2b">partially up to date</span>
+<span style="background-color: #76fe2a">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -6444,9 +6371,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -6457,6 +6382,55 @@ Yoshiki Sawada
 @end ifhtml
 @ifnothtml
 translated
+@end ifnothtml
+@*
+
+@ifhtml
+
+@html
+<span style="background-color: #68ff28">partially up to date</span>
+@end html
+@end ifhtml
+@ifnothtml
+partially up to date
+@end ifnothtml
+@item
+2.2 Keyboard and other multi-staff instruments
+@*
+(904)
+@tab Walter Garcia-Fontes
+@*
+Walter Garcia-Fontes
+@*
+
+@ifhtml
+
+@html
+<small></small>
+@end html
+@end ifhtml
+@ifnothtml
+
+@end ifnothtml
+@*
+
+@ifhtml
+
+@html
+<small></small>
+@end html
+@end ifhtml
+@ifnothtml
+
+@end ifnothtml
+@ifhtml
+
+@html
+<span style="background-color: #d0f0f8">not translated</span>
+@end html
+@end ifhtml
+@ifnothtml
+not translated
 @end ifnothtml
 @*
 
@@ -6468,53 +6442,6 @@ translated
 @end ifhtml
 @ifnothtml
 up to date
-@end ifnothtml
-@item
-2.2 Keyboard and other multi-staff instruments
-@*
-(934)
-@tab Walter Garcia-Fontes
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #2cff20">partially up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-partially up to date
 @end ifnothtml
 @tab  Till Paala
 @*
@@ -6533,7 +6460,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #54ff26">partially up to date</span>
+<span style="background-color: #4efe25">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -6624,31 +6551,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -6661,9 +6568,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -6680,11 +6585,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #47ff24">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 2.3 Unfretted string instruments
@@ -6692,6 +6597,8 @@ up to date
 (279)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -6716,11 +6623,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -6841,31 +6748,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -6878,9 +6765,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -6897,11 +6782,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #91ff2e">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 2.4 Fretted string instruments
@@ -6909,6 +6794,8 @@ up to date
 (2821)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -6933,22 +6820,22 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Till Paala
 @*
@@ -6967,7 +6854,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #76fe2a">partially up to date</span>
+<span style="background-color: #62ff28">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -7045,31 +6932,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7082,9 +6949,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -7101,58 +6966,60 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
-@end ifnothtml
-@item
-2.5 Percussion
-@*
-(753)
-@tab Walter Garcia-Fontes
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #97ff2f">partially up to date</span>
+<span style="background-color: #5bff27">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
 partially up to date
+@end ifnothtml
+@item
+2.5 Percussion
+@*
+(799)
+@tab Walter Garcia-Fontes
+@*
+Walter Garcia-Fontes
+@*
+
+@ifhtml
+
+@html
+<small></small>
+@end html
+@end ifhtml
+@ifnothtml
+
+@end ifnothtml
+@*
+
+@ifhtml
+
+@html
+<small></small>
+@end html
+@end ifhtml
+@ifnothtml
+
+@end ifnothtml
+@ifhtml
+
+@html
+<span style="background-color: #d0f0f8">not translated</span>
+@end html
+@end ifhtml
+@ifnothtml
+not translated
+@end ifnothtml
+@*
+
+@ifhtml
+
+@html
+<span style="background-color: #1fff1f">up to date</span>
+@end html
+@end ifhtml
+@ifnothtml
+up to date
 @end ifnothtml
 @tab Till Paala
 @*
@@ -7171,7 +7038,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #fff23f">partially up to date</span>
+<span style="background-color: #d4ff37">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -7251,31 +7118,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7288,9 +7135,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -7307,11 +7152,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #91ff2e">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 2.6 Wind instruments
@@ -7319,6 +7164,8 @@ up to date
 (324)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -7343,11 +7190,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7468,31 +7315,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7522,11 +7349,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #40fe23">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 2.7 Chord notation
@@ -7534,6 +7361,8 @@ up to date
 (1975)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -7558,11 +7387,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7592,7 +7421,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #5bff27">partially up to date</span>
+<span style="background-color: #54ff26">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -7683,31 +7512,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7720,9 +7529,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -7739,11 +7546,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #4efe25">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 2.8 Contemporary music
@@ -7751,6 +7558,8 @@ up to date
 (475)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -7775,11 +7584,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7887,31 +7696,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -7950,9 +7739,11 @@ up to date
 @item
 2.9 Ancient notation
 @*
-(5437)
+(5518)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -7977,22 +7768,22 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #39ff22">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Till Paala
 @*
@@ -8011,7 +7802,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #b2fe32">partially up to date</span>
+<span style="background-color: #9eff30">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -8069,31 +7860,11 @@ up to date
 @ifhtml
 
 @html
-<small></small>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -8106,17 +7877,17 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -8135,6 +7906,8 @@ up to date
 (1446)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -8159,11 +7932,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -8310,9 +8083,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -8329,58 +8100,60 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
-@end ifnothtml
-@item
-3 General input and output
-@*
-(13276)
-@tab Walter Garcia-Fontes
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<small></small>
-@end html
-@end ifhtml
-@ifnothtml
-
-@end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #dfef77">partially translated (98 %)</span>
-@end html
-@end ifhtml
-@ifnothtml
-partially translated (98 %)
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
 <span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
 partially up to date
+@end ifnothtml
+@item
+3 General input and output
+@*
+(12853)
+@tab Walter Garcia-Fontes
+@*
+Walter Garcia-Fontes
+@*
+
+@ifhtml
+
+@html
+<small></small>
+@end html
+@end ifhtml
+@ifnothtml
+
+@end ifnothtml
+@*
+
+@ifhtml
+
+@html
+<small></small>
+@end html
+@end ifhtml
+@ifnothtml
+
+@end ifnothtml
+@ifhtml
+
+@html
+<span style="background-color: #d0f0f8">not translated</span>
+@end html
+@end ifhtml
+@ifnothtml
+not translated
+@end ifnothtml
+@*
+
+@ifhtml
+
+@html
+<span style="background-color: #1fff1f">up to date</span>
+@end html
+@end ifhtml
+@ifnothtml
+up to date
 @end ifnothtml
 @tab Till Paala
 @*
@@ -8388,18 +8161,18 @@ partially up to date
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (89 %)</span>
+<span style="background-color: #dfef77">partially translated (94 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (89 %)
+partially translated (94 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #ffd743">partially up to date</span>
+<span style="background-color: #ffda43">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -8496,30 +8269,28 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (95 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (95 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #ffda43">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 4 Spacing issues
@@ -8527,6 +8298,8 @@ up to date
 (10982)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -8551,11 +8324,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -8682,9 +8455,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -8701,11 +8472,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #f6fe3b">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 5 Changing defaults
@@ -8713,6 +8484,8 @@ up to date
 (17050)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -8737,11 +8510,11 @@ up to date
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -8888,37 +8661,37 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (92 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (92 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #b2fe32">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 A Notation manual tables
 @*
-(3382)
+(3079)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -8943,11 +8716,11 @@ A Notation manual tables
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -8977,7 +8750,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #ffea40">partially up to date</span>
+<span style="background-color: #efff3a">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -9054,17 +8827,17 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -9083,6 +8856,8 @@ B Cheat sheet
 (252)
 @tab Walter Garcia-Fontes
 @*
+Walter Garcia-Fontes
+@*
 
 @ifhtml
 
@@ -9107,11 +8882,11 @@ B Cheat sheet
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #d0f0f8">not translated</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+not translated
 @end ifnothtml
 @*
 
@@ -9238,8 +9013,6 @@ up to date
 @end ifnothtml
 @tab Yoshiki Sawada
 @*
-Tomohiro Tatejima
-@*
 
 @ifhtml
 
@@ -9255,11 +9028,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #97ff2f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 C GNU Free Documentation License
@@ -9405,8 +9178,6 @@ not translated
 up to date
 @end ifnothtml
 @tab Yoshiki Sawada
-@*
-Tomohiro Tatejima
 @*
 
 @ifhtml
@@ -9864,7 +9635,7 @@ up to date
 @item
 1 Running @command{lilypond}
 @*
-(5433)
+(5469)
 @tab Walter Garcia-Fontes
 @*
 
@@ -10085,9 +9856,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Masamichi Hosoda
+@tab Masamichi Hosoda
 @*
 Yoshiki Sawada
 @*
@@ -10106,11 +9875,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #33ff21">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 2 Updating files with @command{convert-ly}
@@ -10314,30 +10083,28 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (89 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (89 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #ffd244">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 3 Running @command{lilypond-book}
@@ -10561,9 +10328,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -10580,16 +10345,16 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #47ff24">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 4 External programs
 @*
-(2880)
+(2786)
 @tab Walter Garcia-Fontes
 @*
 
@@ -10641,18 +10406,18 @@ Reinhold Kainhofer
 @ifhtml
 
 @html
-<span style="background-color: #dfef77">partially translated (88 %)</span>
+<span style="background-color: #dfef77">partially translated (87 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially translated (88 %)
+partially translated (87 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #fff73e">partially up to date</span>
+<span style="background-color: #f6fe3b">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -10770,30 +10535,28 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">translated</span>
+<span style="background-color: #dfef77">partially translated (87 %)</span>
 @end html
 @end ifhtml
 @ifnothtml
-translated
+partially translated (87 %)
 @end ifnothtml
 @*
 
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #f6fe3b">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 5 Suggestions for writing files
@@ -11021,9 +10784,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Yoshiki Sawada
+@tab Yoshiki Sawada
 @*
 
 @ifhtml
@@ -11040,11 +10801,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #83fe2c">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @item
 A GNU Free Documentation License
@@ -11258,7 +11019,7 @@ up to date
 @end multitable
 
 
-@multitable @columnfractions  0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333 0.0833333333333
+@multitable @columnfractions  0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091 0.0909090909091
 
 @headitem
 LilyPond -- Music notation for everyone
@@ -11271,12 +11032,11 @@ LilyPond -- Music notation for everyone
 @tab it
 @tab ja
 @tab nl
-@tab pt
 @tab zh
 @item
 Section titles
 @*
-(750)
+(760)
 @tab Walter Garcia-Fontes
 @*
 
@@ -11314,11 +11074,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Pavel Fric
 @*
@@ -11362,11 +11122,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Francisco Vila
 @*
@@ -11431,7 +11191,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #b9ff33">partially up to date</span>
+<span style="background-color: #c0ff34">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -11480,9 +11240,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Masamichi Hosoda
+@tab Masamichi Hosoda
 @*
 Yoshiki Sawada
 @*
@@ -11551,29 +11309,6 @@ translated
 @end ifhtml
 @ifnothtml
 partially up to date
-@end ifnothtml
-@tab Rafael Fontenelle
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
 @end ifnothtml
 @tab Ben Luo
 @*
@@ -11807,9 +11542,7 @@ translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Masamichi Hosoda
+@tab Masamichi Hosoda
 @*
 Yoshiki Sawada
 @*
@@ -11859,29 +11592,6 @@ Tineke de Munnik
 @ifnothtml
 
 @end ifnothtml
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
-@end ifnothtml
-@tab Rafael Fontenelle
-@*
-
 @ifhtml
 
 @html
@@ -11930,7 +11640,7 @@ up to date
 @item
 Introduction
 @*
-(5937)
+(5793)
 @tab Walter Garcia-Fontes
 @*
 
@@ -11968,7 +11678,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #39ff22">partially up to date</span>
+<span style="background-color: #2cff20">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -11991,7 +11701,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #fff23f">partially up to date</span>
+<span style="background-color: #fff53e">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12016,7 +11726,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #39ff22">partially up to date</span>
+<span style="background-color: #2cff20">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12039,11 +11749,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Gauvain Pocentek
 @*
@@ -12086,11 +11796,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
 @tab Harmath Dénes
 @*
@@ -12109,7 +11819,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #fff73e">partially up to date</span>
+<span style="background-color: #fffd3d">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12152,15 +11862,13 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #1fff1f">up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-partially up to date
+up to date
 @end ifnothtml
-@tab Tomohiro Tatejima
-@*
-Masamichi Hosoda
+@tab Masamichi Hosoda
 @*
 Yoshiki Sawada
 @*
@@ -12181,7 +11889,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #2cff20">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12224,30 +11932,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #fffd3d">partially up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-partially up to date
-@end ifnothtml
-@tab Rafael Fontenelle
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #efff3a">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12272,7 +11957,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #f6fe3b">partially up to date</span>
+<span style="background-color: #efff3a">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12319,7 +12004,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12342,7 +12027,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #a5ff31">partially up to date</span>
+<span style="background-color: #9eff30">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12367,7 +12052,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #2cff20">partially up to date</span>
+<span style="background-color: #25fe1f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12458,7 +12143,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #7dff2b">partially up to date</span>
+<span style="background-color: #76fe2a">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12569,30 +12254,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #6fff29">partially up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-partially up to date
-@end ifnothtml
-@tab Rafael Fontenelle
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #25fe1f">partially up to date</span>
+<span style="background-color: #68ff28">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12617,7 +12279,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #7dff2b">partially up to date</span>
+<span style="background-color: #76fe2a">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -12917,29 +12579,6 @@ translated
 @end ifhtml
 @ifnothtml
 partially up to date
-@end ifnothtml
-@tab Rafael Fontenelle
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
 @end ifnothtml
 @tab Ben Luo
 @*
@@ -13279,29 +12918,6 @@ not translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Rafael Fontenelle
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #d0f0f8">not translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-not translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
-@end ifnothtml
 @tab Ben Luo
 @*
 
@@ -13348,7 +12964,7 @@ up to date
 @item
 Community
 @*
-(2364)
+(2449)
 @tab Walter Garcia-Fontes
 @*
 
@@ -13386,7 +13002,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #9eff30">partially up to date</span>
+<span style="background-color: #8aff2d">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -13409,7 +13025,7 @@ partially translated (92 %)
 @ifhtml
 
 @html
-<span style="background-color: #efff3a">partially up to date</span>
+<span style="background-color: #d4ff37">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -13434,7 +13050,7 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #7dff2b">partially up to date</span>
+<span style="background-color: #6fff29">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -13525,7 +13141,7 @@ partially translated (92 %)
 @ifhtml
 
 @html
-<span style="background-color: #e8fe39">partially up to date</span>
+<span style="background-color: #cdfe36">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
@@ -13593,11 +13209,11 @@ translated
 @ifhtml
 
 @html
-<span style="background-color: #1fff1f">up to date</span>
+<span style="background-color: #8aff2d">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml
-up to date
+partially up to date
 @end ifnothtml
 @tab Jan Nieuwenhuizen
 @*
@@ -13642,29 +13258,6 @@ not translated
 @ifnothtml
 up to date
 @end ifnothtml
-@tab Rafael Fontenelle
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">translated</span>
-@end html
-@end ifhtml
-@ifnothtml
-translated
-@end ifnothtml
-@*
-
-@ifhtml
-
-@html
-<span style="background-color: #1fff1f">up to date</span>
-@end html
-@end ifhtml
-@ifnothtml
-up to date
-@end ifnothtml
 @tab Ben Luo
 @*
 Anthony Fok
@@ -13684,7 +13277,7 @@ partially translated (95 %)
 @ifhtml
 
 @html
-<span style="background-color: #acff31">partially up to date</span>
+<span style="background-color: #97ff2f">partially up to date</span>
 @end html
 @end ifhtml
 @ifnothtml

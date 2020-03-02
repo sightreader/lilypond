@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+;;;; Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;; Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -47,6 +47,10 @@
 (define-safe-public THREE-Q-SHARP 3/4)
 (define-safe-public DOUBLE-SHARP 1)
 (define-safe-public SEMI-TONE 1/2)
+(define-safe-public FIVE-HALF-FLAT -5/2)
+(define-safe-public SEVEN-HALF-FLAT -7/2)
+(define-safe-public FIVE-HALF-SHARP 5/2)
+(define-safe-public SEVEN-HALF-SHARP 7/2)
 
 (define-safe-public INFINITY-INT 1000000)
 

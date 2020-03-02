@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ protected:
   void stop_translation_time_step ();
   void process_music ();
 
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 };
 
 void

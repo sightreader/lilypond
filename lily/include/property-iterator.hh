@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@ class Property_iterator : public Simple_music_iterator
 {
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
-  DECLARE_CLASSNAME (Property_iterator);
+  OVERRIDE_CLASS_NAME (Property_iterator);
 
 protected:
-  virtual void process (Moment);
+  void process (Moment) override;
 };
 
 /**
@@ -42,27 +42,27 @@ class Property_unset_iterator : public Simple_music_iterator
 {
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
-  DECLARE_CLASSNAME (Property_unset_iterator);
+  OVERRIDE_CLASS_NAME (Property_unset_iterator);
 protected:
-  virtual void process (Moment);
+  void process (Moment) override;
 };
 
 class Push_property_iterator : public Simple_music_iterator
 {
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
-  DECLARE_CLASSNAME (Push_property_iterator);
+  OVERRIDE_CLASS_NAME (Push_property_iterator);
 protected:
-  virtual void process (Moment);
+  void process (Moment) override;
 };
 
 class Pop_property_iterator : public Simple_music_iterator
 {
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
-  DECLARE_CLASSNAME (Pop_property_iterator);
+  OVERRIDE_CLASS_NAME (Pop_property_iterator);
 protected:
-  virtual void process (Moment);
+  void process (Moment) override;
 };
 
 #endif // PROPERTY_ITERATOR_HH

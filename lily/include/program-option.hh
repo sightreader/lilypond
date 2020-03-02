@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2001--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2001--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +27,6 @@ SCM ly_get_option (SCM);
 SCM ly_set_option (SCM, SCM);
 
 bool get_program_option (const char *);
-string get_output_backend_name ();
+std::string get_output_backend_name ();
 
 #endif /* SCM_OPTION_HH */

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@
 #include "system.hh"
 #include "warn.hh"
 #include "constrained-breaking.hh"
+
+using std::vector;
 
 Paper_score::Paper_score (Output_def *layout)
 {
@@ -72,7 +74,7 @@ Paper_score::find_break_indices () const
 
   for (vsize i = 0; i < cols_.size (); i++)
     {
-      Item *it = dynamic_cast<Item *> (cols_[i]);
+      Paper_column *it = cols_[i];
       if (Paper_column::is_breakable (cols_[i])
           && (i == 0 || it->find_prebroken_piece (LEFT))
           && (i == cols_.size () - 1 || it->find_prebroken_piece (RIGHT)))
@@ -83,7 +85,7 @@ Paper_score::find_break_indices () const
     }
 }
 
-vector<vsize>
+vector<vsize> const &
 Paper_score::get_break_indices () const
 {
   if (break_indices_.empty ())
@@ -91,7 +93,7 @@ Paper_score::get_break_indices () const
   return break_indices_;
 }
 
-vector<Grob *>
+vector<Paper_column *> const &
 Paper_score::get_columns () const
 {
   if (cols_.empty ())
@@ -99,7 +101,7 @@ Paper_score::get_columns () const
   return cols_;
 }
 
-vector<vsize>
+vector<vsize> const &
 Paper_score::get_break_ranks () const
 {
   if (break_ranks_.empty ())
@@ -125,7 +127,7 @@ Paper_score::calc_breaking ()
 void
 Paper_score::process ()
 {
-  debug_output (_f ("Element count %d (spanners %d) ",
+  debug_output (_f ("Element count %zu (spanners %zu) ",
                     system_->element_count (),
                     system_->spanner_count ()));
 

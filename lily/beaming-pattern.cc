@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "context.hh"
 #include "beaming-pattern.hh"
 #include "misc.hh"
+
+using std::vector;
 
 /*
   Represents a stem belonging to a beam. Sometimes (for example, if the stem
@@ -172,18 +174,18 @@ Beaming_pattern::beamify (Beaming_options const &options)
                         // we're left of a subdivision
                 ?  (i != infos_.size () - 2)
                    // respect the beam count for shortened beams ...
-                   ? max (beam_count_for_rhythmic_position (i + 1),
+                   ? std::max (beam_count_for_rhythmic_position (i + 1),
                           beam_count_for_length (remaining_length (i + 1)))
                    // ... except if there's only one trailing stem
                    : beam_count_for_rhythmic_position (i + 1)
 
                 // we're at any other stem
-                : min (min (infos_[i].count (non_flag_dir),
+                : std::min (std::min (infos_[i].count (non_flag_dir),
                             infos_[i + non_flag_dir].count (-non_flag_dir)),
                        infos_[i - non_flag_dir].count (non_flag_dir));
 
             // Ensure at least one beam is left, even for groups longer than 1/8
-            count = max (count, 1);
+            count = std::max (count, 1);
 
             infos_[i].beam_count_drul_[non_flag_dir] = count;
           }
@@ -325,7 +327,7 @@ Beaming_pattern::unbeam_invisible_stems ()
   for (vsize i = 1; i < infos_.size (); i++)
     if (infos_[i].invisible_)
       {
-        int b = min (infos_[i].count (LEFT), infos_[i - 1].count (LEFT));
+        int b = std::min (infos_[i].count (LEFT), infos_[i - 1].count (LEFT));
         infos_[i].beam_count_drul_[LEFT] = b;
         infos_[i].beam_count_drul_[RIGHT] = b;
       }
@@ -334,7 +336,7 @@ Beaming_pattern::unbeam_invisible_stems ()
     for (vsize i = infos_.size () - 1; i--;)
       if (infos_[i].invisible_)
         {
-          int b = min (infos_[i].count (LEFT), infos_[i + 1].count (LEFT));
+          int b = std::min (infos_[i].count (LEFT), infos_[i + 1].count (LEFT));
           infos_[i].beam_count_drul_[LEFT] = b;
           infos_[i].beam_count_drul_[RIGHT] = b;
         }
@@ -351,21 +353,21 @@ Beaming_pattern::Beaming_pattern ()
 }
 
 int
-Beaming_pattern::beamlet_count (int i, Direction d) const
+Beaming_pattern::beamlet_count (vsize i, Direction d) const
 {
   return infos_.at (i).beam_count_drul_[d];
 }
 
 Moment
-Beaming_pattern::start_moment (int i) const
+Beaming_pattern::start_moment (vsize i) const
 {
   return infos_.at (i).start_moment_;
 }
 
 Moment
-Beaming_pattern::end_moment (int i) const
+Beaming_pattern::end_moment (vsize i) const
 {
-  Duration dur (2 + max (beamlet_count (i, LEFT),
+  Duration dur (2 + std::max (beamlet_count (i, LEFT),
                          beamlet_count (i, RIGHT)),
                 0);
 
@@ -374,13 +376,13 @@ Beaming_pattern::end_moment (int i) const
 }
 
 Moment
-Beaming_pattern::remaining_length (int i) const
+Beaming_pattern::remaining_length (vsize i) const
 {
     return end_moment (infos_.size () - 1) - infos_[i].start_moment_;
 }
 
 int
-Beaming_pattern::beam_count_for_rhythmic_position (int idx) const
+Beaming_pattern::beam_count_for_rhythmic_position (vsize idx) const
 {
     // Calculate number of beams representing the rhythmic position of given stem
     return intlog2(infos_[idx].start_moment_.main_part_.den()) - 2;
@@ -393,19 +395,19 @@ Beaming_pattern::beam_count_for_length (Moment len) const
 }
 
 bool
-Beaming_pattern::invisibility (int i) const
+Beaming_pattern::invisibility (vsize i) const
 {
   return infos_.at (i).invisible_;
 }
 
 Rational
-Beaming_pattern::factor (int i) const
+Beaming_pattern::factor (vsize i) const
 {
   return infos_.at (i).factor_;
 }
 
 bool
-Beaming_pattern::tuplet_start (int i) const
+Beaming_pattern::tuplet_start (vsize i) const
 {
   return infos_.at (i).tuplet_start_;
 }
@@ -415,7 +417,7 @@ Beaming_pattern::tuplet_start (int i) const
     Beaming_pattern containing the removed elements
 */
 Beaming_pattern *
-Beaming_pattern::split_pattern (int i)
+Beaming_pattern::split_pattern (vsize i)
 {
   Beaming_pattern *new_pattern = 0;
   int count;
@@ -423,7 +425,7 @@ Beaming_pattern::split_pattern (int i)
   new_pattern = new Beaming_pattern ();
   for (vsize j = i + 1; j < infos_.size (); j++)
     {
-      count = max (beamlet_count (j, LEFT), beamlet_count (j, RIGHT));
+      count = std::max (beamlet_count (j, LEFT), beamlet_count (j, RIGHT));
       new_pattern->add_stem (start_moment (j),
                              count,
                              invisibility (j),

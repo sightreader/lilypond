@@ -2,7 +2,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
                  Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -51,7 +51,6 @@
 #define LEXER_CC
 
 #include <iostream>
-using namespace std;
 
 #include "context-def.hh"
 #include "duration.hh"
@@ -72,6 +71,8 @@ using namespace std;
 #include "version.hh"
 #include "warn.hh"
 #include "lily-imports.hh"
+
+using std::string;
 
 /*
 RH 7 fix (?)
@@ -337,17 +338,13 @@ BOM_UTF8	\357\273\277
 	  }
 }
 <incl>(\$|#) { // scm for the filename
-	Input hi = here_input();
-	hi.step_forward ();
-	SCM sval = ly_parse_scm (hi, be_safe_global && is_main_input_, parser_);
-	sval = eval_scm (sval, hi);
-	int n = hi.end () - hi.start ();
+	Input start = here_input();
+	start.step_forward ();
 
-	for (int i = 0; i < n; i++)
-	{
-		yyinput ();
-	}
-	char_count_stack_.back () += n;
+	Input parsed;
+	SCM sval = parse_embedded_scheme (start, be_safe_global && is_main_input_, parser_, &parsed);
+	sval = eval_scm (sval, start);
+	skip_chars (parsed.size ());
 
 	if (scm_is_string (sval)) {
 		new_input (ly_scm2string (sval), sources_);
@@ -393,17 +390,13 @@ BOM_UTF8	\357\273\277
 <INITIAL,chords,figures,lyrics,markup,notes>#	{ //embedded scm
 	Input hi = here_input();
 	hi.step_forward ();
-	SCM sval = ly_parse_scm (hi, be_safe_global && is_main_input_, parser_);
+	Input parsed;
+	SCM sval = parse_embedded_scheme (hi, be_safe_global && is_main_input_, parser_, &parsed);
 
 	if (SCM_UNBNDP (sval))
 		error_level_ = 1;
 
-	int n = hi.end () - hi.start ();
-	for (int i = 0; i < n; i++)
-	{
-		yyinput ();
-	}
-	char_count_stack_.back () += n;
+	skip_chars (parsed.size ());
 
 	yylval = sval;
 	return SCM_TOKEN;
@@ -412,16 +405,10 @@ BOM_UTF8	\357\273\277
 <INITIAL,chords,figures,lyrics,markup,notes>\$	{ //immediate scm
 	Input hi = here_input();
 	hi.step_forward ();
-	SCM sval = ly_parse_scm (hi, be_safe_global && is_main_input_, parser_);
 
-	int n = hi.end () - hi.start ();
-
-	for (int i = 0; i < n; i++)
-	{
-		yyinput ();
-	}
-	char_count_stack_.back () += n;
-
+	Input parsed;
+	SCM sval = parse_embedded_scheme (hi, be_safe_global && is_main_input_, parser_, &parsed);
+	skip_chars (parsed.size ());
 	sval = eval_scm (sval, hi, '$');
 
 	if (YYSTATE == markup && ly_is_procedure (sval))
@@ -749,19 +736,27 @@ BOM_UTF8	\357\273\277
 			extra_tokens_ = SCM_EOL;
 			yy_pop_state ();
 		}
-		if (!close_input () || !is_main_input_)
+		close_input ();
+		if (!YY_CURRENT_BUFFER || !is_main_input_)
  	        /* Returns YY_NULL */
 			yyterminate ();
 	}
-	else if (!close_input ())
- 	        /* Returns YY_NULL */
- 	  	yyterminate ();
+	else
+	{
+		close_input ();
+		if (!YY_CURRENT_BUFFER)
+			/* Returns YY_NULL */
+			yyterminate ();
+	}
 }
 
 <maininput>{ANY_CHAR} {
-	while (include_stack_.size () > main_input_level_
-	       && close_input ())
-		;
+	while (include_stack_.size () > main_input_level_)
+	{
+		close_input ();
+		if (!YY_CURRENT_BUFFER)
+			break;
+	}
 	yyterminate ();
 }
 
@@ -1106,14 +1101,14 @@ Lily_lexer::is_figure_state () const
 // this function is private.
 
 SCM
-Lily_lexer::eval_scm (SCM readerdata, Input hi, char extra_token)
+Lily_lexer::eval_scm (SCM readerdata, Input location, char extra_token)
 {
 	SCM sval = SCM_UNDEFINED;
 
 	if (!SCM_UNBNDP (readerdata))
 	{
-		sval = ly_eval_scm (readerdata,
-				    hi,
+		sval = evaluate_embedded_scheme (readerdata,
+				    location,
 				    be_safe_global && is_main_input_,
 				    parser_);
 	}
@@ -1126,6 +1121,13 @@ Lily_lexer::eval_scm (SCM readerdata, Input hi, char extra_token)
 
 	if (extra_token && SCM_VALUESP (sval))
 	{
+#if GUILEV2
+		size_t nvals = scm_c_nvalues (sval);
+
+		if (nvals > 0) {
+			while (--nvals) {
+				SCM v = scm_c_value_ref (sval, nvals);
+#else
 		sval = scm_struct_ref (sval, SCM_INUM0);
 
 		if (scm_is_pair (sval)) {
@@ -1134,6 +1136,7 @@ Lily_lexer::eval_scm (SCM readerdata, Input hi, char extra_token)
 			     p = scm_cdr (p))
 			{
 				SCM v = scm_car (p);
+#endif
 				if (Music *m = unsmob<Music> (v))
 				{
 					if (!unsmob<Input> (m->get_property ("origin")))
@@ -1154,7 +1157,11 @@ Lily_lexer::eval_scm (SCM readerdata, Input hi, char extra_token)
 					break;
 				}
 			}
+#if GUILEV2
+			sval = scm_c_value_ref (sval, 0);
+#else
 			sval = scm_car (sval);
+#endif
 		} else
 			sval = SCM_UNSPECIFIED;
 	}

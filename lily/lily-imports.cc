@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2015 by David Kastrup <dak@gnu.org>
+  Copyright (C) 2015--2020 by David Kastrup <dak@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@ namespace Lily {
   Variable ly_event_p ("ly:event?");
   Variable ly_make_event_class ("ly:make-event-class");
   Variable ly_music_p ("ly:music?");
+  Variable make_concat_markup ("make-concat-markup");
   Variable make_music ("make-music");
   Variable make_safe_lilypond_module ("make-safe-lilypond-module");
   Variable make_span_event ("make-span-event");
@@ -94,6 +95,8 @@ namespace Lily {
   Variable pitchnames ("pitchnames");
   Variable pure_chain_offset_callback ("pure-chain-offset-callback");
   Variable remove_stencil_warnings ("remove-stencil-warnings");
+  Variable scale_p ("scale?");
+  Variable scale_to_factor ("scale->factor");
   Variable scale_layout ("scale-layout");
   Variable scm_to_string ("scm->string");
   Variable score_lines_markup_list ("score-lines-markup-list");
@@ -115,7 +118,8 @@ namespace Syntax {
   Variable argument_error ("argument-error");
   Variable composed_markup_list ("composed-markup-list");
   Variable context_change ("context-change");
-  Variable context_specification ("context-specification");
+  Variable context_create ("context-create");
+  Variable context_find_or_create ("context-find-or-create");
   Variable create_script ("create-script");
   Variable create_script_function ("create-script-function");
   Variable event_chord ("event-chord");
@@ -128,10 +132,8 @@ namespace Syntax {
   Variable partial_music_function ("partial-music-function");
   Variable partial_text_script ("partial-text-script");
   Variable property_override ("property-override");
-  Variable property_override_function ("property-override-function");
   Variable property_revert ("property-revert");
   Variable property_set ("property-set");
-  Variable property_set_function ("property-set-function");
   Variable property_unset ("property-unset");
   Variable repeat ("repeat");
   Variable repetition_chord ("repetition-chord");

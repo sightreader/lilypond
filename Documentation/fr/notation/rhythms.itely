@@ -957,21 +957,24 @@ R2.*2 |
 @cindex point d'orgue et silence multimesure
 @cindex silence multimesure et point d'orgue
 
-@funindex \fermata
+@funindex MultiMeasureRestScript
 @funindex MultiMeasureRestText
 
 Vous pouvez aussi ajouter du texte à un silence multimesure en
 utilisant la syntaxe @w{@var{note}-@code{markup}} (cf.
-@ref{Mise en forme du texte}).  La variable @code{\fermata} quant
-à elle permet d'ajouter un point d'orgue :
+@ref{Mise en forme du texte}).
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermata
 }
 @end lilypond
+
+@ignore
+@c  TODO: the next section is out of date; \fermataMarkup has been
+@c  deprecated, see section `Full measure rests'
+@c  in the English documentation.
 
 @warning{C'est @code{MultiMeasureRestText} qui créera le texte,
 non @code{TextScript}.  Les commandes de dérogation ou de redéfinition
@@ -982,11 +985,16 @@ dans l'exemple suivant.}
 @lilypond[quote,verbatim,fragment]
 % Ceci échouera : il y a erreur quant à l'objet spécifié
 \override TextScript.padding = #5
+\override Script.color = #blue
 R1^"pas bon !"
+R1\fermata
 % Formulation correcte, qui fonctionnera
 \override MultiMeasureRestText.padding = #5
+\override MultiMeasureRestScript.color = #blue
 R1^"ça marche !"
+R1\fermata
 @end lilypond
+@end ignore
 
 Un silence multimesure placé directement après une commande
 @code{\partial} risque fort de perturber le vérificateur de limites et
@@ -995,13 +1003,11 @@ numéros de mesure.
 @funindex \textLengthOn
 @funindex \textLengthOff
 @funindex textLenthOff
-@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermata},
 @code{\compressMMRests}.
 @endpredefined
 
@@ -1045,6 +1051,7 @@ Morceaux choisis :
 Référence des propriétés internes :
 @rinternals{MultiMeasureRest}.
 @rinternals{MultiMeasureRestNumber},
+@rinternals{MultiMeasureRestScript},
 @rinternals{MultiMeasureRestText}.
 
 @cindex doigté et silence multimesure
@@ -2142,7 +2149,7 @@ par @code{\autoBeamOn} :
 @warning{Si des ligatures sont utilisées dans les paroles d'une chanson
 (pour indiquer des mélismes), les ligatures automatiques doivent être
 désactivées, avec @code{@bs{}autoBeamOff}, et indiquées manuellement.@*
-L'utilisation conjointe de @code{@bs{}partcombine} et de
+L'utilisation conjointe de @code{@bs{}partCombine} et de
 @code{@bs{}autoBeamOff} peut produire des résultats quelque peu
 surprenants ; ceci fait l'objet d'un exemple particulier à la
 rubrique morceaux choisis.}
@@ -2171,6 +2178,7 @@ possibles ; voir @ref{Définition des règles de ligature automatique}.
 
 @cindex ligature, @code{\partCombine} et @code{\autoBeamOff}
 @cindex voix, @code{\autoBeamOff} et @code{\partCombine}
+
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {partcombine-and-autobeamoff.ly}
 

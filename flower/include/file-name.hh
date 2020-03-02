@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -44,19 +44,19 @@ std::string get_working_directory ();
 class File_name
 {
 public:
-  string root_;
-  string dir_;
-  string base_;
-  string ext_;
+  std::string root_;
+  std::string dir_;
+  std::string base_;
+  std::string ext_;
   bool is_absolute_;
 
-  File_name (string = "");
+  File_name (std::string = "");
 
   bool is_absolute () const;
-  string to_string () const;
+  std::string to_string () const;
   File_name canonicalized () const;
-  string dir_part () const;
-  string file_part () const;
+  std::string dir_part () const;
+  std::string file_part () const;
 };
 
 #endif /* FILE_NAME */

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2000--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
 
 #include <cstdio>
 #include <cmath> // rint
-using namespace std;
 
 #include "custos.hh"
 #include "direction.hh"
@@ -36,6 +35,8 @@ using namespace std;
 #include "note-head.hh"
 #include "staff-symbol-referencer.hh"
 #include "warn.hh"
+
+using std::string;
 
 MAKE_SCHEME_CALLBACK (Custos, print, 1);
 SCM

@@ -16,8 +16,8 @@ signature in this test)."
      (ly:stencil-aligned-to
       (ly:stencil-scale (ly:time-signature::print grob) -2 1)
       X LEFT))
-  \override MultiMeasureRestText.stencil =
+  \override MultiMeasureRestScript.stencil =
   #(lambda (grob)
-     (ly:stencil-scale (ly:text-interface::print grob) 2 1.6))
+     (ly:stencil-scale (ly:script-interface::print grob) 2 1.6))
   R1\fermata
 }

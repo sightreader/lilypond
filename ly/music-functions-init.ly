@@ -2,7 +2,7 @@
 
 %%%% This file is part of LilyPond, the GNU music typesetter.
 %%%%
-%%%% Copyright (C) 2003--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+%%%% Copyright (C) 2003--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 %%%%                          Jan Nieuwenhuizen <janneke@gnu.org>
 %%%%
 %%%% LilyPond is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 %%%% You should have received a copy of the GNU General Public License
 %%%% along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 
-\version "2.19.38"
+\version "2.21.0"
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,7 +58,7 @@ addQuote =
 %% keep these two together
 afterGraceFraction = 3/4
 afterGrace =
-#(define-music-function (fraction main grace) ((fraction?) ly:music? ly:music?)
+#(define-music-function (fraction main grace) ((scale?) ly:music? ly:music?)
    (_i "Create @var{grace} note(s) after a @var{main} music expression.
 
 The musical position of the grace expression is after a
@@ -77,7 +77,7 @@ given fraction of the main note's duration has passed.  If
                       'duration (ly:make-duration
                                  0 0
                                  (* (ly:moment-main main-length)
-                                    (/ (car fraction) (cdr fraction)))))
+                                    (scale->factor fraction))))
           (make-music 'GraceMusic
                       'element grace)))))
       'Bottom)))
@@ -184,7 +184,7 @@ assertBeamSlope =
    (_i "Testing function: check whether the slope of the beam is the same as @code{comp}")
    (make-grob-property-override 'Beam 'positions (check-slope-callbacks comp)))
 
-autochange =
+autoChange =
 #(define-music-function (pitch clef-1 clef-2 music)
   ((ly:pitch? (ly:make-pitch 0 0)) (ly:context-mod?)(ly:context-mod?) ly:music?)
   (_i "Make voices that switch between staves automatically.  As an option the
@@ -238,11 +238,12 @@ barNumberCheck =
    (make-music 'ApplyContext
                'procedure
                (lambda (c)
-                 (let ((cbn (ly:context-property c 'currentBarNumber)))
-                   (if (and  (number? cbn) (not (= cbn n)))
-                       (ly:input-warning (*location*)
-                                         "Barcheck failed got ~a expect ~a"
-                                         cbn n))))))
+                 (if (not (ly:context-property c 'ignoreBarNumberChecks #f))
+                     (let ((cbn (ly:context-property c 'currentBarNumber)))
+                       (if (and (number? cbn) (not (= cbn n)))
+                           (ly:input-warning (*location*)
+                                             "Bar number is ~a; expected ~a"
+                                             cbn n)))))))
 
 beamExceptions =
 #(define-scheme-function (music) (ly:music?)
@@ -397,6 +398,12 @@ displayScheme =
    expr)
 
 
+dropNote =
+#(define-music-function (num music) (integer? ly:music?)
+   (_i "Drop a note of any chords in @var{music}, in @var{num}
+position from above.")
+   (music-map (move-chord-note (- num) DOWN) music))
+
 
 endSpanners =
 #(define-music-function (music) (ly:music?)
@@ -444,12 +451,12 @@ featherDurations=
      argument))
 
 finger =
-#(define-event-function (finger) (number-or-markup?)
+#(define-event-function (finger) (integer-or-markup?)
    (_i "Apply @var{finger} as a fingering indication.")
 
    (make-music
             'FingeringEvent
-            (if (number? finger) 'digit 'text)
+            (if (integer? finger) 'digit 'text)
             finger))
 
 fixed =
@@ -589,6 +596,21 @@ instrumentSwitch =
                        instrument-def))
       'Staff)))
 
+inversion =
+#(define-music-function
+   (around to music) (ly:pitch? ly:pitch? ly:music?)
+   (_i "Invert @var{music} about @var{around} and
+transpose from @var{around} to @var{to}.")
+   (music-invert around to music))
+
+invertChords =
+#(define-music-function (num music) (integer? ly:music?)
+   (_i "Invert any chords in @var{music} into their @var{num}-th position.
+(Chord inversions may be directed downwards using negative integers.)")
+   (let loop ((num num) (music music))
+     (cond ((zero? num) music)
+       ((negative? num) (loop (1+ num) (dropNote 1 music)))
+       (else (loop (1- num) (raiseNote 1 music))))))
 
 
 keepWithTag =
@@ -608,7 +630,7 @@ retained.")
 
 key =
 #(define-music-function (tonic pitch-alist)
-   ((ly:pitch? '()) (list? '()))
+   ((ly:pitch? '()) (number-pair-list? '()))
    (_i "Set key to @var{tonic} and scale @var{pitch-alist}.
 If both are null, just generate @code{KeyChangeEvent}.")
    (cond ((null? tonic) (make-music 'KeyChangeEvent))
@@ -804,34 +826,9 @@ makeClusters =
    (_i "Display chords in @var{arg} as clusters.")
    (music-map note-to-cluster arg))
 
-modalInversion =
-#(define-music-function (around to scale music)
-    (ly:pitch? ly:pitch? ly:music? ly:music?)
-    (_i "Invert @var{music} about @var{around} using @var{scale} and
-transpose from @var{around} to @var{to}.")
-    (let ((inverter (make-modal-inverter around to scale)))
-      (change-pitches music inverter)
-      music))
-
-modalTranspose =
-#(define-music-function (from to scale music)
-    (ly:pitch? ly:pitch? ly:music? ly:music?)
-    (_i "Transpose @var{music} from pitch @var{from} to pitch @var{to}
-using @var{scale}.")
-    (let ((transposer (make-modal-transposer from to scale)))
-      (change-pitches music transposer)
-      music))
-
-inversion =
-#(define-music-function
-   (around to music) (ly:pitch? ly:pitch? ly:music?)
-   (_i "Invert @var{music} about @var{around} and
-transpose from @var{around} to @var{to}.")
-   (music-invert around to music))
-
 mark =
-#(define-music-function (label) ((number-or-markup?))
-   "Make the music for the \\mark command."
+#(define-music-function (label) ((integer-or-markup?))
+   (_i "Make the music for the \\mark command.")
    (if label
        (make-music 'MarkEvent 'label label)
        (make-music 'MarkEvent)))
@@ -867,12 +864,30 @@ For example,
           music)))
    music)
 
+modalInversion =
+#(define-music-function (around to scale music)
+    (ly:pitch? ly:pitch? ly:music? ly:music?)
+    (_i "Invert @var{music} about @var{around} using @var{scale} and
+transpose from @var{around} to @var{to}.")
+    (let ((inverter (make-modal-inverter around to scale)))
+      (change-pitches music inverter)
+      music))
+
+modalTranspose =
+#(define-music-function (from to scale music)
+    (ly:pitch? ly:pitch? ly:music? ly:music?)
+    (_i "Transpose @var{music} from pitch @var{from} to pitch @var{to}
+using @var{scale}.")
+    (let ((transposer (make-modal-transposer from to scale)))
+      (change-pitches music transposer)
+      music))
+
 musicMap =
 #(define-music-function (proc mus) (procedure? ly:music?)
    (_i "Apply @var{proc} to @var{mus} and all of the music it contains.")
    (music-map proc mus))
 
-%% noPageBreak and noPageTurn are music functions (not music indentifiers),
+%% noPageBreak and noPageTurn are music functions (not music identifiers),
 %% because music identifiers are not allowed at top-level.
 noPageBreak =
 #(define-music-function () ()
@@ -953,21 +968,29 @@ once =
 #(define-music-function (music) (ly:music?)
    (_i "Set @code{once} to @code{#t} on all layout instruction events
 in @var{music}.  This will complain about music with an actual
-duration.  As a special exception, if @var{music} contains
-@samp{tweaks} it will be silently ignored in order to allow for
-@code{\\once \\propertyTweak} to work as both one-time override and proper
-tweak.")
-   (if (not (pair? (ly:music-property music 'tweaks)))
-       (for-some-music
-        (lambda (m)
-          (cond ((music-is-of-type? m 'layout-instruction-event)
-                 (set! (ly:music-property m 'once) #t)
-                 #t)
-                ((ly:duration? (ly:music-property m 'duration))
-                 (ly:music-warning m (_ "Cannot apply \\once to timed music"))
-                 #t)
-                (else #f)))
-        music))
+duration.  As a special exception, if @var{music} might be the result
+of a @code{\\tweak} command, no warning will be given in order to
+allow for @code{\\once \\propertyTweak} to work as both one-time
+override and proper tweak.")
+   ;; is the warning worth this effort and reliable enough?
+   ;;
+   ;; Note that a repeat chord has a duration but an empty list of
+   ;; tweakable music, so quiet? is trivially true for it.  Which is
+   ;; just as well, considering that tweaks will not register on it.
+   (let ((quiet? (every
+                  (lambda (m) (pair? (ly:music-property m 'tweaks)))
+                  (get-tweakable-music music))))
+     (for-some-music
+      (lambda (m)
+        (cond ((music-is-of-type? m 'layout-instruction-event)
+               (set! (ly:music-property m 'once) #t)
+               #t)
+              ((ly:duration? (ly:music-property m 'duration))
+               (if (not quiet?)
+                   (ly:music-warning m (_ "Cannot apply \\once to timed music")))
+               #t)
+              (else #f)))
+      music))
    music)
 
 ottava =
@@ -1021,7 +1044,7 @@ creation.")
 
 
 
-%% pageBreak and pageTurn are music functions (iso music indentifiers),
+%% pageBreak and pageTurn are music functions (iso music identifiers),
 %% because music identifiers are not allowed at top-level.
 pageBreak =
 #(define-music-function () ()
@@ -1254,7 +1277,7 @@ parenthesize =
             default-part-combine-mark-state-machine split-list)
         >> #} ))
 
-partcombine =
+partCombine =
 #(define-music-function (chord-range part1 part2)
    ((number-pair? '(0 . 8)) ly:music? ly:music?)
    (_i "Take the music in @var{part1} and @var{part2} and return
@@ -1267,7 +1290,7 @@ that may be combined into a chord or unison.")
     #{ \with { \voiceTwo \override DynamicLineSpanner.direction = #DOWN } #}
     #{ #} ))
 
-partcombineUp =
+partCombineUp =
 #(define-music-function (chord-range part1 part2)
    ((number-pair? '(0 . 8)) ly:music? ly:music?)
    (_i "Take the music in @var{part1} and @var{part2} and typeset so
@@ -1277,7 +1300,7 @@ that they share a staff with stems directed upward.")
     #{ \with { \voiceThree \override DynamicLineSpanner.direction = #UP } #}
     #{ \with { \voiceOne \override DynamicLineSpanner.direction = #UP } #} ))
 
-partcombineDown =
+partCombineDown =
 #(define-music-function (chord-range part1 part2)
    ((number-pair? '(0 . 8)) ly:music? ly:music?)
    (_i "Take the music in @var{part1} and @var{part2} and typeset so
@@ -1499,6 +1522,12 @@ usually contains spacers or multi-measure rests.")
                'element main-music
                'quoted-music-name what))
 
+raiseNote =
+#(define-music-function (parser location num music) (integer? ly:music?)
+   (_i "Raise a note of any chords in @var{music}, in @var{num}
+position from below.")
+   (music-map (move-chord-note (1- num) UP) music))
+
 reduceChords =
 #(define-music-function (music) (ly:music?)
    (_i "Reduce chords contained in @var{music} to single notes,
@@ -1567,20 +1596,19 @@ for time signatures of @var{time-signature}.")
    (revert-time-signature-setting time-signature))
 
 rightHandFinger =
-#(define-event-function (finger) (number-or-markup?)
+#(define-event-function (finger) (integer-or-markup?)
    (_i "Apply @var{finger} as a fingering indication.")
 
    (make-music
             'StrokeFingerEvent
-            (if (number? finger) 'digit 'text)
+            (if (integer? finger) 'digit 'text)
             finger))
 
 scaleDurations =
 #(define-music-function (fraction music)
-   (fraction? ly:music?)
+   (scale? ly:music?)
    (_i "Multiply the duration of events in @var{music} by @var{fraction}.")
-   (ly:music-compress music
-                      (ly:make-moment (car fraction) (cdr fraction))))
+   (ly:music-compress music fraction))
 
 settingsFrom =
 #(define-scheme-function (ctx music)
@@ -1684,24 +1712,18 @@ single =
    (ly:music? ly:music?)
    (_i "Convert @var{overrides} to tweaks and apply them to @var{music}.
 This does not convert @code{\\revert}, @code{\\set} or @code{\\unset}.")
-   (set! (ly:music-property music 'tweaks)
-         (fold-some-music
-          (lambda (m) (eq? (ly:music-property m 'name)
-                           'OverrideProperty))
-          (lambda (m tweaks)
-            (let ((p (cond
-                      ((ly:music-property m 'grob-property #f) => list)
-                      (else
-                       (ly:music-property m 'grob-property-path)))))
-              (acons (cons (ly:music-property m 'symbol) ;grob name
-                           (if (pair? (cdr p))
-                               p ;grob property path
-                               (car p))) ;grob property
-                     (ly:music-property m 'grob-value)
-                     tweaks)))
-          (ly:music-property music 'tweaks)
-          overrides))
-   music)
+   (fold-some-music
+    (lambda (m) (eq? (ly:music-property m 'name)
+                     'OverrideProperty))
+    (lambda (m music)
+      (tweak (cons (ly:music-property m 'symbol) ;grob name
+                   (cond
+                    ((ly:music-property m 'grob-property #f) => list)
+                    (else
+                     (ly:music-property m 'grob-property-path))))
+             (ly:music-property m 'grob-value) music))
+    music
+    overrides))
 
 skip =
 #(define-music-function (dur) (ly:duration?)
@@ -1901,23 +1923,27 @@ an indirectly created grob (@samp{Accidental} is caused by
 are affected.
 
 @var{prop} can contain additional elements in which case a nested
-property (inside of an alist) is tweaked.")
+property (inside of an alist) is tweaked.
+
+If @var{music} is an @samp{event-chord}, every contained
+@samp{rhythmic-event} is tweaked instead.")
    (let ((p (check-grob-path prop
                              #:start 1
                              #:default #t
                              #:min 2)))
-     (cond ((not p))
-           ;; p now contains at least two elements.  The first
-           ;; element is #t when no grob has been explicitly
-           ;; specified, otherwise it is a grob name.
-           (else
-            (set! (ly:music-property music 'tweaks)
-                  (acons (cond ((pair? (cddr p)) p)
-                               ((symbol? (car p))
-                                (cons (car p) (cadr p)))
-                               (else (cadr p)))
-                         value
-                         (ly:music-property music 'tweaks)))))
+     (define (tweak-this music)
+       (set! (ly:music-property music 'tweaks)
+             (acons (cond ((pair? (cddr p)) p)
+                          ((symbol? (car p))
+                           (cons (car p) (cadr p)))
+                          (else (cadr p)))
+                    value
+                    (ly:music-property music 'tweaks))))
+     (if p
+         ;; p now contains at least two elements.  The first
+         ;; element is #t when no grob has been explicitly
+         ;; specified, otherwise it is a grob name.
+         (for-each tweak-this (get-tweakable-music music)))
      music))
 
 

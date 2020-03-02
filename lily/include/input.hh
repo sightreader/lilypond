@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,51 +24,60 @@
 #include "smobs.hh"
 
 /**
-   Base class for anything that records its poisition in the parse file.
+   Base class for anything that records its position in the parse file.
 */
 class Input : public Simple_smob<Input>
 {
-  char const *start_;
-  char const *end_;
-  Source_file *source_file_;
+  char const *start_ = nullptr;
+  char const *end_ = nullptr;
+  Source_file *source_file_ = nullptr;
+
 public:
   static const char * const type_p_name_;
   int print_smob (SCM, scm_print_state *) const;
   static SCM equal_p (SCM, SCM);
   SCM mark_smob () const;
   Source_file *get_source_file () const;
-  char const *start () const;
-  char const *end () const;
+  char const *start () const { return start_; }
+  char const *end () const { return end_; }
+  size_t size () const { return end_ - start_; }
 
   void set (Source_file *, char const *, char const *);
-  void error (const string&) const;
-  void programming_error (const string&) const;
-  void non_fatal_error (const string&) const;
-  void warning (const string&) const;
-  void message (const string&) const;
-  void debug_output (const string&) const;
+  void error (const std::string&) const;
+  void programming_error (const std::string&) const;
+  void non_fatal_error (const std::string&) const;
+  void warning (const std::string&) const;
+  void message (const std::string&) const;
+  void debug_output (const std::string&) const;
   void set_spot (Input const &);
   void step_forward ();
   void set_location (Input const &, Input const &);
 
   Input spot () const;
 
-  string location_string () const;
-  string line_number_string () const;
-  string file_string ()const;
+  std::string location_string () const;
+  std::string line_number_string () const;
+  std::string file_string ()const;
 
-  int line_number ()const;
-  int column_number ()const;
-  int end_line_number ()const;
-  int end_column_number ()const;
+  ssize_t line_number () const;
+  ssize_t column_number () const;
+  ssize_t end_line_number () const;
+  ssize_t end_column_number () const;
 
-  void get_counts (int *, int *, int *, int *) const;
+  void get_counts (ssize_t *, ssize_t *, ssize_t *, ssize_t *) const;
 
-  Input (Input const &i);
-  Input ();
+  Input& operator= (Input const &) = default;
+  Input (Input const &i) = default;
+  Input () = default;
+
+  friend std::string source_location (const Input &input) // for logging
+  {
+    return input.message_location ();
+  }
+
 protected:
-  string message_location () const;
-  string message_string (const string &msg) const;
+  std::string message_location () const;
+  std::string message_string (const std::string &msg) const;
 };
 
 extern Input dummy_input_global;

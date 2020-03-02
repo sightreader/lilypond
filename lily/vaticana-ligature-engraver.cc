@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2003--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2003--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,6 +34,9 @@
 #include "rhythmic-head.hh"
 #include "pitch.hh"
 #include "translator.icc"
+
+using std::string;
+using std::vector;
 
 /*
  * This class implements the notation specific aspects of Vaticana
@@ -80,9 +83,9 @@ public:
   TRANSLATOR_INHERIT (Gregorian_ligature_engraver);
   TRANSLATOR_INHERIT (Ligature_engraver);
 protected:
-  virtual Spanner *create_ligature_spanner ();
-  virtual void transform_heads (Spanner *ligature,
-                                vector<Grob_info> const &primitives);
+  Spanner *create_ligature_spanner () override;
+  void transform_heads (Spanner *ligature,
+                        vector<Grob_info> const &primitives) override;
 };
 
 Vaticana_ligature_engraver::Vaticana_ligature_engraver (Context *c)
@@ -656,7 +659,7 @@ Vaticana_ligature_engraver::transform_heads (Spanner *ligature,
                                         scm_from_int (prev_delta_pitch));
           prev_primitive->set_property ("flexa-width",
                                         scm_from_double (flexa_width));
-          bool add_cauda = !(prev_prefix_set && PES_OR_FLEXA);
+          bool add_cauda = !(prev_prefix_set & PES_OR_FLEXA);
           prev_primitive->set_property ("add-cauda",
                                         ly_bool2scm (add_cauda));
           check_for_prefix_loss (primitive);
@@ -715,7 +718,7 @@ Vaticana_ligature_engraver::transform_heads (Spanner *ligature,
   add_mora_column (prev_primitive->get_column ());
 
 #if 0 // experimental code to collapse spacing after ligature
-  /* TODO: set to max (old/new spacing-increment), since other
+  /* TODO: set to std::max (old/new spacing-increment), since other
      voices/staves also may want to set this property. */
   Item *first_primitive = dynamic_cast<Item *> (primitives[0].grob ());
   Paper_column *paper_column = first_primitive->get_column ();

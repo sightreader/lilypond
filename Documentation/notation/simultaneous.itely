@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.21.0"
+@c \version "2.20.0"
 
 
 @node Simultaneous notes
@@ -1024,7 +1024,7 @@ and second parts get marked with @qq{Solo} and @qq{Solo II},
 respectively.  The unison (@notation{a due}) parts are marked with the
 text @qq{a2}.
 
-By default, the partcombiner merges two notes of the same pitch as an
+By default, the partCombiner merges two notes of the same pitch as an
 @notation{a due} note, combines notes with the same
 rhythm less than a ninth apart as chords and separates notes more than
 a ninth apart (or when the voices cross) into
@@ -1032,7 +1032,7 @@ separate voices.  This can be overridden with an optional argument of a pair
 of numbers after the @code{\partCombine} command: the first specifies
 the interval where notes start to be combined (the default is zero) and the
 second where the notes are split into separate voices.  Setting the second
-argument to zero means that the partcombiner splits notes with an interval of
+argument to zero means that the partCombiner splits notes with an interval of
 a second or more, setting it to one splits notes of a third or more, and so on.
 
 @lilypond[quote,verbatim]
@@ -1148,7 +1148,7 @@ instrumentTwo = \relative {
 
 The @code{\partCombine} command is not designed to work with
 lyrics; if one of the voices is explicitly named in order to
-attach lyrics to it, the partcombiner will stop working.  However,
+attach lyrics to it, the partCombiner will stop working.  However,
 this effect can be achieved using a @code{NullVoice} context.  See
 @ref{Polyphony with shared lyrics}.
 

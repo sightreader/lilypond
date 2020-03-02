@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -40,10 +40,10 @@ public:
   virtual ~Lily_lexer ();
   int scan_word (SCM & output, SCM sym);
 private:
-  int lookup_keyword (const string&);
-  int scan_bare_word (const string&);
-  int scan_escaped_word (const string&);
-  int scan_shorthand (const string&);
+  int lookup_keyword (const std::string&);
+  int scan_bare_word (const std::string&);
+  int scan_escaped_word (const std::string&);
+  int scan_shorthand (const std::string&);
   int scan_scm_id (SCM);
   int identifier_type (SCM);
   void push_markup_predicates (SCM sig);
@@ -79,7 +79,7 @@ public:
 
   Lily_lexer (Sources *, Lily_parser *);
   Lily_lexer (Lily_lexer const &, Lily_parser *, SCM);
-  int yylex ();
+  int yylex () override;
 
   void add_lexed_char (int);
 
@@ -95,12 +95,12 @@ public:
 
   void start_main_input ();
 
-  virtual void new_input (const string &s, Sources *);
-  virtual void new_input (const string &s, string d, Sources *);
+  void new_input (const std::string &s, Sources *) override;
+  using Includable_lexer::new_input;
 
   bool top_input () { return include_stack_.size () < 2; }
   SCM keyword_list () const;
-  SCM lookup_identifier (const string &s);
+  SCM lookup_identifier (const std::string &s);
   SCM lookup_identifier_symbol (SCM s);
   void push_extra_token (Input const &where,
                          int token_type, SCM scm = SCM_UNSPECIFIED);
@@ -112,7 +112,7 @@ public:
   void push_markup_state ();
   void push_note_state (SCM alist);
   void pop_state ();
-  void LexerError (char const *);
+  void LexerError (char const *) override;
   void LexerWarning (char const *);
   void set_identifier (SCM path, SCM val);
   int get_state () const;

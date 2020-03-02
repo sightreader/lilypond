@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2011--2015 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2011--2020 Mike Solomon <mike@mikesolomon.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,16 +29,18 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Footnote_engraver : public Engraver
 {
   TRANSLATOR_DECLARATIONS (Footnote_engraver);
 
-  void acknowledge_grob (Grob_info);
+  void acknowledge_grob (Grob_info) override;
   void acknowledge_end_grob (Grob_info);
 
   vector<Drul_array<Spanner *> > annotated_spanners_;
 
-  void finalize ();
+  void finalize () override;
 
   void footnotify (Grob *, SCM);
 };

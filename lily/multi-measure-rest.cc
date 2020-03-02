@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ Multi_measure_rest::percent (SCM smob)
     we gotta stay clear of sp_iv, so move a bit to the right if
     needed.
   */
-  x_off += max (sp_iv[LEFT] - rx, 0.0);
+  x_off += std::max (sp_iv[LEFT] - rx, 0.0);
 
   /*
     center between stuff.
@@ -107,7 +107,7 @@ Multi_measure_rest::print (SCM smob)
     we gotta stay clear of sp_iv, so move a bit to the right if
     needed.
   */
-  Real x_off = max (sp_iv[LEFT] - rx, 0.0);
+  Real x_off = std::max (sp_iv[LEFT] - rx, 0.0);
 
   Stencil mol;
   mol.add_stencil (symbol_stencil (me, space));
@@ -137,7 +137,7 @@ calc_measure_duration_log (Grob *me)
             ->get_property ("measure-length");
   Rational ml = (unsmob<Moment> (sml)) ? unsmob<Moment> (sml)->main_part_
                 : Rational (1);
-  double duration = ml.Rational::to_double ();
+  auto duration = static_cast<double> (ml);
   bool round_up = to_boolean (scm_list_p (scm_member (scm_cons (scm_from_int64 (ml.numerator ()),
                                                                 scm_from_int64 (ml.denominator ())),
                                                       me->get_property ("round-up-exceptions"))))
@@ -230,9 +230,9 @@ Multi_measure_rest::big_rest (Grob *me, Real width)
   Real slt = me->layout ()->get_dimension (ly_symbol2scm ("line-thickness"));
   Real y = slt * thick_thick / 2 * ss;
   Real ythick = hair_thick * slt * ss;
-  Box b (Interval (0.0, max (0.0, (width - 2 * ythick))), Interval (-y, y));
+  Box b (Interval (0.0, std::max (0.0, (width - 2 * ythick))), Interval (-y, y));
 
-  Real blot = width ? (.8 * min (y, ythick)) : 0.0;
+  Real blot = width ? (.8 * std::min (y, ythick)) : 0.0;
 
   Stencil m = Lookup::filled_box (b);
   Stencil yb = Lookup::round_filled_box (Box (Interval (-0.5, 0.5) * ythick, Interval (-ss, ss)), blot);
@@ -252,17 +252,34 @@ Stencil
 Multi_measure_rest::church_rest (Grob *me, Font_metric *musfont, int measure_count,
                                  int mdl, Real space)
 {
+  // using double here is not less exact than rationals because
+  // only simple, unscaled durations are used for representation
+  // even if you have \time 10/6
   double displayed_duration = measure_count * pow (2.0, -mdl);
   SCM mols = SCM_EOL;
   int symbol_count = 0;
   Real symbols_width = 0.0;
+  int dir = get_grob_direction (me);
 
-  if (scm_is_null (me->get_property ("staff-position")))
+  SCM sp = me->get_property ("staff-position");
+  Real pos;
+
+  Grob *staff = Staff_symbol_referencer::get_staff_symbol (me);
+  std::vector<Real> linepos = Staff_symbol::line_positions (staff);
+  bool oneline = linepos.size () == 1;
+
+  if (scm_is_null (sp))
     {
-      int dir = get_grob_direction (me);
-      Real pos = Rest::staff_position_internal (me, mdl, dir);
-      me->set_property ("staff-position", scm_from_double ((mdl == 0) ? (pos - 2) : pos));
+      if (1 <= displayed_duration && displayed_duration < 2) // i. e. longest rest symbol is semibreve
+        {
+          pos = Rest::staff_position_internal (me, 0, dir) - (oneline ? 0 : 2);
+        }
+      else
+        pos = Rest::staff_position_internal (me, 1, dir);
+      me->set_property ("staff-position", scm_from_double (pos));
     }
+  else
+    pos = scm_to_double (sp);
 
   int dl = -3;
   while (displayed_duration > 0)
@@ -277,12 +294,23 @@ Multi_measure_rest::church_rest (Grob *me, Font_metric *musfont, int measure_cou
 
       displayed_duration -= duration;
 
-      Stencil r = musfont->find_by_name (Rest::glyph_name (me, dl, "", true, (dl == 0) ? 2 : 0));
-      if (dl == 0)
+      Real ss = Staff_symbol_referencer::staff_space (me);
+      Real spi = Rest::staff_position_internal (me, dl, dir);
+      Stencil r;
+      if (oneline && (dl == 0 || (dl < 0 && !dir)))
         {
-          Real staff_space = Staff_symbol_referencer::staff_space (me);
-          r.translate_axis (staff_space, Y_AXIS);
+          spi -= 2;
+          r = musfont->find_by_name (Rest::glyph_name (me, dl, "", true, (dl == 0) ? 0 : -2));
         }
+      else
+        r = musfont->find_by_name (Rest::glyph_name (me, dl, "", true, (dl == 0) ? 2 : 0));
+      if (dl < 0)
+        {
+          Real fs = pow (2, robust_scm2double (me->get_property ("font-size"), 0) / 6);
+          r.translate_axis (ss * 0.5 * (spi - pos) + (ss - fs), Y_AXIS);
+        }
+      else
+        r.translate_axis (ss * 0.5 * (spi - pos), Y_AXIS);
 
       symbols_width += r.extent (X_AXIS).length ();
       mols = scm_cons (r.smobbed_copy (), mols);
@@ -300,10 +328,10 @@ Multi_measure_rest::church_rest (Grob *me, Font_metric *musfont, int measure_cou
   if (inner_padding < 0)
     inner_padding = 1.0;
 
-  Real max_separation = max (robust_scm2double (me->get_property ("max-symbol-separation"), 8.0),
+  Real max_separation = std::max (robust_scm2double (me->get_property ("max-symbol-separation"), 8.0),
                              1.0);
 
-  inner_padding = min (inner_padding, max_separation);
+  inner_padding = std::min (inner_padding, max_separation);
   Real left_offset = (space - symbols_width - (inner_padding * (symbol_count - 1)))
                      / 2;
 
@@ -375,7 +403,7 @@ Multi_measure_rest::calculate_spacing_rods (Grob *me, Real length)
       rod.item_drul_[LEFT] = li;
       rod.item_drul_[RIGHT] = ri;
 
-      rod.distance_ = max (Paper_column::minimum_distance (li, ri) + length,
+      rod.distance_ = std::max (Paper_column::minimum_distance (li, ri) + length,
                            minlen);
       rod.add_to_cols ();
     }

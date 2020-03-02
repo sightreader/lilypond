@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2008--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2008--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -21,6 +21,8 @@
 #include "skyline-pair.hh"
 
 #include "international.hh"
+
+using std::vector;
 
 Skyline_pair::Skyline_pair ()
   : skylines_ (Skyline (DOWN), Skyline (UP))
@@ -85,13 +87,13 @@ Skyline_pair::print () const
 Real
 Skyline_pair::left () const
 {
-  return min (skylines_[UP].left (), skylines_[DOWN].left ());
+  return std::min (skylines_[UP].left (), skylines_[DOWN].left ());
 }
 
 Real
 Skyline_pair::right () const
 {
-  return max (skylines_[UP].right (), skylines_[DOWN].right ());
+  return std::max (skylines_[UP].right (), skylines_[DOWN].right ());
 }
 
 void

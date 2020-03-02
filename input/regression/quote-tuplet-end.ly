@@ -3,7 +3,7 @@
   texidoc  ="Tuplet bracket ends properly when quoting."
 }
 
-\version "2.17.11"
+\version "2.21.0"
 
 \paper { ragged-right = ##t }
 

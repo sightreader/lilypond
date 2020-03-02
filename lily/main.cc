@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 #include <cstring>
 #include <cerrno>
 #include <cstdio>
-using namespace std;
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -57,39 +56,14 @@ using namespace std;
 #include "warn.hh"
 #include "lily-imports.hh"
 
+
 /*
  * Global options that can be overridden through command line.
+ * Most variables are defined in file `global-vars.cc'.
  */
-
-/* Names of header fields to be dumped to a separate file. */
-//vector<string> dump_header_fieldnames_global; // moved to global-data.cc
-
-/* Name of initialisation file. */
-//string init_name_global; // moved to global-data.cc
-
-/* Output formats to generate.  */
-//string output_format_global = ""; // moved to global-data.cc
-
-/* Current output name. */
-//string output_name_global; // moved to global-data.cc
-
-/* Run in safe mode? */
-//bool be_safe_global = false; // moved to global-data.cc
 
 /* Provide URI links to the original file */
 bool point_and_click_global = true;
-
-/* Scheme code to execute before parsing, after .scm init.
-   This is where -e arguments are appended to.  */
-//string init_scheme_code_global; // moved to global-data.cc
-//string init_scheme_variables_global; // moved to global-data.cc
-
-//bool relocate_binary = true; // moved to global-data.cc
-
-/*
- * Miscellaneous global stuff.
- */
-//File_path global_path; // moved to global-data.cc
 
 /*
  * File globals.
@@ -124,13 +98,8 @@ static char const *WARRANTY
         "the Free Software Foundation, Inc., 59 Temple Place - Suite 330,\n"
         "Boston, MA 02111-1307, USA.\n");
 
-/* Where the init files live.  Typically:
-   LILYPOND_DATADIR = /usr/share/lilypond
-*/
-//string lilypond_datadir; // moved to global-data.cc
-
 /* The jail specification: USER, GROUP, JAIL, DIR. */
-string jail_spec;
+std::string jail_spec;
 
 /*  The option parser */
 static Getopt_long *option_parser = 0;
@@ -189,7 +158,7 @@ static Long_option_init options_static[]
 	   "or to FOLDER, in which case the file name\n"
 	   "will be taken from the input file.")},
   {0, "relocate", 0,
-     _i ("relocate using directory of lilypond program")},
+     _i ("(ignored)")},
   {0, "silent", 's',
      _i ("no progress, only error messages\n"
            "(equivalent to --loglevel=ERROR)")},
@@ -202,7 +171,9 @@ static Long_option_init options_static[]
   {0, 0, 0, 0}
 };
 
-char const *LILYPOND_DATADIR = PACKAGE_DATADIR "/" TOPLEVEL_VERSION;
+using std::map;
+using std::string;
+using std::vector;
 
 static void
 env_var_info (FILE *out, char const *key)
@@ -224,24 +195,23 @@ dir_info (FILE *out)
  */
 {
   fputs ("\n", out);
-  fprintf (out, "LILYPOND_DATADIR=\"%s\"\n", LILYPOND_DATADIR);
-  env_var_info (out, "LILYPONDPREFIX");
   env_var_info (out, "LILYPOND_DATADIR");
-  fprintf (out, "LOCALEDIR=\"%s\"\n", LOCALEDIR);
+  env_var_info (out, "LILYPOND_LOCALEDIR");
+  env_var_info (out, "LILYPOND_RELOCDIR");
 
-  fprintf (out, "\nEffective prefix: \"%s\"\n", lilypond_datadir.c_str ());
+  fputs (_f ("\n"
+             "Effective prefix: '%s'\n",
+             lilypond_datadir).c_str (), out);
 
-  if (relocate_binary)
-    {
-      env_var_info (out, "FONTCONFIG_FILE");
-      env_var_info (out, "FONTCONFIG_PATH");
-      env_var_info (out, "GS_FONTPATH");
-      env_var_info (out, "GS_LIB");
-      env_var_info (out, "GUILE_LOAD_PATH");
-      env_var_info (out, "PANGO_RC_FILE");
-      env_var_info (out, "PANGO_PREFIX");
-      env_var_info (out, "PATH");
-    }
+  env_var_info (out, "FONTCONFIG_FILE");
+  env_var_info (out, "FONTCONFIG_PATH");
+  env_var_info (out, "GS_FONTPATH");
+  env_var_info (out, "GS_LIB");
+  env_var_info (out, "GUILE_LOAD_PATH");
+  env_var_info (out, "PANGO_RC_FILE");
+  env_var_info (out, "PANGO_PREFIX");
+  env_var_info (out, "PATH");
+  fputs ("\n", out);
 }
 
 static void
@@ -251,7 +221,7 @@ copyright ()
  */
 {
   /* Do not update the copyright years here, run `make grand-replace'  */
-  printf ("%s", (_f ("Copyright (c) %s by\n%s  and others.", "1996--2015",
+  printf ("%s", (_f ("Copyright (c) %s by\n%s  and others.", "1996--2020",
                      AUTHORS).c_str ()));
   printf ("\n");
 }
@@ -451,7 +421,9 @@ main_with_guile (void *, int, char **)
    prepend_scheme_list (lilypond_datadir, scm_pct_load_path );
    prepend_scheme_list (lilypond_datadir + "/scm", scm_pct_load_path);
 
-#if (GUILE2)
+#if 0
+   /* this code is dead, but keeping this around until we sort the
+      guile2/3 situation. */
    /*
      Just as ughy - prepend "/scm/out" onto GUILE V2+ %load-compiled-path
      and set %compile-fallback-path to our scm/out directory
@@ -560,11 +532,9 @@ setup_localisation ()
   bind_textdomain_codeset ("lilypond", "UTF-8");
 #endif
 
-  string localedir = LOCALEDIR;
-  if (char const *env = getenv ("LILYPOND_LOCALEDIR"))
-    localedir = env;
-
-  bindtextdomain ("lilypond", localedir.c_str ());
+  // we temporarily use the compile-time value for the locale
+  // until we get the final directory location
+  bindtextdomain ("lilypond", LOCALEDIR);
   textdomain ("lilypond");
 #endif
 }
@@ -611,7 +581,7 @@ parse_argv (int argc, char **argv)
               || string (opt->longname_str0_) == "ps")
             add_output_format (opt->longname_str0_);
           else if (string (opt->longname_str0_) == "relocate")
-            relocate_binary = true;
+            warning (_ ("The --relocate option is no longer relevant."));
           break;
 
         case 'E':
@@ -675,8 +645,8 @@ parse_argv (int argc, char **argv)
           break;
 
         case 'e':
-          init_scheme_code_global
-          += option_parser->optional_argument_str0_ + string (" ");
+          init_scheme_code_global +=
+            option_parser->optional_argument_str0_ + string (" ");
           break;
         case 'w':
           warranty ();
@@ -754,6 +724,7 @@ setup_guile_gc_env ()
                "104857600", overwrite);
 }
 
+#if (GUILEV2)
 
 void
 setup_guile_v2_env ()
@@ -762,16 +733,39 @@ setup_guile_v2_env ()
  * Scheme files for Guile V2.
  */
 {
-     sane_putenv("GUILE_AUTO_COMPILE", "0", true);  // disable auto-compile
-     sane_putenv("GUILE_WARN_DEPRECATED",
-                  "detailed", "true");   // set Guile to info re deprecation
-     /*
+  sane_putenv ("GUILE_AUTO_COMPILE", "0", false); // disable auto-compile
+  sane_putenv ("GUILE_WARN_DEPRECATED", "detailed",
+               "true"); // set Guile to info re deprecation
+  /*
         Set root for Guile %compile-fallback to
         Lilypond root for its data.
       */
-     sane_putenv("XDG_CACHE_HOME",
-                  lilypond_datadir, true);
+  sane_putenv ("XDG_CACHE_HOME", lilypond_datadir, true);
+
+  // This reduces the GC overhead during parsing and
+  // initialization. To see if this is a good value, run #(display
+  // (gc-stats)) just before \maininput in init.ly, and check that
+  // it's roughly this value.
+  sane_putenv ("GC_INITIAL_HEAP_SIZE", "40M", false);
+
+  /*
+    Empirically, multithreaded GC doesn't change wall time. It just
+    adds another thread that burns 30% of the time.
+
+    David K mentions: "I think that this may be due to both/either our
+    use of mark hooks and of finalisers for calling destructors.
+    Either may cause serialisation.  Another serialisation is because
+    Guile itself switches BGC to Java mode where finalised objects can
+    no longer be marked (or something like that: the exact semantics I
+    do not remember).  And of course the C++ free store still has to
+    do its full job.
+  */
+  sane_putenv ("GC_NPROCS", "1", false);
+
+  // Use less CPU for GC, at the expense of memory.
+  sane_putenv ("GC_FREE_SPACE_DIVISOR", "1", false);
 }
+#endif
 
 void
 setup_guile_env ()
@@ -779,10 +773,10 @@ setup_guile_env ()
  * Set up environment variables relevant to Scheme
  */
 {
-
-  setup_guile_gc_env ();  // configure garbage collector
 #if (GUILEV2)
   setup_guile_v2_env ();  // configure Guile V2 behaviour
+#else
+  setup_guile_gc_env ();  // configure garbage collector
 #endif
 }
 
@@ -823,22 +817,7 @@ main (int argc, char **argv, char **envp)
   /*
    * Start up Guile API using main_with_guile as a callback.
    */
-#if (GUILEV2)
- /* Debugging aid.
-    Set it on by default for Guile V2
-    while migration in progress.
- */
-  try
-    {
-      scm_boot_guile (argc, argv, main_with_guile, 0);
-    }
-  catch (exception e)
-    {
-      error (_f ("exception caught: %s", e.what ()));
-    };
-#else
   scm_boot_guile (argc, argv, main_with_guile, 0);
-#endif
 
   /* Only reachable if GUILE exits.  That is an error.  */
   return 1;

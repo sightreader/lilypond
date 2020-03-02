@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2002--2020 Juergen Reuter <reuter@ipd.uka.de>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -29,6 +29,8 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Cluster_spanner_engraver : public Engraver
 {
 
@@ -37,8 +39,8 @@ protected:
   void listen_cluster_note (Stream_event *);
   void acknowledge_note_column (Grob_info);
   void stop_translation_timestep ();
-  virtual void process_music ();
-  virtual void finalize ();
+  virtual void process_music (); // TODO: Why virtual?  Look for others too.
+  void finalize () override;
 private:
   vector<Stream_event *> cluster_notes_;
   Item *beacon_;
@@ -105,8 +107,8 @@ Cluster_spanner_engraver::process_music ()
 
           int p = (pit ? pit->steps () : 0) + c0;
 
-          pmax = max (pmax, p);
-          pmin = min (pmin, p);
+          pmax = std::max (pmax, p);
+          pmin = std::min (pmin, p);
         }
 
       beacon_ = make_item ("ClusterSpannerBeacon", cluster_notes_[0]->self_scm ());

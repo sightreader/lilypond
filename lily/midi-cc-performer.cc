@@ -1,9 +1,9 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2013--2016 by Heikki Tauriainen <g034737@welho.com>.
+  Copyright (C) 2013--2020 by Heikki Tauriainen <g034737@welho.com>.
   Adapted from performer implementations
-  Copyright (C) 1996--2015 Jan Nieuwenhuizen <janneke@gnu.org>,
+  Copyright (C) 1996--2020 Jan Nieuwenhuizen <janneke@gnu.org>,
   Han-Wen Nienhyus <hanwen@xs4all.nl> and others.
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -32,6 +32,8 @@
 
 #include "translator.icc"
 
+using std::string;
+
 /**
    MIDI control change performer.  Announces "set property" events on MIDI
    context properties.
@@ -43,8 +45,8 @@ public:
   void announce_control_change (SCM);
   ~Midi_control_change_performer ();
 
-  void connect_to_context (Context *c);
-  void disconnect_from_context (Context *c);
+  void connect_to_context (Context *c) override;
+  void disconnect_from_context (Context *c) override;
 
 private:
   class Control_change_announcer : public Midi_control_change_announcer
@@ -53,8 +55,8 @@ private:
     Control_change_announcer (Midi_control_change_performer *p,
                               Stream_event *ev, const string &s);
 
-    SCM get_property_value (const char *property_name);
-    void do_announce (Audio_control_change *item);
+    SCM get_property_value (const char *property_name) override;
+    void do_announce (Audio_control_change *item) override;
 
   private:
     Midi_control_change_performer *performer_;

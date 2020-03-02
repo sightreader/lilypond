@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1993--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1993--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include <cmath>
 
-using namespace std;
+using std::vector;
 
 /*
   Een beter milieu begint bij uzelf. Hergebruik!
@@ -82,7 +82,7 @@ Polynomial::minmax (Real l, Real r, bool ret_max) const
   for (vsize i = 0; i < maxmins.size (); i++)
     if (maxmins[i] >= l && maxmins[i] <= r)
       sols.push_back (eval (maxmins[i]));
-  vector_sort (sols, less<Real> ());
+  vector_sort (sols, std::less<Real> ());
 
   return ret_max ? sols.back () : sols[0];
 }
@@ -167,37 +167,6 @@ Polynomial::set_negate (const Polynomial &src)
 {
   for (int i = 0; i <= src.degree (); i++)
     coefs_[i] = -src.coefs_[i];
-}
-
-/// mod of #u/v#
-int
-Polynomial::set_mod (const Polynomial &u, const Polynomial &v)
-{
-  (*this) = u;
-
-  if (v.lc () < 0.0)
-    {
-      for (ssize_t k = u.degree () - v.degree () - 1; k >= 0; k -= 2)
-        coefs_[k] = -coefs_[k];
-
-      for (ssize_t k = u.degree () - v.degree (); k >= 0; k--)
-        for (ssize_t j = v.degree () + k - 1; j >= k; j--)
-          coefs_[j] = -coefs_[j] - coefs_[v.degree () + k] * v.coefs_[j - k];
-    }
-  else
-
-    {
-      for (ssize_t k = u.degree () - v.degree (); k >= 0; k--)
-        for (ssize_t j = v.degree () + k - 1; j >= k; j--)
-          coefs_[j] -= coefs_[v.degree () + k] * v.coefs_[j - k];
-    }
-
-  ssize_t k = v.degree () - 1;
-  while (k >= 0 && coefs_[k] == 0.0)
-    k--;
-
-  coefs_.resize (1 + ((k < 0) ? 0 : k));
-  return degree ();
 }
 
 void

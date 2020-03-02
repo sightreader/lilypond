@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2003--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2003--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@ public:
 
 protected:
   virtual void build_ligature (Spanner *ligature,
-                               vector<Grob_info> const &primitives) = 0;
-  virtual void typeset_ligature (Spanner *ligature,
-                                 vector<Grob_info> const &primitives);
+                               std::vector<Grob_info> const &primitives) = 0;
+  void typeset_ligature (Spanner *ligature,
+                         std::vector<Grob_info> const &primitives) override;
   virtual void move_related_items_to_column (Item *, Paper_column *, Real);
 private:
-  void collect_accidentals (Spanner *, vector<Grob_info> const &);
+  void collect_accidentals (Spanner *, std::vector<Grob_info> const &);
 };
 
 #endif // COHERENT_LIGATURE_ENGRAVER_HH

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys
+  Copyright (C) 2000--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,13 +30,13 @@ class Ottava_spanner_engraver : public Engraver
 public:
   TRANSLATOR_DECLARATIONS (Ottava_spanner_engraver);
 protected:
-  virtual void finalize ();
+  void finalize () override;
 
   void acknowledge_note_column (Grob_info);
 
   void process_music ();
   void stop_translation_timestep ();
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 private:
   Spanner *span_;
   Spanner *finished_;
@@ -84,14 +84,16 @@ Ottava_spanner_engraver::process_music ()
 void
 Ottava_spanner_engraver::acknowledge_note_column (Grob_info info)
 {
-  Item *it = info.item ();
-  if (span_ && it)
+  if (span_)
     {
-      Side_position_interface::add_support (span_, it);
+      if (Item *it = dynamic_cast<Item *> (info.grob ()))
+        {
+          Side_position_interface::add_support (span_, it);
 
-      if (!span_->get_bound (LEFT))
-        span_->set_bound (LEFT, it);
-      span_->set_bound (RIGHT, it);
+          if (!span_->get_bound (LEFT))
+            span_->set_bound (LEFT, it);
+          span_->set_bound (RIGHT, it);
+        }
     }
 }
 

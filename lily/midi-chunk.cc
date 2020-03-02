@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2007--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -23,6 +23,9 @@
 #include "midi-item.hh"
 #include "std-string.hh"
 #include "string-convert.hh"
+
+using std::string;
+using std::vector;
 
 Midi_track::Midi_track (int number, bool port)
   : number_ (number)

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ class Tweak_engraver : public Engraver
   TRANSLATOR_DECLARATIONS (Tweak_engraver);
 
 protected:
-  void acknowledge_grob (Grob_info);
+  void acknowledge_grob (Grob_info) override;
 };
 
 Tweak_engraver::Tweak_engraver (Context *c)

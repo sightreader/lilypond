@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2006--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,13 +30,11 @@
 #endif
 #endif
 
-#include "config.hh"   /* needed at least for HAVE_STL_DATA_METHOD */
 #include <algorithm>   /* find, reverse, sort */
 #include <functional>  /* unary_function */
 #include <cassert>
 #include <string>
 
-using namespace std;
 
 template<typename T>
 int default_compare (T const &a, T const &b)
@@ -72,7 +70,7 @@ typedef size_t vsize;
 
 template<typename T>
 T const &
-boundary (vector<T> const &v, int dir, vsize i)
+boundary (std::vector<T> const &v, int dir, vsize i)
 {
   assert (dir);
   return v[dir == -1 ? i : v.size () - 1 - i];
@@ -80,7 +78,7 @@ boundary (vector<T> const &v, int dir, vsize i)
 
 template<typename T>
 T &
-boundary (vector<T> &v, int dir, vsize i)
+boundary (std::vector<T> &v, int dir, vsize i)
 {
   assert (dir);
   return v[dir == -1 ? i : v.size () - 1 - i];
@@ -88,35 +86,35 @@ boundary (vector<T> &v, int dir, vsize i)
 
 template<typename T>
 T const &
-back (vector<T> const &v, vsize i)
+back (std::vector<T> const &v, vsize i)
 {
   return v[v.size () - i - 1];
 }
 
 template<typename T>
 T &
-back (vector<T> &v, vsize i)
+back (std::vector<T> &v, vsize i)
 {
   return v[v.size () - i - 1];
 }
 
 template<typename T>
 void
-concat (vector<T> &v, vector<T> const &w)
+concat (std::vector<T> &v, std::vector<T> const &w)
 {
   v.insert (v.end (), w.begin (), w.end ());
 }
 
 template<typename T, typename Compare>
 vsize
-lower_bound (vector<T> const &v,
+lower_bound (std::vector<T> const &v,
              T const &key,
              Compare less,
              vsize b = 0, vsize e = VPOS)
 {
   if (e == VPOS)
     e = v.size ();
-  typename vector<T>::const_iterator i = lower_bound (v.begin () + b,
+  typename std::vector<T>::const_iterator i = lower_bound (v.begin () + b,
                                                       v.begin () + e,
                                                       key,
                                                       less);
@@ -126,7 +124,7 @@ lower_bound (vector<T> const &v,
 
 template<typename T, typename Compare>
 vsize
-upper_bound (vector<T> const &v,
+upper_bound (std::vector<T> const &v,
              T const &key,
              Compare less,
              vsize b = 0, vsize e = VPOS)
@@ -134,7 +132,7 @@ upper_bound (vector<T> const &v,
   if (e == VPOS)
     e = v.size ();
 
-  typename vector<T>::const_iterator i = upper_bound (v.begin () + b,
+  typename std::vector<T>::const_iterator i = upper_bound (v.begin () + b,
                                                       v.begin () + e,
                                                       key,
                                                       less);
@@ -144,7 +142,7 @@ upper_bound (vector<T> const &v,
 
 template<typename T, typename Compare>
 vsize
-binary_search (vector<T> const &v,
+binary_search (std::vector<T> const &v,
                T const &key,
                Compare less,
                vsize b = 0, vsize e = VPOS)
@@ -158,7 +156,7 @@ binary_search (vector<T> const &v,
 
 template<typename T, typename Compare>
 void
-vector_sort (vector<T> &v,
+vector_sort (std::vector<T> &v,
              Compare less,
              vsize b = 0, vsize e = VPOS)
 {
@@ -170,7 +168,7 @@ vector_sort (vector<T> &v,
 
 template<typename T, typename Compare>
 void
-vector_stable_sort (vector<T> &v,
+vector_stable_sort (std::vector<T> &v,
              Compare less,
              vsize b = 0, vsize e = VPOS)
 {
@@ -182,28 +180,28 @@ vector_stable_sort (vector<T> &v,
 
 template<typename T>
 void
-reverse (vector<T> &v)
+reverse (std::vector<T> &v)
 {
-  // CHECKME: for a simple vector, like vector<int>, this should
+  // CHECKME: for a simple vector, like std::vector<int>, this should
   // expand to memrev.
   reverse (v.begin (), v.end ());
 }
 
 template<typename T>
 void
-uniq (vector<T> &v)
+uniq (std::vector<T> &v)
 {
   v.erase (unique (v.begin (), v.end ()), v.end ());
 }
 
 template<typename T>
-typename vector<T>::const_iterator
-find (vector<T> const &v, T const &key)
+typename std::vector<T>::const_iterator
+find (std::vector<T> const &v, T const &key)
 {
   return find (v.begin (), v.end (), key);
 }
 
-template<typename T> struct del : public unary_function<T, void>
+template<typename T> struct del : public std::unary_function<T, void>
 {
   void operator () (T x)
   {
@@ -214,16 +212,14 @@ template<typename T> struct del : public unary_function<T, void>
 
 template<typename T>
 void
-junk_pointers (vector<T> &v)
+junk_pointers (std::vector<T> &v)
 {
   // Hmm.
   for_each (v.begin (), v.end (), del<T> ());
   v.clear ();
 }
 
-vector<string> string_split (string str, char c);
-string string_join (vector<string> const &strs, const string &infix);
-
-#define iterof(i,s) typeof((s).begin()) i((s).begin())
+std::vector<std::string> string_split (std::string str, char c);
+std::string string_join (std::vector<std::string> const &strs, const std::string &infix);
 
 #endif /* STD_VECTOR_HH */

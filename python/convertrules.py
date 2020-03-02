@@ -7,8 +7,6 @@ import re
 import sys
 import lilylib
 
-_ = lilylib._
-
 
 NOT_SMART = "\n" + _ ("Not smart enough to convert %s.") + "\n"
 UPDATE_MANUALLY = _ ("Please refer to the manual for details, and update manually.") + "\n"
@@ -647,7 +645,7 @@ def conv (str):
         "Custos": "custos"
         }
         props =  match.group (1)
-        for (k,v) in break_dict.items():
+        for (k,v) in list(break_dict.items()):
             props = re.sub (k, v, props)
         return  "breakAlignOrder = #'(%s)" % props
 
@@ -1017,7 +1015,7 @@ def sub_chord (m):
     for d in durs:
         if dur_str == '':
             dur_str = d
-        if dur_str <> d:
+        if dur_str != d:
             return '<%s>' % m.group (1)
 
     pslur_strs = ['']
@@ -1025,7 +1023,7 @@ def sub_chord (m):
     slur_strs = ['']
 
     last_str = ''
-    while last_str <> str:
+    while last_str != str:
         last_str = str
 
         def sub_tremolos (m, slur_strs = slur_strs):
@@ -1759,25 +1757,20 @@ def conv (str):
 @rule ((2, 1, 27), "property transposing -> tuning")
 def conv (str):
     def subst (m):
-        g = int (m.group (2))
-        o = g / 12
-        g -= o * 12
-        if g <  0:
-            g += 12
-            o -= 1
+        (o, g) = divmod (int (m.group (2)), 12)
 
-
-        lower_pitches = filter (lambda x : x <= g, [0, 2, 4, 5, 7, 9, 11, 12])
+        lower_pitches = [x for x in [0, 2, 4, 5, 7, 9, 11, 12] if x <= g]
         s = len (lower_pitches) -1
         a = g - lower_pitches [-1]
 
 
         str = 'cdefgab' [s]
         str += ['eses', 'es', '', 'is', 'isis'][a + 2]
+        o += 1                  # c' is octave 0
         if o < 0:
-            str += ',' * (-o - 1)
-        elif o >= 0:
-            str += "'" * (o + 1)
+            str += (-o) * ","
+        elif o > 0:
+            str += o * "'"
 
         return '\\transposition %s ' % str
 
@@ -2257,7 +2250,7 @@ def conv (str):
         elif what == 'override':
             return "override %s #'callbacks #'%s" % (grob, newkey)
         else:
-            raise 'urg'
+            raise RuntimeError ('1st group should match revert or override')
             return ''
 
     str = re.sub(r"(override|revert)\s*([a-zA-Z.]+)\s*#'(spacing-procedure|after-line-breaking-callback"
@@ -3218,7 +3211,6 @@ def paren_matcher (n):
     # parens inside; add the outer parens yourself if needed.
     # Nongreedy.
     return r"[^()]*?(?:\("*n+r"[^()]*?"+r"\)[^()]*?)*?"*n
-    return
 
 def undollar_scm (m):
     return re.sub (r"\$(.?)", r"\1", m.group (0))
@@ -3436,7 +3428,7 @@ grob_path = symbol_list + r"(?:\s+" + symbol_list + r")*"
 grob_spec = wordsyntax + r"(?:\s*\.\s*" + wordsyntax + r")?"
 
 def path_replace (m):
-    return m.group (1) + string.join (re.findall (wordsyntax, m.group (2)), ".")
+    return m.group (1) + ".".join (re.findall (wordsyntax, m.group (2)))
 
 # The following regexp appears to be unusually expensive to compile,
 # so we do it only once instead of for every file
@@ -3452,7 +3444,7 @@ footnotec = re.compile ("(" + matchfullmarkup + ")|"
 def conv (str):
     def patrep (m):
         def fn_path_replace (m):
-            x = string.join (re.findall (wordsyntax, m.group (2)), ".")
+            x = ".".join (re.findall (wordsyntax, m.group (2)))
             if x in ["TimeSignature", "KeySignature", "BarLine",
                      "Clef", "StaffSymbol", "OttavaBracket",
                      "LedgerLineSpanner"]:
@@ -3895,8 +3887,8 @@ def conv (str):
 @rule ((2, 19, 46), r"\context ... \modification -> \context ... \with \modification")
 def conv (str):
     word=r'(?:#?"[^"]*"|\b' + wordsyntax + r'\b)'
-    mods = string.join (re.findall ("\n(" + wordsyntax + r")\s*=\s*\\with(?:\s|\\|\{)", str)
-                        + ['RemoveEmptyStaves','RemoveAllEmptyStaves'], "|")
+    mods = "|".join (re.findall ("\n(" + wordsyntax + r")\s*=\s*\\with(?:\s|\\|\{)", str)
+                     + ['RemoveEmptyStaves','RemoveAllEmptyStaves'])
     str = re.sub (r"(\\(?:drums|figures|chords|lyrics|addlyrics|"
                   + r"(?:new|context)\s*" + word
                   + r"(?:\s*=\s*" + word + r")?)\s*)(\\(?:" + mods + "))",
@@ -3926,14 +3918,67 @@ def conv (str):
     str = re.sub (automatic, r"\1output-attributes.id", str)
     return str
 
-@rule ((2, 19, 80), r"""\markup-command #" -> \markup-command " """)
+@rule ((2, 20, 0), r'''\language "deutsch": beh -> heh''')
 def conv (str):
+    changes = re.findall (r'\\language\s*#?"([a-zçñ]+)"', str)
+    if changes and (changes.count ('deutsch') == len (changes)):
+        str = re.sub (r'\bbeh\b', 'heh', str)
+    return str
+
+matchscmarg = (r'(?:[a-zA-Z_][-a-zA-Z_0-9]*|"(?:[^\\"]|\\.)*"|[-+]?[0-9.]+|\('
+               + paren_matcher (10) + r"\))")
+
+@rule ((2, 21, 0), r"""\note #"4." -> \note {4.}
+\markup-command #" -> \markup-command "
+\partcombine* -> \partCombine, \autochange -> \autoChange
+scripts.trilelement -> scripts.trillelement
+\fermataMarkup -> \fermata
+remove \\powerChords, deprecate banter-chord-names and jazz-chord-names
+""")
+def conv (str):
+    def repl1ly (m):
+        if m.group (2)[0] in "blm":
+            return m.group(1) + "{\\" + m.group(2) + "}"
+        return m.group (1) + "{" + m.group (2) + "}"
+    def repl1scm (m):
+        return ("%s(ly:make-duration %d %d)" %
+                (m.group (1),
+                 {"1": 0, "2": 1, "4": 2, "8": 3, "16": 4,
+                  "32": 5, "64": 6, "128": 7, "256": 8,
+                  "breve": -1, "longa": -2, "maxima": -4}[m.group (2)],
+                 m.end (3) - m.start (3)))
+    def replly (m):
+        return re.sub (r'(\\note\s*)#?"((?:1|2|4|8|16|32|64|128|256'
+                       r'|breve|longa|maxima)\s*\.*)"',
+                       repl1ly, m.group (0))
+    def replscm (m):
+        return re.sub (r'"()(1|2|4|8|16|32|64|128|256'
+                       r'|breve|longa|maxima)\s*(\.*)"',
+                       repl1scm, m.group (0))
+    def replmarkup (m):
+        return re.sub (r'(#:note\s+)"(1|2|4|8|16|32|64|128|256'
+                       r'|breve|longa|maxima)\s*(\.*)"',
+                       repl1scm, m.group (0))
+    str = re.sub (matchfullmarkup, replly, str)
+    str = re.sub (r"\(tuplet-number::(?:fraction-with-notes|non-default-fraction-with-notes|append-note-wrapper)\s" +
+                  paren_matcher (20) + r"\)", replscm, str)
+    str = re.sub (r'\(markup\s' + paren_matcher (20) + r'\)',
+                  replmarkup, str)
     str = re.sub (r'(\\(?:fret-diagram(?:-terse)?|harp-pedal|justify-string'
                   r'|lookup|musicglyph|postscript|simple|tied-lyric|verbatim-file'
                   r'|with-url|wordwrap-string'
                   r'|discant|freeBass|stdBass|stdBassIV|stdBassV|stdBassVI'
                   r')\s*)[#$](\\?")',
                   r'\1\2', str)
+    str = re.sub (r"\\partcombine(Force|Up|Down|Chords|Apart|Unisono|SoloI|SoloII|Automatic|)\b",
+                  r"\\partCombine\1", str)
+    str = re.sub (r"\\autochange", r"\\autoChange", str)
+    str = re.sub (r'\\powerChords', '', str)
+    str = re.sub (r'"scripts\.trilelement"', r'"scripts.trillelement"', str)
+    str = re.sub (r"\\fermataMarkup", r"\\fermata", str)
+    if re.search (r"#(banter|jazz)-chordnames", str):
+        stderr_write (NOT_SMART % "alternative chord naming functions")
+        stderr_write (UPDATE_MANUALLY)
     return str
 
 

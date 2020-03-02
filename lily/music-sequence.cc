@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ Music_sequence::maximum_length (SCM l)
       else
         {
           Moment l = m->get_length ();
-          dur = max (dur, l);
+          dur = std::max (dur, l);
         }
     }
 
@@ -142,7 +142,7 @@ music_list_to_relative (SCM l, Pitch p, bool ret_first)
 }
 
 void
-compress_music_list (SCM l, Moment m)
+compress_music_list (SCM l, Rational m)
 {
   for (SCM s = l; scm_is_pair (s); s = scm_cdr (s))
     unsmob<Music> (scm_car (s))->compress (m);
@@ -154,7 +154,7 @@ Music_sequence::minimum_start (SCM l)
   Moment m;
 
   for (SCM s = l; scm_is_pair (s); s = scm_cdr (s))
-    m = min (m, unsmob<Music> (scm_car (s))->start_mom ());
+    m = std::min (m, unsmob<Music> (scm_car (s))->start_mom ());
   return m;
 }
 

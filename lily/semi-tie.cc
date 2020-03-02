@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -77,7 +77,7 @@ Semi_tie::calc_control_points (SCM smob)
 int
 Semi_tie::get_column_rank (Item *me)
 {
-  return Paper_column::get_rank (me->get_column ());
+  return me->get_column ()->get_rank ();
 }
 
 int

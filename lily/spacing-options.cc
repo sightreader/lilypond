@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -66,7 +66,7 @@ Spacing_options::Spacing_options ()
 Real
 Spacing_options::get_duration_space (Rational d) const
 {
-  Real ratio = d / global_shortest_;
+  auto ratio = static_cast<Real> (d / global_shortest_);
 
   if (ratio < 1.0)
     {

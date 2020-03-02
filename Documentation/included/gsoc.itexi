@@ -127,33 +127,6 @@ Working in this project will mainly be done in the
 @emph{Mentor}: Peter Bjuhr
 
 
-@subsubheading Rewrite LibreOffice LilyPond Extension with Python
-
-The @uref{http://ooolilypond.sourceforge.net/, OOoLilyPond} extension
-made it possible to conveniently include LilyPond score snippets in
-OpenOffice.org/LibreOffice Writer, Draw and Impress documents while
-keeping source and image together.  After many years without development
-an initial effort has started to make the extension compatible again
-with current versions of LibreOffice and LilyPond.
-
-However, as the LibreOffice ecosystem has changed substantially it is
-now possible to rewrite the extension with Python and PyQt.  This will
-not only be more powerful in general but will allow the integration of
-functionality from @uref{http://frescobaldi.org, Frescobaldi}, such as
-for example syntax highlighting, entry helpers, score wizards or musical
-transformations.
-
-@emph{Difficulty:} easy/medium
-
-@emph{Requirements:} Python, PyQt, LilyPond basics, LibreOffice
-extension basics
-
-@emph{Recommended knowledge:} Familiarity with Frescobaldi code based
-or willingness to learn during bonding period
-
-@emph{Mentor(s):} Joram Berger, Urs Liska, (Thorsten Behrens/LibreOffice)
-
-
 @subsubheading Fix Beaming Patterns/Beam Subdivisions and Tuplets
 
 Subdivision is an important way to improve the readability of beamed
@@ -179,6 +152,36 @@ this discussion}), and that this has to be fixed as well.
 of timing issues
 
 @emph{Mentors:} Urs Liska, Carl Sorensen
+
+
+@subsubheading Frescobaldi Extensions
+
+Starting with the current release 3.1
+@uref{http://frescobaldi.org, Frescobaldi} has an extension API that
+allows the easy integration of arbitrary functionality in the editing
+environment.  These could range from, say, document statistics and
+accounting functionality to fancy features like a built-in video chat
+client or a stock market ticker.
+
+We would welcome project suggestions about arbitrary Frescobaldi
+extensions of appropriate complexity that add substantial functionality
+for working with LilyPond scores which might not be suitable to be
+included into Frescobaldi itself.
+
+As @emph{suggestions} and examples may serve: a project management
+extension that can manage repetoire of arbitrary complexity, handle
+the generation of template files and the compilation process. Or an
+extension to manage the @uref{https://openlilylib.org, openLilyLib}
+infrastructure.
+
+@emph{Difficulty:} easy/medium
+
+@emph{Requirements:} Python, (PyQt)
+
+@emph{Optional:} GUILE Scheme (if functionality involves LilyPond
+internals)
+
+@emph{Mentor:} @emph{Urs Liska}
 
 
 @subsubheading Support for Style Sheets
@@ -238,33 +241,6 @@ contemporary notation techniques
 @emph{Recommended:} sense of building hierarchical frameworks
 
 @emph{Mentors:} @emph{NN,} Urs Liska
-
-
-@subsubheading Extending scholarly editing features
-
-The @uref{https://github.com/openlilylib/scholarly, scholarLY}
-extension package provides a powerful infrastructure for scholarly
-editions. With this package it is possible to encode annotations,
-to export them for critical reports, or to produce editorial
-highlighting in the score (e.g. dashing, parenthesizing etc.),
-footnotes etc.
-
-As a GSoC project substantial enhancements can be made to the
-package. Our suggestion is an infrastructure to encode
-@emph{variants} (alternative readings, corrections, regularizations),
-as outlined in
-@uref{https://github.com/openlilylib/scholarly/issues/61, this issue}.
-It could naturally be extended by the ability to produce music examples
-from annotations, to be used in footnotes or reports.
-
-@emph{Difficulty:} medium
-
-@emph{Requirements:} Scheme, ability to assess an extensive existing
-package
-
-@emph{Recommended:} familiarity with scholarly editing
-
-@emph{Mentors:} Jeffery Shivers, Urs Liska
 
 
 @subsubheading  Implement a System to Handle Scores System by System

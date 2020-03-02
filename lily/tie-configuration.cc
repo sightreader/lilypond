@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 #include "warn.hh"
 #include "tie-formatting-problem.hh"
 #include "bezier.hh"
+
+using std::string;
 
 int
 Tie_configuration::compare (Tie_configuration const &a,
@@ -73,7 +75,7 @@ Bezier
 Tie_configuration::get_untransformed_bezier (Tie_details const &details) const
 {
   Real l = attachment_x_.length ();
-  if (isinf (l) || isnan (l))
+  if (!std::isfinite (l))
     {
       programming_error ("Inf or NaN encountered");
       l = 1.0;
@@ -136,7 +138,7 @@ Ties_configuration::reset_score ()
 }
 
 void
-Ties_configuration::add_tie_score (Real s, int i, const string &desc)
+Ties_configuration::add_tie_score (Real s, vsize i, const string &desc)
 {
   assert (!scored_);
   score_ += s;

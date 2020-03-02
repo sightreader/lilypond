@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
   Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 class Score_performer : public Performer_group
 {
 public:
-  DECLARE_CLASSNAME (Score_performer);
+  OVERRIDE_CLASS_NAME (Score_performer);
   Performance *performance_;
 
   ~Score_performer ();
@@ -42,12 +42,12 @@ protected:
   void one_time_step (SCM);
 
   /* Engraver_group_engraver interface */
-  virtual void connect_to_context (Context *);
-  virtual void disconnect_from_context ();
-  virtual void initialize ();
-  virtual void announce_element (Audio_element_info);
-  virtual void derived_mark () const;
-  virtual void acknowledge_audio_elements ();
+  void connect_to_context (Context *) override;
+  void disconnect_from_context () override;
+  void initialize () override;
+  void announce_element (Audio_element_info) override;
+  void derived_mark () const override;
+  void acknowledge_audio_elements () override;
 private:
   void header (Midi_stream &);
 

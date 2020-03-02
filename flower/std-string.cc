@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015  Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2006--2020  Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,59 +21,8 @@
 #include "string-convert.hh"
 #include "std-vector.hh"
 
-string
-to_string (const string &s)
-{
-  return s;
-}
-
-string
-to_string (char c, int n)
-{
-  return string (max (n, 0), c);
-}
-
-string
-to_string (double f, char const *format)
-{
-  return String_convert::double_string (f, format);
-}
-
-string
-to_string (int i, char const *format)
-{
-  return String_convert::int_string (i, format);
-}
-
-string
-to_string (bool b)
-{
-  return String_convert::bool_string (b);
-}
-
-string
-to_string (long b)
-{
-  return String_convert::long_string (b);
-}
-
-string
-to_string (long unsigned b)
-{
-  return String_convert::unsigned_long_string (b);
-}
-
-string
-to_string (unsigned u)
-{
-  return String_convert::unsigned_string (u);
-}
-
-string
-to_string (I64 b, char const *format)
-{
-  return String_convert::i64_string (b, format);
-}
+using std::string;
+using std::vector;
 
 string
 to_string (char const *format, ...)
@@ -104,17 +53,6 @@ replace_all (string *str, char find, char replace)
   for (ssize i = str->find (find); i != NPOS; i = str->find (find, i + 1))
     (*str)[i] = replace;
   return *str;
-}
-
-char *
-string_copy (const string &s)
-{
-  ssize len = s.length ();
-  char *dest = new char[len + 1];
-  copy (s.begin (), s.end (), dest);
-  dest[len] = 0;
-
-  return dest;
 }
 
 vector<string>

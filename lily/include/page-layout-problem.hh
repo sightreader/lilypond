@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2009--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2009--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,13 +37,15 @@ public:
   static bool read_spacing_spec (SCM spec, Real *dest, SCM sym);
   static bool is_spaceable (Grob *g);
   static SCM get_details (Grob *g);
-  static vector<Grob *> get_footnote_grobs (SCM lines);
+  static std::vector<Grob *> get_footnote_grobs (SCM lines);
   static vsize get_footnote_count (SCM lines);
   static SCM get_footnotes_from_lines (SCM lines);
-  static void add_footnotes_to_lines (SCM lines, int counter, Paper_book *pb);
+  static void add_footnotes_to_lines (SCM lines, vsize counter, Paper_book *pb);
   static Stencil get_footnote_separator_stencil (Output_def *paper);
-  static SCM get_spacing_spec (Grob *before, Grob *after, bool pure, int start, int end);
-  static Real get_fixed_spacing (Grob *before, Grob *after, int spaceable_index, bool pure, int start, int end);
+  static SCM get_spacing_spec (Grob *before, Grob *after, bool pure,
+                               vsize start, vsize end);
+  static Real get_fixed_spacing (Grob *before, Grob *after, int spaceable_index,
+                                 bool pure, vsize start, vsize end);
   static Stencil add_footnotes_to_footer (SCM footnotes, Stencil foot, Paper_book *pb);
 
 protected:
@@ -52,24 +54,24 @@ protected:
 
   void solve_rod_spring_problem (bool ragged, Real fixed_force);
   SCM find_system_offsets ();
-  void distribute_loose_lines (vector<Grob *> const &, vector<Real> const &, Real, Real);
+  void distribute_loose_lines (std::vector<Grob *> const &, std::vector<Real> const &, Real, Real);
 
-  static void build_system_skyline (vector<Grob *> const &, vector<Real> const &, Skyline *up, Skyline *down);
-  static vector<Grob *> filter_dead_elements (vector<Grob *> const &);
+  static void build_system_skyline (std::vector<Grob *> const &, std::vector<Real> const &, Skyline *up, Skyline *down);
+  static std::vector<Grob *> filter_dead_elements (std::vector<Grob *> const &);
 
   // This is a union (in spirit).
   // Either staves must be empty or prob must be null.
   typedef struct Element
   {
     Prob *prob;
-    vector<Grob *> staves;
-    vector<Real> min_offsets;
+    std::vector<Grob *> staves;
+    std::vector<Real> min_offsets;
     // Store the appropriate '*-*-spacing 'padding, and skyline-distance,
     //  considering indentation, from the previous system.
     Real min_distance;
     Real padding;
 
-    Element (vector<Grob *> const &a, vector<Real> const &o, Real m, Real p)
+    Element (std::vector<Grob *> const &a, std::vector<Real> const &o, Real m, Real p)
     {
       staves = a;
       min_offsets = o;
@@ -82,6 +84,9 @@ protected:
     {
       prob = p;
       padding = pad;
+      // min_distance is initialized to avoid -Wmaybe-uninitialized warnings
+      // which are possibly false positives.
+      min_distance = 0;
     }
   } Element;
 
@@ -93,9 +98,9 @@ protected:
   static void alter_spring_from_spacing_spec (SCM spec, Spring *spring);
   static void mark_as_spaceable (Grob *);
 
-  vector<Spring> springs_;
-  vector<Element> elements_;
-  vector<Real> solution_;
+  std::vector<Spring> springs_;
+  std::vector<Element> elements_;
+  std::vector<Real> solution_;
   Real force_;
   Skyline bottom_skyline_;
   Real bottom_loose_baseline_;

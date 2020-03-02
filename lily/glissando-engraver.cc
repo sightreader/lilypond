@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2000--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,9 @@
 
 #include "translator.icc"
 
+using std::string;
+using std::vector;
+
 class Glissando_engraver : public Engraver
 {
 public:
@@ -37,7 +40,7 @@ public:
 protected:
   void listen_glissando (Stream_event *);
   void acknowledge_note_column (Grob_info);
-  virtual void finalize ();
+  void finalize () override;
 
   void stop_translation_timestep ();
   void process_music ();

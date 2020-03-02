@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2000--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,6 +26,9 @@
 
 #include "translator.icc"
 
+using std::string;
+using std::vector;
+
 enum Pedal_type {SOSTENUTO, SUSTAIN, UNA_CORDA, NUM_PEDAL_TYPES};
 
 /**
@@ -43,7 +46,7 @@ public:
   TRANSLATOR_DECLARATIONS (Piano_pedal_performer);
 
 protected:
-  virtual void initialize ();
+  void initialize () override;
   static const char *pedal_type_str (int t);
   void process_music ();
   void stop_translation_timestep ();

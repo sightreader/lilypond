@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ class Score_engraver : public Engraver_group
 {
   System *system_;
 
-  vector<Grob *> elems_;
+  std::vector<Grob *> elems_;
   Paper_score *pscore_;
 
   void typeset_all ();
@@ -37,17 +37,18 @@ protected:
   void one_time_step (SCM);
 
   /* Engraver_group_engraver interface */
-  virtual void connect_to_context (Context *);
-  virtual void disconnect_from_context ();
-  virtual void initialize ();
-  virtual void finalize ();
-  virtual void announce_grob (Grob_info, Direction dir, Context *reroute_context = 0);
+  void connect_to_context (Context *) override;
+  void disconnect_from_context () override;
+  void initialize () override;
+  void finalize () override;
+  void announce_grob (Grob_info, Direction dir,
+                      Context *reroute_context = 0) override;
   void stop_translation_timestep ();
 
   /*
     Translator interface
   */
-  virtual void derived_mark () const;
+  void derived_mark () const override;
 
 public:
   Score_engraver ();

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ Moment
 Repeated_music::alternatives_get_length (Music *me, bool fold)
 {
   SCM alternative_list = alternatives (me);
-  int len = scm_ilength (alternative_list);
+  long len = scm_ilength (alternative_list);
   if (len <= 0)
     return 0;
 

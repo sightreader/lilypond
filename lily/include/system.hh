@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,11 @@
 #ifndef SYSTEM_HH
 #define SYSTEM_HH
 
+#include <cstdint>
+#include <limits>
+
 #include "column-x-positions.hh"
+#include "paper-column.hh"
 #include "spanner.hh"
 #include "skyline.hh"
 
@@ -31,7 +35,12 @@
 */
 class System : public Spanner
 {
-  int rank_;
+public:
+  // See Substitution_entry.
+  typedef int16_t rank_type;
+
+private:
+  rank_type rank_;
   Grob_array *all_elements_;
   void init_elements ();
   friend class Paper_score;     // ugh.
@@ -39,15 +48,21 @@ class System : public Spanner
 
 public:
   Paper_score *paper_score () const;
-  Grob *get_extremal_staff (Direction dir, Interval const &);
   Grob *get_neighboring_staff (Direction dir, Grob *vertical_axis_group, Interval_t<int> bounds);
-  Grob *get_pure_bound (Direction dir, int start, int end);
-  Grob *get_maybe_pure_bound (Direction dir, bool pure, int start, int end);
-  int get_rank () const;
-  vector<Real> get_footnote_heights_in_range (vsize st, vsize end);
-  vector<Real> get_in_note_heights_in_range (vsize st, vsize end);
-  vector<Real> internal_get_note_heights_in_range (vsize st, vsize end, bool foot);
-  vector<Grob *> get_footnote_grobs_in_range (vsize st, vsize end);
+  bool accepts_as_bound_item (const Item *) const override;
+  bool accepts_as_bound_paper_column (const Paper_column *) const override;
+  Paper_column *get_bound (Direction d) const {
+    // This is safe because only Paper_columns are accepted as bounds.
+    return static_cast<Paper_column *> (Spanner::get_bound (d));
+  }
+  Paper_column *get_pure_bound (Direction dir, vsize start, vsize end);
+  Paper_column *get_maybe_pure_bound (Direction dir, bool pure,
+                                      vsize start, vsize end);
+  rank_type get_rank () const { return rank_; }
+  std::vector<Real> get_footnote_heights_in_range (vsize st, vsize end);
+  std::vector<Real> get_in_note_heights_in_range (vsize st, vsize end);
+  std::vector<Real> internal_get_note_heights_in_range (vsize st, vsize end, bool foot);
+  std::vector<Grob *> get_footnote_grobs_in_range (vsize st, vsize end);
   vsize num_footnotes ();
   void do_break_substitution_and_fixup_refpoints ();
   void post_processing ();
@@ -69,14 +84,23 @@ public:
 
   System (SCM);
   System (System const &);
+  System *original () const
+  {
+    // safe: if there is an original, it is because this was cloned from it
+    return static_cast<System *> (Spanner::original ());
+  }
 
-  int element_count () const;
-  int spanner_count () const;
+  vsize element_count () const;
+  vsize spanner_count () const;
 
-  void break_into_pieces (vector<Column_x_positions> const &);
+  void break_into_pieces (std::vector<Column_x_positions> const &);
 
-  vector<Item *> broken_col_range (Item const *, Item const *) const;
-  vector<Grob *> used_columns () const;
+  std::vector<Item *> broken_col_range (Item const *, Item const *) const;
+  std::vector<Paper_column *> used_columns_in_range (vsize start, vsize end) const;
+  std::vector<Paper_column *> used_columns () const
+  {
+    return used_columns_in_range(0, std::numeric_limits<vsize>::max ());
+  }
   Paper_column *column (vsize i) const;
 
   void add_column (Paper_column *);
@@ -89,8 +113,8 @@ public:
   void collect_labels (Grob const *, SCM *);
 
 protected:
-  virtual void derived_mark () const;
-  virtual Grob *clone () const;
+  void derived_mark () const override;
+  System *clone () const override { return new System (*this); }
 
 private:
   Interval part_of_line_pure_height (vsize start, vsize end, bool begin);

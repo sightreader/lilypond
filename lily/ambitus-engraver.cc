@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Juergen Reuter <reuter@ipd.uka.de>
+  Copyright (C) 2002--2020 Juergen Reuter <reuter@ipd.uka.de>
 
   Han-Wen Nienhuys <hanwen@xs4all.nl
 
@@ -32,6 +32,7 @@
 #include "separation-item.hh"
 #include "staff-symbol-referencer.hh"
 #include "stream-event.hh"
+#include "text-interface.hh"
 
 #include "translator.icc"
 
@@ -44,8 +45,8 @@ protected:
 
   void process_music ();
   void stop_translation_timestep ();
-  virtual void finalize ();
-  virtual void derived_mark () const;
+  void finalize () override;
+  void derived_mark () const override;
 
 private:
   void create_ambitus ();
@@ -114,19 +115,31 @@ Ambitus_engraver::stop_translation_timestep ()
 {
   if (ambitus_ && !is_typeset_)
     {
+      SCM c_pos = get_property ("middleCPosition");
+      SCM cue_pos = get_property ("middleCCuePosition");
+      SCM ottavation = get_property ("ottavation");
+
       /*
-       * Evaluate middleCPosition not until now, since otherwise we
-       * may then oversee a clef that is defined in a staff context if
-       * we are in a voice context; middleCPosition would then be
-       * assumed to be 0.
-
-       * Don't use middleCPosition as this may be thwarted by a cue
-       * starting here.  middleCOffset is not affected by cue clefs.
+       * \ottava reads middleCClefPosition and overrides
+       * middleCOffset and middleCPosition ignoring previously
+       * set values. Therefore
+       *  1. \ottava is incompatible with non-default offset and
+       *     position values (is this a bug? TODO)
+       *  2. we don’t need to read these values and revert the
+       *     changes \ottava made but we can just read the
+       *     clef position.
        */
-      int clef_pos = robust_scm2int (get_property ("middleCClefPosition"), 0);
-      int offset = robust_scm2int (get_property ("middleCOffset"), 0);
+      if (Text_interface::is_markup (ottavation))
+        start_c0_ = robust_scm2int (get_property ("middleCClefPosition"), 0);
+      else if (scm_is_integer (c_pos) && !scm_is_integer (cue_pos))
+        start_c0_ = scm_to_int (c_pos);
+      else
+        {
+          int clef_pos = robust_scm2int (get_property ("middleCClefPosition"), 0);
+          int offset = robust_scm2int (get_property ("middleCOffset"), 0);
+          start_c0_ = clef_pos + offset;
+        }
 
-      start_c0_ = clef_pos + offset;
       start_key_sig_ = get_property ("keyAlterations");
 
       is_typeset_ = true;
@@ -164,12 +177,21 @@ Ambitus_engraver::finalize ()
       Grob *accidental_placement
         = make_item ("AccidentalPlacement", accidentals_[DOWN]->self_scm ());
 
+      SCM layout_proc = get_property ("staffLineLayoutFunction");
+
       for (DOWN_and_UP (d))
         {
           Pitch p = pitch_interval_[d];
+
+          int pos;
+          if (ly_is_procedure (layout_proc))
+            pos = scm_to_int (scm_call_1 (layout_proc, p.smobbed_copy ()));
+          else
+            pos = p.steps ();
+
           heads_[d]->set_property ("cause", causes_[d]->self_scm ());
           heads_[d]->set_property ("staff-position",
-                                   scm_from_int (start_c0_ + p.steps ()));
+                                   scm_from_int (start_c0_ + pos));
 
           SCM handle = scm_assoc (scm_cons (scm_from_int (p.get_octave ()),
                                             scm_from_int (p.get_notename ())),
@@ -238,8 +260,11 @@ ADD_TRANSLATOR (Ambitus_engraver,
 
                 /* read */
                 "keyAlterations "
+                "middleCPosition "
                 "middleCClefPosition "
-                "middleCOffset ",
+                "middleCCuePosition "
+                "middleCOffset "
+                "staffLineLayoutFunction ",
 
                 /* write */
                 ""

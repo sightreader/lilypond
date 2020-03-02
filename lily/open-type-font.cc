@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 
 #include <cstdio>
 
-using namespace std;
 
 #include FT_TRUETYPE_TABLES_H
 
@@ -39,6 +38,9 @@ using namespace std;
 #include "international.hh"
 #include "modified-font-metric.hh"
 #include "warn.hh"
+
+using std::map;
+using std::string;
 
 FT_Byte *
 load_table (char const *tag_str, FT_Face face, FT_ULong *length)
@@ -234,9 +236,11 @@ get_postscript_name (FT_Face face)
         }
     }
 
-  debug_output (_f ("Replace font name from %s to %s.",
-                    face_ps_name.c_str (), ret.c_str ()));
-
+  if (face_ps_name != ret)
+    {
+      debug_output (_f ("Subsitute font name: %s => %s", face_ps_name.c_str (),
+                        ret.c_str ()));
+    }
   FT_Done_Face (cff_face);
 
   return ret;
@@ -348,7 +352,7 @@ Open_type_font::get_indexed_char_dimensions (size_t signed_idx) const
 
   Box b = get_unscaled_indexed_char_dimensions (signed_idx);
 
-  b.scale (design_size () / Real (face_->units_per_EM));
+  b.scale (design_size () / static_cast<Real> (face_->units_per_EM));
   return b;
 }
 
@@ -362,10 +366,8 @@ size_t
 Open_type_font::name_to_index (string nm) const
 {
   char *nm_str = (char *) nm.c_str ();
-  if (FT_UInt idx = FT_Get_Name_Index (face_, nm_str))
-    return (size_t) idx;
-
-  return (size_t) - 1;
+  FT_UInt idx = FT_Get_Name_Index (face_, nm_str);
+  return (idx != 0) ? idx : GLYPH_INDEX_INVALID;
 }
 
 Box
@@ -420,7 +422,7 @@ Open_type_font::design_size () const
                                quickly. --hwn.
                              */
                              scm_from_unsigned_integer (1));
-  return scm_to_double (entry) * Real (point_constant);
+  return scm_to_double (entry) * static_cast<Real> (point_constant);
 }
 
 SCM

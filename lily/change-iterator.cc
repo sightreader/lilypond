@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "international.hh"
 #include "music.hh"
 #include "warn.hh"
+
+using std::string;
 
 void
 Change_iterator::error (const string &reason)
@@ -63,8 +65,11 @@ Change_iterator::change_to (Music_iterator &it,
                              ly_symbol2scm ("context"), dest->self_scm ());
         }
       else
-        /* FIXME: constant error message.  */
-        it.get_music ()->origin ()->warning (_ ("cannot find context to switch to"));
+        {
+          Input *ori = it.get_music ()->origin ();
+          ori->warning (_f ("cannot find context to change to: %s",
+                            Context::diagnostic_id (to_type, to_id).c_str ()));
+        }
     }
   else if (it.get_outlet ()->is_alias (to_type))
     {

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys
+  Copyright (C) 1996--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ public:
     coordinate_a_[X_AXIS] = coordinate_a_[Y_AXIS] = 0.0;
   }
 
-  string to_string () const;
+  std::string to_string () const;
 
   Offset &mirror (Axis a)
   {

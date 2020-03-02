@@ -1,4 +1,4 @@
-\version "2.16.0"
+\version "2.21.0"
 \header {
     texidoc = "The prefix of additional chord pitches can be tuned with
 @code{additionalPitchPrefix}."

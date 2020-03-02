@@ -1115,7 +1115,7 @@ Das heißt, dass die Funktion nicht funktioniert, wenn einer der
 Kontexte explizit eine Bezeichnung erhält, um ihm etwa Gesangstext
 zuweisen zu können.
 
-@code{\partCombine...}-Funktionen können nicht innerhalb von 
+@code{\partCombine...}-Funktionen können nicht innerhalb von
 @code{\times}- oder @code{\relative}-Umgebungen geschrieben werden.
 
 Wenn @code{printPartCombineTexts} definiert ist und die zwei Stimmen

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include "simple-spacer.hh"
 #include "system.hh"
 #include "warn.hh"
+
+using std::vector;
 
 /*
   We use the following optimal substructure. Let W (A) be our weight function.
@@ -93,7 +95,7 @@ Constrained_breaking::calc_subproblem (vsize start, vsize sys, vsize brk)
         continue; /* the first line cannot have its first break after the beginning */
 
       Line_details const &cur = lines_.at (brk, j + start_col);
-      if (isinf (cur.force_))
+      if (std::isinf (cur.force_))
         break;
 
       Real prev_f = 0;
@@ -104,7 +106,7 @@ Constrained_breaking::calc_subproblem (vsize start, vsize sys, vsize brk)
           prev_f = st.at (j, sys - 1).details_.force_;
           prev_dem = st.at (j, sys - 1).demerits_;
         }
-      if (isinf (prev_dem))
+      if (std::isinf (prev_dem))
         continue;
 
       Real dem = combine_demerits (cur.force_, prev_f) + prev_dem + cur.break_penalty_;
@@ -126,8 +128,10 @@ Constrained_breaking::space_line (vsize i, vsize j)
   bool ragged_right = to_boolean (pscore_->layout ()->c_variable ("ragged-right"));
   bool ragged_last = to_boolean (pscore_->layout ()->c_variable ("ragged-last"));
 
-  vector<Grob *> line (all_.begin () + breaks_[i],
-                       all_.begin () + breaks_[j] + 1);
+  // TODO: Unnecessary copy.  Could pass iterators/indices to
+  // get_line_configuration().  What is the real cost?
+  vector<Paper_column *> const line (all_.begin () + breaks_[i],
+                                     all_.begin () + breaks_[j] + 1);
   Interval line_dims = line_dimensions_int (pscore_->layout (), i);
   bool last = j == breaks_.size () - 1;
   bool ragged = ragged_right || (last && ragged_last);
@@ -178,7 +182,7 @@ Constrained_breaking::solve (vsize start, vsize end, vsize sys_count)
     {
       for (vsize brk = end_brk; brk != VPOS; brk--)
         {
-          if (!isinf (st.at (brk, sys).details_.force_))
+          if (!std::isinf (st.at (brk, sys).details_.force_))
             {
               if (brk != end_brk)
                 {
@@ -260,7 +264,7 @@ Constrained_breaking::line_details (vsize start, vsize end, vsize sys_count)
     {
       for (vsize brk = end_brk; brk != VPOS; brk--)
         {
-          if (!isinf (st.at (brk, sys).details_.force_))
+          if (!std::isinf (st.at (brk, sys).details_.force_))
             {
               if (brk != end_brk)
                 {
@@ -301,7 +305,7 @@ Constrained_breaking::line_details (vsize start, vsize end, vsize sys_count)
   return ret;
 }
 
-int
+vsize
 Constrained_breaking::min_system_count (vsize start, vsize end)
 {
   vsize sys_count;
@@ -316,14 +320,14 @@ Constrained_breaking::min_system_count (vsize start, vsize end)
         {
           resize (sys_count + 3);
         }
-      if (!isinf (st.at (brk, sys_count).details_.force_))
+      if (!std::isinf (st.at (brk, sys_count).details_.force_))
         return sys_count + 1;
     }
   /* no possible breaks satisfy constraints */
   return 1;
 }
 
-int
+vsize
 Constrained_breaking::max_system_count (vsize start, vsize end)
 {
   vsize brk = (end >= start_.size ()) ? breaks_.size () - 1 : starting_breakpoints_[end];
@@ -457,9 +461,9 @@ Constrained_breaking::initialize (Paper_score *ps)
           Line_details &line = lines_.at (j, i);
 
           line.force_ = forces[i * breaks_.size () + j];
-          if (ragged && last && !isinf (line.force_))
+          if (ragged && last && !std::isinf (line.force_))
             line.force_ = (line.force_ < 0 && j > i + 1) ? infinity_f : 0;
-          if (isinf (line.force_))
+          if (std::isinf (line.force_))
             break;
 
           fill_line_details (&line, i, j);
@@ -485,14 +489,14 @@ Constrained_breaking::initialize (Paper_score *ps)
 void
 Constrained_breaking::fill_line_details (Line_details *const out, vsize start, vsize end)
 {
-  int start_rank = Paper_column::get_rank (all_[breaks_[start]]);
-  int end_rank = Paper_column::get_rank (all_[breaks_[end]]);
+  int start_rank = all_[breaks_[start]]->get_rank ();
+  int end_rank = all_[breaks_[end]]->get_rank ();
   System *sys = pscore_->root_system ();
   Interval begin_of_line_extent = sys->begin_of_line_pure_height (start_rank, end_rank);
   Interval rest_of_line_extent = sys->rest_of_line_pure_height (start_rank, end_rank);
   bool last = (end == breaks_.size () - 1);
 
-  Grob *c = all_[breaks_[end]];
+  Paper_column *c = all_[breaks_[end]];
   out->last_column_ = c;
   out->break_penalty_ = robust_scm2double (c->get_property ("line-break-penalty"), 0);
   out->page_penalty_ = robust_scm2double (c->get_property ("page-break-penalty"), 0);
@@ -509,12 +513,12 @@ Constrained_breaking::fill_line_details (Line_details *const out, vsize start, v
                                           out->turn_permission_);
 
   begin_of_line_extent = (begin_of_line_extent.is_empty ()
-                          || isnan (begin_of_line_extent[LEFT])
-                          || isnan (begin_of_line_extent[RIGHT]))
+                          || std::isnan (begin_of_line_extent[LEFT])
+                          || std::isnan (begin_of_line_extent[RIGHT]))
                          ? Interval (0, 0) : begin_of_line_extent;
   rest_of_line_extent = (rest_of_line_extent.is_empty ()
-                         || isnan (rest_of_line_extent[LEFT])
-                         || isnan (rest_of_line_extent[RIGHT]))
+                         || std::isnan (rest_of_line_extent[LEFT])
+                         || std::isnan (rest_of_line_extent[RIGHT]))
                         ? Interval (0, 0) : rest_of_line_extent;
   out->shape_ = Line_shape (begin_of_line_extent, rest_of_line_extent);
   out->padding_ = last ? score_system_padding_ : system_system_padding_;
@@ -623,7 +627,7 @@ Line_details::spring_length (Line_details const &next_line) const
   // the top of next_line's extent.
   Real refpoint_dist = tallness_ + refpoint_extent_[DOWN] - next_line.refpoint_extent_[UP];
   Real space = next_line.title_ ? title_space_ : space_;
-  return max (0.0, space - refpoint_dist);
+  return std::max (0.0, space - refpoint_dist);
 }
 
 Line_shape::Line_shape (Interval begin, Interval rest)
@@ -635,7 +639,7 @@ Line_shape::Line_shape (Interval begin, Interval rest)
 Line_shape
 Line_shape::piggyback (Line_shape mount, Real padding) const
 {
-  Real elevation = max (begin_[UP] - mount.begin_[DOWN], rest_[UP] - mount.rest_[DOWN]);
+  Real elevation = std::max (begin_[UP] - mount.begin_[DOWN], rest_[UP] - mount.rest_[DOWN]);
   Interval begin = Interval (begin_[DOWN], elevation + mount.begin_[UP] + padding);
   Interval rest = Interval (rest_[DOWN], elevation + mount.rest_[UP] + padding);
   return Line_shape (begin, rest);

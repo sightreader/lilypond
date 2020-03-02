@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Nicolas Sceaux <nicolas.sceaux@free.fr>
+  Copyright (C) 2007--2020 Nicolas Sceaux <nicolas.sceaux@free.fr>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -37,7 +37,8 @@ private:
 public:
   Page_marker ();
   Page_marker (Page_marker const &);
-  VIRTUAL_COPY_CONSTRUCTOR (Page_marker, Page_marker);
+  VIRTUAL_CLASS_NAME (Page_marker);
+  virtual Page_marker *clone () const { return new Page_marker (*this); }
 
   void set_permission (SCM symbol, SCM permission);
   void set_label (SCM label);

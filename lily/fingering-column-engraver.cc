@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2012 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2012--2020 Mike Solomon <mike@mikesolomon.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "item.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    Find potentially colliding scripts, and put them in a

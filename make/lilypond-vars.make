@@ -53,10 +53,14 @@ LILYPOND_BOOK_LILYPOND_FLAGS+= \
 -dfont-export-dir=$(top-build-dir)/out-fonts -O TeX-GS
 endif
 
-ifdef QUIET_BUILD
-LILYPOND_BOOK_WARN = --loglevel=NONE
+ifdef SILENT
+  LILYPOND_BOOK_WARN = --loglevel=WARN
 else
-LILYPOND_BOOK_WARN = --loglevel=WARN
+ ifdef VERBOSE
+  LILYPOND_BOOK_WARN = --loglevel=PROGRESS
+ else
+  LILYPOND_BOOK_WARN = --loglevel=BASIC
+ endif
 endif
 
 LILYPOND_BOOK_INFO_IMAGES_DIR = $(if $(INFO_IMAGES_DIR),--info-images-dir=$(INFO_IMAGES_DIR),)

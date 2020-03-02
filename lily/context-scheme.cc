@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -187,15 +187,8 @@ LY_DEFINE (ly_context_find, "ly:context-find",
   LY_ASSERT_SMOB (Context, context, 1);
   LY_ASSERT_TYPE (ly_is_symbol, name, 2);
   Context *tr = unsmob<Context> (context);
-
-  while (tr)
-    {
-      if (tr->is_alias (name))
-        return tr->self_scm ();
-      tr = tr->get_parent_context ();
-    }
-
-  return SCM_BOOL_F;
+  tr = find_context_above (tr, name);
+  return tr ? tr->self_scm () : SCM_BOOL_F;
 }
 
 LY_DEFINE (ly_context_now, "ly:context-now",

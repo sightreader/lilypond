@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys
+  Copyright (C) 2006--2020 Han-Wen Nienhuys
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 #include <cctype>
 #include <cstdio>
-using namespace std;
 
 #include "articulations.hh"
 #include "context.hh"
@@ -30,6 +29,8 @@ using namespace std;
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    make (guitar-like) tablature note
@@ -47,7 +48,7 @@ public:
 protected:
   void stop_translation_timestep ();
   void process_music ();
-  virtual void derived_mark () const;
+  void derived_mark () const override;
   void listen_note (Stream_event *);
   void listen_string_number (Stream_event *);
   void listen_fingering (Stream_event *);

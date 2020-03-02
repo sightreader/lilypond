@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "warn.hh"
 #include "simple-spacer.hh"
 
+using std::vector;
+
 LY_DEFINE (ly_solve_spring_rod_problem, "ly:solve-spring-rod-problem",
            4, 1, 0, (SCM springs, SCM rods, SCM length, SCM ragged),
            "Solve a spring and rod problem for @var{count} objects, that"
@@ -40,7 +42,7 @@ LY_DEFINE (ly_solve_spring_rod_problem, "ly:solve-spring-rod-problem",
            " non-satisfied constraints) followed by @var{spring-count}+1"
            " positions of the objects.")
 {
-  int len = scm_ilength (springs);
+  long len = scm_ilength (springs);
   if (len == 0)
     return scm_list_2 (scm_from_double (0.0), scm_from_double (0.0));
 

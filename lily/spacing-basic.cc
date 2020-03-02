@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 Spring
 Spacing_spanner::standard_breakable_column_spacing (Grob *me, Item *l, Item *r, Spacing_options const *options)
 {
-  Real min_dist = max (0.0, Paper_column::minimum_distance (l, r));
+  Real min_dist = std::max (0.0, Paper_column::minimum_distance (l, r));
 
   if (Paper_column::is_breakable (l) && Paper_column::is_breakable (r))
     {
@@ -80,14 +80,14 @@ Spacing_spanner::standard_breakable_column_spacing (Grob *me, Item *l, Item *r, 
   return Spring (ideal, min_dist);
 }
 
-Moment *
-get_measure_length (Grob *column)
+static Moment *
+get_measure_length (Paper_column *column)
 {
   Grob *sys = column->get_parent (X_AXIS);
 
   extract_grob_set (sys, "columns", cols);
 
-  vsize col_idx = Paper_column::get_rank (column);
+  vsize col_idx = column->get_rank ();
 
   do
     {
@@ -104,8 +104,8 @@ get_measure_length (Grob *column)
 /* Basic spring based on duration alone */
 Spring
 Spacing_spanner::note_spacing (Grob * /* me */,
-                               Grob *lc,
-                               Grob *rc,
+                               Paper_column *lc,
+                               Paper_column *rc,
                                Spacing_options const *options)
 {
   Moment shortest_playing_len = 0;
@@ -136,13 +136,13 @@ Spacing_spanner::note_spacing (Grob * /* me */,
 
   if (Moment *measure_len = get_measure_length (lc))
     {
-      delta_t = min (delta_t, *measure_len);
+      delta_t = std::min (delta_t, *measure_len);
 
       /*
         The following is an extra safety measure, such that
         the length of a mmrest event doesn't cause havoc.
       */
-      shortest_playing_len = min (shortest_playing_len, *measure_len);
+      shortest_playing_len = std::min (shortest_playing_len, *measure_len);
     }
 
   Spring ret;
@@ -153,11 +153,12 @@ Spacing_spanner::note_spacing (Grob * /* me */,
       Real min = options->increment_;  // canonical notehead width
 
       // The portion of that spring proportional to the time between lc and rc
-      Real fraction = (delta_t.main_part_ / shortest_playing_len.main_part_);
+      auto fraction = static_cast<Real> (delta_t.main_part_
+                                         / shortest_playing_len.main_part_);
       ret = Spring (fraction * len, fraction * min);
 
       // Stretch proportional to the space between canonical bare noteheads
-      ret.set_inverse_stretch_strength (fraction * max (0.1, (len - min)));
+      ret.set_inverse_stretch_strength (fraction * std::max (0.1, (len - min)));
     }
   else if (delta_t.grace_part_)
     {

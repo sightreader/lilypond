@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +28,9 @@
 #include "warn.hh"
 
 #include "translator.icc"
+
+using std::string;
+using std::vector;
 
 class Page_turn_event
 {
@@ -61,7 +64,7 @@ public:
         return ret;
       }
 
-    Real new_pen = max (penalty_, penalty.penalty_);
+    Real new_pen = std::max (penalty_, penalty.penalty_);
 
     if (duration_[LEFT] < penalty.duration_[LEFT])
       ret.push_back (Page_turn_event (duration_[LEFT], penalty.duration_[LEFT], permission_, penalty_));
@@ -104,7 +107,7 @@ public:
   TRANSLATOR_DECLARATIONS (Page_turn_engraver);
   void stop_translation_timestep ();
   void start_translation_timestep ();
-  void finalize ();
+  void finalize () override;
 };
 
 Page_turn_engraver::Page_turn_engraver (Context *c)
@@ -119,8 +122,8 @@ Page_turn_engraver::Page_turn_engraver (Context *c)
 Grob *
 Page_turn_engraver::breakable_column (Page_turn_event const &brk)
 {
-  vsize start = lower_bound (breakable_moments_, brk.duration_[LEFT], less<Rational> ());
-  vsize end = upper_bound (breakable_moments_, brk.duration_[RIGHT], less<Rational> ());
+  vsize start = lower_bound (breakable_moments_, brk.duration_[LEFT], std::less<Rational> ());
+  vsize end = upper_bound (breakable_moments_, brk.duration_[RIGHT], std::less<Rational> ());
 
   if (start == breakable_moments_.size ())
     return NULL;
@@ -158,7 +161,7 @@ Page_turn_engraver::acknowledge_note_head (Grob_info gi)
   if (rest_begin_ < now_mom ())
     {
       Real pen = penalty ((now_mom () - rest_begin_).main_part_);
-      if (!isinf (pen))
+      if (!std::isinf (pen))
         automatic_breaks_.push_back (Page_turn_event (rest_begin_.main_part_,
                                                       now_mom ().main_part_,
                                                       ly_symbol2scm ("allow"), 0));
@@ -320,7 +323,7 @@ Page_turn_engraver::finalize ()
       if (pc)
         {
           SCM perm = max_permission (pc->get_property ("page-turn-permission"), brk.permission_);
-          Real pen = min (robust_scm2double (pc->get_property ("page-turn-penalty"), infinity_f), brk.penalty_);
+          Real pen = std::min (robust_scm2double (pc->get_property ("page-turn-penalty"), infinity_f), brk.penalty_);
           pc->set_property ("page-turn-permission", perm);
           pc->set_property ("page-turn-penalty", scm_from_double (pen));
         }

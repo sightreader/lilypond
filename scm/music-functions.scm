@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+;;;; Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;                 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -687,7 +687,7 @@ making it possible to @code{\\revert} to any previous value afterwards."
 (define-safe-public (descend-to-context m context #:optional id mods)
   "Like @code{context-spec-music}, but only descending."
   (let ((cm (context-spec-music m context id mods)))
-    (ly:music-set-property! cm 'descend-only #t)
+    (ly:music-set-property! cm 'search-direction DOWN)
     cm))
 
 (define-public (make-non-relative-music mus)
@@ -783,6 +783,17 @@ inside of and outside of chord construct."
         (override-head-style heads style)
         music
         (revert-head-style heads)))))
+
+(define-public (get-tweakable-music mus)
+  "When tweaking music, returns a list of music expressions where the
+tweaks should be applied.  Relevant for music wrappers and event
+chords."
+  (cond ((music-is-of-type? mus 'music-wrapper-music)
+         (get-tweakable-music (ly:music-property mus 'element)))
+        ((music-is-of-type? mus 'event-chord)
+         (filter (music-type-predicate 'rhythmic-event)
+                 (ly:music-property mus 'elements)))
+        (else (list mus))))
 
 (define-public (set-mus-properties! m alist)
   "Set all of @var{alist} as properties of @var{m}."

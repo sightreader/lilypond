@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #include "warn.hh"
 
 #include <cmath>
+
+using std::string;
 
 Pitch::Pitch (int o, int n, Rational a)
 {
@@ -145,7 +147,7 @@ pitch_interval (Pitch const &from, Pitch const &to)
 }
 
 /* FIXME
-   Merge with *pitch->text* funcs in chord-name.scm  */
+   Merge with *note-name->string* in chord-name.scm  */
 char const *accname[] = {"eses", "eseh", "es", "eh", "",
                          "ih", "is", "isih", "isis"
                         };
@@ -154,11 +156,18 @@ string
 Pitch::to_string () const
 {
   int n = (notename_ + 2) % scale_->step_count ();
-  string s = ::to_string (char (n + 'a'));
+  string s (1, static_cast<char> (n + 'a'));
   Rational qtones = alteration_ * Rational (4, 1);
-  int qt = int (rint (Real (qtones)));
+  size_t qt = size_t (rint (static_cast<Real> (qtones) + 4.0));
+  if (qt < sizeof (accname) / sizeof (accname[0]))
+    {
+      s += string (accname[qt]);
+    }
+  else
+    {
+      s += "??";
+    }
 
-  s += string (accname[qt + 4]);
   if (octave_ >= 0)
     {
       int o = octave_ + 1;
@@ -169,7 +178,7 @@ Pitch::to_string () const
     {
       int o = (-octave_) - 1;
       while (o--)
-        s += ::to_string (',');
+        s += ',';
     }
 
   return s;

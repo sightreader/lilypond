@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;                 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -110,12 +110,13 @@
         (non-musical . #t)
         (space-alist . (
                         (cue-end-clef . (extra-space . 0.5))
-                        (clef . (extra-space . 0.5))
+                        (clef . (extra-space . 1.15))
                         (cue-clef . (extra-space . 0.5))
-                        (key-signature . (extra-space . 0.0))
-                        (staff-bar . (extra-space . 0.0))
-                        (time-signature . (extra-space . 0.0))
-                        (first-note . (fixed-space . 0.0))))
+                        (key-signature . (extra-space . 1.15))
+                        (staff-bar . (extra-space . 1.15))
+                        (time-signature . (extra-space . 1.15))
+                        (right-edge . (extra-space . 0.5))
+                        (first-note . (extra-space . 1.15))))
         (X-extent . ,ly:axis-group-interface::width)
         (Y-extent . ,axis-group-interface::height)
         (meta . ((class . Item)
@@ -172,6 +173,7 @@
      . (
         (cross-staff . ,ly:arpeggio::calc-cross-staff)
         (direction . ,LEFT)
+        (line-thickness . 1)
         (padding . 0.5)
         (positions . ,ly:arpeggio::calc-positions)
         (protrusion . 0.4)
@@ -179,6 +181,7 @@
         (side-axis . ,X)
         (staff-position . 0.0)
         (stencil . ,ly:arpeggio::print)
+        (thickness . 1)
         (X-extent . ,ly:arpeggio::width)
         (Y-extent . ,(grob::unpure-Y-extent-from-stencil ly:arpeggio::pure-height))
         (X-offset . ,ly:side-position-interface::x-aligned-side)
@@ -230,6 +233,7 @@
         (non-musical . #t)
         (rounded . #f)
         (space-alist . (
+                        (ambitus . (extra-space . 1.0))
                         (time-signature . (extra-space . 0.75))
                         (custos . (minimum-space . 2.0))
                         (clef . (extra-space . 1.0))
@@ -442,6 +446,7 @@
      . (
         (axes . (,X))
         (break-align-anchor . ,ly:break-aligned-interface::calc-average-anchor)
+        (break-align-anchor-alignment . ,ly:break-aligned-interface::calc-joint-anchor-alignment)
         (break-visibility . ,ly:break-aligned-interface::calc-break-visibility)
         (X-extent . ,ly:axis-group-interface::width)
         (meta . ((class . Item)
@@ -555,6 +560,7 @@
         (non-musical . #t)
         (space-alist . ((cue-clef . (extra-space . 2.0))
                         (staff-bar . (extra-space . 0.7))
+                        (ambitus . (extra-space . 1.15))
                         (key-cancellation . (minimum-space . 3.5))
                         (key-signature . (minimum-space . 3.5))
                         (time-signature . (minimum-space . 4.2))
@@ -1265,6 +1271,7 @@
         (flat-positions . (2 3 4 2 1 2 1))
         (sharp-positions . (4 5 4 2 3 2 3))
         (space-alist . (
+                        (ambitus . (extra-space . 1.15))
                         (time-signature . (extra-space . 1.15))
                         (staff-bar . (extra-space . 1.1))
                         (cue-clef . (extra-space . 0.5))
@@ -1339,7 +1346,7 @@
         (break-visibility . ,begin-of-line-visible)
         (non-musical . #t)
         (space-alist . (
-                        (ambitus . (extra-space . 2.0))
+                        (ambitus . (extra-space . 1.15))
                         (breathing-sign . (minimum-space . 0.0))
                         (cue-end-clef . (extra-space . 0.8))
                         (clef . (extra-space . 0.8))
@@ -1372,6 +1379,7 @@
         (staff-padding . 0.25)
         (stencil . ,ly:tuplet-bracket::print)
         (thickness . 1.6)
+        (tuplet-slur . #f)
         (X-positions . ,ly:tuplet-bracket::calc-x-positions)
         (meta . ((class . Spanner)
                  (interfaces . (line-interface
@@ -1460,6 +1468,27 @@
         (meta . ((class . Spanner)
                  (interfaces . (font-interface
                                 measure-counter-interface
+                                outside-staff-interface
+                                self-alignment-interface
+                                side-position-interface
+                                text-interface))))))
+
+    (MeasureSpanner
+     . (
+        (connect-to-neighbor . ,ly:measure-spanner::calc-connect-to-neighbors)
+        (direction . ,UP)
+        (edge-height . (0.7 . 0.7))
+        (outside-staff-priority . 750)
+        (self-alignment-X . ,CENTER)
+        (side-axis . ,Y)
+        (spacing-pair . (staff-bar . staff-bar))
+        (staff-padding . 0.5)
+        (stencil . ,ly:measure-spanner::print)
+        (Y-offset . ,side-position-interface::y-aligned-side)
+        (meta . ((class . Spanner)
+                 (interfaces . (font-interface
+                                measure-spanner-interface
+                                line-interface
                                 outside-staff-interface
                                 self-alignment-interface
                                 side-position-interface
@@ -1594,6 +1623,26 @@
                                 side-position-interface
                                 text-interface))))))
 
+    (MultiMeasureRestScript
+     . (
+        (direction . ,UP)
+        (outside-staff-padding . 0)
+        (outside-staff-priority . 40)
+        (parent-alignment-X . ,CENTER)
+        (self-alignment-X . ,CENTER)
+        (staff-padding . 0.25)
+        (stencil . ,ly:script-interface::print)
+        (vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
+        (X-offset . ,ly:self-alignment-interface::aligned-on-x-parent)
+        (Y-extent . ,grob::always-Y-extent-from-stencil)
+        (Y-offset . ,side-position-interface::y-aligned-side)
+        (meta . ((class . Spanner)
+                 (interfaces . (font-interface
+                                multi-measure-interface
+                                outside-staff-interface
+                                script-interface
+                                self-alignment-interface
+                                side-position-interface))))))
 
     (NonMusicalPaperColumn
      . (
@@ -1703,6 +1752,7 @@
         (dash-fraction . 0.3)
         (direction . ,UP)
         (edge-height . (0 . 0.8))
+        (font-series . bold)
         (font-shape . italic)
         (minimum-length . 0.3)
         (outside-staff-priority . 400)
@@ -1848,7 +1898,7 @@
         (outside-staff-horizontal-padding . 0.2)
         (outside-staff-priority . 1500)
         (padding . 0.8)
-        (self-alignment-X . ,CENTER)
+        (self-alignment-X . ,break-alignable-interface::self-alignment-opposite-of-anchor)
         (stencil . ,ly:text-interface::print)
         (vertical-skylines . ,grob::always-vertical-skylines-from-stencil)
         (X-offset . ,self-alignment-interface::self-aligned-on-breakable)
@@ -2124,8 +2174,8 @@
         (details
          . (
             ;; 3.5 (or 3 measured from note head) is standard length
-            ;; 32nd, 64th, 128th flagged stems should be longer
-            (lengths . (3.5 3.5 3.5 4.25 5.0 6.0))
+            ;; 32nd, 64th, ..., 1024th flagged stems should be longer
+            (lengths . (3.5 3.5 3.5 4.25 5.0 6.0 7.0 8.0 9.0))
 
             ;; FIXME.  3.5 yields too long beams (according to Ross and
             ;; looking at Baerenreiter examples) for a number of common
@@ -2520,6 +2570,7 @@
         (extra-spacing-width . (0.0 . 0.8))
         (non-musical . #t)
         (space-alist . (
+                        (ambitus . (extra-space . 1.0))
                         (cue-clef . (extra-space . 1.5))
                         (first-note . (fixed-space . 2.0))
                         (right-edge . (extra-space . 0.5))
@@ -2631,6 +2682,7 @@
         (staff-padding . 0.25)
         (stencil . ,ly:tuplet-bracket::print)
         (thickness . 1.6)
+        (tuplet-slur . #f)
         (vertical-skylines . ,grob::unpure-vertical-skylines-from-stencil)
         (X-positions . ,ly:tuplet-bracket::calc-x-positions)
 

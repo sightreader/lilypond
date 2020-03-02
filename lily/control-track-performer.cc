@@ -9,6 +9,8 @@
 
 #include "translator.icc"
 
+using std::string;
+
 class Control_track_performer : public Performer
 {
   Audio_staff *control_track_;
@@ -17,9 +19,9 @@ class Control_track_performer : public Performer
   TRANSLATOR_DECLARATIONS (Control_track_performer);
 protected:
 
-  virtual void initialize ();
-  virtual void acknowledge_audio_element (Audio_element_info info);
-  virtual void finalize ();
+  void initialize () override;
+  void acknowledge_audio_element (Audio_element_info info) override;
+  void finalize () override;
 };
 
 Control_track_performer::Control_track_performer (Context *c)

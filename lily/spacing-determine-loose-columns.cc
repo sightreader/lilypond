@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #include "grob-array.hh"
 #include "break-align-interface.hh"
 #include "warn.hh"
+
+using std::vector;
 
 /*
   Return whether COL is fixed to its neighbors by some kind of spacing
@@ -139,8 +141,8 @@ Spacing_spanner::set_distances_for_loose_col (Grob *me, Grob *c,
 
   for (LEFT_and_RIGHT (d))
     {
-      Item *lc = dynamic_cast<Item *> ((d == LEFT) ? next_door[LEFT] : c);
-      Item *rc = dynamic_cast<Item *> (d == LEFT ? c : next_door[RIGHT]);
+      Paper_column *lc = dynamic_cast<Paper_column *> ((d == LEFT) ? next_door[LEFT] : c);
+      Paper_column *rc = dynamic_cast<Paper_column *> (d == LEFT ? c : next_door[RIGHT]);
 
       extract_grob_set (lc, "spacing-wishes", wishes);
       for (vsize k = wishes.size (); k--;)
@@ -159,13 +161,13 @@ Spacing_spanner::set_distances_for_loose_col (Grob *me, Grob *c,
               Spring base = note_spacing (me, lc, rc, options);
               Spring spring = Note_spacing::get_spacing (sp, rc, base, options->increment_);
 
-              dists[d] = max (dists[d], spring.min_distance ());
+              dists[d] = std::max (dists[d], spring.min_distance ());
             }
           else if (has_interface<Staff_spacing> (sp))
             {
               Spring spring = Staff_spacing::get_spacing (sp, rc, 0.0);
 
-              dists[d] = max (dists[d], spring.min_distance ());
+              dists[d] = std::max (dists[d], spring.min_distance ());
             }
           else
             programming_error ("Subversive spacing wish");
@@ -186,16 +188,27 @@ Spacing_spanner::set_distances_for_loose_col (Grob *me, Grob *c,
 */
 void
 Spacing_spanner::prune_loose_columns (Grob *me,
-                                      vector<Grob *> *cols,
+                                      vector<Paper_column *> *cols,
                                       Spacing_options *options)
 {
-  vector<Grob *> newcols;
-  for (vsize i = 0; i < cols->size (); i++)
+  // rp is a post-increment read pointer running over the *cols
+  // vector, wp is a post-increment write pointer.  They start in sync
+  // but become different once a loose column gets pruned.
+  vector<Paper_column *>::const_iterator rp;
+  vector<Paper_column *>::iterator wp;
+  // We keep track of the last column in a separate variable instead
+  // of reading it from rp since it could already have been
+  // overwritten via wp.  Very strictly speaking, this can only happen
+  // when rp and wp are still in lockstep and thus the overwritten
+  // value would be unchanged, but let's not get too icky but stick
+  // with a pattern that works for more use cases.
+  Paper_column * lastcol = 0;
+  for (rp = wp = cols->begin (); rp != cols->end ();)
     {
-      Grob *c = cols->at (i);
+      Paper_column *c = *rp++;
 
-      bool loose = (i > 0 && i + 1 < cols->size ())
-                   && is_loose_column (cols->at (i - 1), c, cols->at (i + 1), options);
+      bool loose = (lastcol && rp != cols->end ()
+                    && is_loose_column (lastcol, c, *rp, options));
 
       /* Breakable columns never get pruned; even if they are loose,
         their broken pieces are not.  However, we mark them so that
@@ -230,8 +243,8 @@ Spacing_spanner::prune_loose_columns (Grob *me,
           if (!right_neighbor || !left_neighbor)
             {
               c->programming_error ("Cannot determine neighbors for floating column.");
-              c->set_object ("between-cols", scm_cons (cols->at (i - 1)->self_scm (),
-                                                       cols->at (i + 1)->self_scm ()));
+              c->set_object ("between-cols", scm_cons (lastcol->self_scm (),
+                                                       (*rp)->self_scm ()));
             }
           else
             {
@@ -249,17 +262,19 @@ Spacing_spanner::prune_loose_columns (Grob *me,
         }
 
       else
-        newcols.push_back (c);
+        *wp++ = c;
+
+      lastcol = c;
     }
 
-  *cols = newcols;
+  cols->erase (wp, cols->end ());
 }
 
 /*
   Set neighboring columns determined by the spacing-wishes grob property.
 */
 void
-Spacing_spanner::set_explicit_neighbor_columns (vector<Grob *> const &cols)
+Spacing_spanner::set_explicit_neighbor_columns (vector<Paper_column *> const &cols)
 {
   for (vsize i = 0; i < cols.size (); i++)
     {
@@ -267,15 +282,15 @@ Spacing_spanner::set_explicit_neighbor_columns (vector<Grob *> const &cols)
       for (vsize j = wishes.size (); j--;)
         {
           Item *wish = dynamic_cast<Item *> (wishes[j]);
-          Item *left_col = wish->get_column ();
-          int left_rank = Paper_column::get_rank (left_col);
+          Paper_column *left_col = wish->get_column ();
+          int left_rank = left_col->get_rank ();
           int min_right_rank = INT_MAX;
 
           extract_grob_set (wish, "right-items", right_items);
           for (vsize k = right_items.size (); k--;)
             {
-              Item *right_col = dynamic_cast<Item *> (right_items[k])->get_column ();
-              int right_rank = Paper_column::get_rank (right_col);
+              Paper_column *right_col = dynamic_cast<Item *> (right_items[k])->get_column ();
+              int right_rank = right_col->get_rank ();
 
               if (right_rank < min_right_rank)
                 {
@@ -283,8 +298,8 @@ Spacing_spanner::set_explicit_neighbor_columns (vector<Grob *> const &cols)
                   min_right_rank = right_rank;
                 }
 
-              Grob *old_left_neighbor = unsmob<Grob> (right_col->get_object ("left-neighbor"));
-              if (!old_left_neighbor || left_rank > Paper_column::get_rank (old_left_neighbor))
+              Paper_column *old_left_neighbor = unsmob<Paper_column> (right_col->get_object ("left-neighbor"));
+              if (!old_left_neighbor || left_rank > old_left_neighbor->get_rank ())
                 right_col->set_object ("left-neighbor", left_col->self_scm ());
             }
         }
@@ -297,11 +312,11 @@ Spacing_spanner::set_explicit_neighbor_columns (vector<Grob *> const &cols)
   Why only these? --jneem
 */
 void
-Spacing_spanner::set_implicit_neighbor_columns (vector<Grob *> const &cols)
+Spacing_spanner::set_implicit_neighbor_columns (vector<Paper_column *> const &cols)
 {
   for (vsize i = 0; i < cols.size (); i++)
     {
-      Item *it = dynamic_cast<Item *> (cols[i]);
+      Paper_column *it = cols[i];
       if (!Paper_column::is_breakable (it) && !Paper_column::is_musical (it))
         continue;
 

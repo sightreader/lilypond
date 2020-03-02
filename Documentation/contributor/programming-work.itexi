@@ -1510,9 +1510,8 @@ introduced into the output.  This process is described in
 Initial test:
 
 @example
-make [-j@var{X}]
+make clean                     @emph{## when needed (see below)}
 make [-j@var{X} CPU_COUNT=@var{X}] test-baseline
-make [-j@var{X} CPU_COUNT=@var{X}] check
 @end example
 
 @item
@@ -1521,10 +1520,9 @@ Edit/compile/test cycle:
 @example
 @emph{## edit source files, then...}
 
-make clean                       @emph{## only if needed (see below)}
-make [-j@var{X}]                       @emph{## only if needed (see below)}
-make [-j@var{X} CPU_COUNT=@var{X}] test-redo @emph{## redo files differing from baseline}
-make [-j@var{X} CPU_COUNT=@var{X}] check
+make clean                     @emph{## when needed (see below)}
+make [-j@var{X}]                     @emph{## when needed (see below)}
+make [-j@var{X} CPU_COUNT=@var{X}] check   @emph{## retest cases differing from baseline}
 @end example
 
 @item
@@ -1535,30 +1533,30 @@ make test-clean
 @end example
 @end itemize
 
-If you modify any source files that have to be compiled (such as
-@file{.cc} or @file{.hh} files in @file{flower/} or @file{lily/}),
-then you must run @command{make} before @command{make test-redo},
-so @command{make} can compile the modified files and relink all
-the object files.  If you only modify files which are interpreted,
-like those in the @file{scm/} and @file{ly/} directories, then
-@command{make} is not needed before @command{make test-redo}.
+If you have modified LilyPond source files that have to be
+compiled (such as @file{.cc} or @file{.hh} files in @file{flower/}
+or @file{lily/}), the regression-test targets automatically
+rebuild LilyPond before running the tests.
 
-Also, if you modify any font definitions in the @file{mf/}
-directory then you must run @command{make clean} and
-@command{make} before running @command{make test-redo}.  This will
-recompile everything, whether modified or not, and takes a lot
-longer.
+If you have modified any font definitions in the @file{mf/}
+directory, then you must run @command{make@tie{}clean} before
+running regression tests.  This works around incomplete makefile
+dependencies.  The subsequent regression-test target rebuilds all
+of LilyPond and the fonts before running the tests.
 
-Running @command{make@tie{}check} will leave an HTML page
+Regression-test targets do not necessarily rebuild everything that
+a simple @command{make} builds.  You may omit @command{make} from
+the debugging cycle to save time, but it is still important to run
+@command{make} before committing.
+
+Running @command{make@tie{}check} leaves an HTML page
 @file{out/test-results/index.html}.  This page shows all the
 important differences that your change introduced, whether in the
 layout, MIDI, performance or error reporting.
 
-You only need to use @command{make test-clean} to start from
-scratch, prior to running @command{make@tie{}test-baseline}. To
-check new modifications, all that is needed is to repeat
-@command{make@tie{}test-redo} and @command{make@tie{}test-check}
-(not forgetting @command{make} if needed).
+You only need to use @command{make@tie{}test-clean} to retest all
+cases.  To retest mismatching cases only, all that is needed is to
+repeat @command{make@tie{}check}.
 
 
 
@@ -2487,12 +2485,12 @@ Part_combine_iterator to communicate with Part_combine_engraver.
 
 @subheading Deciding between context and music properties
 
-I'm adding a property to affect how \autochange works.  It seems to
-me that it should be a context property, but the Scheme autochange
+I'm adding a property to affect how \autoChange works.  It seems to
+me that it should be a context property, but the Scheme autoChange
 procedure has a Music argument.  Does this mean I should use
 a Music property?
 
-\autochange is one of these extra strange beasts: it requires
+\autoChange is one of these extra strange beasts: it requires
 look-ahead to decide when to change staves.  This is achieved by
 running the interpreting step twice (see
 @file{scm/part-combiner.scm} , at the bottom), and
@@ -2502,11 +2500,11 @@ where-to-switch list, your must affect the code in
 make-autochange-music (@file{scm/part-combiner.scm}).
 That code is called directly from the parser and there are no
 official "parsing properties" yet, so there is no generic way
-to tune \autochange.  We would have to invent something new
+to tune \autoChange.  We would have to invent something new
 for this, or add a separate argument,
 
 @example
-    \autochange #around-central-C ..music..
+    \autoChange #around-central-C ..music..
 @end example
 
 @noindent
@@ -2579,7 +2577,7 @@ Take a look at @file{lily/music.cc} to see where the transposition takes place.
 @subheading How do I tell about the execution environment?
 
 I get lost figuring out what environment the code I'm looking at is in when it
-executes.  I found both the C++ and Scheme autochange code.  Then I was trying
+executes.  I found both the C++ and Scheme autoChange code.  Then I was trying
 to figure out where the code got called from.  I finally figured out that the
 Scheme procedure was called before the C++ iterator code, but it took me a
 while to figure that out, and I still didn't know who did the calling in the

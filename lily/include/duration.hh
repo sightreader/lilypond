@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ struct Duration : public Simple_smob<Duration>
   Duration ();
   Duration (int, int);
   Duration (Rational, bool scale);
-  string to_string () const;
+  std::string to_string () const;
 
   Duration compressed (Rational) const;
   Rational get_length () const;

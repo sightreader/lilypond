@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,27 +28,29 @@
 #include "moment.hh"
 #include "spacing-options.hh"
 
+using std::vector;
+
 /* Find the loose columns in POSNS, and drape them around the columns
    specified in BETWEEN-COLS.  */
 void
 set_loose_columns (System *which, Column_x_positions const *posns)
 {
-  int loose_col_count = posns->loose_cols_.size ();
+  vsize loose_col_count = posns->loose_cols_.size ();
   if (!loose_col_count)
     return;
 
-  for (int i = 0; i < loose_col_count; i++)
+  for (vsize i = 0; i < loose_col_count; i++)
     dynamic_cast<Paper_column *> (posns->loose_cols_[i])->set_system (which);
 
-  for (int i = 0; i < loose_col_count; i++)
+  for (vsize i = 0; i < loose_col_count; i++)
     {
       int divide_over = 1;
-      Item *loose = dynamic_cast<Item *> (posns->loose_cols_[i]);
+      Paper_column *loose = static_cast<Paper_column *> (posns->loose_cols_[i]);
 
-      Item *left = 0;
-      Item *right = 0;
+      Paper_column *left = 0;
+      Paper_column *right = 0;
 
-      vector<Item *> clique;
+      vector<Paper_column *> clique;
       while (1)
         {
           SCM between = loose->get_object ("between-cols");
@@ -93,19 +95,19 @@ set_loose_columns (System *which, Column_x_positions const *posns)
       else if (right->find_prebroken_piece (LEFT)
                && right->find_prebroken_piece (LEFT)->get_system () == which)
         right = right->find_prebroken_piece (LEFT);
-      else if (Paper_column::get_rank (which->get_bound (RIGHT)) < Paper_column::get_rank (right))
+      else if (which->get_bound (RIGHT)->get_rank () < right->get_rank ())
         right = which->get_bound (RIGHT);
       else
         {
           clique.back ()->programming_error ("Loose column does not have right side to attach to.");
-          System *base_system = dynamic_cast<System *> (which->original ());
-          int j = Paper_column::get_rank (clique.back ()) + 1;
-          int end_rank = Paper_column::get_rank (which->get_bound (RIGHT));
+          System *base_system = which->original ();
+          int j = clique.back ()->get_rank () + 1;
+          int end_rank = which->get_bound (RIGHT)->get_rank ();
           extract_grob_set (base_system, "columns", base_cols);
           for (; j < end_rank; j++)
             {
               if (base_cols[j]->get_system () == which)
-                right = dynamic_cast<Item *> ((Grob *)base_cols[j]);
+                right = dynamic_cast<Paper_column *> (base_cols[j]);
             }
         }
 
@@ -173,8 +175,8 @@ set_loose_columns (System *which, Column_x_positions const *posns)
             }
 
           Real loose_col_horizontal_length = loose_col->extent (loose_col, X_AXIS).length ();
-          base_note_space = max (base_note_space, loose_col_horizontal_length);
-          tight_note_space = max (tight_note_space, loose_col_horizontal_length);
+          base_note_space = std::max (base_note_space, loose_col_horizontal_length);
+          tight_note_space = std::max (tight_note_space, loose_col_horizontal_length);
 
           clique_spacing.push_back (base_note_space);
           clique_tight_spacing.push_back (tight_note_space);
@@ -193,7 +195,7 @@ set_loose_columns (System *which, Column_x_positions const *posns)
           sum_tight_spacing += clique_tight_spacing[j];
           sum_spacing += clique_spacing[j];
         }
-      Real scale_factor = max (0.0, min (1.0, (permissible_distance - left_padding - sum_tight_spacing) / (sum_spacing - sum_tight_spacing)));
+      Real scale_factor = std::max (0.0, std::min (1.0, (permissible_distance - left_padding - sum_tight_spacing) / (sum_spacing - sum_tight_spacing)));
       for (vsize j = clique.size () - 2; j > 0; j--)
         {
           Paper_column *clique_col = dynamic_cast<Paper_column *> (clique[j]);

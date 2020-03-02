@@ -1164,28 +1164,19 @@ and color of dots.
     \fret-diagram "6-x;5-x;4-o;3-2;2-3;1-2;"
   }
   d4 d d
-  fis^\markup {
-    \override #'(size . 0.75) {
-      \override #'(finger-code . below-string) {
-        \fret-diagram-verbose #'((place-fret 6 2 1) (barre 6 1 2)
-                                 (place-fret 5 4 3)
-                                 (place-fret 4 4 4)
-                                 (place-fret 3 3 2)
-                                 (place-fret 2 2 1)
-                                 (place-fret 1 2 1))
-      }
-    }
-  }
+  fis^\markup
+    \override #'((size . 0.75) (finger-code . below-string))
+    \fret-diagram-verbose #'((place-fret 6 2 1) (barre 6 1 2)
+                             (place-fret 5 4 3)
+                             (place-fret 4 4 4)
+                             (place-fret 3 3 2)
+                             (place-fret 2 2 1)
+                             (place-fret 1 2 1))
   fis4 fis fis
-  c^\markup {
-    \override #'(dot-radius . 0.35) {
-      \override #'(finger-code . in-dot) {
-        \override #'(dot-color . white) {
-          \fret-diagram-terse "x;3-1-(;5-2;5-3;5-4;3-1-);"
-        }
-      }
-    }
-  }
+  c^\markup
+    \override #'((dot-radius . 0.35) (finger-code . in-dot)
+                 (dot-color . white))
+    \fret-diagram-terse "x;3-1-(;5-2;5-3;5-4;3-1-);"
   c4 c c
 }
 @end lilypond
@@ -1895,8 +1886,6 @@ LilyPond は、符頭を三角形に変更することで、@c
 @unnumberedsubsubsec パワー コードの指示
 @translationof Indicating power chords
 
-@funindex 
-
 @cindex power chords (パワー コード)
 @cindex chords, power (パワー コード)
 
@@ -1906,16 +1895,17 @@ LilyPond は、符頭を三角形に変更することで、@c
 @lilypond[quote,ragged-right,verbatim]
 ChordsAndSymbols = {
   \chordmode {
-    
     e,,1:5
-    a,,1:5.8
+    a,,:5.8
+    \set TabStaff.restrainOpenStrings = ##t
     \set minimumFret = #8
-    c,1:5
-    f,1:5.8
+    c,:5
+    f,:5.8
   }
-  \set minimumFret = #5
-  <a, e>1
-  <g d' g'>1
+  \set minimumFret = #2
+  \set restrainOpenStrings = ##f
+  <a, e> <a cis' e'>
+  <g d' g'>
 }
 \score {
   <<
@@ -1928,33 +1918,6 @@ ChordsAndSymbols = {
     }
     \new TabStaff {
       \ChordsAndSymbols
-    }
-  >>
-}
-@end lilypond
-
-パワー コードのシンボルは、@c
-他の一般的な和音修飾子が使用されると自動的に Off になります:
-
-@lilypond[quote,ragged-right,verbatim]
-mixedChords = \chordmode {
-  c,1
-  
-  b,,1:5
-  fis,,1:5.8
-  g,,1:m
-}
-\score {
-  <<
-    \new ChordNames {
-      \mixedChords
-    }
-    \new Staff {
-      \clef "treble_8"
-      \mixedChords
-    }
-    \new TabStaff {
-      \mixedChords
     }
   >>
 }

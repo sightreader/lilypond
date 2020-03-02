@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "midi-stream.hh"
 
 #include <cerrno>
-using namespace std;
 
 #include "international.hh"
 #include "main.hh"
@@ -29,6 +28,8 @@ using namespace std;
 #include "program-option.hh"
 #include "string-convert.hh"
 #include "warn.hh"
+
+using std::string;
 
 Midi_stream::Midi_stream (const string &file_name)
 {

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -42,7 +42,9 @@ public:
   Sources *sources_;
   Duration default_duration_;
   int default_tremolo_type_;
-  string output_basename_;
+  std::string output_basename_;
+  
+  // See ly:parser-clone. TODO: are the offsets in chars or in bytes?
   SCM closures_;
 
   int fatal_error_;
@@ -57,14 +59,14 @@ public:
 
   void clear ();
   void do_init_file ();
-  void include_string (const string &ly_code);
-  void parse_file (const string &init, const string &name, const string &out_name);
-  void parse_string (const string &ly_code);
-  SCM parse_string_expression (const string &ly_code, const string &filename, int line);
-  void parser_error (const string&);
-  void parser_error (Input const &, const string&);
+  void include_string (const std::string &ly_code);
+  void parse_file (const std::string &init, const std::string &name, const std::string &out_name);
+  void parse_string (const std::string &ly_code);
+  SCM parse_string_expression (const std::string &ly_code, const std::string &filename, int line);
+  void parser_error (const std::string&);
+  void parser_error (Input const &, const std::string&);
   // The following is called as yyerror
-  static void parser_error (Input const *i, Lily_parser *parser, SCM *, const string &s);
+  static void parser_error (Input const *i, Lily_parser *parser, SCM *, const std::string &s);
   void set_yydebug (bool);
 
   SCM make_scope () const;

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,12 +31,12 @@ public:
   Simple_spacer ();
 
   void solve (Real line_len, bool ragged);
-  void add_rod (int l, int r, Real dist);
+  void add_rod (vsize l, vsize r, Real dist);
   void add_spring (Spring const &);
-  Real range_ideal_len (int l, int r) const;
-  Real range_stiffness (int l, int r, bool stretch) const;
+  Real range_ideal_len (vsize l, vsize r) const;
+  Real range_stiffness (vsize l, vsize r, bool stretch) const;
   Real configuration_length (Real) const;
-  vector<Real> spring_positions () const;
+  std::vector<Real> spring_positions () const;
 
   void set_force (Real force);
   Real force () const;
@@ -47,9 +47,9 @@ public:
 private:
   Real expand_line ();
   Real compress_line ();
-  Real rod_force (int l, int r, Real dist);
+  Real rod_force (vsize l, vsize r, Real dist);
 
-  vector<Spring> springs_;
+  std::vector<Spring> springs_;
   Real line_len_;
   Real force_;
   bool ragged_;
@@ -57,12 +57,12 @@ private:
 };
 
 /* returns a vector of dimensions breaks.size () * breaks.size () */
-vector<Real> get_line_forces (vector<Grob *> const &columns,
+std::vector<Real> get_line_forces (std::vector<Paper_column *> const &columns,
                               Real line_len,
                               Real indent,
                               bool ragged);
 
-Column_x_positions get_line_configuration (vector<Grob *> const &columns,
+Column_x_positions get_line_configuration (std::vector<Paper_column *> const &columns,
                                            Real line_len,
                                            Real indent,
                                            bool ragged);

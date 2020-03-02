@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,9 @@
 #include "lilypond-version.hh"
 #include "string-convert.hh"
 #include "misc.hh"
+
+using std::string;
+using std::vector;
 
 Lilypond_version::Lilypond_version (int major, int minor, int patch)
 {
@@ -68,9 +71,9 @@ Lilypond_version::to_string () const
 {
   if (major_ < 0)
     return "invalid";
-  return ::to_string (major_)
-         + "." + ::to_string (minor_)
-         + "." + ::to_string (patch_);
+  return std::to_string (major_)
+         + "." + std::to_string (minor_)
+         + "." + std::to_string (patch_);
 }
 
 Lilypond_version::operator bool () const

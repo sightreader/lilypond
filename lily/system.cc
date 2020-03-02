@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,6 +16,9 @@
   You should have received a copy of the GNU General Public License
   along with LilyPond.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#include <algorithm>
+#include <limits>
 
 #include "system.hh"
 
@@ -41,6 +44,8 @@
 #include "warn.hh"
 #include "unpure-pure-container.hh"
 #include "lily-imports.hh"
+
+using std::vector;
 
 System::System (System const &src)
   : Spanner (src)
@@ -68,26 +73,23 @@ System::init_elements ()
   set_object ("all-elements", scm_arr);
 }
 
-Grob *
-System::clone () const
-{
-  return new System (*this);
-}
-
-int
+vsize
 System::element_count () const
 {
   return all_elements_->size ();
 }
 
-int
+static bool
+is_spanner (const Grob *g)
+{
+  return dynamic_cast<const Spanner *> (g);
+}
+
+vsize
 System::spanner_count () const
 {
-  int k = 0;
-  for (vsize i = all_elements_->size (); i--;)
-    if (dynamic_cast<Spanner *> (all_elements_->grob (i)))
-      k++;
-  return k;
+  const vector<Grob *> &grobs = all_elements_->array ();
+  return std::count_if (grobs.begin (), grobs.end (), is_spanner);
 }
 
 void
@@ -149,7 +151,7 @@ System::do_break_substitution_and_fixup_refpoints ()
   /*
     fixups must be done in broken line_of_scores, because new elements
     are put over there.  */
-  int count = 0;
+  vsize count = 0;
   for (vsize i = 0; i < broken_intos_.size (); i++)
     {
       Grob *se = broken_intos_[i];
@@ -192,7 +194,19 @@ System::do_break_substitution_and_fixup_refpoints ()
         }
     }
 
-  debug_output (_f ("Element count %d", count + element_count ()) + "\n");
+  debug_output (_f ("Element count %zu", count + element_count ()) + "\n");
+}
+
+bool
+System::accepts_as_bound_item (const Item *) const
+{
+  return false;
+}
+
+bool
+System::accepts_as_bound_paper_column (const Paper_column *) const
+{
+  return true;
 }
 
 SCM
@@ -214,10 +228,9 @@ System::get_paper_systems ()
 
       System *system = dynamic_cast<System *> (broken_intos_[i]);
 
-      scm_vector_set_x (lines, scm_from_int (i),
-                        system->get_paper_system ());
+      scm_c_vector_set_x (lines, i, system->get_paper_system ());
 
-      debug_output (::to_string (i) + "]", false);
+      debug_output (std::to_string (i) + "]", false);
     }
   return lines;
 }
@@ -239,9 +252,8 @@ System::get_footnote_grobs_in_range (vsize start, vsize end)
             spanner_placement = LEFT;
 
           pos = s->spanned_rank_interval ()[spanner_placement];
-          if (s->original ())
+          if (Spanner *orig = s->original ())
             {
-              Spanner *orig = dynamic_cast<Spanner *>(s->original ());
               at_bat = spanner_placement == LEFT ? orig->broken_intos_[0] : orig->broken_intos_.back ();
               pos = at_bat->spanned_rank_interval ()[RIGHT];
             }
@@ -435,14 +447,21 @@ System::break_into_pieces (vector<Column_x_positions> const &breaking)
 {
   for (vsize i = 0; i < breaking.size (); i++)
     {
-      System *system = dynamic_cast<System *> (clone ());
-      system->rank_ = broken_intos_.size ();
+      System *system = clone ();
 
-      vector<Grob *> c (breaking[i].cols_);
+      // set rank
+      {
+        vsize rank = broken_intos_.size ();
+        if (rank >= std::numeric_limits<rank_type>::max ())
+          programming_error ("too many systems");
+        system->rank_ = static_cast<rank_type> (rank);
+      }
+
+      vector<Paper_column *> const &c (breaking[i].cols_);
       pscore_->typeset_system (system);
 
-      int st = Paper_column::get_rank (c[0]);
-      int end = Paper_column::get_rank (c.back ());
+      int st = c[0]->get_rank ();
+      int end = c.back ()->get_rank ();
       Interval iv (pure_y_extent (this, st, end));
       system->set_property ("pure-Y-extent", ly_interval2scm (iv));
 
@@ -452,7 +471,7 @@ System::break_into_pieces (vector<Column_x_positions> const &breaking)
       for (vsize j = 0; j < c.size (); j++)
         {
           c[j]->translate_axis (breaking[i].config_[j], X_AXIS);
-          dynamic_cast<Paper_column *> (c[j])->set_system (system);
+          c[j]->set_system (system);
           /* collect the column labels */
           collect_labels (c[j], &system_labels);
         }
@@ -460,7 +479,7 @@ System::break_into_pieces (vector<Column_x_positions> const &breaking)
         Collect labels from any loose columns too: theses will be set on
         an empty bar line or a column which is otherwise unused mid-line
       */
-      vector<Grob *> loose (breaking[i].loose_cols_);
+      vector<Paper_column *> const &loose (breaking[i].loose_cols_);
       for (vsize j = 0; j < loose.size (); j++)
         collect_labels (loose[j], &system_labels);
 
@@ -500,10 +519,16 @@ System::add_column (Paper_column *p)
 void
 System::pre_processing ()
 {
-  for (vsize i = 0; i < all_elements_->size (); i++)
-    all_elements_->grob (i)->discretionary_processing ();
+  /*
+    Each breakable Item calls back to this System to append two clones of
+    itself (for before and after a break) to the vector.  We stop after
+    breaking the originals and don't invite the clones to break themselves.
+  */
+  vsize num_original_grobs = all_elements_->size ();
+  for (vsize i = 0; i < num_original_grobs; i++)
+    all_elements_->grob (i)->break_breakable_item (this);
 
-  debug_output (_f ("Grob count %d", element_count ()));
+  debug_output (_f ("Grob count %zu", element_count ()));
 
   /*
     order is significant: broken grobs are added to the end of the
@@ -630,20 +655,20 @@ System::get_paper_system ()
         }
     }
 
-  Grob *left_bound = get_bound (LEFT);
+  Paper_column *left_bound = get_bound (LEFT);
   SCM prop_init = left_bound->get_property ("line-break-system-details");
   Prob *pl = make_paper_system (prop_init);
   paper_system_set_stencil (pl, sys_stencil);
 
   /* information that the page breaker might need */
-  Grob *right_bound = get_bound (RIGHT);
+  Paper_column *right_bound = get_bound (RIGHT);
   pl->set_property ("vertical-skylines", get_property ("vertical-skylines"));
   pl->set_property ("page-break-permission", right_bound->get_property ("page-break-permission"));
   pl->set_property ("page-turn-permission", right_bound->get_property ("page-turn-permission"));
   pl->set_property ("page-break-penalty", right_bound->get_property ("page-break-penalty"));
   pl->set_property ("page-turn-penalty", right_bound->get_property ("page-turn-penalty"));
 
-  if (right_bound->original () == dynamic_cast<System *> (original ())->get_bound (RIGHT))
+  if (right_bound->original () == original ()->get_bound (RIGHT))
     pl->set_property ("last-in-score", SCM_BOOL_T);
 
   Interval staff_refpoints;
@@ -664,52 +689,55 @@ System::get_paper_system ()
 }
 
 vector<Item *>
-System::broken_col_range (Item const *left, Item const *right) const
+System::broken_col_range (Item const *left_item, Item const *right_item) const
 {
   vector<Item *> ret;
 
-  left = left->get_column ();
-  right = right->get_column ();
+  Paper_column *left_col = left_item->get_column ();
+  Paper_column *right_col = right_item->get_column ();
 
   extract_grob_set (this, "columns", cols);
 
-  vsize i = Paper_column::get_rank (left);
-  int end_rank = Paper_column::get_rank (right);
-  if (i < cols.size ())
-    i++;
-
-  while (i < cols.size ()
-         && Paper_column::get_rank (cols[i]) < end_rank)
+  vsize end_rank = std::min(static_cast<vsize> (right_col->get_rank ()),
+                            cols.size ());
+  for (vsize i = left_col->get_rank () + 1; i < end_rank; ++i)
     {
-      Paper_column *c = dynamic_cast<Paper_column *> (cols[i]);
-      if (Paper_column::is_breakable (c) && !c->get_system ())
-        ret.push_back (c);
-      i++;
+      if (Paper_column *c = dynamic_cast<Paper_column *> (cols[i]))
+        {
+          if (Paper_column::is_breakable (c) && !c->get_system ())
+            ret.push_back (c);
+        }
     }
 
   return ret;
 }
 
-/** Return all columns, but filter out any unused columns , since they might
-    disrupt the spacing problem. */
-vector<Grob *>
-System::used_columns () const
+/**
+    Return all columns in the given right-open range, but filter out any unused
+    columns, since they might disrupt the spacing problem.
+*/
+vector<Paper_column *>
+System::used_columns_in_range (vsize start, vsize end) const
 {
   extract_grob_set (this, "columns", ro_columns);
 
-  int last_breakable = ro_columns.size ();
+  vsize last_breakable = ro_columns.size ();
 
   while (last_breakable--)
     {
-      if (Paper_column::is_breakable (ro_columns [last_breakable]))
+      Paper_column *c = dynamic_cast<Paper_column *> (ro_columns[last_breakable]);
+      if (c && Paper_column::is_breakable (c))
         break;
     }
 
-  vector<Grob *> columns;
-  for (int i = 0; i <= last_breakable; i++)
+  end = std::min(end, last_breakable + 1);
+
+  vector<Paper_column *> columns;
+  for (vsize i = start; i < end; ++i)
     {
-      if (Paper_column::is_used (ro_columns[i]))
-        columns.push_back (ro_columns[i]);
+      Paper_column *c = dynamic_cast<Paper_column *> (ro_columns[i]);
+      if (c && Paper_column::is_used (c))
+        columns.push_back (c);
     }
 
   return columns;
@@ -729,12 +757,6 @@ Paper_score *
 System::paper_score () const
 {
   return pscore_;
-}
-
-int
-System::get_rank () const
-{
-  return rank_;
 }
 
 System *
@@ -769,31 +791,6 @@ System::get_vertical_alignment (SCM smob)
       return SCM_EOL;
     }
   return ret->self_scm ();
-}
-
-// Finds the furthest staff in the given direction whose x-extent
-// overlaps with the given interval.
-Grob *
-System::get_extremal_staff (Direction dir, Interval const &iv)
-{
-  Grob *align = unsmob<Grob> (get_object ("vertical-alignment"));
-  if (!align)
-    return 0;
-
-  extract_grob_set (align, "elements", elts);
-  vsize start = (dir == UP) ? 0 : elts.size () - 1;
-  vsize end = (dir == UP) ? elts.size () : VPOS;
-  for (vsize i = start; i != end; i += dir)
-    {
-      if (has_interface<Hara_kiri_group_spanner> (elts[i]))
-        Hara_kiri_group_spanner::consider_suicide (elts[i]);
-
-      Interval intersection = elts[i]->extent (this, X_AXIS);
-      intersection.intersect (iv);
-      if (elts[i]->is_live () && !intersection.is_empty ())
-        return elts[i];
-    }
-  return 0;
 }
 
 // Finds the neighboring staff in the given direction over bounds
@@ -954,12 +951,12 @@ System::calc_pure_height (SCM smob, SCM start_scm, SCM end_scm)
   return ly_interval2scm (begin);
 }
 
-Grob *
-System::get_pure_bound (Direction d, int start, int end)
+Paper_column *
+System::get_pure_bound (Direction d, vsize start, vsize end)
 {
-  vector<vsize> ranks = pscore_->get_break_ranks ();
-  vector<vsize> indices = pscore_->get_break_indices ();
-  vector<Grob *> cols = pscore_->get_columns ();
+  vector<vsize> const &ranks = pscore_->get_break_ranks ();
+  vector<vsize> const &indices = pscore_->get_break_indices ();
+  vector<Paper_column *> const &cols = pscore_->get_columns ();
 
   vsize target_rank = (d == LEFT ? start : end);
   vector<vsize>::const_iterator i
@@ -971,8 +968,8 @@ System::get_pure_bound (Direction d, int start, int end)
     return 0;
 }
 
-Grob *
-System::get_maybe_pure_bound (Direction d, bool pure, int start, int end)
+Paper_column *
+System::get_maybe_pure_bound (Direction d, bool pure, vsize start, vsize end)
 {
   return pure ? get_pure_bound (d, start, end) : get_bound (d);
 }
@@ -1049,6 +1046,8 @@ ADD_INTERFACE (System,
                "in-note-padding "
                "in-note-stencil "
                "labels "
+               "page-number "
                "pure-Y-extent "
+               "rank-on-page "
                "vertical-alignment "
               );

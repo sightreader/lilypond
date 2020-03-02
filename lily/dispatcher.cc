@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Erik Sandberg  <mandolaerik@gmail.com>
+  Copyright (C) 2005--2020 Erik Sandberg  <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,8 +35,6 @@ Dispatcher::Dispatcher ()
   dispatchers_ = SCM_EOL;
   listen_classes_ = SCM_EOL;
   smobify_self ();
-// TODO: use resizable hash (guile 1.8)
-//  listeners_ = scm_c_make_hash_table (0);
   listeners_ = scm_c_make_hash_table (17);
   priority_count_ = 0;
 }
@@ -83,10 +81,7 @@ Dispatcher::dispatch (SCM sev)
       return;
     }
 
-#if 0
-  bool sent = false;
-#endif
-  int num_classes = scm_ilength (class_list);
+  long num_classes = scm_ilength (class_list);
 
   /*
     For each event class there is a list of listeners, which is
@@ -144,9 +139,6 @@ Dispatcher::dispatch (SCM sev)
 
           SCM l = scm_cdar (lists[0].list);
           scm_call_1 (l, ev->self_scm ());
-#if 0
-          sent = true;
-#endif
         }
       // go to the next listener; bubble-sort the class list.
       SCM next = scm_cdr (lists[0].list);
@@ -158,12 +150,6 @@ Dispatcher::dispatch (SCM sev)
       lists[i].prio = prio;
       lists[i].list = next;
     }
-
-#if 0
-  /* TODO: Uncomment. */
-  if (!sent)
-    warning (_f ("Junking event: %s", ly_symbol2string (class_symbol).c_str ()));
-#endif
 }
 
 bool

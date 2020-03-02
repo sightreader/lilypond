@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,15 +29,15 @@
 class Simple_music_iterator : public Music_iterator
 {
 protected:
-  DECLARE_CLASSNAME (Simple_music_iterator);
+  OVERRIDE_CLASS_NAME (Simple_music_iterator);
 
   Moment last_processed_mom_;
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
   Simple_music_iterator ();
-  virtual void process (Moment);
-  virtual bool ok ()const;
-  virtual Moment pending_moment ()const;
+  void process (Moment) override;
+  bool ok ()const override;
+  Moment pending_moment ()const override;
 };
 
 #endif /* SIMPLE_MUSIC_ITERATOR_HH */

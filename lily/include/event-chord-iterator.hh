@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ class Event_chord_iterator : public Simple_music_iterator
   /**
      Find a bottom notation context to deliver events to.
   */
-  DECLARE_CLASSNAME (Event_chord_iterator);
+  OVERRIDE_CLASS_NAME (Event_chord_iterator);
 
 public:
   DECLARE_SCHEME_CALLBACK (constructor, ());
@@ -38,8 +38,8 @@ public:
   Event_chord_iterator (Event_chord_iterator const &);
 
 protected:
-  virtual void process (Moment);
-  virtual void construct_children ();
+  void process (Moment) override;
+  void construct_children () override;
 };
 
 #endif // EVENT_CHORD_ITERATOR_HH

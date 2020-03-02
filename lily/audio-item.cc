@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include "midi-item.hh"
 #include "audio-column.hh"
 #include "international.hh"
+
+using std::string;
 
 Audio_instrument::Audio_instrument (string instrument_string)
 {
@@ -123,7 +125,7 @@ remap_grace_duration (Moment m)
 Real
 moment_to_real (Moment m)
 {
-  return remap_grace_duration (m).main_part_.to_double ();
+  return static_cast<Real> (remap_grace_duration (m).main_part_);
 }
 
 int

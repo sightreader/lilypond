@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1999--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
 #include "spacing-spanner.hh"
 
-#include <math.h>
+#include <cmath>
 #include <cstdio>
 
 #include "spacing-options.hh"
@@ -39,19 +39,25 @@
 #include "system.hh"
 #include "warn.hh"
 
-vector<Grob *>
-Spacing_spanner::get_columns (Grob *me_grob)
-{
-  Spanner *me = dynamic_cast<Spanner *> (me_grob);
-  vector<Grob *> all (get_root_system (me)->used_columns ());
-  vsize start = binary_search (all, (Grob *)me->get_bound (LEFT),
-                               &Paper_column::less_than);
-  vsize end = binary_search (all, (Grob *) me->get_bound (RIGHT),
-                             &Paper_column::less_than);
+using std::vector;
 
-  all = vector<Grob *> (all.begin () + start,
-                        all.begin () + end + 1);
-  return all;
+vector<Paper_column *>
+Spacing_spanner::get_columns (Spanner *me)
+{
+  Paper_column *l_bound = dynamic_cast<Paper_column *> (me->get_bound (LEFT));
+  if (!l_bound)
+    {
+      programming_error ("spanner's left bound is not a paper column");
+      return vector<Paper_column *> ();
+    }
+  Paper_column *r_bound = dynamic_cast<Paper_column *> (me->get_bound (RIGHT));
+  if (!r_bound)
+    {
+      programming_error ("spanner's right bound is not a paper column");
+      return vector<Paper_column *> ();
+    }
+  return get_root_system (me)->used_columns_in_range (l_bound->get_rank (),
+                                                      r_bound->get_rank () + 1);
 }
 
 MAKE_SCHEME_CALLBACK (Spacing_spanner, set_springs, 1);
@@ -65,7 +71,7 @@ Spacing_spanner::set_springs (SCM smob)
   */
   Spacing_options options;
   options.init_from_grob (me);
-  vector<Grob *> cols = Spacing_spanner::get_columns (me);
+  vector<Paper_column *> cols = Spacing_spanner::get_columns (me);
   set_explicit_neighbor_columns (cols);
 
   prune_loose_columns (me, &cols, &options);
@@ -91,7 +97,7 @@ Spacing_spanner::calc_common_shortest_duration (SCM grob)
 {
   Spanner *me = unsmob<Spanner> (grob);
 
-  vector<Grob *> cols (get_columns (me));
+  vector<Paper_column *> cols (get_columns (me));
 
   /*
     ascending in duration
@@ -117,7 +123,7 @@ Spacing_spanner::calc_common_shortest_duration (SCM grob)
           SCM st = cols[i]->get_property ("shortest-starter-duration");
           Moment this_shortest = *unsmob<Moment> (st);
           assert (this_shortest.to_bool ());
-          shortest_in_measure = min (shortest_in_measure, this_shortest.main_part_);
+          shortest_in_measure = std::min (shortest_in_measure, this_shortest.main_part_);
         }
       else if (!shortest_in_measure.is_infinity ()
                && Paper_column::is_breakable (cols[i]))
@@ -165,7 +171,7 @@ Spacing_spanner::calc_common_shortest_duration (SCM grob)
     d = m->main_part_;
 
   if (max_idx != VPOS)
-    d = min (d, durations[max_idx]);
+    d = std::min (d, durations[max_idx]);
 
   return Moment (d).smobbed_copy ();
 }
@@ -193,7 +199,7 @@ Spacing_spanner::generate_pair_spacing (Grob *me,
       else
         musical_column_spacing (me, left_col, right_col, options);
 
-      if (Item *rb = right_col->find_prebroken_piece (LEFT))
+      if (Paper_column *rb = right_col->find_prebroken_piece (LEFT))
         musical_column_spacing (me, left_col, rb, options);
     }
   else
@@ -221,7 +227,7 @@ Spacing_spanner::generate_pair_spacing (Grob *me,
 }
 
 static void
-set_column_rods (vector<Grob *> const &cols, Real padding)
+set_column_rods (vector<Paper_column *> const &cols, Real padding)
 {
   /* distances[i] will be the distance betwen cols[i-1] and cols[i], and
      overhangs[j] the amount by which cols[0 thru j] extend beyond cols[j]
@@ -231,7 +237,7 @@ set_column_rods (vector<Grob *> const &cols, Real padding)
 
   for (vsize i = 0; i < cols.size (); i++)
     {
-      Item *r = dynamic_cast<Item *> (cols[i]);
+      Paper_column *r = cols[i];
       Item *rb = r->find_prebroken_piece (LEFT);
 
       if (Separation_item::is_empty (r) && (!rb || Separation_item::is_empty (rb)))
@@ -244,7 +250,7 @@ set_column_rods (vector<Grob *> const &cols, Real padding)
 
       /* min rather than max because stickout will be negative if the right-hand column
          sticks out a lot to the left */
-      Real stickout = min (skys ? (*skys)[LEFT].max_height () : 0.0,
+      Real stickout = std::min (skys ? (*skys)[LEFT].max_height () : 0.0,
                            Separation_item::conditional_skyline (r, cols[i - 1]).max_height ());
 
       Real prev_distances = 0.0;
@@ -257,11 +263,11 @@ set_column_rods (vector<Grob *> const &cols, Real padding)
           if (overhangs[j] + padding <= prev_distances + distances[i] + stickout)
             break; // cols[0 thru j] cannot reach cols[i]
 
-          Item *l = dynamic_cast<Item *> (cols[j]);
+          Paper_column *l = cols[j];
           Item *lb = l->find_prebroken_piece (RIGHT);
 
           Real dist = Separation_item::set_distance (l, r, padding);
-          distances[i] = max (distances[i], dist - prev_distances);
+          distances[i] = std::max (distances[i], dist - prev_distances);
 
           if (lb)
             {
@@ -270,7 +276,7 @@ set_column_rods (vector<Grob *> const &cols, Real padding)
               // right than the unbroken version, by extending farther and/or
               // nesting more closely;
               if (j == i - 1) // check this, the first time we see each lb.
-                overhangs[j] = max (overhangs[j],
+                overhangs[j] = std::max (overhangs[j],
                                     lb->extent (lb, X_AXIS)[RIGHT]
                                     + distances[i] - dist);
             }
@@ -281,21 +287,21 @@ set_column_rods (vector<Grob *> const &cols, Real padding)
 
           prev_distances += distances[j];
         }
-      overhangs[i] = max (overhangs[i],
+      overhangs[i] = std::max (overhangs[i],
                           overhangs[i - 1] - distances[i]);
     }
 }
 
 void
 Spacing_spanner::generate_springs (Grob *me,
-                                   vector<Grob *> const &cols,
+                                   vector<Paper_column *> const &cols,
                                    Spacing_options const *options)
 {
-  Paper_column *prev = dynamic_cast<Paper_column *> (cols[0]);
+  Paper_column *prev = cols[0];
   for (vsize i = 1; i < cols.size (); i++)
     {
-      Paper_column *col = dynamic_cast<Paper_column *> (cols[i]);
-      Paper_column *next = (i + 1 < cols.size ()) ? dynamic_cast<Paper_column *> (cols[i + 1]) : 0;
+      Paper_column *col = cols[i];
+      Paper_column *next = (i + 1 < cols.size ()) ? cols[i + 1] : 0;
 
       generate_pair_spacing (me, prev, col, next, options);
 
@@ -311,8 +317,8 @@ Spacing_spanner::generate_springs (Grob *me,
 */
 void
 Spacing_spanner::musical_column_spacing (Grob *me,
-                                         Item *left_col,
-                                         Item *right_col,
+                                         Paper_column *left_col,
+                                         Paper_column *right_col,
                                          Spacing_options const *options)
 {
   Spring spring = note_spacing (me, left_col, right_col, options);
@@ -418,7 +424,7 @@ Spacing_spanner::musical_column_spacing (Grob *me,
       if (Paper_column::is_extraneous_column_from_ligature (left_col))
         spring.set_distance (spring.min_distance ());
       else
-        spring.set_distance (max (left_col->extent (left_col, X_AXIS)[RIGHT],
+        spring.set_distance (std::max (left_col->extent (left_col, X_AXIS)[RIGHT],
                                   spring.min_distance ()));
 
       spring.set_inverse_stretch_strength (1.0);

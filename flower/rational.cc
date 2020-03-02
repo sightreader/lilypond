@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,13 +22,13 @@
 #include <cmath>
 #include <cassert>
 #include <cstdlib>
-using namespace std;
 
 #include "string-convert.hh"
 #include "libc-extension.hh"
 
-double
-Rational::to_double () const
+using std::string;
+
+Rational::operator double () const
 {
   if (sign_ == -1 || sign_ == 1 || sign_ == 0)
 // FIXME: workaround: In GUB, g++ 4.9.4 for darwin-x86,
@@ -72,6 +72,13 @@ Rational::abs () const
   return Rational (num_, den_);
 }
 
+I64
+Rational::trunc_int () const
+{
+  I64 i = num_ / den_;
+  return i * sign_;
+}
+
 Rational
 Rational::trunc_rat () const
 {
@@ -94,24 +101,17 @@ Rational::Rational (I64 n, I64 d)
   normalize ();
 }
 
-Rational::Rational (I64 n)
+Rational::Rational (long long n)
 {
   sign_ = ::sign (n);
   num_ = ::abs (n);
   den_ = 1;
 }
 
-Rational::Rational (U64 n)
+Rational::Rational (unsigned long long n)
 {
-  sign_ = 1;
+  sign_ = ::sign (n);
   num_ = n;
-  den_ = 1;
-}
-
-Rational::Rational (int n)
-{
-  sign_ = ::sign (n);
-  num_ = ::abs (n);
   den_ = 1;
 }
 
@@ -367,16 +367,10 @@ Rational::to_string () const
       return string (s + "infinity");
     }
 
-  string s = ::to_string (num ());
+  string s = std::to_string (num ());
   if (den () != 1 && num ())
-    s += "/" + ::to_string (den ());
+    s += "/" + std::to_string (den ());
   return s;
-}
-
-int
-Rational::to_int () const
-{
-  return (int) (num () / den ());
 }
 
 int

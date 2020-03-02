@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+;;;; Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;                 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -60,6 +60,9 @@
 (define-public (boolean-or-symbol? x)
   (or (boolean? x) (symbol? x)))
 
+(define-public (integer-or-markup? x)
+  (or (integer? x) (markup? x)))
+
 (define-public (key? x)
   (or (symbol? x) (index? x)))
 
@@ -90,9 +93,6 @@
 (define-public (number-or-string? x)
   (or (number? x) (string? x)))
 
-(define-public (number-or-markup? x)
-  (or (number? x) (markup? x)))
-
 (define-public (string-or-pair? x)
   (or (string? x) (pair? x)))
 
@@ -109,6 +109,18 @@
   (if (list? x)
       (every symbol? x)
       (symbol? x)))
+
+(define-public (scale? x)
+  (or (and (rational? x) (exact? x) (not (negative? x)))
+      (fraction? x)
+      (and (ly:moment? x) (scale? (ly:moment-main x)))))
+
+(define-public (scale->factor x)
+  ;; assumes valid input
+  (cond ((pair? x) (/ (car x) (cdr x)))
+        ((rational? x) x)
+        ((ly:moment? x) (ly:moment-main x))
+        (else #f)))
 
 (define-public (scheme? x) #t)
 

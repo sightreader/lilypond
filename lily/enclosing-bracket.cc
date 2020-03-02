@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -37,6 +37,7 @@ ADD_INTERFACE (Enclosing_bracket,
 
                /* properties */
                "bracket-flare "
+               "dashed-edge "
                "edge-height "
                "elements "
                "padding "
@@ -65,9 +66,9 @@ Enclosing_bracket::width (SCM grob)
   Interval xext = Axis_group_interface::relative_group_extent (elements, common_x, X_AXIS);
 
   Stencil left_br =
-    Bracket::make_axis_constrained_bracket (me, 10.0, Y_AXIS, LEFT);
+    Bracket::make_axis_constrained_bracket (me, 10.0, Y_AXIS, LEFT, Interval ());
   Stencil right_br =
-    Bracket::make_axis_constrained_bracket (me, 10.0, Y_AXIS, LEFT);
+    Bracket::make_axis_constrained_bracket (me, 10.0, Y_AXIS, LEFT, Interval ());
 
   xext.widen (robust_scm2double (me->get_property ("padding"), 0.25));
   left_br.translate_axis (xext[LEFT], X_AXIS);

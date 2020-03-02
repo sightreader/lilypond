@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2002--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+;;;; Copyright (C) 2002--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;;                Patrick McCarty <pnorcks@gmail.com>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -194,7 +194,7 @@
 
 ;; Matches the optional path data from <glyph>
 (define glyph-path-regexp
-  (make-regexp "d=\"([-MmZzLlHhVvCcSsQqTt0-9.\n ]*)\""))
+  (make-regexp "d=\"([-+MmZzLlHhVvCcSsQqTtAa0-9,.Ee\n ]*)\""))
 
 ;; Matches a complete <glyph> element with the glyph-name
 ;; attribute value of NAME.  For example:

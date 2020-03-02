@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -26,6 +26,8 @@
 #include "side-position-interface.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
    Find potentially colliding scripts, and put them in a

@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+;;;; Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;; Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
@@ -307,6 +307,24 @@
    ly:side-position-interface::pure-y-aligned-side))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; break-alignable stuff
+
+(define-public (break-alignable-interface::self-alignment-of-anchor g)
+  "Return a value for @var{g}'s @code{self-alignment-X} that will
+   place @var{g} on the same side of the reference point defined by a
+   @code{break-aligned} item such as a @code{Clef}."
+  (let ((parent (ly:break-alignable-interface::find-parent g)))
+    (if (ly:grob? parent)
+        (ly:grob-property parent 'break-align-anchor-alignment CENTER)
+        CENTER)))
+
+(define-public (break-alignable-interface::self-alignment-opposite-of-anchor g)
+  "Return a value for @var{g}'s @code{self-alignment-X} that will
+   place @var{g} on the opposite side of the reference point defined by a
+   @code{break-aligned} item such as a @code{Clef}."
+  (* -1 (break-alignable-interface::self-alignment-of-anchor g)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; self-alignment stuff
 
 (define-public self-alignment-interface::y-aligned-on-self
@@ -380,15 +398,15 @@
   (let* ((head (ly:grob-parent grob Y))
          (log (ly:grob-property head 'duration-log)))
 
-    (cond
-     ((or (not (grob::has-interface head 'rest-interface))
-          (not (integer? log))) 0)
-     ((= log 7) 4)
-     ((> log 4) 3)
-     ((= log 0) -1)
-     ((= log 1) 1)
-     ((= log -1) 1)
-     (else 0))))
+    (if (or (not (grob::has-interface head 'rest-interface))
+            (not (integer? log)))
+        0
+        (case log
+          ((0)   -2)
+          ((5 6)  2)
+          ((7 8)  4)
+          ((9 10) 6)
+          (else   0)))))
 
 ;; Kept separate from note-head::calc-glyph-name to allow use by
 ;; markup commands \note and \note-by-number

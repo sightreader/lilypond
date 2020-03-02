@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2006--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
       2007--2008 Rune Zedeler
       2008       Joe Neeman <joeneeman@gmail.com>
 
@@ -22,6 +22,9 @@
 #include "scale.hh"
 #include "protected-scm.hh"
 
+#include <limits>
+
+using std::vector;
 
 /*
   todo: put string <-> pitch here too.
@@ -38,8 +41,8 @@ LY_DEFINE (ly_make_scale, "ly:make-scale",
   vector<Rational> tones;
   if (type_ok)
     {
-      int len = scm_c_vector_length (steps);
-      for (int i = 0; i < len; i++)
+      vsize len = scm_c_vector_length (steps);
+      for (vsize i = 0; i < len; i++)
         {
           SCM step = scm_c_vector_ref (steps, i);
           type_ok = type_ok && scm_is_rational (step);
@@ -93,7 +96,7 @@ LY_DEFINE (ly_set_default_scale, "ly:set-default-scale",
 int
 Scale::step_count () const
 {
-  return step_tones_.size ();
+  return static_cast<int> (step_tones_.size ());
 }
 
 Rational
@@ -135,6 +138,7 @@ Scale::normalize_step (int step) const
 
 Scale::Scale (vector<Rational> const &tones)
 {
+  assert (tones.size () <= std::numeric_limits<int>::max ());
   step_tones_ = tones;
 
   smobify_self ();

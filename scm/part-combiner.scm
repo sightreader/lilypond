@@ -1,6 +1,6 @@
 ;;;; This file is part of LilyPond, the GNU music typesetter.
 ;;;;
-;;;; Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+;;;; Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 ;;;;
 ;;;; LilyPond is free software: you can redistribute it and/or modify
 ;;;; it under the terms of the GNU General Public License as published by
@@ -732,7 +732,7 @@ the mark when there are no spanners active.
           (display "***\n")))
 
     ;; Extract all forced combine strategies, i.e. events inserted by
-    ;; \partcombine(Apart|Automatic|SoloI|SoloII|Chords)[Once]
+    ;; \partCombine(Apart|Automatic|SoloI|SoloII|Chords)[Once]
     ;; They will in the end override the automaically determined ones.
     ;; Initial state for both voices is no override
     (analyse-forced-combine 0 #f)

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1998--2020 Jan Nieuwenhuizen <janneke@gnu.org>
   Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -25,7 +25,6 @@
 #include <cstring> /* strdup, strchr */
 #include <cctype>
 
-using namespace std;
 
 #include "dimensions.hh"
 #include "direction.hh"
@@ -42,6 +41,9 @@ using namespace std;
 #include "warn.hh"
 #include "lily-imports.hh"
 
+using std::string;
+using std::vector;
+
 /*
   symbols/strings.
  */
@@ -52,11 +54,7 @@ ly_scm_write_string (SCM s)
                             scm_make_string (SCM_INUM0, SCM_UNDEFINED),
                             SCM_OPN | SCM_WRTNG,
                             "ly_write2string");
-  //  SCM write = scm_eval_3 (ly_symbol2scm ("write"), s, SCM_EOL);
-  SCM write = scm_primitive_eval (ly_symbol2scm ("write"));
-
-  // scm_apply (write, port, SCM_EOL);
-  scm_call_2 (write, s, port);
+  scm_write(s, port);
   return ly_scm2string (scm_strport_to_string (port));
 }
 
@@ -100,8 +98,7 @@ gulp_file_to_string (const string &fn, bool must_exist, int size)
 
   debug_output ("[" + s, true);
 
-  vector<char> chars = gulp_file (s, size);
-  string result (&chars[0], chars.size ());
+  string result = gulp_file (s, size);
 
   debug_output ("]\n", false);
 
@@ -126,12 +123,13 @@ ly_scm2string (SCM str)
 {
   assert (scm_is_string (str));
   string result;
-  size_t len = scm_c_string_length (str);
+  size_t len;
+  char *c_string = scm_to_locale_stringn (str, &len);
   if (len)
     {
-      result.resize (len);
-      scm_to_locale_stringbuf (str, &result.at (0), len);
+      result.assign (c_string, len);
     }
+  free (c_string);
   return result;
 }
 
@@ -173,12 +171,6 @@ is_number_pair (SCM p)
 {
   return scm_is_pair (p)
          && scm_is_number (scm_car (p)) && scm_is_number (scm_cdr (p));
-}
-
-unsigned int
-ly_scm_hash (SCM s)
-{
-  return scm_ihashv (s, ~1u);
 }
 
 bool
@@ -374,12 +366,11 @@ ly_deep_copy (SCM src)
     }
   if (scm_is_vector (src))
     {
-      int len = scm_c_vector_length (src);
+      vsize len = scm_c_vector_length (src);
       SCM nv = scm_c_make_vector (len, SCM_UNDEFINED);
-      for (int i = 0; i < len; i++)
+      for (vsize i = 0; i < len; i++)
         {
-          SCM si = scm_from_int (i);
-          scm_vector_set_x (nv, si, ly_deep_copy (scm_vector_ref (src, si)));
+          scm_c_vector_set_x (nv, i, ly_deep_copy (scm_c_vector_ref (src, i)));
         }
       return nv;
     }
@@ -668,7 +659,7 @@ ly_is_rational (SCM n)
 SCM
 alist_to_hashq (SCM alist)
 {
-  int i = scm_ilength (alist);
+  long i = scm_ilength (alist);
   if (i < 0)
     return scm_c_make_hash_table (0);
 
@@ -750,4 +741,3 @@ SCM ly_assoc_prepend_x (SCM alist, SCM key, SCM val)
 {
   return scm_acons (key, val, scm_assoc_remove_x (alist, key));
 }
-

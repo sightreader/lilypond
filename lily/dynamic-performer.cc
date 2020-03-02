@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2000--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,13 +25,15 @@
 
 #include "translator.icc"
 
+using std::vector;
+
 class Dynamic_performer : public Performer
 {
 public:
   TRANSLATOR_DECLARATIONS (Dynamic_performer);
 protected:
-  virtual void acknowledge_audio_element (Audio_element_info info);
-  virtual void finalize ();
+  void acknowledge_audio_element (Audio_element_info info) override;
+  void finalize () override;
   void stop_translation_timestep ();
   void process_music ();
   Real equalize_volume (Real);
@@ -264,8 +266,8 @@ Dynamic_performer::compute_departure_volume (Direction depart_dir,
 
   // If for some reason one of the endpoints is already below the supposed
   // minimum or maximum, just accept it.
-  min_vol = min (min (min_vol, start_vol), end_vol);
-  max_vol = max (max (max_vol, start_vol), end_vol);
+  min_vol = std::min (std::min (min_vol, start_vol), end_vol);
+  max_vol = std::max (std::max (max_vol, start_vol), end_vol);
 
   const Real vol_range = max_vol - min_vol;
 
@@ -274,7 +276,7 @@ Dynamic_performer::compute_departure_volume (Direction depart_dir,
   const Real far_vol = minmax (-depart_dir, start_vol, end_vol)
                    + depart_dir * far_padding * vol_range;
   const Real depart_vol = minmax (depart_dir, near_vol, far_vol);
-  return max (min (depart_vol, max_vol), min_vol);
+  return std::max (std::min (depart_vol, max_vol), min_vol);
 }
 
 Real

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ public:
 
   Book (Book const &);
   Input *origin () const;
-  VIRTUAL_COPY_CONSTRUCTOR (Book, Book);
+  VIRTUAL_CLASS_NAME (Book);
+  virtual Book *clone () const { return new Book (*this); }
   Book ();
   void add_score (SCM);
   void add_bookpart (SCM);

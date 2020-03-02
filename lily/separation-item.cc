@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@
 #include "skyline-pair.hh"
 #include "stencil.hh"
 #include "warn.hh"
+
+using std::vector;
 
 void
 Separation_item::add_item (Grob *s, Item *i)
@@ -62,7 +64,7 @@ Separation_item::set_distance (Item *l, Item *r, Real padding)
       rod.add_to_cols ();
     }
 
-  return max (dist, 0.0);
+  return std::max (dist, 0.0);
 }
 
 bool
@@ -170,13 +172,13 @@ Separation_item::boxes (Grob *me, Grob *left)
       //  on items that must not overlap other note-columns.
       // If these two uses of inf combine, leave the empty extent.
 
-      if (!isinf (x[LEFT]))
+      if (!std::isinf (x[LEFT]))
         x[LEFT] += extra_width[LEFT];
-      if (!isinf (x[RIGHT]))
+      if (!std::isinf (x[RIGHT]))
         x[RIGHT] += extra_width[RIGHT];
-      if (!isinf (y[DOWN]))
+      if (!std::isinf (y[DOWN]))
         y[DOWN] += extra_height[DOWN];
-      if (!isinf (y[UP]))
+      if (!std::isinf (y[UP]))
         y[UP] += extra_height[UP];
 
       if (!x.is_empty () && !y.is_empty ())

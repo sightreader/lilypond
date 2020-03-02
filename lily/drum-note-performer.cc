@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1996--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "stream-event.hh"
 #include "translator.icc"
 #include "warn.hh"
+
+using std::vector;
 
 class Drum_note_performer : public Performer
 {

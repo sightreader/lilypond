@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "rest-collision.hh"
 
 #include <cmath>                // ceil.
-using namespace std;
 
 #include "directional-element-interface.hh"
 #include "duration.hh"
@@ -37,6 +36,8 @@ using namespace std;
 #include "unpure-pure-container.hh"
 #include "warn.hh"
 #include "lily-imports.hh"
+
+using std::vector;
 
 MAKE_SCHEME_CALLBACK_WITH_OPTARGS (Rest_collision, force_shift_callback_rest, 2, 1, "");
 SCM
@@ -254,7 +255,7 @@ Rest_collision::calc_positioning_done (SCM smob)
                 notedim.unite (notes[i]->extent (common, Y_AXIS));
             }
 
-          Real y = dir * max (0.0,
+          Real y = dir * std::max (0.0,
                               -dir * restdim[-dir] + dir * notedim[dir] + minimum_dist);
 
           // move discretely by half spaces.

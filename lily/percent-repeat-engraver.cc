@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>, Erik Sandberg <mandolaerik@gmail.com>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>, Erik Sandberg <mandolaerik@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ protected:
   Grob *first_command_column_;
   Moment command_moment_;
 
-  virtual void finalize ();
+  void finalize () override;
   void listen_percent (Stream_event *);
 
   void start_translation_timestep ();
@@ -94,7 +94,7 @@ Percent_repeat_engraver::listen_percent (Stream_event *ev)
       Moment body_length = get_event_length (ev);
       start_mom_ = now_mom ();
       stop_mom_ = now_mom () + body_length;
-      get_global_context ()->add_moment_to_process (stop_mom_);
+      find_global_context ()->add_moment_to_process (stop_mom_);
       percent_event_ = ev;
     }
   else

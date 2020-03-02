@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -40,13 +40,14 @@ private:
 public:
   Input *origin () const;
 
-  vector<Output_def *> defs_;
+  std::vector<Output_def *> defs_;
   bool error_found_;
 
   Score ();
   Score (Score const &);
 
-  VIRTUAL_COPY_CONSTRUCTOR (Score, Score);
+  VIRTUAL_CLASS_NAME (Score);
+  virtual Score *clone () const { return new Score (*this); }
 
   SCM get_music () const;
   void add_output_def (Output_def *def);

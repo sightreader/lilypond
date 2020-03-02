@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2004--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 #define PANGO_FONT_HH
 
 #include "config.hh"
-
-#if HAVE_PANGO_FT2
 
 #include <pango/pango.h>
 #include <pango/pangoft2.h>
@@ -50,11 +48,11 @@ public:
               Real);
   ~Pango_font ();
 
-  string description_string () const;
-  SCM font_file_name () const;
-  void register_font_file (const string &filename, const string &ps_name, int face_index);
+  std::string description_string () const;
+  SCM font_file_name () const override;
+  void register_font_file (const std::string &filename, const std::string &ps_name, int face_index);
 
-  size_t name_to_index (string) const;
+  size_t name_to_index (std::string) const override;
   SCM get_glyph_outline (size_t signed_idx) const;
   Box get_glyph_outline_bbox (size_t signed_idx) const;
   Box get_unscaled_indexed_char_dimensions (size_t) const;
@@ -62,11 +60,11 @@ public:
 
   Stencil pango_item_string_stencil (PangoGlyphItem const *) const;
 
-  virtual Stencil text_stencil (Output_def *output_state,
-                                const string &text,
-                                bool music,
-                                const string &features_str) const;
-  virtual void derived_mark () const;
+  Stencil text_stencil (Output_def *output_state,
+                        const std::string &text,
+                        bool music,
+                        const std::string &features_str) const override;
+  void derived_mark () const override;
 };
 
 PangoFontDescription *
@@ -82,6 +80,4 @@ select_pango_font (Output_def *layout, SCM chain);
 const int PANGO_RESOLUTION = 1200;
 PangoFontDescription *properties_to_pango_description (SCM chain, Real text_size);
 
-#endif /* HAVE_PANGO16 */
 #endif /* PANGO_FONT_HH */
-

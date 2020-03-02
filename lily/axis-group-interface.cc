@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2000--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2000--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,6 +39,11 @@
 #include "system.hh"
 #include "warn.hh"
 #include "unpure-pure-container.hh"
+
+using std::multimap;
+using std::pair;
+using std::string;
+using std::vector;
 
 static bool
 pure_staff_priority_less (Grob *const &g1, Grob *const &g2);
@@ -147,7 +152,7 @@ Axis_group_interface::sum_partial_pure_heights (Grob *me, int start, int end)
 }
 
 Interval
-Axis_group_interface::part_of_line_pure_height (Grob *me, bool begin, int start, int end)
+Axis_group_interface::part_of_line_pure_height (Grob *me, bool begin, vsize start, vsize end)
 {
   Spanner *sp = dynamic_cast<Spanner *> (me);
   if (!sp)
@@ -181,28 +186,29 @@ Axis_group_interface::part_of_line_pure_height (Grob *me, bool begin, int start,
 }
 
 Interval
-Axis_group_interface::begin_of_line_pure_height (Grob *me, int start)
+Axis_group_interface::begin_of_line_pure_height (Grob *me, vsize start)
 {
   return part_of_line_pure_height (me, true, start, start + 1);
 }
 
 Interval
-Axis_group_interface::rest_of_line_pure_height (Grob *me, int start, int end)
+Axis_group_interface::rest_of_line_pure_height (Grob *me, vsize start, vsize end)
 {
   return part_of_line_pure_height (me, false, start, end);
 }
 
 Interval
-Axis_group_interface::combine_pure_heights (Grob *me, SCM measure_extents, int start, int end)
+Axis_group_interface::combine_pure_heights (Grob *me, SCM measure_extents,
+                                            vsize start, vsize end)
 {
   Paper_score *ps = get_root_system (me)->paper_score ();
-  vector<vsize> breaks = ps->get_break_indices ();
-  vector<Grob *> cols = ps->get_columns ();
+  vector<vsize> const &breaks = ps->get_break_indices ();
+  vector<Paper_column *> const &cols = ps->get_columns ();
 
   Interval ext;
   for (vsize i = 0; i + 1 < breaks.size (); i++)
     {
-      int r = Paper_column::get_rank (cols[breaks[i]]);
+      vsize r = cols[breaks[i]]->get_rank ();
       if (r >= end)
         break;
 
@@ -229,7 +235,7 @@ Axis_group_interface::adjacent_pure_heights (SCM smob)
   extract_grob_set (me, "pure-relevant-grobs", elts);
 
   Paper_score *ps = get_root_system (me)->paper_score ();
-  vector<vsize> ranks = ps->get_break_ranks ();
+  vector<vsize> const &ranks = ps->get_break_ranks ();
 
   vector<Interval> begin_line_heights;
   vector<Interval> mid_line_heights;
@@ -267,20 +273,22 @@ Axis_group_interface::adjacent_pure_heights (SCM smob)
       Direction d = to_dir (g->get_property_data ("direction"));
       d = (d == CENTER) ? UP : d;
 
-      Interval_t<int> rank_span = g->spanned_rank_interval ();
-      vsize first_break = lower_bound (ranks, (vsize)rank_span[LEFT], less<vsize> ());
-      if (first_break > 0 && ranks[first_break] >= (vsize)rank_span[LEFT])
+      Interval_t<vsize> rank_span (g->spanned_rank_interval ());
+      vsize first_break
+          = lower_bound (ranks, rank_span[LEFT], std::less<vsize> ());
+      if (first_break > 0 && ranks[first_break] >= rank_span[LEFT])
         first_break--;
 
-      for (vsize j = first_break; j + 1 < ranks.size () && (int)ranks[j] <= rank_span[RIGHT]; ++j)
+      for (vsize j = first_break;
+           j + 1 < ranks.size () && ranks[j] <= rank_span[RIGHT]; ++j)
         {
-          int start = ranks[j];
-          int end = ranks[j + 1];
+          vsize start = ranks[j];
+          vsize end = ranks[j + 1];
 
           // Take grobs that are visible with respect to a slightly longer line.
           // Otherwise, we will never include grobs at breakpoints which aren't
           // end-of-line-visible.
-          int visibility_end = j + 2 < ranks.size () ? ranks[j + 2] : end;
+          vsize visibility_end = j + 2 < ranks.size () ? ranks[j + 2] : end;
 
           if (g->pure_is_visible (start, visibility_end))
             {
@@ -311,8 +319,10 @@ Axis_group_interface::adjacent_pure_heights (SCM smob)
   SCM mid_scm = scm_c_make_vector (ranks.size () - 1, SCM_EOL);
   for (vsize i = 0; i < begin_line_heights.size (); ++i)
     {
-      scm_vector_set_x (begin_scm, scm_from_int (i), ly_interval2scm (begin_line_heights[i]));
-      scm_vector_set_x (mid_scm, scm_from_int (i), ly_interval2scm (mid_line_heights[i]));
+      scm_c_vector_set_x (begin_scm, i,
+                          ly_interval2scm (begin_line_heights[i]));
+      scm_c_vector_set_x (mid_scm, i,
+                          ly_interval2scm (mid_line_heights[i]));
     }
 
   return scm_cons (begin_scm, mid_scm);
@@ -322,7 +332,7 @@ Interval
 Axis_group_interface::relative_pure_height (Grob *me, int start, int end)
 {
   /* It saves a _lot_ of time if we assume a VerticalAxisGroup is additive
-     (ie. height (i, k) = max (height (i, j) height (j, k)) for all i <= j <= k).
+     (ie. height (i, k) = std::max (height (i, j) height (j, k)) for all i <= j <= k).
      Unfortunately, it isn't always true, particularly if there is a
      VerticalAlignment somewhere in the descendants.
 
@@ -624,7 +634,7 @@ staff_priority_less (Grob *const &g1, Grob *const &g2)
   /* if neither grob has an outside-staff priority, the ordering will have no
      effect and we assume the two grobs to be equal (none of the two is less).
      We do this to avoid the side-effect of calculating extents. */
-  if (isinf (priority_1) && isinf (priority_2))
+  if (std::isinf (priority_1) && std::isinf (priority_2))
     return false;
 
   /* if there is no preference in staff priority, choose the left-most one */
@@ -684,8 +694,8 @@ avoid_outside_staff_collisions (Grob *elt,
   for (vsize j = 0; j < other_v_skylines.size (); j++)
     {
       Skyline_pair const &v_other = other_v_skylines[j];
-      Real pad = max (padding, other_padding[j]);
-      Real horizon_pad = max (horizon_padding, other_horizon_padding[j]);
+      Real pad = std::max (padding, other_padding[j]);
+      Real horizon_pad = std::max (horizon_padding, other_horizon_padding[j]);
 
       // We need to push elt up by at least this much to be above v_other.
       Real up = (*v_skyline)[DOWN].distance (v_other[UP], horizon_pad) + pad;
@@ -836,7 +846,7 @@ add_grobs_of_one_priority (Grob *me,
           (*all_paddings)[dir].push_back (padding);
           (*all_horizon_paddings)[dir].push_back (horizon_padding);
         }
-      swap (elements, skipped_elements);
+      std::swap (elements, skipped_elements);
       skipped_elements.clear ();
     }
 }

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2008--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2008--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -31,9 +31,9 @@ private:
 
 public:
   Skyline_pair ();
-  Skyline_pair (vector<Box> const &boxes, Axis a);
-  Skyline_pair (vector<Drul_array<Offset> > const &buildings, Axis a);
-  Skyline_pair (vector<Skyline_pair> const &skypairs);
+  Skyline_pair (std::vector<Box> const &boxes, Axis a);
+  Skyline_pair (std::vector<Drul_array<Offset> > const &buildings, Axis a);
+  Skyline_pair (std::vector<Skyline_pair> const &skypairs);
   Skyline_pair (Box const &, Axis a);
 
   Real left () const;

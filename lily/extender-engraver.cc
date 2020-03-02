@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1999--2015 Glen Prideaux <glenprideaux@iname.com>,
+  Copyright (C) 1999--2020 Glen Prideaux <glenprideaux@iname.com>,
   Han-Wen Nienhuys <hanwen@xs4all.nl>,
   Jan Nieuwenhuizen <janneke@gnu.org>
 
@@ -47,7 +47,7 @@ protected:
   void listen_completize_extender (Stream_event *);
   void acknowledge_lyric_syllable (Grob_info);
 
-  virtual void finalize ();
+  void finalize () override;
 
   void stop_translation_timestep ();
   void process_music ();
@@ -93,7 +93,7 @@ Extender_engraver::process_music ()
 void
 Extender_engraver::acknowledge_lyric_syllable (Grob_info i)
 {
-  Item *item = i.item ();
+  Item *item = dynamic_cast<Item *> (i.grob ());
   if (extender_)
     extender_->set_bound (LEFT, item);
 

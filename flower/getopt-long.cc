@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1996--2015 Han-Wen Nienhuys, <hanwen@xs4all.nl>
+  Copyright (C) 1996--2020 Han-Wen Nienhuys, <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,6 +35,8 @@ gettext (char const *s)
 #else
 #include <libintl.h>
 #endif
+
+using std::string;
 
 long
 Getopt_long::get_argument_index ()
@@ -116,7 +118,10 @@ Long_option_init::str_for_help () const
 {
   string s;
   if (shortname_char_)
-    s = "-" + ::to_string (shortname_char_);
+    {
+      s += '-';
+      s += shortname_char_;
+    }
   else
     s = "  ";
 
@@ -316,7 +321,7 @@ Long_option_init::table_string (Long_option_init *l)
 
   size_t wid = 0;
   for (int i = 0; l[i].shortname_char_ || l[i].longname_str0_; i++)
-    wid = max (wid, l[i].str_for_help ().length ());
+    wid = std::max (wid, l[i].str_for_help ().length ());
 
   for (int i = 0; l[i].shortname_char_ || l[i].longname_str0_; i++)
     {

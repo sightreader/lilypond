@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1998--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1998--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 */
 
 #include "engraver.hh"
-#include "pitch.hh"
 #include "rhythmic-head.hh"
 #include "self-alignment-interface.hh"
 #include "side-position-interface.hh"
@@ -27,6 +26,8 @@
 #include "item.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 class Fingering_engraver : public Engraver
 {
@@ -42,9 +43,10 @@ protected:
   void acknowledge_rhythmic_head (Grob_info);
   void acknowledge_stem (Grob_info);
   void acknowledge_flag (Grob_info);
+  void acknowledge_note_column (Grob_info);
 
 private:
-  void make_script (Direction, Stream_event *, int);
+  void make_script (Direction, Stream_event *, size_t);
 };
 
 void
@@ -71,11 +73,19 @@ void
 Fingering_engraver::acknowledge_rhythmic_head (Grob_info inf)
 {
   for (vsize i = 0; i < fingerings_.size (); i++)
+    Side_position_interface::add_support (fingerings_[i], inf.grob ());
+}
+
+void
+Fingering_engraver::acknowledge_note_column (Grob_info inf)
+{
+  /* set NoteColumn as parent */
+  /* and X-align on main noteheads */
+  for (vsize i = 0; i < fingerings_.size (); i++)
     {
       Grob *t = fingerings_[i];
-      Side_position_interface::add_support (t, inf.grob ());
-      if (!t->get_parent (X_AXIS))
-        t->set_parent (inf.grob (), X_AXIS);
+      t->set_parent (inf.grob (), X_AXIS);
+      t->set_property ("X-align-on-main-noteheads", SCM_BOOL_T);
     }
 }
 
@@ -90,7 +100,7 @@ Fingering_engraver::process_music ()
 }
 
 void
-Fingering_engraver::make_script (Direction d, Stream_event *r, int i)
+Fingering_engraver::make_script (Direction d, Stream_event *r, size_t i)
 {
   Item *fingering = make_item ("Fingering", r->self_scm ());
 
@@ -101,16 +111,12 @@ Fingering_engraver::make_script (Direction d, Stream_event *r, int i)
   Side_position_interface::set_axis (fingering, Y_AXIS);
   Self_alignment_interface::set_aligned_on_parent (fingering, X_AXIS);
 
-  // Hmm
-  int priority = 200;
-  SCM s = fingering->get_property ("script-priority");
-  if (scm_is_number (s))
-    priority = scm_to_int (s);
-
   /* See script-engraver.cc */
-  priority += i;
-
-  fingering->set_property ("script-priority", scm_from_int (priority));
+  SCM priority = fingering->get_property ("script-priority");
+  if (!scm_is_number (priority))
+    priority = scm_from_int (200); // TODO: Explain magic.
+  priority = scm_sum (priority, scm_from_size_t (i));
+  fingering->set_property ("script-priority", priority);
 
   if (d)
     fingering->set_property ("direction", scm_from_int (d));
@@ -140,6 +146,7 @@ Fingering_engraver::boot ()
   ADD_ACKNOWLEDGER (Fingering_engraver, rhythmic_head);
   ADD_ACKNOWLEDGER (Fingering_engraver, stem);
   ADD_ACKNOWLEDGER (Fingering_engraver, flag);
+  ADD_ACKNOWLEDGER (Fingering_engraver, note_column);
 }
 
 ADD_TRANSLATOR (Fingering_engraver,

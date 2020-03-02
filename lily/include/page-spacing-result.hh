@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2007--2015 Han-Wen Nienhuys <hanwen@lilypond.org>
+  Copyright (C) 2007--2020 Han-Wen Nienhuys <hanwen@lilypond.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@ typedef enum
 
 struct Page_spacing_result
 {
-  vector<vsize> systems_per_page_;
-  vector<Real> force_;
+  std::vector<vsize> systems_per_page_;
+  std::vector<Real> force_;
   Real penalty_;
   Real demerits_;
   int system_count_status_;

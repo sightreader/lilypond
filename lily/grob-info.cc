@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,11 +19,12 @@
 
 #include "context.hh"
 #include "grob-info.hh"
-#include "item.hh"
+#include "grob.hh"
 #include "music.hh"
-#include "spanner.hh"
 #include "stream-event.hh"
 #include "translator-group.hh"
+
+using std::vector;
 
 Grob_info::Grob_info (Translator *t, Grob *g)
 {
@@ -45,23 +46,7 @@ Grob_info::Grob_info ()
 Stream_event *
 Grob_info::event_cause () const
 {
-  SCM cause = grob_->get_property ("cause");
-  return unsmob<Stream_event> (cause);
-}
-
-vector<Context *>
-Grob_info::origin_contexts (Translator *end) const
-{
-  Context *t = origin_trans_->context ();
-  vector<Context *> r;
-  do
-    {
-      r.push_back (t);
-      t = t->get_parent_context ();
-    }
-  while (t && t != end->context ());
-
-  return r;
+  return grob_->event_cause ();
 }
 
 Context *
@@ -70,27 +55,10 @@ Grob_info::context () const
   return origin_trans_->context ();
 }
 
-Spanner *
-Grob_info::spanner () const
-{
-  return dynamic_cast<Spanner *> (grob_);
-}
-
-Item *
-Grob_info::item () const
-{
-  return dynamic_cast<Item *> (grob_);
-}
-
 Stream_event *
 Grob_info::ultimate_event_cause () const
 {
-  SCM cause = grob_->self_scm ();
-  while (unsmob<Grob> (cause))
-    {
-      cause = unsmob<Grob> (cause)->get_property ("cause");
-    }
-  return unsmob<Stream_event> (cause);
+  return grob_->ultimate_event_cause ();
 }
 
 bool

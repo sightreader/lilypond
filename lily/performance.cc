@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 1997--2020 Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "performance.hh"
 
 #include <ctime>
-using namespace std;
 
 #include "audio-column.hh"
 #include "audio-item.hh"
@@ -34,6 +33,8 @@ using namespace std;
 #include "score.hh"
 #include "string-convert.hh"
 #include "warn.hh"
+
+using std::string;
 
 Performance::Performance (bool ports)
   : midi_ (0),
@@ -80,7 +81,7 @@ Performance::output (Midi_stream &midi_stream,
   Moment start_mom = 0;
   for (vsize i = 0; i < audio_elements_.size (); i++)
     if (Audio_item *item = dynamic_cast<Audio_item *>(audio_elements_[i]))
-      start_mom = min (start_mom, item->audio_column_->when ());
+      start_mom = std::min (start_mom, item->audio_column_->when ());
 
   for (vsize i = 0; i < audio_staffs_.size (); i++)
     {
@@ -100,7 +101,7 @@ Performance::output (Midi_stream &midi_stream,
           assert (text->text_string_ == "control track");
           text->text_string_ = performance_name;
         }
-      debug_output ("[" + ::to_string (i), true);
+      debug_output ("[" + std::to_string (i), true);
       s->output (midi_stream, i, ports_, start_mom);
       debug_output ("]", false);
     }

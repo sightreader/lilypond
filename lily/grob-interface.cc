@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2002--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2002--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,13 +26,15 @@
 #include "warn.hh"
 #include "misc.hh"
 
+using std::string;
+
 SCM add_interface (char const *cxx_name,
                    char const *descr,
                    char const *vars)
 {
   string suffix ("-interface");
   string lispy_name = camel_case_to_lisp_identifier (cxx_name);
-  vsize end = max (int (0), int (lispy_name.length () - suffix.length ()));
+  vsize end = std::max (int (0), int (lispy_name.length () - suffix.length ()));
   if (lispy_name.substr (end) != suffix)
     lispy_name += suffix;
 
@@ -65,9 +67,8 @@ check_interfaces_for_property (Grob const *me, SCM sym)
       SCM iface = scm_hashq_ref (all_ifaces, scm_car (ifs), SCM_BOOL_F);
       if (scm_is_false (iface))
         {
-          string msg = to_string (_f ("Unknown interface `%s'",
-                                      ly_symbol2string (scm_car (ifs)).c_str ()));
-          programming_error (msg);
+          programming_error (_f ("Unknown interface `%s'",
+                                 ly_symbol2string (scm_car (ifs)).c_str ()));
           continue;
         }
 
@@ -76,9 +77,8 @@ check_interfaces_for_property (Grob const *me, SCM sym)
 
   if (!found)
     {
-      string str = to_string (_f ("Grob `%s' has no interface for property `%s'",
-                                  me->name ().c_str (),
-                                  ly_symbol2string (sym).c_str ()));
-      programming_error (str);
+      programming_error (_f ("Grob `%s' has no interface for property `%s'",
+                             me->name ().c_str (),
+                             ly_symbol2string (sym).c_str ()));
     }
 }

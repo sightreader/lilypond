@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 #include "lily-imports.hh"
 
 #include "translator.icc"
+
+using std::vector;
 
 /**
 
@@ -56,8 +58,7 @@ Span_bar_engraver::Span_bar_engraver (Context *c)
 void
 Span_bar_engraver::acknowledge_bar_line (Grob_info i)
 {
-  int depth = i.origin_contexts (this).size ();
-  if (depth && !i.grob ()->internal_has_interface (ly_symbol2scm ("span-bar-interface")))
+  if (!i.grob ()->internal_has_interface (ly_symbol2scm ("span-bar-interface")))
     {
       Item *it = dynamic_cast<Item *> (i.grob ());
       bars_.push_back (it);

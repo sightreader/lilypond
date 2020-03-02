@@ -1,4 +1,4 @@
-\version "2.19.80"
+\version "2.21.0"
 
 #(ly:set-option 'warning-as-error #f)
 #(ly:expect-warning (_ "Harp pedal diagram contains ~a pedals rather than the usual 7.") 0)

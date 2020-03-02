@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   Jan Nieuwenhuizen <janneke@gnu.org>
 
@@ -23,7 +23,6 @@
 
 #include <cmath>
 #include <cctype>
-using namespace std;
 
 #include "line-interface.hh"
 #include "warn.hh"
@@ -33,6 +32,8 @@ using namespace std;
 #include "file-path.hh"
 #include "main.hh"
 #include "lily-guile.hh"
+
+using std::vector;
 
 Stencil
 Lookup::beam (Real slope, Real width, Real thick, Real blot)
@@ -167,13 +168,13 @@ Stencil
 Lookup::round_filled_box (Box b, Real blotdiameter)
 {
   Real width = b.x ().delta ();
-  blotdiameter = min (blotdiameter, width);
+  blotdiameter = std::min (blotdiameter, width);
   Real height = b.y ().delta ();
-  blotdiameter = min (blotdiameter, height);
+  blotdiameter = std::min (blotdiameter, height);
 
   if (blotdiameter < 0.0)
     {
-      if (!isinf (blotdiameter))
+      if (!std::isinf (blotdiameter))
         warning (_f ("Not drawing a box with negative dimension, %.2f by %.2f.",
                      width, height));
       return Stencil (b, SCM_EOL);
@@ -293,7 +294,7 @@ Lookup::round_filled_polygon (vector<Offset> const &points,
       Offset center;
       for (vsize i = 0; i < points.size (); i++)
         center += points[i];
-      center /= points.size ();
+      center /= static_cast<Real> (points.size ());
 
       Real area = 0.0;
       Offset last = points.back () - center;
@@ -605,7 +606,7 @@ Lookup::triangle (Interval iv, Real thick, Real protrude)
 {
   Box b;
   b[X_AXIS] = Interval (0, iv.length ());
-  b[Y_AXIS] = Interval (min (0., protrude), max (0.0, protrude));
+  b[Y_AXIS] = Interval (std::min (0., protrude), std::max (0.0, protrude));
 
   vector<Offset> points;
   points.push_back (Offset (iv[LEFT], 0));

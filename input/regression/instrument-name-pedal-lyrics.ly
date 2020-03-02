@@ -1,4 +1,4 @@
-\version "2.19.21"
+\version "2.21.0"
 
 \header {
   texidoc = "@code{Dynamics} and @code{Lyrics} lines below

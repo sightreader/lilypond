@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2005--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 2005--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -20,24 +20,11 @@
 
 #include "engraver.hh"
 #include "item.hh"
+#include "laissez-vibrer-engraver.hh"
 #include "pointer-group-interface.hh"
 #include "stream-event.hh"
 
 #include "translator.icc"
-
-class Laissez_vibrer_engraver : public Engraver
-{
-  Stream_event *event_;
-  Grob *lv_column_;
-  vector<Grob *> lv_ties_;
-
-  void stop_translation_timestep ();
-  void acknowledge_note_head (Grob_info);
-protected:
-  void listen_laissez_vibrer (Stream_event *);
-public:
-  TRANSLATOR_DECLARATIONS (Laissez_vibrer_engraver);
-};
 
 Laissez_vibrer_engraver::Laissez_vibrer_engraver (Context *c)
   : Engraver (c)
@@ -60,21 +47,38 @@ Laissez_vibrer_engraver::listen_laissez_vibrer (Stream_event *ev)
   ASSIGN_EVENT_ONCE (event_, ev);
 }
 
+bool
+Laissez_vibrer_engraver::is_my_event_class (Stream_event *ev)
+{
+  return ev->in_event_class ("laissez-vibrer-event");
+}
+
+Grob *
+Laissez_vibrer_engraver::make_my_tie (SCM cause)
+{
+  return make_item ("LaissezVibrerTie", cause);
+}
+
+Grob *
+Laissez_vibrer_engraver::make_my_column (SCM cause)
+{
+  return make_item ("LaissezVibrerTieColumn", cause);
+}
+
 void
 Laissez_vibrer_engraver::acknowledge_note_head (Grob_info inf)
 {
   /* use the heard event_ for all note heads, or an individual event for just
    * a single note head (attached as an articulation inside a chord) */
   Stream_event *tie_ev = event_;
-  Grob *head = inf.grob ();
-  Stream_event *note_ev = unsmob<Stream_event> (head->get_property ("cause"));
+  Stream_event *note_ev = inf.event_cause ();
   if (!tie_ev && note_ev && note_ev->in_event_class ("note-event"))
     {
       SCM articulations = note_ev->get_property ("articulations");
       for (SCM s = articulations; !tie_ev && scm_is_pair (s); s = scm_cdr (s))
         {
           Stream_event *ev = unsmob<Stream_event> (scm_car (s));
-          if (ev && ev->in_event_class ("laissez-vibrer-event"))
+          if (ev && is_my_event_class (ev))
             tie_ev = ev;
         }
     }
@@ -84,19 +88,19 @@ Laissez_vibrer_engraver::acknowledge_note_head (Grob_info inf)
 
   SCM cause = tie_ev->self_scm ();
 
-  Grob *lv_tie = make_item ("LaissezVibrerTie", cause);
+  Grob *lv_tie = make_my_tie (cause);
 
   if (!lv_column_)
-    lv_column_ = make_item ("LaissezVibrerTieColumn", lv_tie->self_scm ());
+    lv_column_ = make_my_column (lv_tie->self_scm ());
 
-  lv_tie->set_object ("note-head", head->self_scm ());
+  lv_tie->set_object ("note-head", inf.grob ()->self_scm ());
 
   Pointer_group_interface::add_grob (lv_column_, ly_symbol2scm ("ties"),
                                      lv_tie);
 
-  if (is_direction (unsmob<Stream_event> (cause)->get_property ("direction")))
+  if (is_direction (tie_ev->get_property ("direction")))
     {
-      Direction d = to_dir (unsmob<Stream_event> (cause)->get_property ("direction"));
+      Direction d = to_dir (tie_ev->get_property ("direction"));
       lv_tie->set_property ("direction", scm_from_int (d));
     }
 

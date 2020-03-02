@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2011--2015 Mike Solomon <mike@mikesolomon.org>
+  Copyright (C) 2011--2020 Mike Solomon <mike@mikesolomon.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 #include "pointer-group-interface.hh"
 #include "stem.hh"
 
+using std::vector;
+
 class Beam_collision_engraver : public Engraver
 {
 protected:
@@ -40,7 +42,7 @@ protected:
   void acknowledge_beam (Grob_info);
   void acknowledge_flag (Grob_info);
 
-  virtual void finalize ();
+  void finalize () override;
 
 private:
   bool covered_grob_has_interface (Grob *covered_grob, Grob *beam);

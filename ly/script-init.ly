@@ -1,6 +1,6 @@
 % script-init.ly
 
-\version "2.19.80"
+\version "2.21.0"
 
 harmonic = #(make-music 'HarmonicEvent)
 
@@ -14,6 +14,9 @@ espressivo = #(make-articulation "espressivo")
 fermata = #(make-articulation "fermata")
 flageolet = #(make-articulation "flageolet")
 halfopen = #(make-articulation "halfopen")
+haydnturn = #(make-articulation "haydnturn")
+henzelongfermata = #(make-articulation "henzelongfermata")
+henzeshortfermata = #(make-articulation "henzeshortfermata")
 lheel = #(make-articulation "lheel")
 lineprall = #(make-articulation "lineprall")
 longfermata = #(make-articulation "longfermata")
@@ -38,6 +41,7 @@ rtoe = #(make-articulation "rtoe")
 segno = #(make-articulation "segno")
 shortfermata = #(make-articulation "shortfermata")
 signumcongruentiae = #(make-articulation "signumcongruentiae")
+slashturn = #(make-articulation "slashturn")
 snappizzicato = #(make-articulation "snappizzicato")
 staccatissimo = #(make-articulation "staccatissimo"
                   'midi-length
@@ -61,6 +65,7 @@ upmordent = #(make-articulation "upmordent")
 upprall = #(make-articulation "upprall")
 varcoda = #(make-articulation "varcoda")
 verylongfermata = #(make-articulation "verylongfermata")
+veryshortfermata = #(make-articulation "veryshortfermata")
 
 % code char abbreviations
 dashHat = \marcato

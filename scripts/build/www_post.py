@@ -6,6 +6,7 @@
 # USAGE: www_post PACKAGE_NAME TOPLEVEL_VERSION OUTDIR TARGETS
 # please call me from top of the source directory
 
+import codecs
 import sys
 import os
 import re
@@ -38,7 +39,7 @@ static_files = {
         package_version + '\n',
     }
 
-for f, contents in static_files.items ():
+for f, contents in list(static_files.items ()):
     open (f, 'w').write (contents)
 
 sys.stderr.write ("Mirroring...\n")
@@ -70,7 +71,8 @@ whitelisted_files = [
 ]
 for f in files:
     if f.endswith ('.html'):
-        if f in whitelisted_files or not 'UNTRANSLATED NODE: IGNORE ME' in open (f).read ():
+        contents = codecs.open (f, 'r', 'utf-8').read ()
+        if f in whitelisted_files or not 'UNTRANSLATED NODE: IGNORE ME' in contents:
             html_files.append (f)
     else:
         hardlinked_files.append (f)
@@ -92,8 +94,10 @@ for t in targets:
         if not os.path.exists (new_dir):
             os.mkdir (new_dir)
     for f in hardlinked_files:
-        if not os.path.isfile (strip_file_name[t] (f)):
-            os.link (f, strip_file_name[t] (f))
+        dest_filename = strip_file_name[t] (f)
+        if os.path.isfile (dest_filename):
+            os.remove (dest_filename)
+        os.link (f, dest_filename)
     for l in symlinks:
         p = mirrortree.new_link_path (os.path.normpath (os.readlink (l)), os.path.dirname (l), strip_re)
         dest = strip_file_name[t] (l)

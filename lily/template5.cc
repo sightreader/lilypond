@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@
 
 #include "interval.tcc"
 
+using std::string;
+
 template<>
 Rational
 Interval_t<Rational>::infinity ()
@@ -30,13 +32,6 @@ Interval_t<Rational>::infinity ()
   Rational infty;
   infty.set_infinite (1);
   return infty;
-}
-
-template<>
-string
-Interval_t<Rational>::T_to_string (Rational a)
-{
-  return a.to_string ();
 }
 
 template INTERVAL__INSTANTIATE (Rational);
@@ -49,13 +44,6 @@ Interval_t<Moment>::infinity ()
 
   infty.main_part_.set_infinite (1);
   return infty;
-}
-
-template<>
-string
-Interval_t<Moment>::T_to_string (Moment a)
-{
-  return a.to_string ();
 }
 
 template INTERVAL__INSTANTIATE (Moment);

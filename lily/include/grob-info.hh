@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,12 +39,9 @@ public:
   Context *context () const;
   Stream_event *event_cause () const;
   Stream_event *ultimate_event_cause () const;
-  vector<Context *> origin_contexts (Translator *) const;
   Grob_info (Translator *, Grob *);
   Grob_info ();
 
-  Item *item () const;
-  Spanner *spanner () const;
   static bool less (Grob_info i, Grob_info j);
 };
 

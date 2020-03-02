@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2015 by David Kastrup <dak@gnu.org>
+  Copyright (C) 2015--2020 by David Kastrup <dak@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,6 +27,9 @@ namespace Guile_user {
   typedef Module_variable<module> Variable;
 
   extern Variable apply;
+#if GUILEV2
+  extern Variable f_default_port_encoding;
+#endif
   extern Variable plus;
   extern Variable make_module;
 #if GUILEV2
@@ -83,6 +86,7 @@ namespace Lily {
   extern Variable ly_event_p;
   extern Variable ly_make_event_class;
   extern Variable ly_music_p;
+  extern Variable make_concat_markup;
   extern Variable make_music;
   extern Variable make_safe_lilypond_module;
   extern Variable make_span_event;
@@ -100,6 +104,8 @@ namespace Lily {
   extern Variable pitchnames;
   extern Variable pure_chain_offset_callback;
   extern Variable remove_stencil_warnings;
+  extern Variable scale_p;
+  extern Variable scale_to_factor;
   extern Variable scale_layout;
   extern Variable scm_to_string;
   extern Variable score_lines_markup_list;
@@ -123,7 +129,8 @@ namespace Syntax {
   extern Variable argument_error;
   extern Variable composed_markup_list;
   extern Variable context_change;
-  extern Variable context_specification;
+  extern Variable context_create;
+  extern Variable context_find_or_create;
   extern Variable create_script;
   extern Variable create_script_function;
   extern Variable event_chord;
@@ -136,10 +143,8 @@ namespace Syntax {
   extern Variable partial_music_function;
   extern Variable partial_text_script;
   extern Variable property_override;
-  extern Variable property_override_function;
   extern Variable property_revert;
   extern Variable property_set;
-  extern Variable property_set_function;
   extern Variable property_unset;
   extern Variable repeat;
   extern Variable repetition_chord;

@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1993--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1993--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ struct Polynomial
   ssize_t degree ()const;
 
   /// coefficients
-  vector<Real> coefs_;
+  std::vector<Real> coefs_;
 
   // leading coef
   Real &lc ();
@@ -46,8 +46,8 @@ struct Polynomial
   void print () const;
   Real eval (Real) const;
   Real minmax (Real, Real, bool) const;
-  void print_sols (vector<Real>) const;
-  void check_sols (vector<Real>) const;
+  void print_sols (std::vector<Real>) const;
+  void check_sols (std::vector<Real>) const;
   void check_sol (Real x) const;
   static Polynomial multiply (const Polynomial &p1, const Polynomial &p2);
   static Polynomial power (int exponent, const Polynomial &src);
@@ -69,15 +69,14 @@ struct Polynomial
 
   /// take the derivative
   void differentiate ();
-  int set_mod (const Polynomial &u, const Polynomial &v);
 
   void debug_clean ();
 
-  vector<Real> solve_quadric ()const;
-  vector<Real> solve_cubic ()const;
-  vector<Real> solve_linear ()const;
+  std::vector<Real> solve_quadric ()const;
+  std::vector<Real> solve_cubic ()const;
+  std::vector<Real> solve_linear ()const;
 
-  vector<Real> solve () const;
+  std::vector<Real> solve () const;
 };
 
 IMPLEMENT_ARITHMETIC_OPERATOR (Polynomial, -);

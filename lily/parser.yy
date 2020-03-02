@@ -2,7 +2,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 1997--2015 Han-Wen Nienhuys <hanwen@xs4all.nl>
+  Copyright (C) 1997--2020 Han-Wen Nienhuys <hanwen@xs4all.nl>
                  Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ or
 %left ADDLYRICS
 
 %right ':' UNSIGNED REAL E_UNSIGNED EVENT_IDENTIFIER EVENT_FUNCTION '^' '_'
-       HYPHEN EXTENDER DURATION_IDENTIFIER '!'
+	HYPHEN EXTENDER DURATION_IDENTIFIER '!' '\'' ','
 
  /* The above are needed for collecting tremoli and other items (that
     could otherwise be interpreted as belonging to the next function
@@ -116,7 +116,6 @@ FIXME:
 #include <cctype>
 #include <cstdlib>
 #include <cstdio>
-using namespace std;
 
 #include "book.hh"
 #include "context.hh"
@@ -142,7 +141,7 @@ using namespace std;
 #include "lily-imports.hh"
 
 void
-Lily_parser::parser_error (Input const *i, Lily_parser *parser, SCM *, const string &s)
+Lily_parser::parser_error (Input const *i, Lily_parser *parser, SCM *, const std::string &s)
 {
 	parser->parser_error (*i, s);
 }
@@ -158,9 +157,8 @@ Lily_parser::parser_error (Input const *i, Lily_parser *parser, SCM *, const str
 		if (yychar != YYEMPTY)					\
 			parser->lexer_->push_extra_token		\
 				(yylloc, yychar, yylval);		\
-		if (Token)						\
-			parser->lexer_->push_extra_token		\
-				(Location, Token, Value);		\
+		parser->lexer_->push_extra_token			\
+			(Location, Token, Value);			\
 		parser->lexer_->push_extra_token (Location, BACKUP);	\
 		yychar = YYEMPTY;					\
 	} while (0)
@@ -224,6 +222,7 @@ SCM get_next_unique_lyrics_context_id ();
 #define _(x) gettext (x)
 #endif
 
+using std::string;
 
 static Music *make_music_with_input (SCM name, Input where);
 bool add_post_events (Music *music, SCM events);
@@ -240,6 +239,7 @@ bool is_regular_identifier (SCM id, bool multiple=false);
 SCM make_reverse_key_list (SCM keys);
 SCM try_word_variants (SCM pred, SCM str);
 SCM try_string_variants (SCM pred, SCM str);
+SCM post_event_cons (SCM ev, SCM tail);
 int yylex (YYSTYPE *s, YYLTYPE *loc, Lily_parser *parser);
 
 %}
@@ -601,7 +601,7 @@ embedded_lilypond:
 		if (!unsmob<Music> ($1))
 			$$ = MY_MAKE_MUSIC ("PostEvents", @$)->unprotect ();
 	}
-	| multiplied_duration post_events %prec ':'
+	| duration post_events %prec ':'
 	{
 		if (scm_is_pair ($2)) {
 			Music *n = MY_MAKE_MUSIC ("NoteEvent", @$);
@@ -697,11 +697,6 @@ assignment:
 		parser->lexer_->set_identifier (path, $5);
                 $$ = SCM_UNSPECIFIED;
 	}
-	| assignment_id ',' property_path '=' identifier_init {
-		SCM path = scm_cons ($1, $3);
-		parser->lexer_->set_identifier (path, $5);
-                $$ = SCM_UNSPECIFIED;
-	}
 	| markup_mode_word '=' identifier_init
 	{
 		if (scm_is_false (Lily::markup_function_p ($3)))
@@ -709,7 +704,7 @@ assignment:
 			parser->parser_error (@3, _ ("Not a markup function"));
 		} else {
 			Lily::define_markup_command_internal
-				(scm_string_to_symbol ($1), $3);
+ 				(scm_string_to_symbol ($1), $3, SCM_BOOL_F);
 		}
 		$$ = SCM_UNSPECIFIED;
 	}
@@ -729,16 +724,7 @@ identifier_init:
 	}
 	| post_event_nofinger post_events
 	{
-		$$ = scm_reverse_x ($2, SCM_EOL);
-		if (Music *m = unsmob<Music> ($1))
-		{
-			if (m->is_mus_type ("post-event-wrapper"))
-				$$ = scm_append
-					(scm_list_2 (m->get_property ("elements"),
-						     $$));
-			else
-				$$ = scm_cons ($1, $$);
-		}
+		$$ = post_event_cons ($1, scm_reverse_x ($2, SCM_EOL));
 		if (scm_is_pair ($$)
 		    && scm_is_null (scm_cdr ($$)))
 			$$ = scm_car ($$);
@@ -822,7 +808,7 @@ partial_function:
 			$$ = scm_list_1 (SCM_BOOL_F);
 		else
 			$$ = scm_cons
-				(scm_list_3 (Syntax::property_override_function,
+				(scm_list_3 (Syntax::property_override,
 					     scm_cdr ($2), scm_car ($2)),
 				 SCM_EOL);
 	}
@@ -832,7 +818,7 @@ partial_function:
 			$$ = scm_list_1 (SCM_BOOL_F);
 		else
 			$$ = scm_cons
-				(scm_list_3 (Syntax::property_set_function,
+				(scm_list_3 (Syntax::property_set,
 					     scm_cadr ($2), scm_car ($2)),
 				 SCM_EOL);
 	}
@@ -842,7 +828,7 @@ partial_function:
 			$$ = scm_list_1 (SCM_BOOL_F);
 		else
 			$$ = scm_cons
-				(scm_list_3 (Syntax::property_override_function,
+				(scm_list_3 (Syntax::property_override,
 					     scm_cdr ($2), scm_car ($2)),
 				 $4);
 	}
@@ -852,7 +838,7 @@ partial_function:
 			$$ = scm_list_1 (SCM_BOOL_F);
 		else
 			$$ = scm_cons
-				(scm_list_3 (Syntax::property_set_function,
+				(scm_list_3 (Syntax::property_set,
 					     scm_cadr ($2), scm_car ($2)),
 				 $4);
 	}
@@ -976,7 +962,7 @@ book_body:
 	{
 		Book *book = new Book;
 		init_papers (parser);
-		book->paper_ = dynamic_cast<Output_def*> (unsmob<Output_def> (parser->lexer_->lookup_identifier ("$defaultpaper"))->clone ());
+		book->paper_ = unsmob<Output_def> (parser->lexer_->lookup_identifier ("$defaultpaper"))->clone ();
 		book->paper_->unprotect ();
 		push_paper (parser, book->paper_);
 		book->header_ = get_header (parser);
@@ -1456,7 +1442,7 @@ music_embedded:
 	{
 		$$ = $3;
 	}
-	| multiplied_duration post_events %prec ':'
+	| duration post_events %prec ':'
 	{
 		Music *n = MY_MAKE_MUSIC ("NoteEvent", @$);
 
@@ -1619,10 +1605,10 @@ context_mod_list:
 
 context_prefix:
 	CONTEXT symbol optional_id optional_context_mods {
-		$$ = START_MAKE_SYNTAX (context_specification, $2, $3, $4, SCM_BOOL_F);
+		$$ = START_MAKE_SYNTAX (context_find_or_create, $2, $3, $4);
 	}
 	| NEWCONTEXT symbol optional_id optional_context_mods {
-		$$ = START_MAKE_SYNTAX (context_specification, $2, $3, $4, SCM_BOOL_T);
+		$$ = START_MAKE_SYNTAX (context_create, $2, $3, $4);
 	}
 	;
 
@@ -1879,7 +1865,7 @@ function_arglist_nonbackup:
 					       (parser, @3, $3),
 					       $1, $2);
 	}
-	| function_arglist_nonbackup_reparse REPARSE multiplied_duration
+	| function_arglist_nonbackup_reparse REPARSE duration
 	{
 		$$ = check_scheme_arg (parser, @3, $3, $1, $2);
 	}
@@ -2276,7 +2262,7 @@ function_arglist_backup:
 		$$ = check_scheme_arg (parser, @3,
 				       $3, $1, $2);
 	}
-	| function_arglist_backup REPARSE multiplied_duration
+	| function_arglist_backup REPARSE duration
 	{
 		$$ = check_scheme_arg (parser, @3,
 				       $3, $1, $2);
@@ -2412,7 +2398,7 @@ function_arglist_common:
 		$$ = check_scheme_arg (parser, @3,
 				       $3, $1, $2);
 	}
-	| function_arglist_common_reparse REPARSE multiplied_duration
+	| function_arglist_common_reparse REPARSE duration
 	{
 		$$ = check_scheme_arg (parser, @3,
 				       $3, $1, $2);
@@ -2640,7 +2626,7 @@ mode_changed_music:
 		parser->lexer_->pop_state ();
 	}
 	| mode_changing_head_with_context optional_context_mods grouped_music_list {
-		$$ = MAKE_SYNTAX (context_specification, @$, $1, SCM_EOL, $2, SCM_BOOL_T, $3);
+		$$ = MAKE_SYNTAX (context_create, @$, $1, SCM_EOL, $2, $3);
 		if (scm_is_eq ($1, ly_symbol2scm ("ChordNames")))
 		{
 		  $$ = MAKE_SYNTAX (unrelativable_music, @$, $$);
@@ -3178,22 +3164,7 @@ post_events:
 		$$ = SCM_EOL;
 	}
 	| post_events post_event {
-		$$ = $1;
-		if (Music *m = unsmob<Music> ($2))
-		{
-			if (m->is_mus_type ("post-event-wrapper"))
-			{
-				for (SCM p = m->get_property ("elements");
-				     scm_is_pair (p);
-				     p = scm_cdr (p))
-				{
-					$$ = scm_cons (scm_car (p), $$);
-				}
-			} else {
-				m->set_spot (parser->lexer_->override_input (@2));
-				$$ = scm_cons ($2, $$);
-			}
-		}
+		$$ = post_event_cons ($2, $1);
 	}
 	;
 
@@ -3318,10 +3289,18 @@ quotes:
 	/* empty */
 	{
                 $$ = SCM_INUM0;
-        }
-	| sub_quotes
-        | sup_quotes
+	} %prec ':'
+	| sub_quotes %prec ':'
+	| sup_quotes %prec ':'
         ;
+
+// no quotes, no error: pass *undefined* in that case.
+erroneous_quotes:
+	quotes {
+		if (scm_is_eq (SCM_INUM0, $1))
+			$$ = SCM_UNDEFINED;
+	}
+	;
 
 sup_quotes:
 	'\'' {
@@ -3452,7 +3431,7 @@ maybe_notemode_duration:
 	{
 		$$ = SCM_UNDEFINED;
 	} %prec ':'
-	| multiplied_duration	{
+	| duration	{
 		$$ = $1;
 		parser->default_duration_ = *unsmob<Duration> ($$);
 	}
@@ -3481,7 +3460,7 @@ steno_duration:
 	}
 	;
 
-multiplied_duration:
+duration:
 	steno_duration multipliers {
 		$$ = make_duration ($1, 0, $2);
 	}
@@ -3494,6 +3473,11 @@ dots:
 	| dots '.' {
 		$$ = scm_oneplus ($1);
 	}
+	;
+
+multiplier_scm:
+	NUMBER_IDENTIFIER
+	| embedded_scm_bare
 	;
 
 multipliers:
@@ -3515,6 +3499,16 @@ multipliers:
 							  scm_cdr ($3)));
 		else
 			$$ = scm_divide (scm_car ($3), scm_cdr ($3));
+	}
+	| multipliers '*' multiplier_scm
+	{
+		if (scm_is_false (Lily::scale_p ($3)))
+		{
+			parser->parser_error (@3, _ ("not a multiplier"));
+		} else if (SCM_UNBNDP ($1))
+			$$ = Lily::scale_to_factor ($3);
+		else
+			$$ = scm_product ($1, Lily::scale_to_factor ($3));
 	}
 	;
 
@@ -3636,18 +3630,42 @@ optional_rest:
 	;
 
 pitch_or_music:
-	pitch exclamations questions octave_check maybe_notemode_duration optional_rest post_events {
+// The erroneous_quotes element is for input such as a1'' which is a
+// typical note entry error that we don't want the parser to get
+// confused about.  The resulting grammar, however, is inconsistent
+// enough that accepting it is not doing anybody a favor.
+	pitch exclamations questions octave_check maybe_notemode_duration erroneous_quotes optional_rest post_events {
 		if (!parser->lexer_->is_note_state ())
 			parser->parser_error (@1, _ ("have to be in Note mode for notes"));
+		if (!SCM_UNBNDP ($6))
+		{
+			// It's possible to get here without a
+			// duration, like when there is no
+			// octave_check but a question mark.  But we
+			// point out the most frequent error of an
+			// interspersed duration specifically
+			if (!SCM_UNBNDP ($5))
+				parser->parser_error (@6, _ ("octave marks must precede duration"));
+			else
+				parser->parser_error (@6, _ ("badly placed octave marks"));
+			// Try sorting the quotes to where they likely belong
+			if (scm_is_number ($4)) {
+				$4 = scm_sum ($4, $6);
+			} else {
+				$1 = unsmob<Pitch> ($1)->transposed
+					(Pitch (scm_to_int ($6), 0)).smobbed_copy ();
+			}
+		}
+
 		if (!SCM_UNBNDP ($2)
                     || !SCM_UNBNDP ($3)
                     || scm_is_number ($4)
                     || !SCM_UNBNDP ($5)
-                    || scm_is_true ($6)
-		    || scm_is_pair ($7))
+		    || scm_is_true ($7)
+		    || scm_is_pair ($8))
 		{
 			Music *n = 0;
-			if (scm_is_true ($6))
+			if (scm_is_true ($7))
 				n = MY_MAKE_MUSIC ("RestEvent", @$);
 			else
 				n = MY_MAKE_MUSIC ("NoteEvent", @$);
@@ -3669,9 +3687,9 @@ pitch_or_music:
 				n->set_property ("cautionary", SCM_BOOL_T);
 			if (to_boolean ($2) || to_boolean ($3))
 				n->set_property ("force-accidental", SCM_BOOL_T);
-			if (scm_is_pair ($7))
+			if (scm_is_pair ($8))
 				n->set_property ("articulations",
-						 scm_reverse_x ($7, SCM_EOL));
+						 scm_reverse_x ($8, SCM_EOL));
 			$$ = n->unprotect ();
 		}
 	} %prec ':'
@@ -4069,18 +4087,38 @@ markup_command_list:
 	}
 	;
 
+markup_command_embedded_lilypond:
+	'{' {
+		parser->lexer_->push_note_state (Lily::pitchnames);
+	} embedded_lilypond '}' {
+		parser->lexer_->pop_state ();
+                $$ = $3;
+	}
+	;
+
+
 markup_command_basic_arguments:
 	EXPECT_MARKUP_LIST markup_command_list_arguments markup_list {
-	  $$ = scm_cons ($3, $2);
+		$$ = scm_cons ($3, $2);
 	}
 	| EXPECT_SCM markup_command_list_arguments embedded_scm {
-	  $$ = check_scheme_arg (parser, @3, $3, $2, $1);
+		$$ = check_scheme_arg (parser, @3, $3, $2, $1);
+	}
+	| EXPECT_SCM markup_command_list_arguments markup_command_embedded_lilypond
+	{
+		$$ = check_scheme_arg (parser, @3, $3, $2, $1);
+	}
+	| EXPECT_SCM markup_command_list_arguments mode_changed_music {
+		$$ = check_scheme_arg (parser, @3, $3, $2, $1);
+	}
+	| EXPECT_SCM markup_command_list_arguments MUSIC_IDENTIFIER {
+		$$ = check_scheme_arg (parser, @3, $3, $2, $1);
 	}
 	| EXPECT_SCM markup_command_list_arguments STRING {
 		$$ = check_scheme_arg (parser, @3, $3, $2, $1);
 	}
 	| EXPECT_NO_MORE_ARGS {
-	  $$ = SCM_EOL;
+		$$ = SCM_EOL;
 	}
 	;
 
@@ -4653,7 +4691,7 @@ SCM reverse_music_list (Lily_parser *parser, Input loc, SCM lst, bool preserve, 
 		Music *m = unsmob<Music> (elt);
 		assert (m);
 		if (m->is_mus_type ("post-event")) {
-			post = scm_cons (elt, post);
+			post = post_event_cons (elt, post);
 			continue;
 		}
 		if (add_post_events (m, post)) {
@@ -4699,6 +4737,51 @@ SCM reverse_music_list (Lily_parser *parser, Input loc, SCM lst, bool preserve, 
 	return res;
 }
 
+SCM post_event_cons (SCM post_event, SCM tail)
+{
+	Music *ev = unsmob<Music> (post_event);
+	if (!ev)
+		return tail;
+	if (!ev->is_mus_type ("post-event-wrapper"))
+		return scm_cons (post_event, tail);
+	SCM elts = SCM_UNDEFINED;
+	SCM props = SCM_EOL;
+	SCM tweaks = SCM_UNDEFINED;
+	for (SCM p = ev->get_property_alist (true);
+	     scm_is_pair (p);
+	     p = scm_cdr (p))
+	{
+		SCM pair = scm_car (p);
+		SCM sym = scm_car (pair);
+		if (scm_is_eq (sym, ly_symbol2scm ("origin")))
+			continue;
+		else if (scm_is_eq (sym, ly_symbol2scm ("elements"))
+			 && SCM_UNBNDP (elts))
+			elts = scm_cdr (pair);
+		else if (scm_is_eq (sym, ly_symbol2scm ("tweaks"))
+			 && SCM_UNBNDP (tweaks))
+			tweaks = scm_cdr (pair);
+		else
+			props = scm_cons (pair, props);
+	}
+	if (!scm_is_pair (elts))
+		return tail;
+	for (SCM p = elts; scm_is_pair (p); p = scm_cdr (p))
+	{
+		Music *ev = unsmob<Music> (scm_car (p));
+		// tweaks are always collected in-order, newer tweaks
+		// nearer to the front of the list
+		if (scm_is_pair (tweaks))
+			ev->set_property ("tweaks",
+					  scm_reverse_x (tweaks, ev->get_property ("tweaks")));
+		// other properties are applied last to first so that
+		// in case of duplicate properties, the actually
+		// current one survives
+		for (SCM q = props; scm_is_pair (q); q = scm_cdr (q))
+			ev->set_property (scm_caar (q), scm_cdar (q));
+	}
+	return ly_append2 (elts, tail);
+}
 
 int
 yylex (YYSTYPE *s, YYLTYPE *loc, Lily_parser *parser)

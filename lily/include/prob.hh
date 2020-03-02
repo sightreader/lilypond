@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2004--2015  Jan Nieuwenhuizen <janneke@gnu.org>
+  Copyright (C) 2004--2020  Jan Nieuwenhuizen <janneke@gnu.org>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ public:
   static const char * const type_p_name_;
   virtual ~Prob ();
 private:
-  DECLARE_CLASSNAME (Prob);
+  VIRTUAL_CLASS_NAME (Prob);
 
   void init_vars ();
 protected:
@@ -56,7 +56,7 @@ protected:
 public:
   Prob (SCM, SCM);
   Prob (Prob const &);
-  virtual string name () const;
+  virtual std::string name () const;
   SCM type () const { return type_; }
   SCM get_property_alist (bool _mutable) const;
   SCM internal_get_property (SCM sym) const;

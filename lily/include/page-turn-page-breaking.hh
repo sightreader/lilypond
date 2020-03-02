@@ -1,7 +1,7 @@
 /*
   This file is part of LilyPond, the GNU music typesetter.
 
-  Copyright (C) 2006--2015 Joe Neeman <joeneeman@gmail.com>
+  Copyright (C) 2006--2020 Joe Neeman <joeneeman@gmail.com>
 
   LilyPond is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 class Page_turn_page_breaking: public Page_breaking
 {
 public:
-  virtual SCM solve ();
+  SCM solve () override;
 
   Page_turn_page_breaking (Paper_book *pb);
   virtual ~Page_turn_page_breaking ();
@@ -47,7 +47,7 @@ protected:
     vsize break_pos_; /* index into breaks_ */
 
     Line_division div_;
-    vector<vsize> system_count_; /* systems per page */
+    std::vector<vsize> system_count_; /* systems per page */
 
     Break_node ()
     {
@@ -59,16 +59,16 @@ protected:
     }
   };
 
-  vector<Break_node> state_;
+  std::vector<Break_node> state_;
 
   vsize total_page_count (Break_node const &b);
   Break_node put_systems_on_pages (vsize start,
                                    vsize end,
                                    vsize configuration,
-                                   vsize page_number);
+                                   int page_number);
 
-  SCM make_lines (vector<Break_node> *breaks);
-  SCM make_pages (vector<Break_node> const &breaks, SCM systems);
+  SCM make_lines (std::vector<Break_node> *breaks);
+  SCM make_pages (std::vector<Break_node> const &breaks, SCM systems);
 
   void calc_subproblem (vsize i);
   void print_break_node (Break_node const &b);

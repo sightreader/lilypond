@@ -1,4 +1,4 @@
-\version "2.19.21"
+\version "2.21.0"
 
 \header {
   texidoc = "Clefs for cue notes and line breaks.  If the cue notes start in a
