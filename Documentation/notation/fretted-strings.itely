@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @node Fretted string instruments
 @section Fretted string instruments
@@ -540,11 +540,11 @@ Chords are not handled in a special way, and hence the automatic
 string selector may easily select the same string for two notes in
 a chord.
 
-In order to handle @code{\partcombine}, a @code{TabStaff} must use
+In order to handle @code{\partCombine}, a @code{TabStaff} must use
 specially-created voices:
 
 @lilypond[quote,ragged-right,verbatim]
-melodia = \partcombine { e4 g g g } { e4 e e e }
+melodia = \partCombine { e4 g g g } { e4 e e e }
 <<
   \new TabStaff <<
     \new TabVoice = "one" s1
@@ -1907,7 +1907,7 @@ Notation Reference:
 @node Indicating power chords
 @unnumberedsubsubsec Indicating power chords
 
-@funindex \powerChords
+@funindex 
 
 @cindex power chord
 @cindex chord, power
@@ -1918,7 +1918,7 @@ constructs:
 @lilypond[quote,ragged-right,verbatim]
 ChordsAndSymbols = {
   \chordmode {
-    \powerChords
+    
     e,,1:5
     a,,1:5.8
     \set minimumFret = #8
@@ -1951,7 +1951,7 @@ other common chord modifier is used:
 @lilypond[quote,ragged-right,verbatim]
 mixedChords = \chordmode {
   c,1
-  \powerChords
+  
   b,,1:5
   fis,,1:5.8
   g,,1:m

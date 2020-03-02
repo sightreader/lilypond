@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 
 @c Translators: Tomohiro Tatejima, Masamichi Hosoda, Yoshiki Sawada
@@ -1183,7 +1183,7 @@ c'
 
 @lilypond[quote,verbatim,fragment]
 a'2 a'^\markup {
-  \note "4" #1
+  \note {4} #1
   =
   \note-by-number #1 #1 #1.5
 }

@@ -8,7 +8,7 @@
    Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Frédéric Chiasson, Jean-Charles Malahieude
 @c Translation checkers: Valentin Villenave, François Martin, Xavier Scheuer
@@ -957,19 +957,19 @@ R2.*2 |
 @cindex point d'orgue et silence multimesure
 @cindex silence multimesure et point d'orgue
 
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex MultiMeasureRestText
 
 Vous pouvez aussi ajouter du texte à un silence multimesure en
 utilisant la syntaxe @w{@var{note}-@code{markup}} (cf.
-@ref{Mise en forme du texte}).  La variable @code{\fermataMarkup} quant
+@ref{Mise en forme du texte}).  La variable @code{\fermata} quant
 à elle permet d'ajouter un point d'orgue :
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermataMarkup
+  R2.^\fermata
 }
 @end lilypond
 
@@ -995,13 +995,13 @@ numéros de mesure.
 @funindex \textLengthOn
 @funindex \textLengthOff
 @funindex textLenthOff
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermataMarkup},
+@code{\fermata},
 @code{\compressMMRests}.
 @endpredefined
 
@@ -2169,8 +2169,8 @@ possibles ; voir @ref{Définition des règles de ligature automatique}.
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {changing-beam-knee-gap.ly}
 
-@cindex ligature, @code{\partcombine} et @code{\autoBeamOff}
-@cindex voix, @code{\autoBeamOff} et @code{\partcombine}
+@cindex ligature, @code{\partCombine} et @code{\autoBeamOff}
+@cindex voix, @code{\autoBeamOff} et @code{\partCombine}
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {partcombine-and-autobeamoff.ly}
 

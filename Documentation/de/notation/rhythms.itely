@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes.
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Till Paala
 
@@ -920,19 +920,19 @@ R2.*2 |
 @cindex Fermate über Mehrtaktpausen
 @cindex Mehrtaktpause mit Fermate
 
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex MultiMeasureRestText
 
 Textbeschriftung kann Mehrtaktpausen mit @code{\markup}
 hinzugefügt werden.  Ein
-vordefinierte Befehl @code{\fermataMarkup} fügt eine
+vordefinierte Befehl @code{\fermata} fügt eine
 Fermate ein.
 
 @lilypond[quote,verbatim,relative=2]
 \compressFullBarRests
 \time 3/4
 R2.*10^\markup { \italic "ad lib." }
-R2.^\fermataMarkup
+R2.^\fermata
 @end lilypond
 
 @warning{
@@ -958,14 +958,14 @@ Taktprüfungswarnungen nicht angezeigt.
 
 @funindex \textLengthOn
 @funindex \textLengthOff
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \compressFullBarRests
 @funindex \expandFullBarRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermataMarkup},
+@code{\fermata},
 @code{\compressFullBarRests},
 @code{\expandFullBarRests}.
 @endpredefined
@@ -2054,8 +2054,8 @@ können erstellt werden, siehe @ref{Einstellung von automatischen Balken}.
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {changing-beam-knee-gap.ly}
 
-@cindex Balken, \partcombine und \autoBeamOff
-@cindex Stimmen, \autoBeamOff und \partcombine
+@cindex Balken, \partCombine und \autoBeamOff
+@cindex Stimmen, \autoBeamOff und \partCombine
 
 @lilypondfile [verbatim, quote, ragged-right, texidoc, doctitle]
 {partcombine-and-autobeamoff.ly}

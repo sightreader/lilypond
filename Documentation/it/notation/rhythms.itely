@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Federico Bruni
 @c Translation checkers: Luca Rossetto Casel
@@ -948,17 +948,17 @@ R2.*2 |
 @cindex annotazione su pausa multipla
 @cindex pausa multipla con testo a margine
 
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex MultiMeasureRestText
 
 Si possono aggiungere delle annotazioni alle pause multiple.  Il comando
-predefinito @code{\fermataMarkup} permette di aggiungere il segno di corona.
+predefinito @code{\fermata} permette di aggiungere il segno di corona.
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermataMarkup
+  R2.^\fermata
 }
 @end lilypond
 
@@ -982,13 +982,13 @@ non apparire i relativi avvertimenti del controllo battuta.
 
 @funindex \textLengthOn
 @funindex \textLengthOff
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermataMarkup},
+@code{\fermata},
 @code{\compressMMRests},
 @endpredefined
 
@@ -2150,8 +2150,8 @@ quelli automatici predefiniti, come è spiegato in @ref{Impostare il comportamen
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {changing-beam-knee-gap.ly}
 
-@cindex travatura, @code{\partcombine} con @code{\autoBeamOff}
-@cindex voce, @code{\partcombine} con @code{\autoBeamOff}
+@cindex travatura, @code{\partCombine} con @code{\autoBeamOff}
+@cindex voce, @code{\partCombine} con @code{\autoBeamOff}
 @lilypondfile [verbatim, quote, ragged-right, texidoc, doctitle]
 {partcombine-and-autobeamoff.ly}
 

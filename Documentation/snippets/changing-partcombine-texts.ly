@@ -4,7 +4,7 @@
 %% and then run scripts/auxiliar/makelsr.py
 %%
 %% This file is in the public domain.
-\version "2.18.0"
+\version "2.21.0"
 
 \header {
   lsrtags = "simultaneous-notes"
@@ -21,7 +21,7 @@ the solo and unison sections may be changed:
   \set Staff.soloText = #"girl"
   \set Staff.soloIIText = #"boy"
   \set Staff.aDueText = #"together"
-  \partcombine
+  \partCombine
     \relative c'' {
       g4 g r r
       a2 g

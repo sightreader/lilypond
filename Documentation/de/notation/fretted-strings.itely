@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes.
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Till Paala
 
@@ -498,12 +498,12 @@ Referenz der Interna:
 Akkorde werden nicht gesondert behandelt, sodass die Saitenauswahlfunktion
 eventuell die selbe Saite für zwei Töne eines Akkordes auswählen kann.
 
-Damit die Kombination von Stimmen (@code{\partcombine}) richtig funktioniert,
+Damit die Kombination von Stimmen (@code{\partCombine}) richtig funktioniert,
 müssen speziell erstellte Stimmen innerhalb des Tabulatursystems
 (@code{TabStaff}) benutzt werden:
 
 @lilypond[quote,ragged-right,verbatim]
-melodia = \partcombine { e4 g g g } { e4 e e e }
+melodia = \partCombine { e4 g g g } { e4 e e e }
 <<
   \new TabStaff <<
     \new TabVoice = "one" s1
@@ -1809,7 +1809,7 @@ Schnipsel:
 @unnumberedsubsubsec Powerakkorde anzeigen
 @translationof Indicating power chords
 
-@funindex \powerChords
+@funindex 
 
 @cindex Powerakkorde
 @cindex Powerchords
@@ -1820,7 +1820,7 @@ gesetzt werden:
 @lilypond[quote,ragged-right,verbatim]
 ChordsAndSymbols = {
   \chordmode {
-    \powerChords
+    
     e,,1:5
     a,,1:5.8
     \set minimumFret = #8
@@ -1853,7 +1853,7 @@ normalen Akkord-Modifikatoren verwendet wird:
 @lilypond[quote,ragged-right,verbatim]
 mixedChords = \chordmode {
   c,1
-  \powerChords
+  
   b,,1:5
   fis,,1:5.8
   g,,1:m

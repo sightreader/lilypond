@@ -1,4 +1,4 @@
-\version "2.17.6"
+\version "2.21.0"
 
 \header {
   texidoc = "Stencils can be scaled using @code{ly:stencil-scale}.
@@ -19,5 +19,5 @@ signature in this test)."
   \override MultiMeasureRestText.stencil =
   #(lambda (grob)
      (ly:stencil-scale (ly:text-interface::print grob) 2 1.6))
-  R1\fermataMarkup
+  R1\fermata
 }

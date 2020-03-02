@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.21"
+@c \version "2.21.0"
 
 @node Expresiones
 @section Expresiones
@@ -118,7 +118,7 @@ se tratan los métodos para crear las nuevas marcas dinámicas.
 @funindex \fermata
 @funindex \longfermata
 @funindex \verylongfermata
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \segno
 @funindex \coda
 @funindex \varcoda
@@ -181,7 +181,7 @@ describen de forma más completa en @rinternals{Script}.
 Las articulaciones se pueden adjuntar a los silencios así como a
 las notas, pero no se pueden adjuntar a silencions multicompás.
 Está disponible una instrucción predefinida especial,
-@code{\fermataMarkup}, para adosar un calderón a un silencio
+@code{\fermata}, para adosar un calderón a un silencio
 multicompás (y sólo a un silencio multicompás).  La instrucción
 crea un objeto @code{MultiMeasureRestText}.
 
@@ -189,7 +189,7 @@ crea un objeto @code{MultiMeasureRestText}.
 \override Script.color = #red
 \override MultiMeasureRestText.color = #blue
 a'2\fermata r\fermata
-R1\fermataMarkup
+R1\fermata
 @end lilypond
 
 Además de articulaciones, se pueden adjuntar textos y elementos de

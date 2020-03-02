@@ -6,7 +6,7 @@
     version that you are working on.  See TRANSLATION for details.
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Tomohiro Tatejima, Yoshiki Sawada
 @c Translation status: post-GDP
@@ -930,18 +930,18 @@ R2.*2 |
 @cindex markup on multi-measure rest (複数小節にまたがる休符上のマークアップ)
 @cindex multi-measure rest with markup (マークアップを持つ複数小節にまたがる休符)
 
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex MultiMeasureRestText
 
 マークアップを複数小節にまたがる休符に付け加えることができます。@c
 フェルマータを付け加えるための定義済みコマンドとして
-@code{\fermataMarkup} が提供されています。
+@code{\fermata} が提供されています。
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermataMarkup
+  R2.^\fermata
 }
 @end lilypond
 
@@ -970,13 +970,13 @@ R1^"right"
 
 @funindex \textLengthOn
 @funindex \textLengthOff
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermataMarkup},
+@code{\fermata},
 @code{\compressMMRests}
 @endpredefined
 
@@ -2092,8 +2092,8 @@ R1^"right"
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {changing-beam-knee-gap.ly}
 
-@cindex beams, \partcombine with \autoBeamOff (連桁と \autoBeamOff を伴う \partcombine)
-@cindex voices, \partcombine with \autoBeamOff (ボイスと \autoBeamOff を伴う \partcombine)
+@cindex beams, \partCombine with \autoBeamOff (連桁と \autoBeamOff を伴う \partCombine)
+@cindex voices, \partCombine with \autoBeamOff (ボイスと \autoBeamOff を伴う \partCombine)
 
 @lilypondfile [verbatim, quote, ragged-right, texidoc, doctitle]
 {partcombine-and-autobeamoff.ly}

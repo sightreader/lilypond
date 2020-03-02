@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Walter Garcia-Fontes
 @c Translation checkers:
@@ -285,14 +285,14 @@ d'un canvi de pauta.  En aquest cas, feu servir barres manuals.
 @cindex automàtic, canvi de pentagrama
 @cindex pentagrama, canvi automàtic de
 
-@funindex \autochange
+@funindex \autoChange
 @funindex PianoStaff
 
 Es pot fer que les veus canviïn automàticament entre els
 pentagrames inferior i superior.  La sintaxi per aconseguir això és
 
 @example
-\autochange @dots{}@var{música}@dots{}
+\autoChange @dots{}@var{música}@dots{}
 @end example
 
 @noindent
@@ -305,7 +305,7 @@ i s'avança saltant sobre els silencis per fer canvis per avançat.
 
 @lilypond[quote,verbatim]
 \new PianoStaff {
-  \autochange {
+  \autoChange {
     g4 a b c'
     d'4 r a g
   }
@@ -323,9 +323,9 @@ music = {
   d'8 r f' g' a'2
 }
 
-\autochange d' \music
-\autochange b \with { \clef soprano } \music
-\autochange d' \with { \clef alto } \with { \clef tenor } \music
+\autoChange d' \music
+\autoChange b \with { \clef soprano } \music
+\autoChange d' \with { \clef alto } \with { \clef tenor } \music
 @end lilypond
 
 @cindex relatiu, mode, autocanviador i
@@ -334,13 +334,13 @@ music = {
 @funindex \relative
 
 Una secció marcada @code{\relative} que es troba fora de
-@code{\autochange} no té efecte sobre les notes de la música:
+@code{\autoChange} no té efecte sobre les notes de la música:
 per tant, en cas necessari escriviu @code{\relative} dins de
-@code{\autochange}.
+@code{\autoChange}.
 
 Si cal més control sobre els pentagrames individuals, es poden
 crear manualment amb els noms @code{"up"} i @code{"down"}.
-Aleshores, l'ordre @code{\autochange} alternarà la veu entre els
+Aleshores, l'ordre @code{\autoChange} alternarà la veu entre els
 pentagrames existents.
 
 @warning{Si es creen els pentagrames manualment, @emph{s'han}
@@ -356,7 +356,7 @@ tonalitat al pentagrama inferior:
   \new Staff = "up" {
     \new Voice = "melodiaU" {
       \key g \major
-      \autochange \relative {
+      \autoChange \relative {
         g8 b a c b d c e
         d8 r fis, g a2
       }
@@ -380,7 +380,7 @@ Referència de funcionament intern:
 @rinternals{AutoChangeMusic}.
 
 @knownissues
-@cindex acords, divisió entre pentagrames amb \autochange
+@cindex acords, divisió entre pentagrames amb \autoChange
 
 Els canvis de pentagrama poden no acabar en llocs òptims. Per
 aconseguir una sortida d'alta qualitat és millor especificar

@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.21"
+@c \version "2.21.0"
 
 @c Translators: Walter Garcia-Fontes
 @c Translation checkers:
@@ -117,7 +117,7 @@ tracten els mètodes per crear les marques dinàmiques.
 @funindex \fermata
 @funindex \longfermata
 @funindex \verylongfermata
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \segno
 @funindex \coda
 @funindex \varcoda
@@ -179,7 +179,7 @@ propietats es descriuen de forma més completa a @rinternals{Script}.
 
 Les articulacions es poden adjuntar als silencis així com a les
 notes, pero no es poden ajuntar a silencis multicompàs. Hi ha
-disponible una ordre predefinida especial, @code{\fermataMarkup},
+disponible una ordre predefinida especial, @code{\fermata},
 per annexar un calderó a un silenci multicompàs (i sols a un
 silenci multicompàs).  L'ordre crea un objecte @code{MultiMeasureRestText}.
 
@@ -187,7 +187,7 @@ silenci multicompàs).  L'ordre crea un objecte @code{MultiMeasureRestText}.
 \override Script.color = #red
 \override MultiMeasureRestText.color = #blue
 a'2\fermata r\fermata
-R1\fermataMarkup
+R1\fermata
 @end lilypond
 
 A més d'articulacions, es poden adjuntar textos i elements de

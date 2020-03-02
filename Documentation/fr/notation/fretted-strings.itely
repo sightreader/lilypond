@@ -8,7 +8,7 @@
    Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Matthieu Jacquot
 @c Translation checkers: Jean-Charles Malahieude
@@ -555,11 +555,11 @@ Les accords ne subissent aucun traitement particulier ; de ce fait,
 la sélection automatique des cordes peut attribuer une même corde pour
 deux notes différentes de l'accord.
 
-Afin que @code{\partcombine} fonctionne avec des tablatures, on doit
+Afin que @code{\partCombine} fonctionne avec des tablatures, on doit
 ajouter au contexte @code{TabStaff} des voix fantômes :
 
 @lilypond[quote,ragged-right,verbatim]
-melodia = \partcombine { e4 g g g } { e4 e e e }
+melodia = \partCombine { e4 g g g } { e4 e e e }
 <<
   \new TabStaff <<
     \new TabVoice = "one" s1
@@ -1931,7 +1931,7 @@ Morceaux choisis :
 @unnumberedsubsubsec Indication de @emph{power chord}
 @translationof Indicating power chords
 
-@funindex \powerChords
+@funindex 
 
 @cindex power chord
 @cindex chord, power
@@ -1943,7 +1943,7 @@ dans une construction en accord :
 @lilypond[quote,ragged-right,verbatim]
 ChordsAndSymbols = {
   \chordmode {
-    \powerChords
+    
     e,,1:5
     a,,1:5.8
     \set minimumFret = #8
@@ -1976,7 +1976,7 @@ accord traditionnel :
 @lilypond[quote,ragged-right,verbatim]
 mixedChords = \chordmode {
   c,1
-  \powerChords
+  
   b,,1:5
   fis,,1:5.8
   g,,1:m

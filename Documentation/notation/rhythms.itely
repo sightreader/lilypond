@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @node Rhythms
 @section Rhythms
@@ -933,18 +933,18 @@ R2.*2 |
 @cindex markup, on multi-measure rest
 @cindex multi-measure rest, with markup
 
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex MultiMeasureRestText
 
 Markups can be added to multi-measure rests.
-The predefined command @code{\fermataMarkup}
+The predefined command @code{\fermata}
 is provided for adding fermatas.
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermataMarkup
+  R2.^\fermata
 }
 @end lilypond
 
@@ -968,13 +968,13 @@ setting, resulting bar-check warnings may not be displayed.
 
 @funindex \textLengthOn
 @funindex \textLengthOff
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermataMarkup},
+@code{\fermata},
 @code{\compressMMRests}.
 @endpredefined
 
@@ -2133,8 +2133,8 @@ created; see @ref{Setting automatic beam behavior}.
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {changing-beam-knee-gap.ly}
 
-@cindex beam, @code{\partcombine} with @code{\autoBeamOff}
-@cindex voice, @code{\partcombine} with @code{\autoBeamOff}
+@cindex beam, @code{\partCombine} with @code{\autoBeamOff}
+@cindex voice, @code{\partCombine} with @code{\autoBeamOff}
 @lilypondfile [verbatim, quote, ragged-right, texidoc, doctitle]
 {partcombine-and-autobeamoff.ly}
 

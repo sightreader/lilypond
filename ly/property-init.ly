@@ -1,6 +1,6 @@
 % property-init.ly
 
-\version "2.19.22"
+\version "2.21.0"
 
 %% for dashed slurs, phrasing slurs, and ties
 #(define (make-simple-dash-definition dash-fraction dash-period)
@@ -410,12 +410,12 @@ partcombineForce =
    (if type (propertySet 'partCombineForced type)
        (propertyUnset 'partCombineForced)))
 
-partcombineApart = \partcombineForce #'apart
-partcombineChords = \partcombineForce #'chords
-partcombineUnisono = \partcombineForce #'unisono
-partcombineSoloI = \partcombineForce #'solo1
-partcombineSoloII = \partcombineForce #'solo2
-partcombineAutomatic = \partcombineForce \default
+partcombineApart = \partCombineForce #'apart
+partcombineChords = \partCombineForce #'chords
+partcombineUnisono = \partCombineForce #'unisono
+partcombineSoloI = \partCombineForce #'solo1
+partcombineSoloII = \partCombineForce #'solo2
+partcombineAutomatic = \partCombineForce \default
 
 
 %% phrasing slurs

@@ -8,7 +8,7 @@
    Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.21"
+@c \version "2.21.0"
 
 @c Translators: Valentin Villenave, Jean-Charles Malahieude
 @c Translation checkers: Jean-Charles Malahieude, John Mandereau
@@ -115,7 +115,7 @@ et aborderons la manière de générer vos propres signes.
 @funindex \fermata
 @funindex \longfermata
 @funindex \verylongfermata
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \segno
 @funindex \coda
 @funindex \varcoda
@@ -172,14 +172,14 @@ Une articulation peut se rattacher aussi bien à un silence qu'à une
 note, mais @strong{pas à un silence multimesures}.  Il existe cependant
 un cas particulier : le point d'orgue -- ou point d'arrêt -- attaché à
 un silence valant l'intégralité de la mesure.  LilyPond dispose à cet
-effet de la commande @code{\fermataMarkup}, qui créera un objet
+effet de la commande @code{\fermata}, qui créera un objet
 @code{MultiMeasureRestText} rattaché à ce « silence multimesures ».
 
 @lilypond[verbatim,quote,fragment]
 \override Script.color = #red
 \override MultiMeasureRestText.color = #blue
 a'2\fermata r\fermata
-R1\fermataMarkup
+R1\fermata
 @end lilypond
 
 En dehors des articulations habituelles, vous pouvez adjoindre du texte

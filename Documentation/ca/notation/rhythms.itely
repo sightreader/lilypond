@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Walter Garcia-Fontes
 @c Translation checkers:
@@ -937,18 +937,18 @@ R2.*2 |
 @cindex marcatge sobre silencis multicompàs
 @cindex multicompàs, silenci, amb marcatges
 
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex MultiMeasureRestText
 
 Es poden afegir elements de marcatge als silencis multicompàs.  Es
-proporciona l'ordre predefinida @code{\fermataMarkup} per afegir
+proporciona l'ordre predefinida @code{\fermata} per afegir
 calderons.
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermataMarkup
+  R2.^\fermata
 }
 @end lilypond
 
@@ -973,13 +973,13 @@ mostrin els advertiments corresponents de comprovació de compàs.
 
 @funindex \textLengthOn
 @funindex \textLengthOff
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermataMarkup},
+@code{\fermata},
 @code{\compressMMRests}.
 @endpredefined
 
@@ -2097,8 +2097,8 @@ automàtics predeterminats; vegeu
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {changing-beam-knee-gap.ly}
 
-@cindex barras, \partcombine con \autoBeamOff
-@cindex voces, \partcombine con \autoBeamOff
+@cindex barras, \partCombine con \autoBeamOff
+@cindex voces, \partCombine con \autoBeamOff
 
 @lilypondfile [verbatim, quote, ragged-right, texidoc, doctitle]
 {partcombine-and-autobeamoff.ly}

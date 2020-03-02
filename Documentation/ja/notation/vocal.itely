@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Tomohiro Tatejima, Yoshiki Sawada
 @c Translation status: post-GDP
@@ -1672,8 +1672,8 @@ contraltoWords = \lyricmode { Con -- tral -- to words }
 @cindex NullVoice
 @cindex polyphony, shared lyrics (歌詞を共有する多声)
 @cindex lyrics, shared among voices (歌詞を共有する多声)
-@cindex \partcombine and lyrics (\partcombine と歌詞)
-@funindex \partcombine
+@cindex \partCombine and lyrics (\partCombine と歌詞)
+@funindex \partCombine
 
 2 つのボイスが異なるリズムを持ち、同じ歌詞を共有する場合、@c
 片方のボイスに歌詞を合わせるともう片方には合いません。@c
@@ -1712,7 +1712,7 @@ words = \lyricmode { la __ la __ }
 @end lilypond
 
 この方法は、単体では歌詞をサポートしていない
-@code{\partcombine} 関数にも用いることができます:
+@code{\partCombine} 関数にも用いることができます:
 
 @lilypond[quote,verbatim]
 soprano = \relative { b'8( c d c) d2 }
@@ -1721,7 +1721,7 @@ aligner = \relative { b'8( c d c) b( a g a) }
 words = \lyricmode { la __ la __ }
 
 \new Staff <<
-  \new Voice \partcombine \soprano \alto
+  \new Voice \partCombine \soprano \alto
   \new NullVoice = "aligner" \aligner
   \new Lyrics \lyricsto "aligner" \words
 >>
@@ -1732,7 +1732,7 @@ words = \lyricmode { la __ la __ }
 @code{NullVoice} と一緒に用いることはできません。
 
 @noindent
-@code{\partcombine} 関数については、@ref{自動パート結合}に説明があります。
+@code{\partCombine} 関数については、@ref{自動パート結合}に説明があります。
 
 最後に、この方法はボイスが異なる譜にある場合にも用いることができ、@c
 2 つよりも多くのボイスにも適用することができます:
@@ -1748,7 +1748,7 @@ words = \lyricmode { la __ la __ }
   \new Staff \soprano
   \new NullVoice = "aligner" \aligner
   \new Lyrics \lyricsto "aligner" \words
-  \new Staff \partcombine \altoOne \altoTwo
+  \new Staff \partCombine \altoOne \altoTwo
 >>
 @end lilypond
 

@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.22"
+@c \version "2.21.0"
 @c Translators: Federico Bruni
 @c Translation checkers:
 
@@ -2233,13 +2233,13 @@ allLyrics = \lyricmode { King of glo -- ry }
   \new Lyrics \allLyrics
   \new PianoStaff <<
     \new Staff = "Destra" {
-      \partcombine
+      \partCombine
       \sopranoMusic
       \altoMusic
     }
     \new Staff = "Sinistra" {
       \clef "bass"
-      \partcombine
+      \partCombine
       \tenorMusic
       \bassMusic
     }

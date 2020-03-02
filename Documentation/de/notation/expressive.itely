@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.21"
+@c \version "2.21.0"
 
 @c Translators: Till Paala
 
@@ -109,7 +109,7 @@ Ausdrucksbezeichnungen zu erstellen.
 @funindex \fermata
 @funindex \longfermata
 @funindex \verylongfermata
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \segno
 @funindex \coda
 @funindex \varcoda
@@ -179,7 +179,7 @@ an eine Mehrtaktpause anfügen kann (und nur hieran).  Damit wird ein
 \override Script.color = #red
 \override MultiMeasureRestText.color = #blue
 a'2\fermata r\fermata
-R1\fermataMarkup
+R1\fermata
 @end lilypond
 
 Zusätzlich zu den Artikulationszeichen können auch Text und Beschriftung

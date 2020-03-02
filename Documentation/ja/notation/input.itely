@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 
 @c Translators: Tomohiro Tatejima, Yoshiki Sawada
@@ -2237,11 +2237,11 @@ allLyrics = \lyricmode { King of glo -- ry }
   \new Lyrics \allLyrics
   \new PianoStaff <<
     \new Staff = "RH" {
-      \partcombine \sopranoMusic \altoMusic
+      \partCombine \sopranoMusic \altoMusic
     }
     \new Staff = "LH" {
       \clef "bass"
-      \partcombine \tenorMusic \bassMusic
+      \partCombine \tenorMusic \bassMusic
     }
   >>
 >>

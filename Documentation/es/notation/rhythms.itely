@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @node Duraciones
 @section Duraciones
@@ -983,18 +983,18 @@ R2.*2 |
 @cindex marcado, sobre silencios multicompás
 @cindex multicompás, silencio, con marcados
 
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex MultiMeasureRestText
 
 Se pueden añadir elementos de marcado a los silencios multicompás.
-Se proporciona la instrucción predefinida @code{\fermataMarkup}
+Se proporciona la instrucción predefinida @code{\fermata}
 para añadir calderones.
 
 @lilypond[quote,verbatim]
 \compressMMRests {
   \time 3/4
   R2.*10^\markup { \italic "ad lib." }
-  R2.^\fermataMarkup
+  R2.^\fermata
 }
 @end lilypond
 
@@ -1020,13 +1020,13 @@ comprobación de compás.
 
 @funindex \textLengthOn
 @funindex \textLengthOff
-@funindex \fermataMarkup
+@funindex \fermata
 @funindex \compressMMRests
 
 @predefined
 @code{\textLengthOn},
 @code{\textLengthOff},
-@code{\fermataMarkup},
+@code{\fermata},
 @code{\compressMMRests}.
 @endpredefined
 
@@ -2217,8 +2217,8 @@ automáticos predeterminados; véase
 @lilypondfile[verbatim,quote,ragged-right,texidoc,doctitle]
 {changing-beam-knee-gap.ly}
 
-@cindex barra, @code{\partcombine} con @code{\autoBeamOff}
-@cindex voz, @code{\partcombine} con @code{\autoBeamOff}
+@cindex barra, @code{\partCombine} con @code{\autoBeamOff}
+@cindex voz, @code{\partCombine} con @code{\autoBeamOff}
 @lilypondfile [verbatim, quote, ragged-right, texidoc, doctitle]
 {partcombine-and-autobeamoff.ly}
 

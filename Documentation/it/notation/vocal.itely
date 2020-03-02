@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Federico Bruni
 @c Translation checkers:
@@ -1683,8 +1683,8 @@ in @ref{Polifonia su un solo rigo}.
 @funindex NullVoice
 @cindex polifonia, testo cantato condiviso
 @cindex testo cantato, condiviso tra voci
-@cindex @code{\partcombine} e testo cantato
-@funindex \partcombine
+@cindex @code{\partCombine} e testo cantato
+@funindex \partCombine
 
 Quando due voci contenenti durate diverse condividono lo stesso
 testo cantato, allineare il testo a una delle voci può creare
@@ -1724,7 +1724,7 @@ words = \lyricmode { la __ la __ }
 >>
 @end lilypond
 
-Questo metodo si può usare anche con la funzione @code{\partcombine},
+Questo metodo si può usare anche con la funzione @code{\partCombine},
 che di per sé non accetta il testo cantato:
 
 @lilypond[quote,verbatim]
@@ -1734,7 +1734,7 @@ aligner = \relative { b'8( c d c) b( a g a) }
 words = \lyricmode { la __ la __ }
 
 \new Staff <<
-  \new Voice \partcombine \soprano \alto
+  \new Voice \partCombine \soprano \alto
   \new NullVoice = "aligner" \aligner
   \new Lyrics \lyricsto "aligner" \words
 >>
@@ -1745,7 +1745,7 @@ La funzione @code{\addlyrics} funziona solo con testi vocali collegati
 a contesti @code{Voice} e non può essere usata con @code{NullVoice}.
 
 @noindent
-La funzione @code{\partcombine} è descritta in
+La funzione @code{\partCombine} è descritta in
 @ref{Combinazione automatica delle parti}.
 
 Infine, si può usare questo metodo anche quando le voci si trovano su
@@ -1764,7 +1764,7 @@ words = \lyricmode { la __ la __ }
     \new NullVoice = "aligner" \aligner
   >>
   \new Lyrics \lyricsto "aligner" \words
-  \new Staff \partcombine \altoOne \altoTwo
+  \new Staff \partCombine \altoOne \altoTwo
 >>
 @end lilypond
 

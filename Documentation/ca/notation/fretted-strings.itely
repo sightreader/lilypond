@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Walter Garcia-Fontes
 @c Translation checkers:
@@ -543,11 +543,11 @@ Els acords no es tracten d'una manera especial, i d'aquí que  el
 selector automàtic de la corda pot escollir fàcilment la mateixa
 corda per a dues notes de l'acord.
 
-Per utilitzar @code{\partcombine}, cal que @code{TabStaff} faci
+Per utilitzar @code{\partCombine}, cal que @code{TabStaff} faci
 servir veus especialment creades:
 
 @lilypond[quote,ragged-right,verbatim]
-melodia = \partcombine { e4 g g g } { e4 e e e }
+melodia = \partCombine { e4 g g g } { e4 e e e }
 <<
   \new TabStaff <<
     \new TabVoice = "one" s1
@@ -1927,7 +1927,7 @@ Referència de la notació:
 @unnumberedsubsubsec Indicació d'acords de potència o de cinquena buida
 @translationof Indicating power chords
 
-@funindex \powerChords
+@funindex 
 
 @cindex potència, acords de
 @cindex acords de potència
@@ -1942,7 +1942,7 @@ com construccions d'acord normals:
 @lilypond[quote,ragged-right,verbatim]
 ChordsAndSymbols = {
   \chordmode {
-    \powerChords
+    
     e,,1:5
     a,,1:5.8
     \set minimumFret = #8
@@ -1975,7 +1975,7 @@ s'utilitza qualsevol dels altres modificadors d'acord:
 @lilypond[quote,ragged-right,verbatim]
 mixedChords = \chordmode {
   c,1
-  \powerChords
+  
   b,,1:5
   fis,,1:5.8
   g,,1:m

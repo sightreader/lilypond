@@ -8,7 +8,7 @@
    Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.22"
+@c \version "2.21.0"
 
 @c Translators: Jean-Charles Malahieude, Valentin Villenave
 
@@ -2303,12 +2303,12 @@ allLyrics = \lyricmode { King of glo -- ry }
   \new PianoStaff <<
     \new Staff = "RH" {
       \set Staff.printPartCombineTexts = ##f
-      \partcombine \sopranoMusic \altoMusic
+      \partCombine \sopranoMusic \altoMusic
     }
     \new Staff = "LH" {
       \set Staff.printPartCombineTexts = ##f
       \clef "bass"
-      \partcombine \tenorMusic \bassMusic
+      \partCombine \tenorMusic \bassMusic
     }
   >>
 >>

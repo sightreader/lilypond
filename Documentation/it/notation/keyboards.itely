@@ -7,7 +7,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Federico Bruni
 @c Translation checkers:
@@ -289,14 +289,14 @@ caso occorre usare le travature manuali.
 @cindex cambio automatico di rigo
 @cindex rigo, cambio automatico
 
-@funindex \autochange
+@funindex \autoChange
 @funindex PianoStaff
 
 È possibile scambiare automaticamente le voci tra rigo superiore e inferiore.
 La sintassi è la seguente:
 
 @example
-\autochange @dots{}@var{musica}@dots{}
+\autoChange @dots{}@var{musica}@dots{}
 @end example
 
 @noindent
@@ -309,7 +309,7 @@ le pause per poter scambiare in anticipo.
 
 @lilypond[quote,verbatim]
 \new PianoStaff {
-  \autochange {
+  \autoChange {
     g4 a b c'
     d'4 r a g
   }
@@ -326,9 +326,9 @@ music = {
   d'8 r f' g' a'2
 }
 
-\autochange d' \music
-\autochange b \with { \clef soprano } \music
-\autochange d' \with { \clef alto } \with { \clef tenor } \music
+\autoChange d' \music
+\autoChange b \with { \clef soprano } \music
+\autoChange d' \with { \clef alto } \with { \clef tenor } \music
 @end lilypond
 
 @cindex musica relativa, e @code{autochange}
@@ -336,13 +336,13 @@ music = {
 
 @funindex \relative
 
-Una sezione @code{\relative} che si trova fuori da @code{\autochange}
+Una sezione @code{\relative} che si trova fuori da @code{\autoChange}
 non ha effetto sulle altezze della musica.  Dunque, se necessario, mettere
-@code{\relative} dentro @code{\autochange}.
+@code{\relative} dentro @code{\autoChange}.
 
 Se è richiesto ulteriore controllo sui righi individuali, possono essere
 creati manualmente coi nomi @code{"up"} e @code{"down"}.  Il comando
-@code{\autochange} scambierà allora la sua voce tra i righi esistenti.
+@code{\autoChange} scambierà allora la sua voce tra i righi esistenti.
 
 @warning{Se i righi sono creati manualmente, @emph{devono} chiamarsi
 @code{"up"} e @code{"down"}.}
@@ -355,7 +355,7 @@ un'armatura di chiave nel rigo inferiore:
   \new Staff = "up" {
     \new Voice = "melOne" {
       \key g \major
-      \autochange \relative {
+      \autoChange \relative {
         g8 b a c b d c e
         d8 r fis, g a2
       }
@@ -380,7 +380,7 @@ Guida al funzionamento interno:
 
 
 @knownissues
-@cindex accordo, suddivisione sui righi con @code{\autochange}
+@cindex accordo, suddivisione sui righi con @code{\autoChange}
 
 Gli scambi di rigo potrebbero finire in posizioni non ottimali.
 Per ottenere un risultato di alta qualità, i cambi di rigo devono

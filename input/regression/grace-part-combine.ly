@@ -1,5 +1,5 @@
 
-\version "2.19.21"
+\version "2.21.0"
 \header {
   texidoc = "Grace notes may be put in a @code{partcombine}r."
 }
@@ -8,7 +8,7 @@
 
 
 \new Staff
-\partcombine 
+\partCombine 
 \relative {
   c''4 d e f  \grace f16 g1
 }

@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Tomohiro Tatejima
 @c Translation status: post-GDP
@@ -481,10 +481,10 @@
 @tab
 @code{1.5}
 @tab
-@code{\powerChords c1:5}
+@code{ c1:5}
 @tab
 @lilypond[line-width=2.1\cm,noragged-right,notime]
-\chordmode { \powerChords c1:5 }
+\chordmode {  c1:5 }
 @end lilypond
 
 @item
@@ -494,10 +494,10 @@
 @tab
 @code{1.5.8}
 @tab
-@code{\powerChords c1:5.8}
+@code{ c1:5.8}
 @tab
 @lilypond[line-width=2.1\cm,noragged-right,notime]
-  \chordmode { \powerChords c1:5.8 }
+  \chordmode {  c1:5.8 }
 @end lilypond
 
 @end multitable

@@ -10,7 +10,7 @@
 
 @c Translators: Till Paala
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @node Notationsübersicht
 @appendix Notationsübersicht
@@ -404,7 +404,7 @@ Perfekte Quinte
 @tab
 @lilypond[line-width=3\cm,noragged-right, notime]
 \chordmode {
-  \powerChords
+  
   c1:5
 }
 @end lilypond
@@ -418,7 +418,7 @@ Perfekte Quinte, Oktave
 @tab
 @lilypond[line-width=3\cm,noragged-right, notime]
 \chordmode {
-  \powerChords
+  
   c1:5.8
 }
 @end lilypond

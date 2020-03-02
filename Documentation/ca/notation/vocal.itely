@@ -8,7 +8,7 @@
     Guide, node Updating translation committishes..
 @end ignore
 
-@c \version "2.19.80"
+@c \version "2.21.0"
 
 @c Translators: Walter Garcia-Fontes
 @c Translation checkers:
@@ -1728,8 +1728,8 @@ temporal, vegeu la secció @emph{Passatges polifònics temporals} dins de
 @cindex NullVoice
 @cindex polifonia, lletra compartida
 @cindex lletra, compartida entre veus
-@cindex \partcombine y letra
-@funindex \partcombine
+@cindex \partCombine y letra
+@funindex \partCombine
 
 Quan dues veus les notes de les quals tenen diferents duracions
 comparteixen la mateixa lletra, l'alineació de la lletra a una de
@@ -1770,7 +1770,7 @@ words = \lyricmode { la __ la __ }
 @end lilypond
 
 Aquest mètode es pot usar també amb la funció
-@code{\partcombine}, que per sí mateixa no permet incloure lletra:
+@code{\partCombine}, que per sí mateixa no permet incloure lletra:
 
 @lilypond[quote,verbatim]
 soprano = \relative { b'8( c d c) d2 }
@@ -1779,7 +1779,7 @@ aligner = \relative { b'8( c d c) b( a g a) }
 words = \lyricmode { la __ la __ }
 
 \new Staff <<
-  \new Voice \partcombine \soprano \alto
+  \new Voice \partCombine \soprano \alto
   \new NullVoice = "aligner" \aligner
   \new Lyrics \lyricsto "aligner" \words
 >>
@@ -1791,7 +1791,7 @@ La funció @code{\addLyrics} sols funciona amb lletra de
 @code{NullVoice}.
 
 @noindent
-La funció @code{\partcombine} es descriu a
+La funció @code{\partCombine} es descriu a
 @ref{Combinació automàtica de les parts}.
 
 Por últim, aquest mètode es pot usar fins i tot si les veus estan
@@ -1808,7 +1808,7 @@ words = \lyricmode { la __ la __ }
   \new Staff \soprano
   \new NullVoice = "aligner" \aligner
   \new Lyrics \lyricsto "aligner" \words
-  \new Staff \partcombine \altoOne \altoTwo
+  \new Staff \partCombine \altoOne \altoTwo
 >>
 @end lilypond
 
