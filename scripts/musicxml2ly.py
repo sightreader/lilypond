@@ -200,6 +200,7 @@ def extract_score_information(tree):
         if value:
             header.set_field(field, utilities.escape_ly_output_string(value))
 
+    header.set_field('tagline', utilities.escape_ly_output_string(''))
     movement_title = tree.get_maybe_exist_named_child('movement-title')
     movement_number = tree.get_maybe_exist_named_child('movement-number')
     if movement_title:
@@ -214,29 +215,29 @@ def extract_score_information(tree):
         work_title = work.get_work_title()
         # Overwrite the title from movement-title with work->title
         set_if_exists('title', work.get_work_title())
-        set_if_exists('opus', work.get_work_number())
+        # set_if_exists('opus', work.get_work_number())
         # Use movement-title as subtitle
-        if movement_title:
-              set_if_exists('subtitle', movement_title.get_text())
+        # if movement_title:
+        #       set_if_exists('subtitle', movement_title.get_text())
 
 # TODO: Translation of opus element. Not to be confused with opus in LilyPond. MusicXML opus is a document element for opus DTD
     identifications = tree.get_named_children('identification')
     for ids in identifications:
-        set_if_exists('copyright', ids.get_rights())
-        set_if_exists('composer', ids.get_composer())
-        set_if_exists('arranger', ids.get_arranger())
-        set_if_exists('editor', ids.get_editor())
-        set_if_exists('poet', ids.get_poet())
+        # set_if_exists('copyright', ids.get_rights())
+        # set_if_exists('composer', ids.get_composer())
+        # set_if_exists('arranger', ids.get_arranger())
+        # set_if_exists('editor', ids.get_editor())
+        # set_if_exists('poet', ids.get_poet())
 
-        set_if_exists('encodingsoftware', ids.get_encoding_software())
-        set_if_exists('encodingdate', ids.get_encoding_date())
-        set_if_exists('encoder', ids.get_encoding_person())
-        set_if_exists('encodingdescription', ids.get_encoding_description())
-        set_if_exists('source', ids.get_source())
+        # set_if_exists('encodingsoftware', ids.get_encoding_software())
+        # set_if_exists('encodingdate', ids.get_encoding_date())
+        # set_if_exists('encoder', ids.get_encoding_person())
+        # set_if_exists('encodingdescription', ids.get_encoding_description())
+        # set_if_exists('source', ids.get_source())
 
         # <miscellaneous><miscellaneous-field name="description"> ... becomes
         # \header { texidoc = ...
-        set_if_exists('texidoc', ids.get_file_description());
+        # set_if_exists('texidoc', ids.get_file_description());
 
         # Finally, apply the required compatibility modes
         # Some applications created wrong MusicXML files, so we need to
@@ -945,12 +946,14 @@ def musicxml_print_to_lily(el):
             elts.append(musicexp.Break("pageBreak"))
     child = el.get_maybe_exist_named_child("part-name-display")
     if child:
-        elts.append(musicexp.SetEvent("Staff.instrumentName",
-                                        "\"%s\"" % extract_display_text(child)))
+        return
+        # elts.append(musicexp.SetEvent("Staff.instrumentName",
+        #                                 "\"%s\"" % extract_display_text(child)))
     child = el.get_maybe_exist_named_child("part-abbreviation-display")
     if child:
-        elts.append(musicexp.SetEvent("Staff.shortInstrumentName",
-                                        "\"%s\"" % extract_display_text(child)))
+        return
+        # elts.append(musicexp.SetEvent("Staff.shortInstrumentName",
+        #                                 "\"%s\"" % extract_display_text(child)))
     return elts
 
 
@@ -1468,6 +1471,7 @@ def musicxml_metronome_to_ly(mxl_event, text_event=None):
     index = -1
     index = next_non_hash_index(children, index)
     if isinstance(children[index], musicxml.BeatUnit):
+        return
         # first form of metronome-mark, using unit and beats/min or other unit
         ev = musicexp.TempoMark()
         if text_event:
@@ -2745,6 +2749,8 @@ def option_parser():
                              description=
 _("""Convert MusicXML from FILE.xml to LilyPond input.
 If the given filename is -, musicxml2ly reads from the command line.
+
+This program has been modified to convert MusicXML files more easily.
 """), add_help_option=False)
 
     p.add_option("-h", "--help",
@@ -3031,7 +3037,7 @@ def update_layout_information():
 
 def print_ly_preamble(printer, filename):
     printer.dump_version(lilypond_version)
-    printer.print_verbatim('% automatically converted by musicxml2ly from ' + filename)
+    printer.print_verbatim('% Automatically converted by musicxml2ly')
     printer.newline()
     printer.dump(r'\pointAndClickOff')
     printer.newline()
@@ -3046,8 +3052,10 @@ def print_ly_additional_definitions(printer, filename=None):
         printer.print_verbatim('%% additional definitions required by the score:')
         printer.newline()
     for a in set(needed_additional_definitions):
-        printer.print_verbatim(additional_definitions.get(a, ''))
-        printer.newline()
+        additional_definition = additional_definitions.get(a, '')
+        if 'make-dynamic-script' not in additional_definition:
+            printer.print_verbatim(additional_definition)
+            printer.newline()
     printer.newline()
 
 # Read in the tree from the given I/O object (either file or string) and

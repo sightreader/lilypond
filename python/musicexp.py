@@ -1161,9 +1161,9 @@ class BeamEvent (SpanEvent):
 
 class PedalEvent (SpanEvent):
     def ly_expression (self):
-        return {-1: '\\sustainOn',
-            0:'\\sustainOff\\sustainOn',
-            1:'\\sustainOff'}.get (self.span_direction, '')
+        return {-1: '',
+            0:'',
+            1:''}.get (self.span_direction, '')
 
 class TextSpannerEvent (SpanEvent):
     def print_before_note (self, printer):
@@ -1704,26 +1704,29 @@ class RestEvent (RhythmicEvent):
         self.pitch = None
 
     def ly_expression (self):
-        res = self.ly_expression_pre_note (False)
-        if self.pitch:
-            return res + "%s%s\\rest" % (self.pitch.ly_expression (), self.duration.ly_expression ())
-        else:
-            return 'r%s' % self.duration.ly_expression ()
+        return 's%s' % self.duration.ly_expression ()
+        # res = self.ly_expression_pre_note (False)
+        # if self.pitch:
+        #     return res + "%s%s\\rest" % (self.pitch.ly_expression (), self.duration.ly_expression ())
+        # else:
+        #     return 's%s' % self.duration.ly_expression ()
 
     def print_ly (self, printer):
         for ev in self.associated_events:
             ev.print_ly (printer)
+        printer('s')
+        self.duration.print_ly (printer)
 #        if hasattr(self, 'color'):
 #            printer.print_note_color("NoteHead", self.color)
 #            printer.print_note_color("Stem", self.color)
 #            printer.print_note_color("Beam", self.color)
-        if self.pitch:
-            self.pitch.print_ly (printer)
-            self.duration.print_ly (printer)
-            printer ('\\rest')
-        else:
-            printer('r')
-            self.duration.print_ly (printer)
+        # if self.pitch:
+        #     self.pitch.print_ly (printer)
+        #     self.duration.print_ly (printer)
+        #     printer ('\\rest')
+        # else:
+        #     printer('s')
+        #     self.duration.print_ly (printer)
 
 class SkipEvent (RhythmicEvent):
     def ly_expression (self):
